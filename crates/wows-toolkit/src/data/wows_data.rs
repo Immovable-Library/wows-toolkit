@@ -1006,10 +1006,10 @@ impl ReplayLoader {
             };
 
             let res = { replay.read().parse(game_version.to_string().as_str()) };
-            let res = res.map(|report| {
+            let res = res.map(|parsed| {
                 {
                     let mut replay_guard = replay.write();
-                    replay_guard.battle_report = Some(report);
+                    replay_guard.store_parse(parsed);
                     replay_guard.build_ui_report(&deps);
                 }
                 BackgroundTaskCompletion::ReplayLoaded { replay, source }

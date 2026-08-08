@@ -105,8 +105,10 @@ use escaper::decode_html;
 use jiff::Timestamp;
 use parking_lot::Mutex;
 use parking_lot::RwLock;
-use tracing::debug;
+use tracing::warn;
 
+use crate::task::replay_upload::ResultsScan;
+use crate::task::replay_upload::ResultsScanner;
 use tracing::error;
 use wows_battle_world::BattleWorld;
 use wows_battle_world::merged::MergedReplays;
@@ -3113,6 +3115,14 @@ fn take_alt_reparse(ctx: &egui::Context) -> Option<PendingAltRequest> {
     ctx.data_mut(|data| data.remove_temp::<PendingAltReparse>(alt_perspective_slot_id())).and_then(|pending| pending.0)
 }
 
+/// What one parse of a replay produced: the battle report, plus the
+/// independently-collected evidence of whether the stream carried an
+/// end-of-battle marker.
+pub struct ParsedReplay {
+    pub report: BattleReport,
+    pub results: ResultsScan,
+}
+
 pub struct Replay {
     pub replay_file: ReplayFile,
 
@@ -3127,6 +3137,12 @@ pub struct Replay {
 
     pub battle_report: Option<BattleReport>,
     pub ui_report: Option<UiReport>,
+
+    /// End-of-battle evidence from the last parse of this replay's packet
+    /// stream. `None` until parsed. This, not the decoded report, is the single
+    /// source of truth for whether results are present: a parse that stops
+    /// early yields a report with no results but is not evidence of absence.
+    pub results_scan: Option<ResultsScan>,
 
     pub game_constants: Option<Arc<wows_replays::game_constants::GameConstants>>,
 
@@ -3168,10 +3184,18 @@ impl Replay {
             resource_loader,
             battle_report: None,
             ui_report: None,
+            results_scan: None,
             game_constants: None,
             source_path: None,
             timeline: TimelineState::NotRequested,
         }
+    }
+
+    /// Attach a parse result. Both halves land together so no caller can store
+    /// a report while leaving the results evidence stale from an earlier parse.
+    pub fn store_parse(&mut self, parsed: ParsedReplay) {
+        self.battle_report = Some(parsed.report);
+        self.results_scan = Some(parsed.results);
     }
 
     pub fn player_vehicle(&self) -> Option<&VehicleInfoMeta> {
@@ -3228,7 +3252,7 @@ impl Replay {
         .replace(['.', ':', ' '], "-")
     }
 
-    pub fn parse(&self, expected_build: &str) -> Result<BattleReport, Report> {
+    pub fn parse(&self, expected_build: &str) -> Result<ParsedReplay, Report> {
         let version_parts: Vec<_> = self.replay_file.meta.clientVersionFromExe.split(',').collect();
         assert!(version_parts.len() == 4);
         if version_parts[3] != expected_build {
@@ -3259,17 +3283,26 @@ impl Replay {
             let mut p =
                 wows_replays::packet2::Parser::with_version(self.resource_loader.entity_specs(), replay_version);
             let mut remaining = self.replay_file.packet_data();
+            let mut scanner = ResultsScanner::new();
             while !remaining.is_empty() {
                 match p.parse_packet(&mut remaining) {
-                    Ok(packet) => world.process(&packet),
+                    Ok(packet) => {
+                        scanner.observe(&packet);
+                        world.process(&packet);
+                    }
                     Err(e) => {
-                        debug!("Packet parse error: {:?}", e);
+                        // A malformed packet leaves the parser's entity state
+                        // untrustworthy, so the walk stops here. Recording the
+                        // stop keeps a truncated parse distinguishable from a
+                        // replay that genuinely carried no results.
+                        warn!("packet parse stopped early, results presence is unknown: {:?}", e);
+                        scanner.truncate();
                         break;
                     }
                 }
             }
             world.finish();
-            return Ok(world.into_report());
+            return Ok(ParsedReplay { report: world.into_report(), results: scanner.finish() });
         }
 
         // Merge path — fold alt perspectives into a single world via
@@ -3293,7 +3326,17 @@ impl Replay {
         session.world_mut().set_record_salvo_history(true);
         while session.step().map_err(|e| rootcause::report!("{e}"))?.is_some() {}
         session.finish();
-        Ok(session.into_world().into_report())
+        let world = session.into_world();
+        // The merge loop propagates a parse error rather than stopping at it, so
+        // arriving here means every stream was consumed whole. That makes the
+        // world's own end-of-battle state a sound marker on this path, unlike
+        // the single-replay path above, which can stop mid-stream.
+        let results = if world.battle_results().is_some() || world.battle_end_clock().is_some() {
+            ResultsScan::Present
+        } else {
+            ResultsScan::Absent
+        };
+        Ok(ParsedReplay { report: world.into_report(), results })
     }
 
     pub fn build_ui_report(&mut self, deps: &crate::data::wows_data::ReplayDependencies) {
@@ -3325,13 +3368,12 @@ impl Replay {
     }
 
     /// Returns a boolean indicating if the replay has incomplete battle results.
+    /// Reads the packet-stream scan rather than the decoded report, so a parse
+    /// that stopped mid-stream reports "pending" instead of silently claiming
+    /// the replay had no results. An unparsed replay is pending by the same
+    /// rule: absence of evidence is not evidence of results.
     pub fn battle_results_are_pending(&self) -> bool {
-        // If we don't yet have a battle result, that implies that we never got the end
-        // of battle packet.
-        //
-        // If we don't have a UI report, that implies that the battle result packet from the
-        // server was never received
-        self.battle_result().is_none()
+        !self.results_scan.is_some_and(|scan| scan.is_present())
     }
 
     pub fn battle_result(&self) -> Option<BattleResult> {

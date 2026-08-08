@@ -27,6 +27,7 @@ use wowsunpack::vfs::VfsPath;
 
 use crate::data::replay_reconcile::ParseOutcome;
 use crate::data::replay_reconcile::RawUploadDeadline;
+use crate::data::replay_reconcile::raw_upload_first_seen;
 use crate::data::settings::DataSharingMode;
 use crate::data::wows_data::BuildData;
 use crate::data::wows_data::GameAsset;
@@ -474,23 +475,34 @@ fn parse_replay_data_in_background(
                     let mut parsed_ok = false;
                     let mut upload_outcome = ShipBuildsUploadOutcome::Sent;
                     match replay.parse(game_version.to_string().as_str()) {
-                        Ok(report) => {
+                        Ok(parsed) => {
                             if !replay_parsed_before {
-                                upload_outcome = upload_parsed_replay(
-                                    path,
-                                    &replay,
-                                    &report,
-                                    metadata_provider.as_ref(),
-                                    configured_data_sharing_mode(&data.persisted),
-                                    shipbuilds_client,
-                                    replay_bytes,
-                                );
+                                match resolve_raw_upload_anchor(data, path) {
+                                    Some(first_seen) => {
+                                        upload_outcome = upload_parsed_replay(
+                                            crate::task::replay_upload::ReplayUploadCandidate {
+                                                path,
+                                                replay: &replay,
+                                                report: &parsed.report,
+                                                bytes: replay_bytes,
+                                                results: parsed.results,
+                                                first_seen,
+                                            },
+                                            metadata_provider.as_ref(),
+                                            configured_data_sharing_mode(&data.persisted),
+                                            shipbuilds_client,
+                                        );
+                                    }
+                                    // Without an anchor the window cannot be
+                                    // evaluated; retry rather than upload early.
+                                    None => upload_outcome = ShipBuildsUploadOutcome::TransientFailure,
+                                }
 
                                 data.player_tracker.write().update_from_replay(&replay);
                             }
 
                             // Update the player tracker
-                            replay.battle_report = Some(report);
+                            replay.store_parse(parsed);
                             parsed_ok = true;
                         }
                         Err(e)
@@ -506,16 +518,17 @@ fn parse_replay_data_in_background(
                         }
                     }
 
-                    if let Some(battle_report) = replay.battle_report.as_ref() {
+                    if replay.battle_report.is_some() {
                         // Data export should only happen once server-provided battle results are
                         // available -- otherwise the exported data isn't reliable or interesting.
                         // Indexing, however, runs for any successfully-parsed replay: a
                         // results-absent (left-early) replay is still indexed with
                         // `results_available = false` and NULL server stats (see
                         // `replay_index::map_rows`), so it still shows up in rosters and
-                        // recent-matches. Capture the flag now, since it's the last use of
-                        // `battle_report` before `build_ui_report` needs `&mut replay`.
-                        let results_available = battle_report.battle_results().is_some();
+                        // recent-matches. Reads the packet-stream scan so export uses the
+                        // same definition of "results present" as the index and the
+                        // uploader, rather than a third one derived from the report.
+                        let results_available = !replay.battle_results_are_pending();
 
                         // Create a dummy sender since we don't need to send background tasks from here
                         let (dummy_sender, _) = egui_inbox::UiInbox::channel();
@@ -620,6 +633,17 @@ fn replay_file_is_missing(error: &rootcause::Report) -> bool {
     error
         .downcast_current_context::<std::io::Error>()
         .is_some_and(|io_error| io_error.kind() == std::io::ErrorKind::NotFound)
+}
+
+/// Resolve this replay's grace-window anchor, recording now as first sight if
+/// it has none. `None` when the index is unavailable or the query failed, which
+/// callers must treat as retryable rather than uploading without a window.
+fn resolve_raw_upload_anchor(data: &BackgroundParserThread, path: &Path) -> Option<jiff::Timestamp> {
+    let (pool, runtime) = (data.db_pool.as_ref()?, data.tokio_runtime.as_ref()?);
+    runtime
+        .block_on(raw_upload_first_seen(pool, path, jiff::Timestamp::now()))
+        .inspect_err(|e| error!("failed to resolve the raw-upload anchor for {}: {e:?}", path.display()))
+        .ok()
 }
 
 fn parse_outcome_for_upload(
@@ -1021,8 +1045,8 @@ pub fn start_populating_player_inspector(
                         replay.game_constants = Some(gc);
                         replay.source_path = Some(path.clone());
                         match replay.parse(game_version.to_string().as_str()) {
-                            Ok(report) => {
-                                replay.battle_report = Some(report);
+                            Ok(parsed) => {
+                                replay.store_parse(parsed);
                                 player_tracker.write().update_from_replay(&replay);
                             }
                             Err(e) => {
@@ -1071,7 +1095,7 @@ pub fn start_send_all_replays_to_shipbuilds(
             sent_replays.as_ref(),
             &progress_tx,
             &persisted,
-            |path| upload_replay_path_to_shipbuilds(path, &deps, &persisted),
+            |path| upload_replay_path_to_shipbuilds(path, &deps, &persisted, &db_pool, &tokio_runtime),
             |path| persist_sent_replay(&tokio_runtime, &db_pool, path),
         );
 
@@ -1100,11 +1124,12 @@ fn persist_sent_replay(
         .map_err(|error| error.attach(format!("path: {}", path.display())).into_dynamic())
 }
 
-#[allow(dead_code)]
 fn upload_replay_path_to_shipbuilds(
     path: &Path,
     deps: &ReplayDependencies,
     persisted: &SharedPersistedState,
+    db_pool: &sqlx::SqlitePool,
+    tokio_runtime: &tokio::runtime::Runtime,
 ) -> ShipBuildsUploadOutcome {
     let loaded = match ReplayLoader::build_replay_from_path(deps, path.to_path_buf()) {
         Ok(replay) => replay,
@@ -1115,22 +1140,35 @@ fn upload_replay_path_to_shipbuilds(
     };
     let game_version = loaded.wows_data.read().patch_version;
     let replay = loaded.replay.read();
-    let report = match replay.parse(game_version.to_string().as_str()) {
-        Ok(report) => report,
+    let parsed = match replay.parse(game_version.to_string().as_str()) {
+        Ok(parsed) => parsed,
         Err(error) => {
             error!("failed to parse replay for ShipBuilds upload {}: {:?}", path.display(), error);
             return ShipBuildsUploadOutcome::TransientFailure;
         }
     };
+    let first_seen = match tokio_runtime.block_on(raw_upload_first_seen(db_pool, path, jiff::Timestamp::now())) {
+        Ok(first_seen) => first_seen,
+        Err(error) => {
+            // Without an anchor the window cannot be evaluated, and guessing
+            // one would either upload early or defer forever. Retry later.
+            error!("failed to resolve the raw-upload anchor for {}: {:?}", path.display(), error);
+            return ShipBuildsUploadOutcome::TransientFailure;
+        }
+    };
 
     upload_parsed_replay(
-        path,
-        &replay,
-        &report,
+        crate::task::replay_upload::ReplayUploadCandidate {
+            path,
+            replay: &replay,
+            report: &parsed.report,
+            bytes: loaded.bytes,
+            results: parsed.results,
+            first_seen,
+        },
         replay.resource_loader.as_ref(),
         configured_data_sharing_mode(persisted),
         &deps.shipbuilds_client,
-        loaded.bytes,
     )
 }
 
@@ -1274,8 +1312,8 @@ fn index_one_replay(
     replay.source_path = Some(path.to_path_buf());
 
     match replay.parse(game_version.to_string().as_str()) {
-        Ok(report) => {
-            replay.battle_report = Some(report);
+        Ok(parsed) => {
+            replay.store_parse(parsed);
         }
         Err(e)
             if e.downcast_current_context::<ToolkitError>()
@@ -2026,8 +2064,8 @@ fn index_ingested_replay(
     reset_after(
         &mut *guard,
         |replay| {
-            let report = replay.parse(&expected_build)?;
-            replay.battle_report = Some(report);
+            let parsed = replay.parse(&expected_build)?;
+            replay.store_parse(parsed);
             replay.build_ui_report(deps);
             crate::data::replay_index::index_replay_reporting(
                 tokio_runtime,

@@ -3,6 +3,8 @@ use std::path::Path;
 use tracing::debug;
 use tracing::error;
 use wows_battle_world::report::BattleReport;
+use wows_replays::packet2::Packet;
+use wows_replays::packet2::PacketType;
 use wowsunpack::game_params::provider::GameMetadataProvider;
 
 use crate::data::replay_reconcile::RawUploadDeadline;
@@ -12,9 +14,74 @@ use crate::data::wows_data::ReplayBytes;
 use crate::ui::replay_parser::Replay;
 use crate::util::build_tracker;
 
-/// Grace window measured from the replay file's mtime. When it lapses, a
-/// results-less replay is uploaded as-is; the file is not going to improve.
-pub const RAW_UPLOAD_GRACE: jiff::SignedDuration = jiff::SignedDuration::from_secs(20 * 60);
+/// Grace window measured from the instant this replay was first observed, not
+/// from its mtime: an archived file carries an mtime from months ago and would
+/// otherwise be past due the moment it is first indexed. When the window
+/// lapses the replay is uploaded as-is, results or not.
+pub const RAW_UPLOAD_GRACE: jiff::SignedDuration = jiff::SignedDuration::from_secs(30 * 60);
+
+/// Name of the entity method announcing the battle's end. Unlike the
+/// `BattleResults` packet, which only exists at or after
+/// `MODERN_PACKET_LAYOUT_MIN_VERSION`, this is present in every packet layout
+/// and is the only end-of-battle marker older replays can carry.
+const BATTLE_END_METHOD: &str = "onBattleEnd";
+
+/// Whether a replay's packet stream carries an end-of-battle marker.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum ResultsScan {
+    /// A marker was observed.
+    Present,
+    /// The walk consumed the whole stream and observed no marker.
+    Absent,
+    /// The walk stopped before the end of the stream, so the tail where the
+    /// markers live was never read. Presence is unknown, not absent.
+    Truncated,
+}
+
+impl ResultsScan {
+    /// True only when a marker was positively observed. `Truncated` is not
+    /// evidence of absence and must never be treated as such.
+    pub fn is_present(&self) -> bool {
+        matches!(self, Self::Present)
+    }
+}
+
+/// Accumulates [`ResultsScan`] evidence while a caller walks a packet stream.
+#[derive(Debug, Default)]
+pub struct ResultsScanner {
+    marker_seen: bool,
+    truncated: bool,
+}
+
+impl ResultsScanner {
+    pub fn new() -> Self {
+        Self::default()
+    }
+
+    /// Record one successfully parsed packet.
+    pub fn observe(&mut self, packet: &Packet<'_, '_>) {
+        self.marker_seen |= match &packet.payload {
+            PacketType::BattleResults(_) => true,
+            PacketType::EntityMethod(method) => method.method == BATTLE_END_METHOD,
+            _ => false,
+        };
+    }
+
+    /// Record that the walk stopped before consuming the whole stream.
+    pub fn truncate(&mut self) {
+        self.truncated = true;
+    }
+
+    pub fn finish(&self) -> ResultsScan {
+        if self.marker_seen {
+            ResultsScan::Present
+        } else if self.truncated {
+            ResultsScan::Truncated
+        } else {
+            ResultsScan::Absent
+        }
+    }
+}
 
 /// Whether the raw replay file is ready for `/api/replays`.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -27,20 +94,20 @@ pub enum RawReplaySnapshotState {
     IncompleteGraceLapsed,
 }
 
+/// `Truncated` is deliberately treated like `Absent`: a walk that stopped early
+/// never reached the tail where the markers live, so it is not evidence the
+/// replay lacks results. Both wait out the window rather than uploading now.
 pub fn raw_replay_snapshot_state(
-    results_available: bool,
-    mtime: Option<jiff::Timestamp>,
+    results: ResultsScan,
+    first_seen: jiff::Timestamp,
     now: jiff::Timestamp,
 ) -> RawReplaySnapshotState {
-    if results_available {
+    if results.is_present() {
         return RawReplaySnapshotState::Complete;
     }
-    // A missing mtime anchors the window at `now`: the fallback upload is
-    // delayed by at most one full window, never issued early.
-    let anchor = mtime.unwrap_or(now);
     // Saturate: an anchor close enough to jiff's range edge to overflow is
     // garbage, and holding the upload for results is the conservative reading.
-    let deadline = anchor.checked_add(RAW_UPLOAD_GRACE).unwrap_or(jiff::Timestamp::MAX);
+    let deadline = first_seen.checked_add(RAW_UPLOAD_GRACE).unwrap_or(jiff::Timestamp::MAX);
     if deadline <= now {
         RawReplaySnapshotState::IncompleteGraceLapsed
     } else {
@@ -174,15 +241,26 @@ pub(crate) fn send_shipbuilds_payloads<T: serde::Serialize>(
     send_shipbuilds_requests_for_replay(replay_path, requests)
 }
 
+/// One replay's upload candidacy: the file, what parsing it produced, and the
+/// bytes that would be sent. `bytes` is the same snapshot the parse read, so a
+/// mid-battle rewrite cannot make the decision and the payload disagree.
+pub(crate) struct ReplayUploadCandidate<'a> {
+    pub path: &'a Path,
+    pub replay: &'a Replay,
+    pub report: &'a BattleReport,
+    pub bytes: ReplayBytes,
+    pub results: ResultsScan,
+    /// When this replay was first observed; anchors the grace window.
+    pub first_seen: jiff::Timestamp,
+}
+
 pub(crate) fn upload_parsed_replay(
-    path: &Path,
-    replay: &Replay,
-    report: &BattleReport,
+    candidate: ReplayUploadCandidate<'_>,
     metadata: &GameMetadataProvider,
     mode: DataSharingMode,
     client: &ShipBuildsClient,
-    replay_bytes: ReplayBytes,
 ) -> ShipBuildsUploadOutcome {
+    let ReplayUploadCandidate { path, replay, report, bytes: replay_bytes, results, first_seen } = candidate;
     let Some(game_type) = replay.replay_file.meta.gameType.as_ref() else {
         debug!("replay {:?} has no game type and is not eligible for upload", path);
         return ShipBuildsUploadOutcome::Skipped(ReplayUploadSkipReason::IneligibleGameType);
@@ -205,12 +283,7 @@ pub(crate) fn upload_parsed_replay(
         .map(|vehicle| !vehicle.is_test_ship())
         .unwrap_or(false);
 
-    let mtime = std::fs::metadata(path).and_then(|meta| meta.modified()).ok().and_then(|mtime| {
-        // A file time outside jiff's range is garbage; treat it as missing so
-        // the grace window anchors at now.
-        jiff::Timestamp::try_from(mtime).ok()
-    });
-    let raw_snapshot = raw_replay_snapshot_state(report.battle_results().is_some(), mtime, jiff::Timestamp::now());
+    let raw_snapshot = raw_replay_snapshot_state(results, first_seen, jiff::Timestamp::now());
 
     match decide_upload_action(mode, is_valid_game_type, self_confirmed_non_test, raw_snapshot) {
         ReplayUploadAction::Skip(reason) => ShipBuildsUploadOutcome::Skipped(reason),
@@ -579,9 +652,82 @@ mod tests {
         assert_eq!(progress.fraction(), 0.0);
     }
 
+    fn packet<'a>(payload: PacketType<'a, 'a>) -> Packet<'a, 'a> {
+        Packet {
+            packet_size: 0,
+            packet_type: wows_replays::packet2::PacketTypeId::EntityMethod,
+            clock: wows_replays::types::GameClock(0.0),
+            payload,
+            raw: &[],
+            leftover: &[],
+        }
+    }
+
+    fn entity_method(name: &str) -> PacketType<'_, '_> {
+        PacketType::EntityMethod(wows_replays::packet2::EntityMethodPacket {
+            entity_id: wows_replays::types::EntityId::from(1_u32),
+            method: name,
+            args: Vec::new(),
+        })
+    }
+
+    #[test]
+    fn a_stream_with_no_markers_is_absent() {
+        let mut scanner = ResultsScanner::new();
+        scanner.observe(&packet(entity_method("onArenaStateReceived")));
+
+        assert_eq!(scanner.finish(), ResultsScan::Absent);
+    }
+
+    #[test]
+    fn a_battle_results_packet_is_present() {
+        let mut scanner = ResultsScanner::new();
+        scanner.observe(&packet(PacketType::BattleResults("{}")));
+
+        assert_eq!(scanner.finish(), ResultsScan::Present);
+    }
+
+    /// The only marker a pre-12.6.0 replay can carry: that layout has no
+    /// `BattleResults` packet at all.
+    #[test]
+    fn an_on_battle_end_method_is_present_without_a_battle_results_packet() {
+        let mut scanner = ResultsScanner::new();
+        scanner.observe(&packet(entity_method(BATTLE_END_METHOD)));
+
+        assert_eq!(scanner.finish(), ResultsScan::Present);
+    }
+
+    #[test]
+    fn a_truncated_walk_without_a_marker_is_not_absent() {
+        let mut scanner = ResultsScanner::new();
+        scanner.observe(&packet(entity_method("onArenaStateReceived")));
+        scanner.truncate();
+
+        assert_eq!(scanner.finish(), ResultsScan::Truncated);
+    }
+
+    #[test]
+    fn a_marker_already_seen_survives_a_later_truncation() {
+        let mut scanner = ResultsScanner::new();
+        scanner.observe(&packet(PacketType::BattleResults("{}")));
+        scanner.truncate();
+
+        assert_eq!(scanner.finish(), ResultsScan::Present);
+    }
+
+    #[test]
+    fn truncated_is_never_reported_as_present() {
+        let mut scanner = ResultsScanner::new();
+        scanner.truncate();
+
+        assert!(!scanner.finish().is_present());
+    }
+
     fn timestamp(second: i64) -> jiff::Timestamp {
         jiff::Timestamp::from_second(second).unwrap()
     }
+
+    const GRACE_SECS: i64 = 30 * 60;
 
     fn within_grace() -> RawReplaySnapshotState {
         RawReplaySnapshotState::IncompleteWithinGrace { deadline: RawUploadDeadline(timestamp(1_200)) }
@@ -675,39 +821,73 @@ mod tests {
     }
 
     #[test]
-    fn results_in_the_file_are_complete_regardless_of_mtime() {
-        for mtime in [None, Some(timestamp(0)), Some(timestamp(10_000_000))] {
-            assert_eq!(raw_replay_snapshot_state(true, mtime, timestamp(100)), RawReplaySnapshotState::Complete);
+    fn an_observed_marker_is_complete_regardless_of_when_the_file_was_first_seen() {
+        for first_seen in [timestamp(0), timestamp(10_000_000)] {
+            assert_eq!(
+                raw_replay_snapshot_state(ResultsScan::Present, first_seen, timestamp(100)),
+                RawReplaySnapshotState::Complete
+            );
         }
     }
 
     #[test]
-    fn a_fresh_results_less_file_waits_until_mtime_plus_grace() {
-        let mtime = timestamp(1_000);
+    fn a_freshly_seen_results_less_replay_waits_until_first_seen_plus_grace() {
+        let first_seen = timestamp(1_000);
         let now = timestamp(1_060);
         assert_eq!(
-            raw_replay_snapshot_state(false, Some(mtime), now),
+            raw_replay_snapshot_state(ResultsScan::Absent, first_seen, now),
             RawReplaySnapshotState::IncompleteWithinGrace {
-                deadline: RawUploadDeadline(timestamp(1_000 + 20 * 60))
+                deadline: RawUploadDeadline(timestamp(1_000 + GRACE_SECS))
             }
         );
     }
 
     #[test]
-    fn a_stale_results_less_file_has_lapsed() {
-        let mtime = timestamp(1_000);
-        let now = timestamp(1_000 + 20 * 60);
-        assert_eq!(raw_replay_snapshot_state(false, Some(mtime), now), RawReplaySnapshotState::IncompleteGraceLapsed);
-    }
-
-    #[test]
-    fn a_missing_mtime_anchors_the_grace_window_at_now() {
-        let now = timestamp(5_000);
+    fn a_results_less_replay_first_seen_long_ago_has_lapsed() {
+        let first_seen = timestamp(1_000);
+        let now = timestamp(1_000 + GRACE_SECS);
         assert_eq!(
-            raw_replay_snapshot_state(false, None, now),
+            raw_replay_snapshot_state(ResultsScan::Absent, first_seen, now),
+            RawReplaySnapshotState::IncompleteGraceLapsed
+        );
+    }
+
+    /// The grace window is anchored on first observation, not the file's mtime,
+    /// so a months-old replay still gets a full window on the launch that first
+    /// sees it instead of being instantly past due.
+    #[test]
+    fn an_old_file_first_seen_now_is_not_instantly_past_due() {
+        let now = timestamp(10_000_000);
+        assert_eq!(
+            raw_replay_snapshot_state(ResultsScan::Absent, now, now),
             RawReplaySnapshotState::IncompleteWithinGrace {
-                deadline: RawUploadDeadline(timestamp(5_000 + 20 * 60))
+                deadline: RawUploadDeadline(timestamp(10_000_000 + GRACE_SECS))
             }
         );
+    }
+
+    #[test]
+    fn a_truncated_parse_waits_for_the_timer_instead_of_uploading_immediately() {
+        let first_seen = timestamp(1_000);
+        assert_eq!(
+            raw_replay_snapshot_state(ResultsScan::Truncated, first_seen, timestamp(1_060)),
+            RawReplaySnapshotState::IncompleteWithinGrace {
+                deadline: RawUploadDeadline(timestamp(1_000 + GRACE_SECS))
+            }
+        );
+    }
+
+    #[test]
+    fn a_truncated_parse_still_uploads_once_the_timer_expires() {
+        let first_seen = timestamp(1_000);
+        assert_eq!(
+            raw_replay_snapshot_state(ResultsScan::Truncated, first_seen, timestamp(1_000 + GRACE_SECS)),
+            RawReplaySnapshotState::IncompleteGraceLapsed
+        );
+    }
+
+    #[test]
+    fn the_grace_window_is_thirty_minutes() {
+        assert_eq!(RAW_UPLOAD_GRACE, jiff::SignedDuration::from_secs(GRACE_SECS));
     }
 }
