@@ -56,6 +56,9 @@ pub struct GameMetadataProvider {
     params: GameParams,
     param_id_to_translation_id: HashMap<GameParamId, String>,
     translations: RwLock<Option<Catalog>>,
+    /// Advanced by every [`Self::set_translations`]. Callers caching localized
+    /// strings key on this so an in-place catalog swap invalidates them.
+    translation_epoch: std::sync::atomic::AtomicU64,
     specs: Arc<Vec<EntitySpec>>,
 }
 
@@ -2147,6 +2150,7 @@ impl GameMetadataProvider {
             params: params.into(),
             param_id_to_translation_id,
             translations: RwLock::new(None),
+            translation_epoch: std::sync::atomic::AtomicU64::new(0),
             specs,
         })
     }
@@ -2163,12 +2167,20 @@ impl GameMetadataProvider {
             params: params.into(),
             param_id_to_translation_id,
             translations: RwLock::new(None),
+            translation_epoch: std::sync::atomic::AtomicU64::new(0),
             specs,
         })
     }
 
     pub fn set_translations(&self, catalog: Catalog) {
         *self.translations.write().expect("translations lock poisoned") = Some(catalog);
+        self.translation_epoch.fetch_add(1, std::sync::atomic::Ordering::Release);
+    }
+
+    /// The number of catalog swaps so far. Two equal values around a cached
+    /// read mean the localized strings behind it did not change.
+    pub fn translation_epoch(&self) -> u64 {
+        self.translation_epoch.load(std::sync::atomic::Ordering::Acquire)
     }
 
     /// Look up a translation key in the catalog, returning `None` when the
