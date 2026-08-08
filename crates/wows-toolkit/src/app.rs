@@ -6292,3 +6292,43 @@ mod shipbuilds_batch_dispatch_tests {
         }
     }
 }
+
+#[cfg(test)]
+mod i18n_stack_tests {
+    /// The `i18n!()` lazy static needs ~1.2 MB of stack to initialize in debug
+    /// builds. Each test runs on its own harness thread, so without a raised
+    /// default stack (see `.cargo/config.toml`) whichever test reached `t!()`
+    /// first aborted the whole binary with STATUS_STACK_OVERFLOW.
+    ///
+    /// This has no assertion because the failure mode is a hard crash, not a
+    /// wrong value: if the stack is too small again, this dies and takes the
+    /// run with it, which is the signal.
+    #[test]
+    fn initializing_i18n_does_not_overflow_a_test_thread() {
+        crate::init_i18n();
+    }
+
+    /// The catalogs are no longer compiled in by `i18n!()`; they are parsed
+    /// from embedded source at startup. A backend that silently loaded nothing
+    /// would still let every `t!()` "work", echoing the key back instead of
+    /// translating it, and most assertions would never notice.
+    #[test]
+    fn translations_resolve_to_text_rather_than_echoing_the_key() {
+        crate::init_i18n();
+
+        assert_eq!(rust_i18n::t!("meta.language_name", locale = "en"), "English");
+        assert_eq!(rust_i18n::t!("meta.language_name", locale = "de"), "Deutsch");
+    }
+
+    /// Every bundled locale has to survive parsing, not just the one the test
+    /// machine happens to run in.
+    #[test]
+    fn every_bundled_locale_is_loaded() {
+        crate::init_i18n();
+
+        for (locale, _) in wt_translations::embedded::EMBEDDED {
+            let name = rust_i18n::t!("meta.language_name", locale = locale);
+            assert!(!name.contains("meta.language_name"), "{locale} did not load: got {name:?}");
+        }
+    }
+}

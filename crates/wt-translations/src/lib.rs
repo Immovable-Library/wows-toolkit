@@ -7,6 +7,7 @@
 /// - **`TextResolver` trait**: for consumers that need translated text without
 ///   depending on `rust-i18n` (e.g. minimap renderer's `ImageTarget`)
 /// - **Language metadata**: supported locales, native names, system locale mapping
+pub mod embedded;
 pub mod keys;
 mod text_resolver;
 

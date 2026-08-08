@@ -1,7 +1,14 @@
 #![warn(clippy::all, rust_2018_idioms)]
 #![allow(clippy::blocks_in_conditions)]
 
-rust_i18n::i18n!("../wt-translations/translations", fallback = "en", backend = FileBackend::try_load());
+// The path deliberately holds no locale files. Pointed at the real catalogs,
+// `i18n!()` generates one `HashMap::from([(k, v)])` temporary per key inside a
+// single closure; across 20 locales that is ~20,000 temporaries, and an
+// unoptimized build gives each its own stack slot, so the initializer needs a
+// frame larger than the 2 MiB a thread gets by default. Every test that reached
+// `t!()` first therefore died with a stack overflow. `TranslationsBackend`
+// supplies the same catalogs, parsed at startup, with no such frame.
+rust_i18n::i18n!("i18n_no_compiled_locales", fallback = "en", backend = TranslationsBackend::load());
 
 mod app;
 mod armor_viewer;
@@ -102,23 +109,34 @@ impl wt_translations::TextResolver for LocalizedTextResolver {
     }
 }
 
-/// Backend that loads translations from TOML files on disk next to the
-/// executable. Checked first by `t!()`; missing keys fall through to the
-/// compiled-in translations. Data is loaded once at first `t!()` call.
-pub(crate) struct FileBackend {
+/// The whole translation catalog: the locales bundled into the binary, plus
+/// any `translations/*.toml` sitting next to the executable, which override
+/// them key by key so a user can correct a string without a rebuild.
+///
+/// Loaded once, at the first `t!()` call.
+pub(crate) struct TranslationsBackend {
     translations: std::collections::HashMap<String, std::collections::HashMap<String, String>>,
 }
 
-impl FileBackend {
-    /// Attempt to load `translations/*.toml` from the exe directory.
-    /// Returns an empty backend if the directory doesn't exist.
-    pub fn try_load() -> Self {
-        let translations_dir = std::env::current_exe().ok().and_then(|p| p.parent().map(|d| d.join("translations")));
-
+impl TranslationsBackend {
+    pub fn load() -> Self {
         let mut all = std::collections::HashMap::new();
-        if let Some(dir) = translations_dir {
-            load_toml_dir(&dir, &mut all);
+        for (locale, source) in wt_translations::embedded::EMBEDDED {
+            if let Some(flat) = parse_locale(source) {
+                all.insert((*locale).to_owned(), flat);
+            }
         }
+
+        // Applied second so an on-disk file wins, and per key rather than per
+        // file, so an override listing one string does not blank the rest.
+        let mut on_disk = std::collections::HashMap::new();
+        if let Some(dir) = std::env::current_exe().ok().and_then(|p| p.parent().map(|d| d.join("translations"))) {
+            load_toml_dir(&dir, &mut on_disk);
+        }
+        for (locale, overrides) in on_disk {
+            all.entry(locale).or_default().extend(overrides);
+        }
+
         Self { translations: all }
     }
 }
@@ -144,8 +162,15 @@ fn load_toml_dir(
 /// (reused across files) rather than accumulating in the caller's frame.
 #[inline(never)]
 fn load_locale_file(path: &std::path::Path) -> Option<std::collections::HashMap<String, String>> {
-    let content = std::fs::read_to_string(path).ok()?;
-    let table: Box<toml::Table> = Box::new(content.parse().ok()?);
+    parse_locale(&std::fs::read_to_string(path).ok()?)
+}
+
+/// Flatten one locale's TOML source. Non-inlined for the same reason as
+/// [`load_locale_file`]: the `toml::Table` intermediate is large, and inlining
+/// would accumulate one per locale in the caller's frame.
+#[inline(never)]
+fn parse_locale(source: &str) -> Option<std::collections::HashMap<String, String>> {
+    let table: Box<toml::Table> = Box::new(source.parse().ok()?);
     let mut flat = std::collections::HashMap::new();
     flatten_toml("", &table, &mut flat);
     Some(flat)
@@ -168,7 +193,7 @@ fn flatten_toml(prefix: &str, table: &toml::Table, out: &mut std::collections::H
 
 pub use wows_toolkit_config::storage_dir;
 
-impl rust_i18n::Backend for FileBackend {
+impl rust_i18n::Backend for TranslationsBackend {
     fn available_locales(&self) -> Vec<&str> {
         self.translations.keys().map(|s| s.as_str()).collect()
     }
