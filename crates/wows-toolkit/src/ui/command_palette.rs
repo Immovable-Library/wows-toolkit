@@ -114,7 +114,7 @@ impl CommandPalette {
     /// Static root menu: categories that cascade into a sub-search, plus a
     /// handful of direct shortcuts. Always fuzzy-filtered by `egui_palette`
     /// against the raw query (no DB/catalog access).
-    pub fn root_entries(&self, debug_mode: bool) -> Vec<egui_palette::Entry<'static, PaletteAction>> {
+    pub fn root_entries(&self) -> Vec<egui_palette::Entry<'static, PaletteAction>> {
         let mut entries = Vec::new();
 
         entries.push(egui_palette::Entry::new("Search players...", PaletteAction::EnterSub(SubKind::Players)));
@@ -136,12 +136,10 @@ impl CommandPalette {
             "Send all replays to ShipBuilds",
             PaletteAction::SendAllReplaysToShipBuilds { cache_policy: SendReplayCachePolicy::UseLedger },
         ));
-        if debug_mode {
-            entries.push(egui_palette::Entry::new(
-                "Send all replays to ShipBuilds (ignore cache)",
-                PaletteAction::SendAllReplaysToShipBuilds { cache_policy: SendReplayCachePolicy::IgnoreLedger },
-            ));
-        }
+        entries.push(egui_palette::Entry::new(
+            "Send all replays to ShipBuilds (ignore cache)",
+            PaletteAction::SendAllReplaysToShipBuilds { cache_policy: SendReplayCachePolicy::IgnoreLedger },
+        ));
         for (label, choice) in [
             ("Theme: follow system", crate::data::settings::ThemeChoice::System),
             ("Theme: dark", crate::data::settings::ThemeChoice::Dark),
@@ -247,7 +245,7 @@ mod tests {
     #[test]
     fn root_entries_include_categories_and_shortcuts() {
         let p = CommandPalette::default();
-        let entries = p.root_entries(false);
+        let entries = p.root_entries();
         assert!(entries.iter().any(|e| matches!(e.data, PaletteAction::EnterSub(SubKind::Players))));
         assert!(entries.iter().any(|e| matches!(e.data, PaletteAction::EnterSub(SubKind::MyShips))));
         assert!(entries.iter().any(|e| matches!(e.data, PaletteAction::EnterSub(SubKind::ArmorShips))));
@@ -272,34 +270,23 @@ mod tests {
     }
 
     #[test]
-    fn shipbuilds_entries_follow_runtime_debug_mode() {
+    fn both_shipbuilds_entries_are_offered_without_debug_mode() {
         let palette = CommandPalette::default();
-        let normal = palette.root_entries(false);
-        let normal_entry = normal
-            .iter()
-            .find(|entry| entry.title == "Send all replays to ShipBuilds")
-            .expect("normal ShipBuilds entry");
-        assert!(matches!(
-            normal_entry.data,
-            PaletteAction::SendAllReplaysToShipBuilds { cache_policy: SendReplayCachePolicy::UseLedger }
-        ));
-        assert!(!normal.iter().any(|entry| entry.title == "Send all replays to ShipBuilds (ignore cache)"));
+        let entries = palette.root_entries();
 
-        let debug = palette.root_entries(true);
-        let debug_normal_entry = debug
-            .iter()
-            .find(|entry| entry.title == "Send all replays to ShipBuilds")
-            .expect("normal ShipBuilds entry in debug mode");
+        let normal =
+            entries.iter().find(|entry| entry.title == "Send all replays to ShipBuilds").expect("normal entry");
         assert!(matches!(
-            debug_normal_entry.data,
+            normal.data,
             PaletteAction::SendAllReplaysToShipBuilds { cache_policy: SendReplayCachePolicy::UseLedger }
         ));
-        let debug_ignore_cache_entry = debug
+
+        let ignore_cache = entries
             .iter()
             .find(|entry| entry.title == "Send all replays to ShipBuilds (ignore cache)")
-            .expect("ignore-cache ShipBuilds entry");
+            .expect("ignore-cache entry is always offered");
         assert!(matches!(
-            debug_ignore_cache_entry.data,
+            ignore_cache.data,
             PaletteAction::SendAllReplaysToShipBuilds { cache_policy: SendReplayCachePolicy::IgnoreLedger }
         ));
     }
