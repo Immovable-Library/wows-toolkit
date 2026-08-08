@@ -209,6 +209,38 @@ where
     StartupFileOutcome { file, stable_skip_changed }
 }
 
+/// The instant this replay was first observed by the uploader, recording `now`
+/// if this is its first sight.
+///
+/// The raw-upload grace window anchors here rather than on the file's mtime: an
+/// archived replay carries an mtime from months ago and would be past due the
+/// moment it is first indexed, so the window would never hold anything outside
+/// a live battle. Stored per path rather than in shared memory because both the
+/// background parser and the manual batch decide uploads independently.
+pub async fn raw_upload_first_seen(
+    pool: &sqlx::SqlitePool,
+    path: &Path,
+    now: jiff::Timestamp,
+) -> Result<jiff::Timestamp, sqlx::Error> {
+    let path_text = path.to_string_lossy();
+    // Insert-then-read in one statement: RETURNING on a conflicting insert
+    // yields no row, so the DO UPDATE keeps the stored anchor and returns it
+    // rather than the caller having to branch on whether it won the race.
+    let seconds: i64 = sqlx::query_scalar(
+        "INSERT INTO raw_upload_first_seen (replay_path, first_seen) VALUES (?1, ?2) \
+         ON CONFLICT(replay_path) DO UPDATE SET first_seen = first_seen \
+         RETURNING first_seen",
+    )
+    .bind(path_text.as_ref())
+    .bind(now.as_second())
+    .fetch_one(pool)
+    .await?;
+
+    // A stored value outside jiff's range can only come from a corrupted row;
+    // falling back to `now` restarts the window rather than failing the upload.
+    Ok(jiff::Timestamp::from_second(seconds).unwrap_or(now))
+}
+
 /// Persistent set of files that panicked or hard-errored, keyed by path + mtime,
 /// so they are not retried every launch. A replaced file (new mtime) recovers.
 /// Serialized as JSON in the settings table under `replay_unindexable`.
@@ -469,6 +501,59 @@ mod tests {
         );
         assert_eq!(bad, FileOutcome::HardFailure);
         assert_eq!(good, FileOutcome::Parsed { upload: ParsedUploadDisposition::Sent });
+    }
+
+    fn instant(second: i64) -> jiff::Timestamp {
+        jiff::Timestamp::from_second(second).unwrap()
+    }
+
+    fn first_seen_pool(runtime: &tokio::runtime::Runtime) -> sqlx::SqlitePool {
+        let pool = runtime
+            .block_on(sqlx::sqlite::SqlitePoolOptions::new().max_connections(1).connect("sqlite::memory:"))
+            .unwrap();
+        runtime
+            .block_on(
+                sqlx::query(
+                    "CREATE TABLE raw_upload_first_seen (replay_path TEXT PRIMARY KEY, first_seen INTEGER NOT NULL)",
+                )
+                .execute(&pool),
+            )
+            .unwrap();
+        pool
+    }
+
+    #[test]
+    fn the_first_sight_of_a_replay_records_and_returns_now() {
+        let runtime = tokio::runtime::Runtime::new().unwrap();
+        let pool = first_seen_pool(&runtime);
+
+        let anchor = runtime.block_on(raw_upload_first_seen(&pool, Path::new("a.wowsreplay"), instant(1_000))).unwrap();
+
+        assert_eq!(anchor, instant(1_000));
+    }
+
+    /// The whole point of the anchor: a later launch must not slide the window
+    /// forward, or a results-less replay would be deferred forever.
+    #[test]
+    fn a_later_sight_returns_the_original_anchor_and_does_not_move_it() {
+        let runtime = tokio::runtime::Runtime::new().unwrap();
+        let pool = first_seen_pool(&runtime);
+        runtime.block_on(raw_upload_first_seen(&pool, Path::new("a.wowsreplay"), instant(1_000))).unwrap();
+
+        let anchor = runtime.block_on(raw_upload_first_seen(&pool, Path::new("a.wowsreplay"), instant(9_999))).unwrap();
+
+        assert_eq!(anchor, instant(1_000), "the anchor must survive a restart and never slide forward");
+    }
+
+    #[test]
+    fn each_replay_gets_its_own_anchor() {
+        let runtime = tokio::runtime::Runtime::new().unwrap();
+        let pool = first_seen_pool(&runtime);
+        runtime.block_on(raw_upload_first_seen(&pool, Path::new("a.wowsreplay"), instant(1_000))).unwrap();
+
+        let anchor = runtime.block_on(raw_upload_first_seen(&pool, Path::new("b.wowsreplay"), instant(2_000))).unwrap();
+
+        assert_eq!(anchor, instant(2_000));
     }
 
     #[test]
