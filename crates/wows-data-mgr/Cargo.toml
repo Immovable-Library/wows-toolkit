@@ -1,6 +1,9 @@
 [package]
 name = "wows-data-mgr"
-version = "0.20.0"
+version = "0.20.1"
+# Integration tests download real game data; they cannot run from the published
+# crate.
+exclude = ["tests/"]
 edition.workspace = true
 rust-version.workspace = true
 license.workspace = true

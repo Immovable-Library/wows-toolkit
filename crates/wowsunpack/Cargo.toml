@@ -1,10 +1,12 @@
 [package]
 name = "wowsunpack"
 description = "Utility for interacting with World of Warships game assets"
-version = "0.44.0"
+version = "0.44.1"
 repository = "https://github.com/landaire/wows-toolkit"
 documentation = "https://docs.rs/wowsunpack/"
-exclude = ["format_templates/"]
+# Integration tests need a real game install, so they cannot run from the
+# published crate and only add weight to it.
+exclude = ["tests/"]
 edition.workspace = true
 rust-version.workspace = true
 license.workspace = true
