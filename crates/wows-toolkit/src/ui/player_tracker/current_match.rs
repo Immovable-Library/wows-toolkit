@@ -225,7 +225,7 @@ impl ToolkitTabViewer<'_> {
         let mut replays: Vec<(PathBuf, String, Option<Timestamp>)> = self
             .tab_state
             .all_workspaces()
-            .filter_map(|workspace| workspace.replay_files.as_ref())
+            .filter_map(|workspace| workspace.replay_files())
             .flatten()
             .map(|(path, listed)| {
                 let stamp = parse_replay_list_timestamp(&listed.date_time);

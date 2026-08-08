@@ -1958,7 +1958,7 @@ impl WowsToolkitApp {
                     // `replays` was loaded from the game's own replays directory,
                     // so it belongs to the live workspace regardless of which one
                     // is active.
-                    self.tab_state.live_workspace.replay_files = replays;
+                    self.tab_state.live_workspace.set_replay_files(replays);
                     self.tab_state.browser_state.reset_filters();
 
                     self.tab_state.toasts.lock().success(t!("ui.messages.game_data_loaded"));
@@ -2089,7 +2089,7 @@ impl WowsToolkitApp {
                             })
                         };
                         if let Some((path, listed)) = listed
-                            && let Some(replay_files) = &mut self.tab_state.live_workspace.replay_files
+                            && let Some(replay_files) = self.tab_state.live_workspace.replay_files_mut()
                         {
                             replay_files.insert(path, Arc::new(listed));
                         }
@@ -2181,7 +2181,7 @@ impl WowsToolkitApp {
                         // A directory with nothing in it sends no batches, so
                         // the listing is started here rather than left unset,
                         // which reads as "not loaded yet".
-                        target.replay_files.get_or_insert_with(std::collections::HashMap::new);
+                        target.replay_files_mut().get_or_insert_with(std::collections::HashMap::new);
                         // Any summaries already loaded were read against the
                         // live source. Drop the stamp so the next frame reads
                         // them against the source just resolved.
@@ -2259,7 +2259,7 @@ impl WowsToolkitApp {
                 }
                 BackgroundTaskCompletion::RowSummariesLoaded { summaries, workspace, .. } => {
                     if let Some(target) = self.tab_state.workspace_mut(workspace) {
-                        target.replay_row_summaries = summaries;
+                        target.set_row_summaries(summaries);
                         target.replay_row_summaries_loaded = true;
                         target.replay_rows_need_reindex_scan = true;
                     }
@@ -6218,10 +6218,12 @@ mod shipbuilds_batch_dispatch_tests {
         let mut tab_state = ready_tab_state();
         let shared = PathBuf::from("C:/replays/shared.wowsreplay");
         let unique = PathBuf::from("D:/archive/unique.wowsreplay");
-        tab_state.live_workspace.replay_files = Some(HashMap::from([(shared.clone(), listed_replay())]));
+        tab_state.live_workspace.set_replay_files(Some(HashMap::from([(shared.clone(), listed_replay())])));
         let workspace = tab_state.open_directory_workspace(PathBuf::from("D:/archive"));
-        tab_state.workspace_mut(workspace).expect("workspace is open").replay_files =
-            Some(HashMap::from([(shared.clone(), listed_replay()), (unique.clone(), listed_replay())]));
+        tab_state.workspace_mut(workspace).expect("workspace is open").set_replay_files(Some(HashMap::from([
+            (shared.clone(), listed_replay()),
+            (unique.clone(), listed_replay()),
+        ])));
         tab_state.persisted.write().settings.integrations.data_sharing_mode = DataSharingMode::Replays;
         tab_state.persisted.write().settings.app.debug_mode = true;
         let expected_persisted = Arc::clone(&tab_state.persisted);

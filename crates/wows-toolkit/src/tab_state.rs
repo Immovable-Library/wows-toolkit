@@ -894,7 +894,7 @@ impl TabState {
     /// Replay paths listed across every open workspace.
     pub fn open_replay_paths(&self) -> BTreeSet<PathBuf> {
         self.all_workspaces()
-            .filter_map(|workspace| workspace.replay_files.as_ref())
+            .filter_map(|workspace| workspace.replay_files())
             .flat_map(|replay_files| replay_files.keys().cloned())
             .collect()
     }
@@ -1198,7 +1198,7 @@ impl TabState {
                 NotifyFileEvent::Removed(old_file) => {
                     // The watcher only observes the live replays directory, so a
                     // removal it reports always belongs to the live workspace.
-                    if let Some(replay_files) = &mut self.live_workspace.replay_files {
+                    if let Some(replay_files) = self.live_workspace.replay_files_mut() {
                         replay_files.remove(&old_file);
                     }
                 }
@@ -1289,7 +1289,7 @@ impl TabState {
         let Some(workspace) = self.workspace_mut(workspace) else {
             return;
         };
-        if let Some(files) = workspace.replay_files.as_mut() {
+        if let Some(files) = workspace.replay_files_mut() {
             files.retain(|path, _| present.contains(path));
         }
     }
@@ -1305,7 +1305,7 @@ impl TabState {
             return;
         };
 
-        workspace.replay_files.get_or_insert_with(HashMap::new).extend(batch.replays);
+        workspace.replay_files_mut().get_or_insert_with(HashMap::new).extend(batch.replays);
         workspace.ingest_stage = Some(crate::task::replays::IngestStage::Reading(batch.progress));
 
         if workspace.source != Some(batch.source) {
@@ -1644,7 +1644,7 @@ mod tests {
     use std::collections::BTreeSet;
 
     fn insert_listed_paths<'a>(workspace: &mut ReplayWorkspace, paths: impl IntoIterator<Item = &'a PathBuf>) {
-        workspace.replay_files = Some(paths.into_iter().map(|path| (path.clone(), listed_replay())).collect());
+        workspace.set_replay_files(Some(paths.into_iter().map(|path| (path.clone(), listed_replay())).collect()));
     }
 
     /// The shape of a `tempArenaInfo.json`: the same metadata a finished
@@ -1927,13 +1927,13 @@ mod tests {
 
         let mut live_files = HashMap::new();
         live_files.insert(path.clone(), listed_replay());
-        state.live_workspace.replay_files = Some(live_files);
+        state.live_workspace.set_replay_files(Some(live_files));
 
         let other_id = WorkspaceId(1);
         let mut other_workspace = ReplayWorkspace::new(None);
         let mut other_files = HashMap::new();
         other_files.insert(path.clone(), listed_replay());
-        other_workspace.replay_files = Some(other_files);
+        other_workspace.set_replay_files(Some(other_files));
         state.workspaces.insert(other_id, other_workspace);
         state.set_active_workspace(other_id);
         assert_eq!(state.active_workspace_id(), other_id, "the other workspace must actually be active");
@@ -1945,17 +1945,11 @@ mod tests {
         state.try_update_replays();
 
         assert!(
-            !state.live_workspace.replay_files.as_ref().expect("set above").contains_key(&path),
+            !state.live_workspace.replay_files().expect("set above").contains_key(&path),
             "the live workspace's entry must be removed"
         );
         assert!(
-            state
-                .workspace(other_id)
-                .expect("inserted above")
-                .replay_files
-                .as_ref()
-                .expect("set above")
-                .contains_key(&path),
+            state.workspace(other_id).expect("inserted above").replay_files().expect("set above").contains_key(&path),
             "the active (non-live) workspace's entry must be untouched"
         );
     }
@@ -1982,12 +1976,12 @@ mod tests {
         let mut state = TabState::default();
         let id = WorkspaceId(1);
         let mut workspace = ReplayWorkspace::new(None);
-        workspace.replay_files = Some(HashMap::from([(PathBuf::from("a.wowsreplay"), listed_replay())]));
+        workspace.set_replay_files(Some(HashMap::from([(PathBuf::from("a.wowsreplay"), listed_replay())])));
         state.workspaces.insert(id, workspace);
 
         state.apply_ingest_batch(ingest_batch(id, &["b.wowsreplay"], 2, 2));
 
-        let files = state.workspace(id).expect("inserted above").replay_files.as_ref().expect("set above");
+        let files = state.workspace(id).expect("inserted above").replay_files().expect("set above");
         assert!(files.contains_key(Path::new("a.wowsreplay")), "the replay already listed must survive the batch");
         assert!(files.contains_key(Path::new("b.wowsreplay")), "the batch's replay must be added");
     }
@@ -2003,7 +1997,7 @@ mod tests {
         state.apply_ingest_batch(ingest_batch(id, &["a.wowsreplay"], 1, 4));
 
         let workspace = state.workspace(id).expect("inserted above");
-        assert_eq!(workspace.replay_files.as_ref().map(|files| files.len()), Some(1));
+        assert_eq!(workspace.replay_files().map(|files| files.len()), Some(1));
         assert_eq!(workspace.source, Some(crate::db::index::rows::SourceId(3)), "the batch's source must be adopted");
         assert_eq!(
             workspace.ingest_stage.clone(),
@@ -2031,12 +2025,12 @@ mod tests {
         state.apply_ingest_batch(ingest_batch(target, &["a.wowsreplay"], 1, 1));
 
         assert_eq!(
-            state.workspace(target).expect("inserted above").replay_files.as_ref().map(|files| files.len()),
+            state.workspace(target).expect("inserted above").replay_files().map(|files| files.len()),
             Some(1),
             "the named workspace must receive the batch"
         );
         assert!(
-            state.workspace(active).expect("inserted above").replay_files.is_none(),
+            state.workspace(active).expect("inserted above").replay_files().is_none(),
             "the active workspace must not receive another workspace's batch"
         );
     }
@@ -2049,7 +2043,7 @@ mod tests {
         let mut state = TabState::default();
         state.apply_ingest_batch(ingest_batch(WorkspaceId(99), &["a.wowsreplay"], 1, 1));
 
-        assert!(state.live_workspace.replay_files.is_none(), "a departed workspace's batch must not land on live");
+        assert!(state.live_workspace.replay_files().is_none(), "a departed workspace's batch must not land on live");
         assert!(state.workspaces.is_empty(), "a departed workspace must not be recreated by its own batch");
     }
 
@@ -2061,10 +2055,10 @@ mod tests {
         let mut state = TabState::default();
         let id = WorkspaceId(1);
         let mut workspace = ReplayWorkspace::new(None);
-        workspace.replay_files = Some(HashMap::from([
+        workspace.set_replay_files(Some(HashMap::from([
             (PathBuf::from("kept.wowsreplay"), listed_replay()),
             (PathBuf::from("deleted.wowsreplay"), listed_replay()),
-        ]));
+        ])));
         state.workspaces.insert(id, workspace);
 
         state.apply_ingest_update(crate::task::replays::IngestUpdate::Walked {
@@ -2072,7 +2066,7 @@ mod tests {
             paths: HashSet::from([PathBuf::from("kept.wowsreplay")]),
         });
 
-        let files = state.workspace(id).expect("inserted above").replay_files.as_ref().expect("set above");
+        let files = state.workspace(id).expect("inserted above").replay_files().expect("set above");
         assert!(files.contains_key(Path::new("kept.wowsreplay")), "a file the walk found must stay listed");
         assert!(
             !files.contains_key(Path::new("deleted.wowsreplay")),
@@ -2094,7 +2088,7 @@ mod tests {
         });
 
         assert!(
-            state.workspace(id).expect("inserted above").replay_files.is_none(),
+            state.workspace(id).expect("inserted above").replay_files().is_none(),
             "a walk that has listed nothing yet must not leave an empty listing behind"
         );
     }
@@ -2107,7 +2101,7 @@ mod tests {
         let mut state = TabState::default();
         let id = WorkspaceId(1);
         let mut workspace = ReplayWorkspace::new(None);
-        workspace.replay_files = Some(HashMap::from([(PathBuf::from("a.wowsreplay"), listed_replay())]));
+        workspace.set_replay_files(Some(HashMap::from([(PathBuf::from("a.wowsreplay"), listed_replay())])));
         state.workspaces.insert(id, workspace);
 
         state.apply_ingest_update(crate::task::replays::IngestUpdate::Stage {
@@ -2128,7 +2122,7 @@ mod tests {
             "progress with no replay to carry it must still reach the listing"
         );
         assert_eq!(
-            workspace.replay_files.as_ref().map(|files| files.len()),
+            workspace.replay_files().map(|files| files.len()),
             Some(1),
             "progress must not disturb the replays already listed"
         );

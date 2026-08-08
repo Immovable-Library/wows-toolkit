@@ -457,7 +457,7 @@ impl ToolkitTabViewer<'_> {
             // its prerequisites available.
             let index_path_available = self.tab_state.db_pool.is_some() && self.tab_state.tokio_runtime.is_some();
             let fallback_path_available =
-                self.tab_state.active_workspace().replay_files.is_some() && self.tab_state.build_cache.is_some();
+                self.tab_state.active_workspace().replay_files().is_some() && self.tab_state.build_cache.is_some();
             let populate_enabled = index_path_available || fallback_path_available;
 
             ui.vertical(|ui| {
@@ -583,7 +583,7 @@ impl ToolkitTabViewer<'_> {
             self.queue_player_search(id);
         }
         if populate_from_replays_requested
-            && let Some(replay_files) = self.tab_state.active_workspace().replay_files.as_ref()
+            && let Some(replay_files) = self.tab_state.active_workspace().replay_files()
             && let Some(build_cache) = self.tab_state.build_cache.as_ref()
         {
             crate::update_background_task!(

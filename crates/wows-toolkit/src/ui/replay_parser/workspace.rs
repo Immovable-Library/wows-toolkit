@@ -29,7 +29,12 @@ pub(crate) struct ReplayWorkspace {
     /// Every file the listing shows, with just the metadata its row draws. A
     /// fully hydrated `Replay` exists only for the files open in this
     /// workspace's dock, reachable through [`Self::hydrated_replay`].
-    pub replay_files: Option<HashMap<PathBuf, Arc<ListedReplay>>>,
+    ///
+    /// Private so every mutation goes through [`Self::replay_files_mut`] or
+    /// [`Self::set_replay_files`], which advance the revision the listing
+    /// cache keys on. A write that bypassed the bump would leave the listing
+    /// drawing from a stale cache with nothing to notice it.
+    replay_files: Option<HashMap<PathBuf, Arc<ListedReplay>>>,
     /// True while a directory ingest is walking this workspace's root, so
     /// re-picking the same directory cannot start a second walk over it.
     /// Owned by the in-flight task, which clears it when it finishes.
@@ -39,8 +44,9 @@ pub(crate) struct ReplayWorkspace {
     pub ingest_stage: Option<IngestStage>,
     /// Index-sourced display data for the listing, keyed by replay path.
     /// Reloaded whenever `index_generation()` moves past
-    /// `replay_row_summaries_generation`.
-    pub replay_row_summaries: HashMap<PathBuf, RowSummary>,
+    /// `replay_row_summaries_generation`. Private for the same reason as
+    /// `replay_files`: mutation must advance the summaries revision.
+    replay_row_summaries: HashMap<PathBuf, RowSummary>,
     /// The `index_generation()` value of the most recent load *attempt*, stamped
     /// when the task is dispatched rather than when it lands. A load that errors
     /// therefore waits for the index to move again instead of re-dispatching on
@@ -68,6 +74,15 @@ pub(crate) struct ReplayWorkspace {
     /// Whether large grouped listings have had their default collapse applied.
     /// Reset when game state is cleared so the collapse re-applies on next load.
     pub replay_listing_collapse_defaulted: bool,
+    /// Advanced by every `replay_files` mutation. The listing cache stores the
+    /// value it was built from and rebuilds when they differ.
+    files_revision: u64,
+    /// Advanced by every `replay_row_summaries` mutation, invalidating the
+    /// summary-derived layer of the listing cache (win rates, row artifacts).
+    summaries_revision: u64,
+    /// Derived listing state (sorted rows, groups, win-rate labels), rebuilt
+    /// lazily when the revisions above move. Never serialized.
+    pub(crate) listing_cache: super::listing_cache::ListingCacheSlot,
 }
 
 impl ReplayWorkspace {
@@ -88,7 +103,41 @@ impl ReplayWorkspace {
             next_replay_tab_id: 0,
             replay_listing_auto_sized: false,
             replay_listing_collapse_defaulted: false,
+            files_revision: 0,
+            summaries_revision: 0,
+            listing_cache: super::listing_cache::ListingCacheSlot::default(),
         }
+    }
+
+    pub fn replay_files(&self) -> Option<&HashMap<PathBuf, Arc<ListedReplay>>> {
+        self.replay_files.as_ref()
+    }
+
+    /// Mutable access to the listed files. Advances the files revision
+    /// unconditionally: over-invalidating on a write that changes nothing
+    /// costs one cache rebuild, while missing a change shows a stale listing.
+    pub fn replay_files_mut(&mut self) -> &mut Option<HashMap<PathBuf, Arc<ListedReplay>>> {
+        self.files_revision += 1;
+        &mut self.replay_files
+    }
+
+    pub fn set_replay_files(&mut self, files: Option<HashMap<PathBuf, Arc<ListedReplay>>>) {
+        self.files_revision += 1;
+        self.replay_files = files;
+    }
+
+    pub fn row_summaries(&self) -> &HashMap<PathBuf, RowSummary> {
+        &self.replay_row_summaries
+    }
+
+    pub fn set_row_summaries(&mut self, summaries: HashMap<PathBuf, RowSummary>) {
+        self.summaries_revision += 1;
+        self.replay_row_summaries = summaries;
+    }
+
+    /// The revision pair the listing cache keys on.
+    pub fn listing_revisions(&self) -> (u64, u64) {
+        (self.files_revision, self.summaries_revision)
     }
 
     /// Returns the replay shown in the currently focused (or first) replay dock tab, if any.
@@ -178,7 +227,9 @@ impl ReplayWorkspace {
     pub fn reset(&mut self) {
         self.replay_dock_state = egui_dock::DockState::new(vec![]);
         self.next_replay_tab_id = 0;
+        self.files_revision += 1;
         self.replay_files = None;
+        self.summaries_revision += 1;
         self.replay_row_summaries.clear();
         self.replay_row_summaries_generation = None;
         self.replay_row_summaries_loaded = false;
@@ -446,7 +497,11 @@ mod tests {
         let pinned_before = Arc::strong_count(&resource_loader);
 
         let mut ws = ReplayWorkspace::new(Some(PathBuf::from("replays")));
-        ws.replay_files = Some(HashMap::from([listed("a.wowsreplay"), listed("b.wowsreplay"), listed("c.wowsreplay")]));
+        ws.set_replay_files(Some(HashMap::from([
+            listed("a.wowsreplay"),
+            listed("b.wowsreplay"),
+            listed("c.wowsreplay"),
+        ])));
 
         assert_eq!(
             ws.replay_files.as_ref().map(HashMap::len),
@@ -587,7 +642,7 @@ mod tests {
         };
 
         let mut ws = ReplayWorkspace::new(Some(PathBuf::from("replays")));
-        ws.replay_files = Some(HashMap::from([listed("a.wowsreplay")]));
+        ws.set_replay_files(Some(HashMap::from([listed("a.wowsreplay")])));
 
         // Listed but unopened: there is no parse to prefer, so the index wins.
         let unopened = resolve_row_stats(
@@ -621,7 +676,7 @@ mod tests {
     #[test]
     fn reset_clears_the_listing_but_keeps_the_root_and_an_in_flight_load() {
         let mut ws = ReplayWorkspace::new(Some(PathBuf::from("replays")));
-        ws.replay_files = Some(HashMap::new());
+        ws.set_replay_files(Some(HashMap::new()));
         ws.replay_dock_state.push_to_focused_leaf(test_replay_tab(0));
         assert!(ws.replay_dock_state.iter_all_tabs().next().is_some(), "the tab was actually added before reset");
         ws.replay_row_summaries.insert(
