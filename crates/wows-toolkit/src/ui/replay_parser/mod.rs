@@ -1,4 +1,7 @@
 mod damage_types;
+mod listing_cache;
+#[cfg(test)]
+mod listing_perf;
 mod listing_row;
 mod models;
 pub(crate) mod preview_popup;
@@ -11,7 +14,6 @@ pub(crate) use workspace::ReplayWorkspace;
 use workspace::alt_perspective_slot_id;
 use workspace::request_slot_id;
 pub(crate) use workspace::shorten_root;
-use workspace::workspace_group_salt;
 use workspace::workspace_leaf_salt;
 use workspace::workspace_salt;
 
@@ -175,15 +177,11 @@ pub struct ReplayTab {
 }
 
 /// A replay file path paired with the listing data drawn for it.
-type ReplayEntry = (std::path::PathBuf, Arc<ListedReplay>);
-/// A named group of replay entries (e.g., grouped by date or ship name).
-type ReplayGroup = (String, Vec<ReplayEntry>);
-
 /// The groupings that draw a tree of groups. [`ReplayGrouping::None`] has its
 /// own flat listing, so it is not representable here and the tree listing needs
 /// no arm for it.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
-enum GroupedListing {
+pub(crate) enum GroupedListing {
     Date,
     Ship,
 }
@@ -376,108 +374,76 @@ fn show_group_context_menu(ui: &mut egui::Ui, paths: &[std::path::PathBuf], ws_i
     }
 }
 
-/// Lookup maps for a grouped tree view, bundling leaf and group ID mappings.
-#[derive(Clone)]
-struct GroupedTreeMaps {
-    /// Leaf node ID -> file path
-    leaf_paths: HashMap<egui::Id, std::path::PathBuf>,
-    /// Group node ID -> child node IDs
-    group_child_ids: HashMap<egui::Id, Vec<egui::Id>>,
-    /// Group node ID -> child file paths
-    group_paths: HashMap<egui::Id, Vec<std::path::PathBuf>>,
-}
+/// Show the fallback (multi-selection) context menu for tree views.
+fn show_multi_selection_context_menu(
+    tree: &listing_cache::TreeIdMaps,
+    ui: &mut egui::Ui,
+    selected_ids: &[egui::Id],
+    ws_id: WorkspaceId,
+) {
+    let selected_paths = tree.collect_selected(selected_ids);
+    if selected_paths.is_empty() {
+        return;
+    }
+    let count = selected_paths.len();
 
-impl GroupedTreeMaps {
-    /// Collect paths from a set of selected node IDs, deduplicating leaf nodes
-    /// that are already covered by a selected group.
-    fn collect_selected(&self, selected_ids: &[egui::Id]) -> Vec<std::path::PathBuf> {
-        let mut covered_by_group: std::collections::HashSet<egui::Id> = std::collections::HashSet::new();
-        let mut paths: Vec<std::path::PathBuf> = Vec::new();
-        for id in selected_ids {
-            if let Some(group_paths) = self.group_paths.get(id) {
-                paths.extend(group_paths.iter().cloned());
-                if let Some(child_ids) = self.group_child_ids.get(id) {
-                    covered_by_group.extend(child_ids.iter().copied());
-                }
-            }
-            if !covered_by_group.contains(id)
-                && let Some(path) = self.leaf_paths.get(id)
-            {
-                paths.push(path.clone());
-            }
-        }
-        paths
+    let copy_label =
+        if count == 1 { "Copy Replay".to_string() } else { format!("Copy {} Replays", selected_paths.len()) };
+    if ui.button(copy_label).clicked() {
+        copy_files_to_clipboard(&selected_paths);
+        ui.close_kind(UiKind::Menu);
     }
 
-    /// Show the fallback (multi-selection) context menu for tree views.
-    fn show_multi_selection_context_menu(&self, ui: &mut egui::Ui, selected_ids: &[egui::Id], ws_id: WorkspaceId) {
-        let selected_paths = self.collect_selected(selected_ids);
-        if selected_paths.is_empty() {
-            return;
-        }
-        let count = selected_paths.len();
+    // Batch render
+    let render_label: String = if count == 1 {
+        t!("ui.replay.context.render_to_video").into()
+    } else {
+        t!("ui.replay.context.render_to_video_many", count = count).into()
+    };
+    if ui.button(render_label).clicked() {
+        ui.ctx().data_mut(|data| {
+            data.insert_temp(request_slot_id(ws_id, ReplayRequestSlot::BatchRenderReplays), selected_paths.clone());
+        });
+        ui.close_kind(UiKind::Menu);
+    }
+    let clipboard_label: String = if count == 1 {
+        t!("ui.replay.context.render_to_clipboard").into()
+    } else {
+        t!("ui.replay.context.render_to_clipboard_many", count = count).into()
+    };
+    if ui.button(clipboard_label).clicked() {
+        ui.ctx().data_mut(|data| {
+            data.insert_temp(request_slot_id(ws_id, ReplayRequestSlot::BatchRenderClipboard), selected_paths.clone());
+        });
+        ui.close_kind(UiKind::Menu);
+    }
+    ui.separator();
 
-        let copy_label =
-            if count == 1 { "Copy Replay".to_string() } else { format!("Copy {} Replays", selected_paths.len()) };
-        if ui.button(copy_label).clicked() {
-            copy_files_to_clipboard(&selected_paths);
-            ui.close_kind(UiKind::Menu);
-        }
-
-        // Batch render
-        let render_label: String = if count == 1 {
-            t!("ui.replay.context.render_to_video").into()
-        } else {
-            t!("ui.replay.context.render_to_video_many", count = count).into()
-        };
-        if ui.button(render_label).clicked() {
-            ui.ctx().data_mut(|data| {
-                data.insert_temp(request_slot_id(ws_id, ReplayRequestSlot::BatchRenderReplays), selected_paths.clone());
-            });
-            ui.close_kind(UiKind::Menu);
-        }
-        let clipboard_label: String = if count == 1 {
-            t!("ui.replay.context.render_to_clipboard").into()
-        } else {
-            t!("ui.replay.context.render_to_clipboard_many", count = count).into()
-        };
-        if ui.button(clipboard_label).clicked() {
-            ui.ctx().data_mut(|data| {
-                data.insert_temp(
-                    request_slot_id(ws_id, ReplayRequestSlot::BatchRenderClipboard),
-                    selected_paths.clone(),
-                );
-            });
-            ui.close_kind(UiKind::Menu);
-        }
-        ui.separator();
-
-        let set_label = if count == 1 {
-            "Set as Session Stats (1 replay)".to_string()
-        } else {
-            format!("Set as Session Stats ({} replays)", count)
-        };
-        if ui.button(set_label).clicked() {
-            ui.ctx().data_mut(|data| {
-                data.insert_temp(
-                    egui::Id::new("pending_confirmation_request"),
-                    Some(crate::tab_state::ConfirmableAction::SetAsSessionStats { replays: selected_paths.clone() }),
-                );
-            });
-            ui.close_kind(UiKind::Menu);
-        }
-        let add_label = if count == 1 {
-            "Add to Session Stats (1 replay)".to_string()
-        } else {
-            format!("Add to Session Stats ({} replays)", count)
-        };
-        if ui.button(add_label).clicked() {
-            ui.ctx().data_mut(|data| {
-                // App-wide: feeds the one global session-stats total, not a per-workspace one.
-                data.insert_temp(egui::Id::new("add_to_session_stats_request"), selected_paths);
-            });
-            ui.close_kind(UiKind::Menu);
-        }
+    let set_label = if count == 1 {
+        "Set as Session Stats (1 replay)".to_string()
+    } else {
+        format!("Set as Session Stats ({} replays)", count)
+    };
+    if ui.button(set_label).clicked() {
+        ui.ctx().data_mut(|data| {
+            data.insert_temp(
+                egui::Id::new("pending_confirmation_request"),
+                Some(crate::tab_state::ConfirmableAction::SetAsSessionStats { replays: selected_paths.clone() }),
+            );
+        });
+        ui.close_kind(UiKind::Menu);
+    }
+    let add_label = if count == 1 {
+        "Add to Session Stats (1 replay)".to_string()
+    } else {
+        format!("Add to Session Stats ({} replays)", count)
+    };
+    if ui.button(add_label).clicked() {
+        ui.ctx().data_mut(|data| {
+            // App-wide: feeds the one global session-stats total, not a per-workspace one.
+            data.insert_temp(egui::Id::new("add_to_session_stats_request"), selected_paths);
+        });
+        ui.close_kind(UiKind::Menu);
     }
 }
 
@@ -4074,23 +4040,21 @@ impl ToolkitTabViewer<'_> {
         let mut replay_to_open: Option<PathBuf> = None;
         let mut replay_to_open_new: Option<PathBuf> = None;
 
-        // One borrow of the workspace covers everything this listing reads from
-        // it, so a workspace that has gone away draws nothing rather than
-        // needing each read to argue that it is still there.
-        if let Some(workspace) = self.tab_state.workspace(ws_id)
-            && let Some(mut files) = workspace
-                .replay_files
-                .as_ref()
-                .map(|files| files.iter().map(|(x, y)| (x.clone(), y.clone())).collect::<Vec<_>>())
+        // The cached sorted listing needs the workspace mutably (a stale cache
+        // rebuilds in place); everything else this listing reads comes from
+        // one immutable borrow afterwards, so a workspace that has gone away
+        // draws nothing rather than needing each read to argue that it is
+        // still there.
+        let rows = self.tab_state.workspace_mut(ws_id).and_then(|workspace| workspace.listing_rows());
+        if let Some(files) = rows
+            && let Some(workspace) = self.tab_state.workspace(ws_id)
         {
-            files.sort_by(|a, b| b.0.cmp(&a.0));
-
             let metadata_provider = self.metadata_provider().unwrap();
             let focused = workspace.focused_replay_path();
             let hydrated = workspace.hydrated_replays();
             let locale = self.tab_state.persisted.read().settings.app.locale.clone();
             let wows_dir = self.tab_state.persisted.read().settings.game.wows_dir.clone();
-            let row_summaries = &workspace.replay_row_summaries;
+            let row_summaries = workspace.row_summaries();
             let font_id = egui::TextStyle::Body.resolve(ui.style());
 
             // `available_rect_before_wrap` is built from `max_rect`, which this
@@ -4106,36 +4070,65 @@ impl ToolkitTabViewer<'_> {
             // so this is just the two-line galley.
             let row_height = ui.text_style_height(&egui::TextStyle::Body) * 2.0;
 
+            // Sized to the rows this viewport can actually show; scrolling
+            // reuses cached rows instead of re-laying them out.
+            let (files_rev, summaries_rev) = workspace.listing_revisions();
+            let artifacts = workspace.row_artifacts();
+            let visible_rows =
+                (ui.available_height() / (row_height + ui.spacing().item_spacing.y)).ceil().max(0.0) as usize;
+            artifacts.begin_frame(
+                listing_cache::ArtifactEpoch {
+                    files_rev,
+                    summaries_rev,
+                    provider: Arc::downgrade(&metadata_provider),
+                    translation_epoch: metadata_provider.translation_epoch(),
+                    locale: locale.clone(),
+                    dark_mode: ui.visuals().dark_mode,
+                },
+                listing_cache::artifact_capacity(visible_rows),
+            );
+
             egui::ScrollArea::both().id_salt(workspace_salt(ws_id, "replay_listing_scroll_area")).show_rows(
                 ui,
                 row_height,
                 files.len(),
                 |ui, range| {
                     for (path, listed) in &files[range] {
-                        let identity = listing_row::listed_row_identity(listed, &metadata_provider);
                         let parsed = parsed_stats_for(&hydrated, path);
-
+                        let has_parse = parsed.is_some();
                         let summary = row_summaries.get(path);
-                        let stats = listing_row::resolve_row_stats(parsed, summary);
-                        let identity_text = listing_row::identity_line(&identity, ReplayGrouping::None);
-                        let stats_text =
-                            listing_row::stats_line(&identity, &stats, ReplayGrouping::None, locale.as_deref());
-
                         let is_selected = focused.as_deref() == Some(path.as_path());
-                        let label_text = listing_row::row_layout_job(
-                            &identity_text,
-                            &stats_text,
-                            &stats,
-                            is_selected,
-                            ui.visuals(),
-                            font_id.clone(),
-                        );
-                        let hover = listing_row::hover_text(&identity, &stats, locale.as_deref());
+
+                        let build_row = || {
+                            let identity = listing_row::listed_row_identity(listed, &metadata_provider);
+                            let stats = listing_row::resolve_row_stats(parsed, summary);
+                            let identity_text = listing_row::identity_line(&identity, ReplayGrouping::None);
+                            let stats_text =
+                                listing_row::stats_line(&identity, &stats, ReplayGrouping::None, locale.as_deref());
+                            listing_cache::RowArtifacts {
+                                label: listing_row::row_layout_job(
+                                    &identity_text,
+                                    &stats_text,
+                                    &stats,
+                                    is_selected,
+                                    ui.visuals(),
+                                    font_id.clone(),
+                                ),
+                                hover: listing_row::hover_text(&identity, &stats, locale.as_deref()),
+                            }
+                        };
+                        // A hydrated row's stats come from the in-memory parse,
+                        // which the cache epoch does not see; build it fresh.
+                        let row = if has_parse {
+                            Arc::new(build_row())
+                        } else {
+                            artifacts.get_or_insert_with(path, is_selected, build_row)
+                        };
 
                         let path_clone = path.clone();
                         let wows_dir_clone = wows_dir.clone();
                         let label_response = ui.add(
-                            Label::new(label_text)
+                            Label::new(row.label.clone())
                                 .selectable(false)
                                 .sense(Sense::click())
                                 // The scroll area hands rows its full visible width, so a
@@ -4152,9 +4145,9 @@ impl ToolkitTabViewer<'_> {
                             .and_then(|deps| Some((deps, preview_popup::preview_key(path, summary)?)));
                         let label_response = match preview {
                             Some((deps, key)) => label_response.on_hover_ui(|ui| {
-                                preview_popup::preview_tooltip(ui, deps, key, &listed.map_name, &hover);
+                                preview_popup::preview_tooltip(ui, deps, key, &listed.map_name, &row.hover);
                             }),
-                            None => label_response.on_hover_text(hover),
+                            None => label_response.on_hover_text(row.hover.clone()),
                         };
                         label_response.context_menu(|ui| {
                             show_leaf_context_menu(ui, &path_clone, &wows_dir_clone, ws_id);
@@ -4175,18 +4168,28 @@ impl ToolkitTabViewer<'_> {
 
     fn build_file_listing_grouped(&mut self, ui: &mut egui::Ui, ws_id: WorkspaceId, listing: GroupedListing) {
         let grouping = listing.grouping();
-        let Some(mut files) = self
+        let tree_id_salt = match listing {
+            GroupedListing::Ship => "replay_ship_tree",
+            GroupedListing::Date => "replay_date_tree",
+        };
+        let locale = self.tab_state.persisted.read().settings.app.locale.clone();
+
+        let Some(rows) = self.tab_state.workspace_mut(ws_id).and_then(|workspace| workspace.listing_rows()) else {
+            return;
+        };
+        let metadata_provider = self.metadata_provider().unwrap();
+        let Some(groups) = self
             .tab_state
-            .workspace(ws_id)
-            .and_then(|workspace| workspace.replay_files.as_ref())
-            .map(|files| files.iter().map(|(x, y)| (x.clone(), y.clone())).collect::<Vec<_>>())
+            .workspace_mut(ws_id)
+            .and_then(|workspace| workspace.listing_groups(ws_id, listing, &metadata_provider, locale.as_deref()))
         else {
             return;
         };
-
-        files.sort_by(|a, b| b.0.cmp(&a.0));
-        let files_len = files.len();
-        let metadata_provider = self.metadata_provider().unwrap();
+        let stats = match self.tab_state.workspace_mut(ws_id) {
+            Some(workspace) => workspace.listing_group_stats(listing, &groups, &rows),
+            None => return,
+        };
+        let files_len = rows.len();
 
         // Computed on this outer ui -- the same panel content ui
         // `build_file_listing_ungrouped` tests -- and not on the `ScrollArea`
@@ -4199,65 +4202,9 @@ impl ToolkitTabViewer<'_> {
         let pointer_over_listing = ui.rect_contains_pointer(ui.available_rect_before_wrap());
 
         egui::ScrollArea::both().id_salt(workspace_salt(ws_id, "replay_listing_scroll_area")).show(ui, |ui| {
-            // Build groups based on grouping mode
-            let (groups, group_id_salt, tree_id_salt) = match listing {
-                GroupedListing::Ship => {
-                    let mut ship_groups: HashMap<String, Vec<ReplayEntry>> = HashMap::new();
-                    let mut ship_most_recent: HashMap<String, std::path::PathBuf> = HashMap::new();
-                    for (path, listed) in files {
-                        let ship_name = listing_row::listed_ship_name(&listed, &metadata_provider);
-                        ship_groups.entry(ship_name.clone()).or_default().push((path.clone(), listed));
-                        ship_most_recent.entry(ship_name).or_insert(path);
-                    }
-                    let mut groups: Vec<ReplayGroup> = ship_groups.into_iter().collect();
-                    groups.sort_by(|a, b| {
-                        let a_recent = ship_most_recent.get(&a.0);
-                        let b_recent = ship_most_recent.get(&b.0);
-                        b_recent.cmp(&a_recent)
-                    });
-                    (groups, "ship_group", "replay_ship_tree")
-                }
-                GroupedListing::Date => {
-                    let mut groups: Vec<ReplayGroup> = Vec::new();
-                    for (path, listed) in files {
-                        let date = listed.date_time.split(' ').next().unwrap_or(&listed.date_time).to_string();
-                        if let Some((last_date, last_group)) = groups.last_mut()
-                            && *last_date == date
-                        {
-                            last_group.push((path, listed));
-                            continue;
-                        }
-                        groups.push((date, vec![(path, listed)]));
-                    }
-                    (groups, "date_group", "replay_date_tree")
-                }
-            };
-
-            // Build lookup maps for tree node IDs
-            let mut tree_maps = GroupedTreeMaps {
-                leaf_paths: HashMap::new(),
-                group_child_ids: HashMap::new(),
-                group_paths: HashMap::new(),
-            };
-
-            for (group_name, replays) in &groups {
-                let group_id = workspace_group_salt(ws_id, group_id_salt, group_name);
-                let mut child_ids = Vec::new();
-                let mut grp_paths = Vec::new();
-                for (path, _listed) in replays {
-                    let id = workspace_leaf_salt(ws_id, path);
-                    tree_maps.leaf_paths.insert(id, path.clone());
-                    child_ids.push(id);
-                    grp_paths.push(path.clone());
-                }
-                tree_maps.group_child_ids.insert(group_id, child_ids);
-                tree_maps.group_paths.insert(group_id, grp_paths);
-            }
-
-            let fallback_maps = tree_maps.clone();
             let visuals = ui.visuals().clone();
             let font_id = egui::TextStyle::Body.resolve(ui.style());
-            let locale = self.tab_state.persisted.read().settings.app.locale.clone();
+            let wows_dir = self.tab_state.persisted.read().settings.game.wows_dir.clone();
 
             let preview_deps = self.preview_deps(ui, pointer_over_listing);
 
@@ -4273,11 +4220,10 @@ impl ToolkitTabViewer<'_> {
                 let tree_id = ui.make_persistent_id(workspace_salt(ws_id, tree_id_salt));
                 ui.ctx().data_mut(|data| {
                     let state = data.get_temp_mut_or_default::<egui_ltreeview::TreeViewState<egui::Id>>(tree_id);
-                    for (group_name, _) in &groups {
-                        let node_id = workspace_group_salt(ws_id, group_id_salt, group_name);
+                    for group in &groups.groups {
                         // Only groups the user has never opened or closed.
-                        if state.is_open(&node_id).is_none() {
-                            state.set_openness(node_id, false);
+                        if state.is_open(&group.id).is_none() {
+                            state.set_openness(group.id, false);
                         }
                     }
                 });
@@ -4292,39 +4238,57 @@ impl ToolkitTabViewer<'_> {
                 return;
             };
             let hydrated = workspace.hydrated_replays();
-            let row_summaries = &workspace.replay_row_summaries;
+            let row_summaries = workspace.row_summaries();
 
+            // Parsed outcomes (open tabs) override the index in group win
+            // rates. Only a handful of replays are ever hydrated, so their
+            // groups' counts are patched here instead of invalidating the
+            // cached stats layer.
+            let mut patched_counts: HashMap<u32, listing_cache::OutcomeCounts> = HashMap::new();
+            for path in hydrated.keys() {
+                let Some(parsed) = parsed_stats_for(&hydrated, path) else { continue };
+                let summary_outcome = row_summaries.get(path).map(|summary| summary.outcome);
+                if summary_outcome == Some(parsed.outcome) {
+                    continue;
+                }
+                let Some(listed) = workspace.replay_files().and_then(|files| files.get(path)) else { continue };
+                let key = listing_cache::group_key(listing, listed, &metadata_provider);
+                let Some(&group_idx) = groups.by_name.get(&key) else { continue };
+                let counts = patched_counts.entry(group_idx).or_insert(stats.counts[group_idx as usize]);
+                if let Some(previous) = summary_outcome {
+                    counts.remove(previous);
+                }
+                counts.add(parsed.outcome);
+            }
+
+            let fallback_tree = Arc::clone(&groups.tree);
             let tree = egui_ltreeview::TreeView::new(ui.make_persistent_id(workspace_salt(ws_id, tree_id_salt)))
                 .allow_multi_selection(true)
                 .fallback_context_menu(move |ui, selected_ids| {
-                    fallback_maps.show_multi_selection_context_menu(ui, selected_ids, ws_id);
+                    show_multi_selection_context_menu(&fallback_tree, ui, selected_ids, ws_id);
                 });
 
             let (response, actions) = tree.show(ui, |builder| {
-                for (group_name, replays) in &groups {
-                    let outcomes: Vec<crate::db::index::rows::MatchOutcome> = replays
-                        .iter()
-                        .map(|(path, _)| {
-                            listing_row::resolved_outcome(
-                                parsed_stats_for(&hydrated, path).map(|stats| stats.outcome),
-                                row_summaries.get(path),
-                            )
-                        })
-                        .collect();
-                    let win_rate = listing_row::win_rate_label(&outcomes);
-                    let group_id = workspace_group_salt(ws_id, group_id_salt, group_name);
-                    let group_paths = tree_maps.group_paths.get(&group_id).cloned().unwrap_or_default();
-                    let dir_node = egui_ltreeview::NodeBuilder::dir(group_id)
-                        .label(format!("{} ({}){}", group_name, replays.len(), win_rate))
-                        .context_menu(move |ui| {
-                            show_group_context_menu(ui, &group_paths, ws_id);
-                        });
+                for (group_idx, group) in groups.groups.iter().enumerate() {
+                    let label = match patched_counts.get(&(group_idx as u32)) {
+                        Some(counts) => format!("{} ({}){}", group.name, group.rows.len(), counts.suffix()),
+                        None => stats.labels[group_idx].clone(),
+                    };
+                    let menu_tree = Arc::clone(&groups.tree);
+                    let group_id = group.id;
+                    let dir_node = egui_ltreeview::NodeBuilder::dir(group.id).label(label).context_menu(move |ui| {
+                        // Resolved only when the menu opens; per frame this
+                        // closure costs the Arc clone above.
+                        let group_paths = menu_tree.group_paths(&group_id).unwrap_or_default();
+                        show_group_context_menu(ui, &group_paths, ws_id);
+                    });
                     let is_open = builder.node(dir_node);
                     if is_open {
-                        for (path, listed) in replays {
+                        for &row in &group.rows {
+                            let (path, listed) = row.get(&rows);
                             let id = workspace_leaf_salt(ws_id, path);
                             let path_clone = path.clone();
-                            let wows_dir = self.tab_state.persisted.read().settings.game.wows_dir.clone();
+                            let wows_dir = wows_dir.clone();
 
                             let identity = listing_row::listed_row_identity(listed, &metadata_provider);
                             let parsed = parsed_stats_for(&hydrated, path);
@@ -4388,7 +4352,7 @@ impl ToolkitTabViewer<'_> {
                         let mut needs_expansion = false;
                         for id in &selected_ids {
                             expanded_selection.push(*id);
-                            if let Some(child_ids) = tree_maps.group_child_ids.get(id) {
+                            if let Some(child_ids) = groups.tree.group_child_ids.get(id) {
                                 for child_id in child_ids {
                                     if !selected_ids.contains(child_id) {
                                         needs_expansion = true;
@@ -4408,7 +4372,7 @@ impl ToolkitTabViewer<'_> {
                     }
                     egui_ltreeview::Action::Activate(activate) => {
                         for id in activate.selected {
-                            if let Some(path) = tree_maps.leaf_paths.get(&id) {
+                            if let Some(path) = groups.tree.leaf_paths.get(&id) {
                                 replay_to_open = Some(path.clone());
                                 break;
                             }
@@ -4428,7 +4392,7 @@ impl ToolkitTabViewer<'_> {
                 });
                 if let Some(selected_ids) = selected {
                     for id in &selected_ids {
-                        if let Some(path) = tree_maps.leaf_paths.get(id) {
+                        if let Some(path) = groups.tree.leaf_paths.get(id) {
                             replay_to_open = Some(path.clone());
                             break;
                         }
@@ -5274,9 +5238,8 @@ impl ToolkitTabViewer<'_> {
                     // stats line exists would latch a width fitted to "not indexed".
                     // One borrow of the workspace covers every read the measurement makes.
                     let workspace = self.tab_state.workspace(ws_id);
-                    let has_files = workspace
-                        .and_then(|workspace| workspace.replay_files.as_ref())
-                        .is_some_and(|files| !files.is_empty());
+                    let has_files =
+                        workspace.and_then(|workspace| workspace.replay_files()).is_some_and(|files| !files.is_empty());
 
                     let mut default_width = 250.0f32;
 
@@ -5292,13 +5255,13 @@ impl ToolkitTabViewer<'_> {
                         let font_id = egui::TextStyle::Body.resolve(ui.style());
                         let hydrated = workspace.hydrated_replays();
                         let max_width = workspace
-                            .replay_files
+                            .replay_files()
                             .iter()
                             .flat_map(|files| files.iter())
                             .map(|(path, listed)| {
                                 let identity = listing_row::listed_row_identity(listed, &metadata_provider);
                                 let parsed = parsed_stats_for(&hydrated, path);
-                                let summary = workspace.replay_row_summaries.get(path);
+                                let summary = workspace.row_summaries().get(path);
                                 let stats = listing_row::resolve_row_stats(parsed, summary);
                                 let identity_text = listing_row::identity_line(&identity, grouping);
                                 let stats_text =
@@ -5532,12 +5495,8 @@ impl ToolkitTabViewer<'_> {
         let Some(sender) = self.tab_state.background_parser_tx.as_ref() else {
             return;
         };
-        let Some(files) = self
-            .tab_state
-            .workspace(ws_id)
-            .expect("ws_id checked present by build_replay_parser_tab")
-            .replay_files
-            .as_ref()
+        let Some(files) =
+            self.tab_state.workspace(ws_id).expect("ws_id checked present by build_replay_parser_tab").replay_files()
         else {
             return;
         };
@@ -5546,7 +5505,7 @@ impl ToolkitTabViewer<'_> {
             if self.tab_state.workspace(ws_id).expect("checked above").replay_rows_reindex_requested.contains(path) {
                 continue;
             }
-            let summary = self.tab_state.workspace(ws_id).expect("checked above").replay_row_summaries.get(path);
+            let summary = self.tab_state.workspace(ws_id).expect("checked above").row_summaries().get(path);
             let freshness = listing_row::row_freshness(summary, listing_row::file_mtime_secs(path));
             if !matches!(freshness, listing_row::RowFreshness::Stale) {
                 continue;

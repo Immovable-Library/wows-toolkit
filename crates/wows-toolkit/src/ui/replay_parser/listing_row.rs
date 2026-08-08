@@ -346,30 +346,6 @@ pub(crate) fn listed_row_identity(listed: &ListedReplay, metadata_provider: &Gam
     }
 }
 
-/// The outcome a row draws, under the same precedence [`resolve_row_stats`]
-/// applies. Split out because a group header needs every member's outcome for
-/// its win rate, and cloning each member's full stats -- division mates
-/// included -- to read one field would cost a list of allocations per frame.
-pub(crate) fn resolved_outcome(parsed: Option<MatchOutcome>, summary: Option<&RowSummary>) -> MatchOutcome {
-    parsed.or_else(|| summary.map(|summary| summary.outcome)).unwrap_or(MatchOutcome::Unknown)
-}
-
-/// The `W/L (%)` suffix a group header carries, from its members' outcomes.
-/// Empty when no member has a decided result.
-pub(crate) fn win_rate_label(outcomes: &[MatchOutcome]) -> String {
-    let (wins, losses) = outcomes.iter().fold((0u32, 0u32), |(wins, losses), outcome| match outcome {
-        MatchOutcome::Win => (wins + 1, losses),
-        MatchOutcome::Loss => (wins, losses + 1),
-        MatchOutcome::Draw | MatchOutcome::Unknown => (wins, losses),
-    });
-    let total = wins + losses;
-    if total > 0 {
-        format!(" - {}W/{}L ({:.0}%)", wins, losses, (wins as f64 / total as f64) * 100.0)
-    } else {
-        String::new()
-    }
-}
-
 /// Stats from an in-memory parse, when one exists. `None` for a replay that has
 /// only been read for its metadata.
 pub(crate) fn replay_parsed_stats(replay: &super::Replay) -> Option<ParsedStats> {
@@ -531,30 +507,6 @@ mod tests {
         let listed = ListedReplay::from_meta(&spectator);
         assert_eq!(listed.ship_id, None);
         assert_eq!(listed.game_type, "");
-    }
-
-    #[test]
-    fn win_rate_label_counts_only_decided_outcomes() {
-        use MatchOutcome::Draw;
-        use MatchOutcome::Loss;
-        use MatchOutcome::Unknown;
-        use MatchOutcome::Win;
-
-        assert_eq!(win_rate_label(&[Win, Win, Win, Loss]), " - 3W/1L (75%)");
-        // A draw and an unindexed row are neither a win nor a loss, and must
-        // not enter the denominator either.
-        assert_eq!(win_rate_label(&[Win, Loss, Draw, Unknown]), " - 1W/1L (50%)");
-        assert_eq!(win_rate_label(&[Draw, Unknown]), "", "no decided result means no label at all");
-        assert_eq!(win_rate_label(&[]), "");
-    }
-
-    #[test]
-    fn resolved_outcome_prefers_a_parse_over_the_index_row() {
-        let summary = summary();
-        assert_eq!(summary.outcome, MatchOutcome::Win, "the fixture must disagree with the parse below");
-        assert_eq!(resolved_outcome(Some(MatchOutcome::Loss), Some(&summary)), MatchOutcome::Loss);
-        assert_eq!(resolved_outcome(None, Some(&summary)), MatchOutcome::Win);
-        assert_eq!(resolved_outcome(None, None), MatchOutcome::Unknown);
     }
 
     #[test]
