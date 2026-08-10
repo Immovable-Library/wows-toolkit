@@ -1214,11 +1214,11 @@ impl WowsToolkitApp {
                     // direct on rejection, so this line must not claim a proxy
                     // is in use when it is about to be rejected everywhere.
                     if crate::util::http::reqwest_proxy(config).is_some() {
-                        info!("using proxy {} from {source} ({bypass})", config.url);
+                        info!("using proxy {} from {source} ({bypass})", config.redacted_url());
                     } else {
                         warn!(
                             "detected proxy {} from {source} but the URL is not usable, connecting directly ({bypass})",
-                            config.url
+                            config.redacted_url()
                         );
                     }
                 }
@@ -1226,6 +1226,18 @@ impl WowsToolkitApp {
             }
             state.tab_state.shipbuilds_client = crate::data::shipbuilds::ShipBuildsClient::new(proxy.as_ref())
                 .expect("failed to build ShipBuilds HTTP client");
+            // The bootstrap `TwitchState::default()` client (built before
+            // settings were known) is unproxied; replace it in place so every
+            // existing clone of the `Arc<RwLock<TwitchState>>` picks this up.
+            match crate::util::http::async_client(proxy.as_ref()) {
+                Ok(client) => state.tab_state.twitch_state.write().set_client(client),
+                Err(e) => {
+                    warn!(
+                        "failed to build proxied Twitch HTTP client, keeping the default: {}",
+                        crate::util::http::error_chain(&e)
+                    );
+                }
+            }
             state.tab_state.proxy = proxy;
         }
 

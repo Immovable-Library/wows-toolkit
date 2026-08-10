@@ -128,6 +128,15 @@ impl TwitchState {
         &self.client
     }
 
+    /// Rebuilds the inner HTTP client from `client`. Called once at startup
+    /// after the proxy is resolved, mirroring `shipbuilds_client`'s bootstrap
+    /// pattern: `Default` builds an unproxied client (nothing is known about
+    /// settings yet at that point), and this replaces it in place so every
+    /// clone of the surrounding `Arc<RwLock<TwitchState>>` sees the change.
+    pub fn set_client(&mut self, client: reqwest::Client) {
+        self.client = HelixClient::with_client(client);
+    }
+
     pub fn player_is_potential_stream_sniper(
         &self,
         name: &str,

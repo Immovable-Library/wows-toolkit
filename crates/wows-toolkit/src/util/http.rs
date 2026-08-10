@@ -26,7 +26,7 @@ pub(crate) fn reqwest_proxy(config: &ProxyConfig) -> Option<reqwest::Proxy> {
     let mut proxy = match reqwest::Proxy::all(&config.url) {
         Ok(proxy) => proxy,
         Err(e) => {
-            tracing::warn!("ignoring malformed proxy URL {:?}: {e}", config.url);
+            tracing::warn!("ignoring malformed proxy URL {:?}: {e}", config.redacted_url());
             return None;
         }
     };

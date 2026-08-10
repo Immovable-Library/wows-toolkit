@@ -16,17 +16,165 @@ use reqwest::Url;
 use rootcause::Report;
 use rootcause::prelude::ResultExt;
 use tokio::runtime::Runtime;
+use tower::Layer;
 use tracing::debug;
 use tracing::error;
 use tracing::instrument;
 use zip::ZipArchive;
 
 use crate::util::error::ToolkitError;
+use crate::util::proxy::ProxyConfig;
 
 use super::BackgroundTask;
 use super::BackgroundTaskCompletion;
 use super::BackgroundTaskKind;
 use super::DownloadProgress;
+
+/// Connect and read timeouts for the global GitHub client, applied whether or
+/// not a proxy is configured.
+const GITHUB_CONNECT_TIMEOUT: Duration = Duration::from_secs(15);
+const GITHUB_READ_TIMEOUT: Duration = Duration::from_secs(30);
+
+const GITHUB_BASE_URI: &str = "https://api.github.com";
+
+/// Errors from assembling the proxy-aware GitHub client. The caller falls
+/// back to a direct connection on any of these, so this only needs to carry
+/// enough detail for the warn! log.
+#[derive(Debug, thiserror::Error)]
+enum ProxiedOctocrabClientError {
+    #[error("proxy URL is not a valid URI: {0}")]
+    InvalidProxyUri(http::uri::InvalidUri),
+    #[error("failed to build the rustls native-roots HTTPS connector: {0}")]
+    HttpsConnector(std::io::Error),
+    #[error("failed to build the proxy connector: {0}")]
+    ProxyConnector(std::io::Error),
+}
+
+/// Strips a `[...]` IPv6-literal wrapper if present. `hyper_http_proxy`'s
+/// `Intercept` calls back with `http::Uri::host()`, which keeps the brackets
+/// for an IPv6 host (`http` crate's `authority.rs`); the bypass entries this
+/// app produces never have them (`parse_bypass`'s `<local>` expansion pushes
+/// bare `"::1"`), so leaving them in place would make every IPv6 bypass entry
+/// silently never match.
+fn strip_ipv6_brackets(host: &str) -> &str {
+    host.strip_prefix('[').and_then(|host| host.strip_suffix(']')).unwrap_or(host)
+}
+
+/// Matches `host` the way the Windows proxy dialog and `NO_PROXY` entries do:
+/// a leading or trailing `*` wildcard (`*.corp.example`, `10.*`); otherwise a
+/// bare pattern (`localhost`, `127.0.0.1`, `::1`, or a domain from `NO_PROXY`)
+/// matches itself and any subdomain, mirroring `reqwest::NoProxy`'s
+/// documented handling of the same `ProxyConfig.bypass` entries for this
+/// app's other clients ("a domain name... would match both that domain AND
+/// all subdomains"). A pattern with wildcards on both ends is not supported;
+/// none of `util::proxy`'s bypass sources produce one.
+fn host_matches_bypass_pattern(pattern: &str, host: &str) -> bool {
+    let pattern = strip_ipv6_brackets(pattern).to_ascii_lowercase();
+    let host = strip_ipv6_brackets(host).to_ascii_lowercase();
+    match (pattern.strip_prefix('*'), pattern.strip_suffix('*')) {
+        (Some(suffix), _) => host.ends_with(suffix),
+        (None, Some(prefix)) => host.starts_with(prefix),
+        (None, None) => host == pattern || host.ends_with(&format!(".{pattern}")),
+    }
+}
+
+/// Builds the global GitHub client with no proxy: octocrab's own default
+/// build (feature-rich; see `build_proxied_octocrab_client`'s doc comment),
+/// just with connect/read timeouts. This is the unchanged, pre-proxy-support
+/// path, kept as its own function so it is reused verbatim as the fallback
+/// when a configured proxy cannot be honored.
+fn build_direct_octocrab_client() -> Result<octocrab::Octocrab, octocrab::Error> {
+    octocrab::Octocrab::builder()
+        .set_connect_timeout(Some(GITHUB_CONNECT_TIMEOUT))
+        .set_read_timeout(Some(GITHUB_READ_TIMEOUT))
+        .build()
+}
+
+/// Builds the global GitHub client dialing through `config`'s proxy.
+///
+/// octocrab 0.49.9's feature-rich `build()` (base URI resolution, the
+/// mandatory GitHub User-Agent header, the default retry policy; lib.rs:729)
+/// is only reachable from its `NoSvc` builder state. Calling `with_service`
+/// (lib.rs:473) moves to a builder state whose `build()` (lib.rs:563) only
+/// boxes the response body and constructs `Octocrab::new` from the supplied
+/// service directly -- none of those defaults apply there. They are
+/// re-applied below as explicit tower layers, in the same relative order
+/// octocrab's own `build()` applies them (retry closest to the transport,
+/// then the User-Agent header, then base-URI resolution outermost so it can
+/// rewrite the relative paths octocrab's request builders produce before
+/// anything else sees the request).
+///
+/// The inner connector is the same rustls native-roots HTTPS connector
+/// octocrab's default build uses (lib.rs:734-749), so a bypassed host still
+/// gets TLS: `ProxyConnector` only applies its own TLS for the CONNECT-tunnel
+/// path, and calls the inner connector directly for hosts its intercept
+/// excludes.
+fn build_proxied_octocrab_client(config: &ProxyConfig) -> Result<octocrab::Octocrab, ProxiedOctocrabClientError> {
+    let proxy_uri: http::Uri = config.url.parse().map_err(ProxiedOctocrabClientError::InvalidProxyUri)?;
+
+    let https = hyper_rustls::HttpsConnectorBuilder::new()
+        .with_native_roots()
+        .map_err(ProxiedOctocrabClientError::HttpsConnector)?
+        .https_or_http()
+        .enable_http1()
+        .build();
+
+    let bypass = config.bypass.clone();
+    let intercept: hyper_http_proxy::Intercept =
+        (move |_scheme: Option<&str>, host: Option<&str>, _port: Option<u16>| {
+            host.is_none_or(|host| !bypass.iter().any(|pattern| host_matches_bypass_pattern(pattern, host)))
+        })
+        .into();
+
+    // `Proxy::new` picks up userinfo embedded in `proxy_uri`
+    // (`http://user:pass@proxy:8080`) and sets it as proxy Basic auth.
+    let proxy = hyper_http_proxy::Proxy::new(intercept, proxy_uri);
+    let proxy_connector = hyper_http_proxy::ProxyConnector::from_proxy(https, proxy)
+        .map_err(ProxiedOctocrabClientError::ProxyConnector)?;
+
+    // Applied to the underlying connector, not through the builder's
+    // `set_connect_timeout`/`set_read_timeout`: those configure the
+    // `NoSvc`-state build only and do not apply once a service is supplied.
+    let mut timeout_connector = hyper_timeout::TimeoutConnector::new(proxy_connector);
+    timeout_connector.set_connect_timeout(Some(GITHUB_CONNECT_TIMEOUT));
+    timeout_connector.set_read_timeout(Some(GITHUB_READ_TIMEOUT));
+
+    let client: hyper_util::client::legacy::Client<_, octocrab::OctoBody> =
+        hyper_util::client::legacy::Client::builder(hyper_util::rt::TokioExecutor::new()).build(timeout_connector);
+
+    // octocrab's own default retry policy (`RetryConfig::Simple(3)`,
+    // lib.rs:932). Applied directly to the raw legacy client, where octocrab
+    // itself applies it: `RetryConfig`'s `Policy` impl is keyed to
+    // `hyper_util::client::legacy::Error`, which later layers replace.
+    let client =
+        tower::retry::RetryLayer::new(octocrab::service::middleware::retry::RetryConfig::Simple(3)).layer(client);
+
+    // GitHub rejects requests with no User-Agent header; this is the same
+    // value and the same layer octocrab's default build applies (lib.rs:821).
+    let user_agent_headers = Arc::new(vec![(http::header::USER_AGENT, http::HeaderValue::from_static("octocrab"))]);
+    let client = octocrab::service::middleware::extra_headers::ExtraHeadersLayer::new(user_agent_headers).layer(client);
+
+    // octocrab's request builders (e.g. `repos(...).releases().get_latest()`)
+    // only ever produce relative paths; without this layer they are not
+    // valid request targets for a bare hyper client.
+    let base_uri: http::Uri = GITHUB_BASE_URI.parse().expect("GITHUB_BASE_URI is a valid URI");
+    let client = octocrab::service::middleware::base_uri::BaseUriLayer::new(base_uri).layer(client);
+
+    // Known gaps versus octocrab's default build, both accepted for now:
+    // - No `AuthHeaderLayer`. This app never authenticates to GitHub today
+    //   (`AuthState::None`, no `.personal_token()`/`.oauth()`/etc. call
+    //   anywhere); if that changes, it needs adding here too.
+    // - No `FollowRedirectLayer`. GitHub's contents API (used by
+    //   `fetch_latest_constants`'s `raw_file` call) can 3xx-redirect for
+    //   larger files; `data/latest.json` is a small manifest and not
+    //   expected to trigger that, but a proxied response would be returned
+    //   un-followed if it ever did.
+    octocrab::OctocrabBuilder::new_empty()
+        .with_service(client)
+        .with_auth(octocrab::AuthState::None)
+        .build()
+        .map_err(|infallible: std::convert::Infallible| match infallible {})
+}
 
 /// A job that can be sent to the networking thread.
 pub enum NetworkJob {
@@ -111,15 +259,32 @@ impl NetworkingThread {
         debug!("Networking thread started");
 
         // Configure the global GitHub client (app-update and constants checks) with
-        // connect/read timeouts so a stalled network fails fast instead of hanging.
-        // Built inside the runtime because octocrab's tower Buffer spawns a worker
-        // task; it keeps octocrab's default transient-failure retry.
+        // connect/read timeouts so a stalled network fails fast instead of hanging,
+        // and route it through the resolved proxy when one is configured. Built
+        // inside the runtime because octocrab's tower Buffer spawns a worker task;
+        // it keeps octocrab's default transient-failure retry either way.
         self.runtime.block_on(async {
-            match octocrab::Octocrab::builder()
-                .set_connect_timeout(Some(Duration::from_secs(15)))
-                .set_read_timeout(Some(Duration::from_secs(30)))
-                .build()
-            {
+            let client = match &self.proxy {
+                Some(config) => match build_proxied_octocrab_client(config) {
+                    Ok(client) => {
+                        debug!("GitHub client is proxied through {}", config.redacted_url());
+                        Ok(client)
+                    }
+                    Err(e) => {
+                        tracing::warn!(
+                            "failed to build proxied GitHub client, falling back to a direct connection: {}",
+                            crate::util::http::error_chain(&e)
+                        );
+                        build_direct_octocrab_client()
+                    }
+                },
+                None => {
+                    debug!("GitHub client is not proxied");
+                    build_direct_octocrab_client()
+                }
+            };
+
+            match client {
                 Ok(client) => {
                     octocrab::initialise(client);
                 }
@@ -604,4 +769,44 @@ pub fn start_twitch_task(
             }
         }
     });
+}
+
+#[cfg(test)]
+mod tests {
+    use super::host_matches_bypass_pattern;
+
+    #[test]
+    fn a_leading_wildcard_matches_a_suffix() {
+        assert!(host_matches_bypass_pattern("*.corp.example", "internal.corp.example"));
+        assert!(!host_matches_bypass_pattern("*.corp.example", "corp.example.evil.com"));
+    }
+
+    #[test]
+    fn a_trailing_wildcard_matches_a_prefix() {
+        assert!(host_matches_bypass_pattern("10.*", "10.0.0.5"));
+        assert!(!host_matches_bypass_pattern("10.*", "192.10.0.5"));
+    }
+
+    #[test]
+    fn a_bare_pattern_matches_itself_and_subdomains() {
+        // Matches `reqwest::NoProxy`'s documented handling of the same
+        // `ProxyConfig.bypass` entries elsewhere in this app.
+        assert!(host_matches_bypass_pattern("github.com", "github.com"));
+        assert!(host_matches_bypass_pattern("github.com", "api.github.com"));
+        assert!(!host_matches_bypass_pattern("github.com", "notgithub.com"));
+    }
+
+    #[test]
+    fn matching_is_case_insensitive() {
+        assert!(host_matches_bypass_pattern("Localhost", "LOCALHOST"));
+    }
+
+    #[test]
+    fn an_ipv6_bracketed_host_matches_the_bare_bypass_entry() {
+        // `parse_bypass`'s `<local>` expansion pushes bare "::1"; the host
+        // this app's `Intercept` callback receives keeps IPv6 brackets
+        // (`http::Uri::host()`), e.g. "[::1]".
+        assert!(host_matches_bypass_pattern("::1", "[::1]"));
+        assert!(host_matches_bypass_pattern("127.0.0.1", "127.0.0.1"));
+    }
 }
