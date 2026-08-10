@@ -179,10 +179,11 @@ impl NetworkingThread {
                 }
             },
             Err(e) => {
-                let _ = self.result_tx.send(NetworkResult::AppUpdateCheckFailed(format!(
-                    "failed to check GitHub releases: {}",
-                    crate::util::http::error_chain(&e)
-                )));
+                let chain = crate::util::http::error_chain(&e);
+                tracing::warn!("failed to check GitHub releases: {chain}");
+                let _ = self
+                    .result_tx
+                    .send(NetworkResult::AppUpdateCheckFailed(format!("failed to check GitHub releases: {chain}")));
             }
         }
     }
@@ -254,6 +255,7 @@ impl NetworkingThread {
                 let _ = self.result_tx.send(NetworkResult::ConstantsUpToDate);
             }
             Err(msg) => {
+                tracing::warn!("{msg}");
                 let _ = self.result_tx.send(NetworkResult::ConstantsFetchFailed(msg));
             }
         }
@@ -268,10 +270,11 @@ impl NetworkingThread {
                 let _ = self.result_tx.send(NetworkResult::PersonalRatingDataFetched(data));
             }
             Err(e) => {
-                let _ = self.result_tx.send(NetworkResult::PersonalRatingDataFetchFailed(format!(
-                    "failed to fetch PR data: {}",
-                    crate::util::http::error_chain(&e)
-                )));
+                let chain = crate::util::http::error_chain(&e);
+                tracing::warn!("failed to fetch PR data: {chain}");
+                let _ = self
+                    .result_tx
+                    .send(NetworkResult::PersonalRatingDataFetchFailed(format!("failed to fetch PR data: {chain}")));
             }
         }
     }
@@ -302,6 +305,9 @@ impl NetworkingThread {
                 let _ = self.result_tx.send(NetworkResult::VersionedConstantsFetched { build: target_build });
             }
             Err(e) => {
+                // rootcause::Report doesn't implement std::error::Error, so error_chain
+                // doesn't apply here; its Debug output already renders the full chain.
+                tracing::warn!(build = target_build, "failed to fetch versioned constants: {e:?}");
                 let _ = self
                     .result_tx
                     .send(NetworkResult::VersionedConstantsFetchFailed { build: target_build, msg: format!("{e}") });
