@@ -15,6 +15,7 @@ use wows_replays::analyzer::battle_controller::BattleResult;
 use wows_replays::analyzer::battle_controller::ConnectionChangeKind;
 use wows_replays::types::Relation;
 
+use crate::data::constants::ConstantsFit;
 use crate::db::index::query;
 use crate::db::index::rows::IndexError;
 use crate::db::index::rows::IndexedVehicleRow;
@@ -70,7 +71,7 @@ pub struct MappedRows {
 
 /// Build index rows from a parsed replay. Returns `None` if the reports needed
 /// are not present (unparsed replay).
-pub fn map_rows(replay: &Replay, source_id: SourceId, indexed_at: Timestamp) -> Option<MappedRows> {
+pub fn map_rows(replay: &Replay, source_id: SourceId, indexed_at: Timestamp, fit: ConstantsFit) -> Option<MappedRows> {
     let ui_report = replay.ui_report.as_ref()?;
     let battle_report = replay.battle_report.as_ref()?;
 
@@ -168,7 +169,37 @@ pub fn map_rows(replay: &Replay, source_id: SourceId, indexed_at: Timestamp) -> 
         indexed_at,
     };
 
-    Some(MappedRows { objective, vehicles, record })
+    let mut rows = MappedRows { objective, vehicles, record };
+    if fit == ConstantsFit::Mismatched {
+        suppress_untrusted_results(&mut rows);
+    }
+    Some(rows)
+}
+
+/// Blank every value that came from the server results blob, and mark the
+/// record as carrying no results.
+///
+/// Results are decoded through per-build lookup tables, so constants that do
+/// not belong to the build read the wrong indices and produce numbers that look
+/// ordinary. Everything left untouched here comes from the packet stream or
+/// game params and is unaffected: roster, ship, map, mode, survival, outcome.
+///
+/// This leaves rows in the same shape as a replay whose results never arrived,
+/// which the listing, the search UI, and `fill_missing_pr` already handle, and
+/// which a later pass upgrades in place once real constants exist.
+pub fn suppress_untrusted_results(rows: &mut MappedRows) {
+    for vehicle in &mut rows.vehicles {
+        vehicle.damage = None;
+        vehicle.kills = None;
+        vehicle.spotting = None;
+        vehicle.potential = None;
+        vehicle.received = None;
+        vehicle.pr = None;
+    }
+    rows.record.self_damage = None;
+    rows.record.self_kills = None;
+    rows.record.self_pr = None;
+    rows.record.results_available = false;
 }
 
 /// Seconds before/after a match's start within which a Twitch chat
@@ -298,8 +329,9 @@ pub fn index_replay_blocking(
     source_id: SourceId,
     now: Timestamp,
     pr_data: &RwLock<PersonalRatingData>,
+    fit: ConstantsFit,
 ) {
-    if let Err(e) = index_replay_reporting(rt, pool, replay, source_id, now, pr_data) {
+    if let Err(e) = index_replay_reporting(rt, pool, replay, source_id, now, pr_data, fit) {
         warn!("failed to index replay: {e}");
     }
 }
@@ -313,8 +345,9 @@ pub fn index_replay_reporting(
     source_id: SourceId,
     now: Timestamp,
     pr_data: &RwLock<PersonalRatingData>,
+    fit: ConstantsFit,
 ) -> Result<(), Report> {
-    let Some(mut rows) = map_rows(replay, source_id, now) else {
+    let Some(mut rows) = map_rows(replay, source_id, now, fit) else {
         return Err(report!("replay carries no parsed report to index"));
     };
     fill_missing_pr(&mut rows, &pr_data.read());
@@ -595,5 +628,106 @@ mod tests {
         let won = single_battle_pr(&pr_data, &inputs).expect("the fixture rates this ship");
         let lost = single_battle_pr(&pr_data, &PrInputs { is_win: false, ..inputs }).expect("same ship");
         assert!(won > lost, "a win must not rate the same as a loss ({won} vs {lost})");
+    }
+
+    fn sample_rows() -> MappedRows {
+        use crate::db::index::rows::VehicleRelation;
+        use wows_replays::types::AccountId;
+        use wows_replays::types::ArenaId;
+        use wows_replays::types::GameParamId;
+
+        MappedRows {
+            objective: ObjectiveMatch {
+                arena_id: ArenaId::new(7),
+                timestamp: Timestamp::from_second(9000).unwrap(),
+                map: "Ocean".into(),
+                game_mode: "Domination".into(),
+                game_mode_id: Some(7),
+                game_type: "pvp".into(),
+                match_group: "pvp".into(),
+                version_build: Some(12116141),
+            },
+            vehicles: vec![IndexedVehicleRow {
+                arena_id: ArenaId::new(7),
+                account_id: AccountId(42),
+                player_name: "Me".into(),
+                clan: "WT".into(),
+                realm: Some("na".into()),
+                ship_id: GameParamId::from(999u64),
+                ship_index: "PJSD018".into(),
+                ship_name: "Harugumo".into(),
+                nation: "japan".into(),
+                species: "Destroyer".into(),
+                tier: 10,
+                relation: VehicleRelation::SelfPlayer,
+                division_id: Some(3),
+                survived: Some(true),
+                damage: Some(120_000),
+                kills: Some(3),
+                spotting: Some(40_000),
+                potential: Some(900_000),
+                received: Some(20_000),
+                pr: Some(1800.0),
+                is_test_ship: false,
+                disconnected: Some(false),
+                is_stream_sniper: None,
+                sniper_twitch_login: None,
+            }],
+            record: ReplayRecord {
+                arena_id: ArenaId::new(7),
+                source_id: SourceId(1),
+                replay_path: std::path::PathBuf::from("C:/wows/replays/a.wowsreplay"),
+                file_mtime: Some(5),
+                outcome: MatchOutcome::Win,
+                self_account_id: Some(AccountId(42)),
+                self_ship_id: Some(GameParamId::from(999u64)),
+                self_survived: Some(true),
+                self_damage: Some(120_000),
+                self_kills: Some(3),
+                self_pr: Some(1800.0),
+                results_available: true,
+                indexed_at: Timestamp::from_second(1).unwrap(),
+            },
+        }
+    }
+
+    #[test]
+    fn suppression_blanks_every_results_derived_value() {
+        let mut rows = sample_rows();
+
+        suppress_untrusted_results(&mut rows);
+
+        let vehicle = &rows.vehicles[0];
+        assert_eq!(vehicle.damage, None);
+        assert_eq!(vehicle.kills, None);
+        assert_eq!(vehicle.spotting, None);
+        assert_eq!(vehicle.potential, None);
+        assert_eq!(vehicle.received, None);
+        assert_eq!(vehicle.pr, None);
+        assert_eq!(rows.record.self_damage, None);
+        assert_eq!(rows.record.self_kills, None);
+        assert_eq!(rows.record.self_pr, None);
+        assert!(!rows.record.results_available);
+    }
+
+    #[test]
+    fn suppression_keeps_everything_the_packet_stream_provided() {
+        let before = sample_rows();
+        let mut rows = sample_rows();
+
+        suppress_untrusted_results(&mut rows);
+
+        assert_eq!(rows.objective.map, before.objective.map);
+        assert_eq!(rows.objective.game_mode_id, before.objective.game_mode_id);
+        assert_eq!(rows.record.outcome, before.record.outcome);
+        assert_eq!(rows.record.self_survived, before.record.self_survived);
+        let (vehicle, was) = (&rows.vehicles[0], &before.vehicles[0]);
+        assert_eq!(vehicle.player_name, was.player_name);
+        assert_eq!(vehicle.clan, was.clan);
+        assert_eq!(vehicle.ship_id, was.ship_id);
+        assert_eq!(vehicle.tier, was.tier);
+        assert_eq!(vehicle.division_id, was.division_id);
+        assert_eq!(vehicle.survived, was.survived);
+        assert_eq!(vehicle.disconnected, was.disconnected);
     }
 }
