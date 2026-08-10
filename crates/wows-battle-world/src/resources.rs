@@ -286,10 +286,6 @@ pub enum HydrophoneContactPosition {
     Pose { params_id: GameParamId, position: WorldPos, yaw: f32, pitch: f32 },
 }
 
-/// `burningFlags` bits 0-3 (ma779114d BURN_MASK). Bits 4-7 are floods, 8 acid,
-/// 9 wild fire.
-pub const BURN_MASK: u16 = 0x000F;
-
 /// Name of the `Vehicle` property carrying the burn bitmask.
 pub const BURNING_FLAGS_PROPERTY: &str = "burningFlags";
 
@@ -315,9 +311,9 @@ pub struct BurnFlagsObserved(pub bool);
 pub struct BurnStateChange {
     pub victim: EntityId,
     pub clock: GameClock,
-    /// burningFlags & BURN_MASK before the change.
+    /// Burning fire sections before the change.
     pub previous: u16,
-    /// burningFlags & BURN_MASK after the change.
+    /// Burning fire sections after the change.
     pub current: u16,
 }
 

@@ -619,6 +619,317 @@ impl From<u32> for VisibilityFlags {
     }
 }
 
+/// The `Vehicle.burningFlags` bitmask: which damage-over-time effects are
+/// active, and on which hull sections.
+///
+/// Layout mirrors the client's masks: bits 0-3 are the four fire sections,
+/// bits 4-7 the four flooding sections, bit 8 acid, bit 9 wild fire.
+///
+/// A fire section here is a `BurnNodeIndex` in `wowsunpack::models::fire_nodes`,
+/// which owns the section count and the index-to-bit mapping.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Default)]
+#[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
+#[cfg_attr(feature = "serde", serde(transparent))]
+#[cfg_attr(feature = "rkyv", derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize))]
+pub struct BurningFlags(u16);
+
+impl BurningFlags {
+    const BURN: u16 = 0x000F;
+    const FLOOD: u16 = 0x00F0;
+    const ACID: u16 = 0x0100;
+    const WILD_FIRE: u16 = 0x0200;
+    const KNOWN: u16 = Self::BURN | Self::FLOOD | Self::ACID | Self::WILD_FIRE;
+
+    pub const fn new(raw: u16) -> Self {
+        Self(raw)
+    }
+
+    pub const fn raw(self) -> u16 {
+        self.0
+    }
+
+    /// Which of the four fire sections are alight, as a 4-bit mask.
+    pub const fn fire_sections(self) -> u16 {
+        self.0 & Self::BURN
+    }
+
+    /// Which of the four flooding sections are open, as a 4-bit mask shifted
+    /// down so section N is bit N, matching [`Self::fire_sections`].
+    pub const fn flood_sections(self) -> u16 {
+        (self.0 & Self::FLOOD) >> 4
+    }
+
+    pub const fn fire_count(self) -> u32 {
+        self.fire_sections().count_ones()
+    }
+
+    pub const fn flood_count(self) -> u32 {
+        self.flood_sections().count_ones()
+    }
+
+    pub const fn is_burning(self) -> bool {
+        self.fire_sections() != 0
+    }
+
+    pub const fn is_flooding(self) -> bool {
+        self.flood_sections() != 0
+    }
+
+    pub const fn has_acid(self) -> bool {
+        self.0 & Self::ACID != 0
+    }
+
+    pub const fn has_wild_fire(self) -> bool {
+        self.0 & Self::WILD_FIRE != 0
+    }
+
+    /// Any damage-over-time effect at all.
+    pub const fn is_any(self) -> bool {
+        self.0 & Self::KNOWN != 0
+    }
+
+    /// Set bits with no known meaning in this build. Non-zero means the client
+    /// added an effect this table does not cover yet.
+    pub const fn unknown_bits(self) -> u16 {
+        self.0 & !Self::KNOWN
+    }
+}
+
+impl fmt::Display for BurningFlags {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        if self.0 == 0 {
+            return write!(f, "NONE");
+        }
+        let mut first = true;
+        let mut sep = |f: &mut fmt::Formatter<'_>| -> fmt::Result {
+            if !first {
+                write!(f, "|")?;
+            }
+            first = false;
+            Ok(())
+        };
+        if self.is_burning() {
+            sep(f)?;
+            write!(f, "BURN({:#06b})", self.fire_sections())?;
+        }
+        if self.is_flooding() {
+            sep(f)?;
+            write!(f, "FLOOD({:#06b})", self.flood_sections())?;
+        }
+        if self.has_acid() {
+            sep(f)?;
+            write!(f, "ACID")?;
+        }
+        if self.has_wild_fire() {
+            sep(f)?;
+            write!(f, "WILD_FIRE")?;
+        }
+        let unknown = self.unknown_bits();
+        if unknown != 0 {
+            sep(f)?;
+            write!(f, "UNKNOWN({unknown:#x})")?;
+        }
+        Ok(())
+    }
+}
+
+impl From<u16> for BurningFlags {
+    fn from(raw: u16) -> Self {
+        Self(raw)
+    }
+}
+
+/// One bit of the account attribute mask carried by `Avatar.attrs`.
+///
+/// Values are the client's `ACCOUNT_ATTR` constants. Bits 16-20, 23-28 and 34
+/// are unassigned.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
+#[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
+#[repr(u64)]
+pub enum AccountAttr {
+    CooperativeBattlesOnly = 0,
+    TournamentBattlesOnly = 1,
+    Clan = 2,
+    Mercenary = 3,
+    Rating = 4,
+    UserInfo = 5,
+    Statistics = 6,
+    ArenaChange = 7,
+    ChatAdmin = 8,
+    Admin = 9,
+    Roaming = 10,
+    DailyMultipliedXp = 11,
+    Payments = 12,
+    OutOfSessionWallet = 13,
+    ExcludedFromFairplay = 14,
+    ComplaintsImmune = 15,
+    DailyBonus1 = 21,
+    DailyBonus2 = 22,
+    Alpha = 29,
+    CBeta = 30,
+    OBeta = 31,
+    Premium = 32,
+    Aogas = 33,
+    IgrBase = 35,
+    IgrPremium = 36,
+    FullAccessBotsAi = 37,
+    ServerReplaysAccess = 38,
+}
+
+impl AccountAttr {
+    /// Every flag, in ascending bit order.
+    pub const ALL: [AccountAttr; 27] = [
+        AccountAttr::CooperativeBattlesOnly,
+        AccountAttr::TournamentBattlesOnly,
+        AccountAttr::Clan,
+        AccountAttr::Mercenary,
+        AccountAttr::Rating,
+        AccountAttr::UserInfo,
+        AccountAttr::Statistics,
+        AccountAttr::ArenaChange,
+        AccountAttr::ChatAdmin,
+        AccountAttr::Admin,
+        AccountAttr::Roaming,
+        AccountAttr::DailyMultipliedXp,
+        AccountAttr::Payments,
+        AccountAttr::OutOfSessionWallet,
+        AccountAttr::ExcludedFromFairplay,
+        AccountAttr::ComplaintsImmune,
+        AccountAttr::DailyBonus1,
+        AccountAttr::DailyBonus2,
+        AccountAttr::Alpha,
+        AccountAttr::CBeta,
+        AccountAttr::OBeta,
+        AccountAttr::Premium,
+        AccountAttr::Aogas,
+        AccountAttr::IgrBase,
+        AccountAttr::IgrPremium,
+        AccountAttr::FullAccessBotsAi,
+        AccountAttr::ServerReplaysAccess,
+    ];
+
+    pub const fn bit(self) -> u64 {
+        1u64 << (self as u64)
+    }
+
+    /// The client's own identifier for this flag.
+    pub const fn name(self) -> &'static str {
+        match self {
+            AccountAttr::CooperativeBattlesOnly => "COOPERATIVE_BATTLES_ONLY",
+            AccountAttr::TournamentBattlesOnly => "TOURNAMENT_BATTLES_ONLY",
+            AccountAttr::Clan => "CLAN",
+            AccountAttr::Mercenary => "MERCENARY",
+            AccountAttr::Rating => "RATING",
+            AccountAttr::UserInfo => "USER_INFO",
+            AccountAttr::Statistics => "STATISTICS",
+            AccountAttr::ArenaChange => "ARENA_CHANGE",
+            AccountAttr::ChatAdmin => "CHAT_ADMIN",
+            AccountAttr::Admin => "ADMIN",
+            AccountAttr::Roaming => "ROAMING",
+            AccountAttr::DailyMultipliedXp => "DAILY_MULTIPLIED_XP",
+            AccountAttr::Payments => "PAYMENTS",
+            AccountAttr::OutOfSessionWallet => "OUT_OF_SESSION_WALLET",
+            AccountAttr::ExcludedFromFairplay => "EXCLUDED_FROM_FAIRPLAY",
+            AccountAttr::ComplaintsImmune => "COMPLAINTS_IMMUNE",
+            AccountAttr::DailyBonus1 => "DAILY_BONUS_1",
+            AccountAttr::DailyBonus2 => "DAILY_BONUS_2",
+            AccountAttr::Alpha => "ALPHA",
+            AccountAttr::CBeta => "CBETA",
+            AccountAttr::OBeta => "OBETA",
+            AccountAttr::Premium => "PREMIUM",
+            AccountAttr::Aogas => "AOGAS",
+            AccountAttr::IgrBase => "IGR_BASE",
+            AccountAttr::IgrPremium => "IGR_PREMIUM",
+            AccountAttr::FullAccessBotsAi => "FULL_ACCESS_BOTS_AI",
+            AccountAttr::ServerReplaysAccess => "SERVER_REPLAYS_ACCESS",
+        }
+    }
+}
+
+impl fmt::Display for AccountAttr {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        write!(f, "{}", self.name())
+    }
+}
+
+/// The `Avatar.attrs` bitmask: entitlements and roles of the account that
+/// recorded the replay. It describes the recording player only.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Default)]
+#[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
+#[cfg_attr(feature = "serde", serde(transparent))]
+#[cfg_attr(feature = "rkyv", derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize))]
+pub struct AccountAttrs(u64);
+
+impl AccountAttrs {
+    /// Every bit this table assigns a meaning to.
+    const KNOWN: u64 = {
+        let mut mask = 0;
+        let mut i = 0;
+        while i < AccountAttr::ALL.len() {
+            mask |= AccountAttr::ALL[i].bit();
+            i += 1;
+        }
+        mask
+    };
+
+    pub const fn new(raw: u64) -> Self {
+        Self(raw)
+    }
+
+    pub const fn raw(self) -> u64 {
+        self.0
+    }
+
+    pub const fn contains(self, attr: AccountAttr) -> bool {
+        self.0 & attr.bit() != 0
+    }
+
+    /// The recognized flags that are set, in ascending bit order.
+    pub fn attrs(self) -> impl Iterator<Item = AccountAttr> {
+        AccountAttr::ALL.into_iter().filter(move |attr| self.contains(*attr))
+    }
+
+    /// Set bits with no known meaning in this build.
+    pub const fn unknown_bits(self) -> u64 {
+        self.0 & !Self::KNOWN
+    }
+
+    /// Premium account, either bought outright or granted through IGR.
+    pub const fn is_premium(self) -> bool {
+        self.contains(AccountAttr::Premium) || self.contains(AccountAttr::IgrPremium)
+    }
+}
+
+impl fmt::Display for AccountAttrs {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        if self.0 == 0 {
+            return write!(f, "NONE");
+        }
+        let mut first = true;
+        for attr in self.attrs() {
+            if !first {
+                write!(f, "|")?;
+            }
+            write!(f, "{attr}")?;
+            first = false;
+        }
+        let unknown = self.unknown_bits();
+        if unknown != 0 {
+            if !first {
+                write!(f, "|")?;
+            }
+            write!(f, "UNKNOWN({unknown:#x})")?;
+        }
+        Ok(())
+    }
+}
+
+impl From<u64> for AccountAttrs {
+    fn from(raw: u64) -> Self {
+        Self(raw)
+    }
+}
+
 /// Packed minimap squadron identifier.
 /// Encodes `(avatar_id: u32, index: u3, purpose: u3, departures: u1)` in the low 39 bits.
 #[derive(Debug, Default, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
@@ -3444,6 +3755,64 @@ mod tests {
         let future = VisibilityFlags::new(1 | 1 << 20);
         assert_eq!(future.unknown_bits(), 1 << 20);
         assert_eq!(future.to_string(), "BY_SHIP|UNKNOWN(0x100000)");
+    }
+
+    #[test]
+    fn burning_flags_decompose() {
+        assert_eq!(BurningFlags::default().to_string(), "NONE");
+        assert!(!BurningFlags::default().is_any());
+
+        // Fire in sections 0 and 2, flooding in section 0.
+        let flags = BurningFlags::new(0b0001_0101);
+        assert_eq!(flags.fire_sections(), 0b0101);
+        assert_eq!(flags.fire_count(), 2);
+        assert_eq!(flags.flood_sections(), 0b0001, "flood bits report as section indices");
+        assert_eq!(flags.flood_count(), 1);
+        assert!(flags.is_burning() && flags.is_flooding());
+        assert!(!flags.has_acid() && !flags.has_wild_fire());
+        assert_eq!(flags.to_string(), "BURN(0b0101)|FLOOD(0b0001)");
+
+        // Fire and flooding occupy disjoint nibbles, so neither leaks into the other.
+        let flood_only = BurningFlags::new(0x00F0);
+        assert_eq!(flood_only.fire_count(), 0);
+        assert_eq!(flood_only.flood_count(), 4);
+
+        let exotic = BurningFlags::new(0x0300);
+        assert!(exotic.has_acid() && exotic.has_wild_fire());
+        assert!(!exotic.is_burning() && !exotic.is_flooding());
+        assert!(exotic.is_any());
+        assert_eq!(exotic.to_string(), "ACID|WILD_FIRE");
+
+        let future = BurningFlags::new(0x0001 | 0x8000);
+        assert_eq!(future.unknown_bits(), 0x8000);
+        assert_eq!(future.to_string(), "BURN(0b0001)|UNKNOWN(0x8000)");
+    }
+
+    #[test]
+    fn account_attrs_decompose() {
+        // Both values observed on real replays; they differ only in PREMIUM.
+        let premium = AccountAttrs::new(0x1_0000_1050);
+        assert_eq!(
+            premium.attrs().collect::<Vec<_>>(),
+            vec![AccountAttr::Rating, AccountAttr::Statistics, AccountAttr::Payments, AccountAttr::Premium]
+        );
+        assert!(premium.is_premium());
+        assert_eq!(premium.unknown_bits(), 0);
+        assert_eq!(premium.to_string(), "RATING|STATISTICS|PAYMENTS|PREMIUM");
+
+        let plain = AccountAttrs::new(0x1050);
+        assert!(!plain.is_premium());
+        assert_eq!(plain.raw(), 0x1050);
+
+        // IGR premium counts as premium even without the outright bit.
+        assert!(AccountAttrs::new(AccountAttr::IgrPremium.bit()).is_premium());
+
+        assert_eq!(AccountAttrs::default().to_string(), "NONE");
+
+        // Bits 16-20 are unassigned, so they surface rather than being dropped.
+        let future = AccountAttrs::new(AccountAttr::Clan.bit() | 1 << 16);
+        assert_eq!(future.unknown_bits(), 1 << 16);
+        assert_eq!(future.to_string(), "CLAN|UNKNOWN(0x10000)");
     }
 
     #[test]

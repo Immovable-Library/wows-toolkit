@@ -42,7 +42,6 @@ use crate::components::Vehicle;
 use crate::components::VehicleState;
 use crate::components::WeatherZone;
 use crate::components::WeatherZoneData;
-use crate::resources::BURN_MASK;
 use crate::resources::BURNING_FLAGS_PROPERTY;
 use crate::resources::BurnFlagsObserved;
 use crate::resources::BurnStateChange;
@@ -122,9 +121,9 @@ fn handle_vehicle_create<G: ResourceLoader>(
     let previous_burn = world
         .get_entity(entity)
         .ok()
-        .and_then(|er| er.get::<VehicleState>().map(|vs| vs.0.burning_flags() & BURN_MASK))
+        .and_then(|er| er.get::<VehicleState>().map(|vs| vs.0.burning_flags().fire_sections()))
         .unwrap_or(0);
-    let current_burn = props.burning_flags() & BURN_MASK;
+    let current_burn = props.burning_flags().fire_sections();
     if packet.props.contains_key(BURNING_FLAGS_PROPERTY) {
         world.resource_mut::<BurnFlagsObserved>().0 = true;
     }
@@ -1012,6 +1011,7 @@ mod burn_baseline_tests {
 
     use wows_replays::packet2::Rot3;
     use wows_replays::packet2::Vec3;
+    use wows_replays::types::BurningFlags;
 
     use super::*;
 
@@ -1040,7 +1040,7 @@ mod burn_baseline_tests {
             spec_idx: 0,
             entity_type: "Vehicle",
             space_id: 0,
-            vehicle_id: GameParamId::default(),
+            vehicle_id: None,
             position: Vec3 { x: 0.0, y: 0.0, z: 0.0 },
             rotation: Rot3 { roll: 0.0, pitch: 0.0, yaw: 0.0 },
             state_length: 0,
@@ -1125,7 +1125,7 @@ mod burn_baseline_tests {
         let mut world = create_test_world();
         create_vehicle(&mut world, EntityId::from(24u32), 0b0001_0000, GameClock(200.0));
         assert!(world.resource::<BurnStateLog>().0.is_empty());
-        assert_eq!(0b0001_0000 & BURN_MASK, 0);
+        assert_eq!(BurningFlags::new(0b0001_0000).fire_sections(), 0);
     }
 
     /// A build that never replicates `burningFlags` produces the same empty

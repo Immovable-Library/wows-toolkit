@@ -26,6 +26,7 @@ use crate::analyzer::decoder::PlayerStateData;
 use crate::analyzer::decoder::Recognized;
 use crate::analyzer::decoder::WeaponType;
 use crate::game_constants::GameConstants;
+use crate::types::BurningFlags;
 use crate::types::EntityId;
 use crate::types::GameClock;
 use crate::types::GameParamId;
@@ -698,7 +699,7 @@ pub struct VehicleProps {
     respawn_time: u16,
     engine_power: u8,
     max_server_speed_raw: u32,
-    burning_flags: u16,
+    burning_flags: BurningFlags,
 }
 
 impl Default for VehicleProps {
@@ -759,7 +760,7 @@ impl Default for VehicleProps {
             respawn_time: 0,
             engine_power: 0,
             max_server_speed_raw: 0,
-            burning_flags: 0,
+            burning_flags: BurningFlags::default(),
         }
     }
 }
@@ -990,7 +991,7 @@ impl VehicleProps {
         self.max_server_speed_raw
     }
 
-    pub fn burning_flags(&self) -> u16 {
+    pub fn burning_flags(&self) -> BurningFlags {
         self.burning_flags
     }
 
@@ -1142,7 +1143,7 @@ impl VehicleProps {
             // keeps every meaningful bit.
             "burningFlags" => {
                 if let Some(flags) = value.as_u32() {
-                    self.burning_flags = flags as u16;
+                    self.burning_flags = BurningFlags::new(flags as u16);
                 }
             }
             _ => {}
@@ -1358,6 +1359,7 @@ mod tests {
     use wowsunpack::rpc::typedefs::ArgValue;
 
     use crate::game_constants::GameConstants;
+    use crate::types::BurningFlags;
 
     use super::VehicleProps;
 
@@ -1386,7 +1388,7 @@ mod tests {
             let mut props = VehicleProps::default();
             let args: HashMap<&str, ArgValue<'_>> = [("burningFlags", value.clone())].into_iter().collect();
             props.update_from_args(&args, version, &constants);
-            assert_eq!(props.burning_flags(), 0b0101, "burningFlags dropped for {value:?}");
+            assert_eq!(props.burning_flags(), BurningFlags::new(0b0101), "burningFlags dropped for {value:?}");
         }
     }
 }

@@ -13,7 +13,6 @@ use wowsunpack::rpc::typedefs::ArgValue;
 use crate::components::Aim;
 use crate::components::Vehicle;
 use crate::components::VehicleState;
-use crate::resources::BURN_MASK;
 use crate::resources::BURNING_FLAGS_PROPERTY;
 use crate::resources::BurnFlagsObserved;
 use crate::resources::BurnStateChange;
@@ -54,10 +53,10 @@ pub fn handle_vehicle_property(
         && let Some(mut vs) = er.get_mut::<VehicleState>()
     {
         // Compare masked values so a flood or acid bit change does not log as a
-        // fire transition; bits 4-9 share this property (ma779114d BURN_MASK).
-        let previous = vs.0.burning_flags() & BURN_MASK;
+        // fire transition; bits 4-9 share this property.
+        let previous = vs.0.burning_flags().fire_sections();
         vs.0.update_by_name(property, value, version, constants);
-        let current = vs.0.burning_flags() & BURN_MASK;
+        let current = vs.0.burning_flags().fire_sections();
         if previous != current {
             burn_change = Some(BurnStateChange { victim: entity_id, clock, previous, current });
         }
@@ -170,9 +169,9 @@ pub fn apply_player_create_props(
     if let Ok(mut er) = world.get_entity_mut(ecs_entity)
         && let Some(mut vs) = er.get_mut::<VehicleState>()
     {
-        let previous = vs.0.burning_flags() & BURN_MASK;
+        let previous = vs.0.burning_flags().fire_sections();
         vs.0.update_from_args(props, version, constants);
-        let current = vs.0.burning_flags() & BURN_MASK;
+        let current = vs.0.burning_flags().fire_sections();
         if previous != current {
             burn_change = Some(BurnStateChange { victim: entity_id, clock, previous, current });
         }
