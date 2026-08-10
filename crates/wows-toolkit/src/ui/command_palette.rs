@@ -43,6 +43,13 @@ pub enum PaletteAction {
     /// picker runs at dispatch time: `root_entries` is rebuilt every frame,
     /// so a dialog opened while entries are built would refire endlessly.
     OpenReplayDirectory,
+    /// Pick a `constants.json` and install it for the build it names. The file
+    /// picker runs at dispatch time for the same reason as
+    /// [`PaletteAction::OpenReplayDirectory`].
+    ImportConstantsFile,
+    /// Re-parse every replay in the replays directory and rewrite its stored
+    /// row. Confirmed first: it rewrites values an earlier pass stored.
+    RefreshPersistedReplayData,
     OpenSearchTab,
     IndexAllReplays,
     SendAllReplaysToShipBuilds {
@@ -129,6 +136,14 @@ impl CommandPalette {
         entries.push(egui_palette::Entry::new(
             rust_i18n::t!("ui.replay.open_directory"),
             PaletteAction::OpenReplayDirectory,
+        ));
+        entries.push(egui_palette::Entry::new(
+            rust_i18n::t!("ui.replay.import_constants"),
+            PaletteAction::ImportConstantsFile,
+        ));
+        entries.push(egui_palette::Entry::new(
+            rust_i18n::t!("ui.replay.refresh_persisted_data"),
+            PaletteAction::RefreshPersistedReplayData,
         ));
         entries.push(egui_palette::Entry::new("Advanced search...", PaletteAction::OpenSearchTab));
         entries.push(egui_palette::Entry::new("Index all replays", PaletteAction::IndexAllReplays));
@@ -289,6 +304,14 @@ mod tests {
             ignore_cache.data,
             PaletteAction::SendAllReplaysToShipBuilds { cache_policy: SendReplayCachePolicy::IgnoreLedger }
         ));
+    }
+
+    #[test]
+    fn root_entries_offer_constants_import_and_refresh() {
+        let palette = CommandPalette::default();
+        let entries = palette.root_entries();
+        assert!(entries.iter().any(|e| matches!(e.data, PaletteAction::ImportConstantsFile)));
+        assert!(entries.iter().any(|e| matches!(e.data, PaletteAction::RefreshPersistedReplayData)));
     }
 
     #[test]
