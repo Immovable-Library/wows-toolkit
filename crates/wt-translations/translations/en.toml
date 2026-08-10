@@ -102,7 +102,7 @@ download_plan_pending = "Working out what needs fetching..."
 download_objects_to_fetch = "Objects to fetch for the ticked builds: %{count}"
 download_plan_failed = "Could not work out what needs fetching"
 download_plan_no_cache_dir = "No game data cache directory is set. Choose one in Settings, then try again."
-refresh_persisted_data_message = "Re-parse every replay in your replays directory and rewrite its stored data. Use this to correct entries recorded with the wrong replay data mapping. This can take a while."
+refresh_persisted_data_message = "Re-parse every replay in your replays directory and rewrite its stored data. Entries recorded with a replay data mapping that does not match their game build are left as they are. This can take a while."
 
 # -- Labels --
 
