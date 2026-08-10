@@ -142,7 +142,7 @@ fn validate_expected_values(bytes: &[u8]) -> Result<(), FetchExpectedValuesError
 pub async fn fetch_expected_values(
     proxy: Option<&crate::util::proxy::ProxyConfig>,
 ) -> Result<Vec<u8>, FetchExpectedValuesError> {
-    let client = crate::util::http::async_client(proxy)?;
+    let client = crate::util::http::async_client(proxy, reqwest::redirect::Policy::default())?;
     let response = crate::util::http::get_with_retry(&client, EXPECTED_VALUES_URL).await?;
     let bytes = response.bytes().await?.to_vec();
     validate_expected_values(&bytes)?;

@@ -149,6 +149,14 @@ fn build_proxied_octocrab_client(config: &ProxyConfig) -> Result<octocrab::Octoc
     let client =
         tower::retry::RetryLayer::new(octocrab::service::middleware::retry::RetryConfig::Simple(3)).layer(client);
 
+    // octocrab enables this by default (lib.rs:815-816, `follow-redirect`
+    // feature). `raw_file` (used by `fetch_latest_constants`) does not
+    // compensate for its absence: it calls `execute` directly rather than
+    // routing through `follow_location_to_data` the way `download_tarball`
+    // does, so a 3xx here would otherwise drain an empty body and surface as
+    // a confusing JSON parse error instead of a followed redirect.
+    let client = tower_http::follow_redirect::FollowRedirectLayer::new().layer(client);
+
     // GitHub rejects requests with no User-Agent header; this is the same
     // value and the same layer octocrab's default build applies (lib.rs:821).
     let user_agent_headers = Arc::new(vec![(http::header::USER_AGENT, http::HeaderValue::from_static("octocrab"))]);
@@ -160,15 +168,10 @@ fn build_proxied_octocrab_client(config: &ProxyConfig) -> Result<octocrab::Octoc
     let base_uri: http::Uri = GITHUB_BASE_URI.parse().expect("GITHUB_BASE_URI is a valid URI");
     let client = octocrab::service::middleware::base_uri::BaseUriLayer::new(base_uri).layer(client);
 
-    // Known gaps versus octocrab's default build, both accepted for now:
-    // - No `AuthHeaderLayer`. This app never authenticates to GitHub today
-    //   (`AuthState::None`, no `.personal_token()`/`.oauth()`/etc. call
-    //   anywhere); if that changes, it needs adding here too.
-    // - No `FollowRedirectLayer`. GitHub's contents API (used by
-    //   `fetch_latest_constants`'s `raw_file` call) can 3xx-redirect for
-    //   larger files; `data/latest.json` is a small manifest and not
-    //   expected to trigger that, but a proxied response would be returned
-    //   un-followed if it ever did.
+    // Known gap versus octocrab's default build, accepted for now: no
+    // `AuthHeaderLayer`. This app never authenticates to GitHub today
+    // (`AuthState::None`, no `.personal_token()`/`.oauth()`/etc. call
+    // anywhere); if that changes, it needs adding here too.
     octocrab::OctocrabBuilder::new_empty()
         .with_service(client)
         .with_auth(octocrab::AuthState::None)
@@ -522,7 +525,8 @@ async fn download_update(
     file: Url,
     proxy: Option<&crate::util::proxy::ProxyConfig>,
 ) -> Result<PathBuf, Report> {
-    let client = crate::util::http::async_client(proxy).context("failed to build HTTP client for update download")?;
+    let client = crate::util::http::async_client(proxy, reqwest::redirect::Policy::default())
+        .context("failed to build HTTP client for update download")?;
     let mut body = client
         .get(file)
         .send()

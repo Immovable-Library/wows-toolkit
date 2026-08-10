@@ -39,9 +39,20 @@ pub(crate) fn reqwest_proxy(config: &ProxyConfig) -> Option<reqwest::Proxy> {
 }
 
 /// Async client with connect + read (inactivity) timeouts; safe for streaming large downloads.
-pub fn async_client(proxy: Option<&ProxyConfig>) -> reqwest::Result<reqwest::Client> {
-    let mut builder =
-        reqwest::Client::builder().user_agent(USER_AGENT).connect_timeout(CONNECT_TIMEOUT).read_timeout(READ_TIMEOUT);
+///
+/// `redirect_policy` is explicit, like `blocking_client`'s, rather than
+/// relying on reqwest's default (follow up to 10): a caller standing in for
+/// another client's documented behavior (e.g. twitch_api's, which disallows
+/// redirects) needs to say so, not inherit whatever reqwest defaults to.
+pub fn async_client(
+    proxy: Option<&ProxyConfig>,
+    redirect_policy: reqwest::redirect::Policy,
+) -> reqwest::Result<reqwest::Client> {
+    let mut builder = reqwest::Client::builder()
+        .user_agent(USER_AGENT)
+        .connect_timeout(CONNECT_TIMEOUT)
+        .read_timeout(READ_TIMEOUT)
+        .redirect(redirect_policy);
     if let Some(p) = proxy.and_then(reqwest_proxy) {
         builder = builder.proxy(p);
     }
@@ -121,14 +132,19 @@ pub async fn get_with_retry(client: &reqwest::Client, url: &str) -> reqwest::Res
 /// and TLS session cache. `None` only when the client cannot be built at all,
 /// which is a broken TLS backend rather than a per-call failure.
 ///
-/// The proxy is only honored on the first call: the client is built once and
-/// cached for the process's life, and every caller passes the same
-/// startup-resolved value anyway.
-pub fn shared_async_client(proxy: Option<&ProxyConfig>) -> Option<&'static reqwest::Client> {
+/// The proxy and redirect policy are only honored on the first call: the
+/// client is built once and cached for the process's life, and every caller
+/// passes the same startup-resolved proxy anyway.
+pub fn shared_async_client(
+    proxy: Option<&ProxyConfig>,
+    redirect_policy: reqwest::redirect::Policy,
+) -> Option<&'static reqwest::Client> {
     static SHARED: std::sync::OnceLock<Option<reqwest::Client>> = std::sync::OnceLock::new();
     SHARED
         .get_or_init(|| {
-            async_client(proxy).inspect_err(|e| tracing::error!("failed to build shared HTTP client: {e}")).ok()
+            async_client(proxy, redirect_policy)
+                .inspect_err(|e| tracing::error!("failed to build shared HTTP client: {e}"))
+                .ok()
         })
         .as_ref()
 }
@@ -143,8 +159,10 @@ mod tests {
     /// of thousands of small objects reconnects instead of reusing.
     #[test]
     fn the_shared_client_is_one_client() {
-        let first = shared_async_client(None).expect("a client can be built in this environment");
-        let second = shared_async_client(None).expect("a client can be built in this environment");
+        let first = shared_async_client(None, reqwest::redirect::Policy::default())
+            .expect("a client can be built in this environment");
+        let second = shared_async_client(None, reqwest::redirect::Policy::default())
+            .expect("a client can be built in this environment");
         assert!(std::ptr::eq(first, second));
     }
 
@@ -155,7 +173,7 @@ mod tests {
     fn a_malformed_proxy_url_is_ignored_rather_than_failing_the_client() {
         let config = ProxyConfig { url: "not a url".to_string(), bypass: Vec::new(), source: ProxySource::Manual };
         assert!(reqwest_proxy(&config).is_none());
-        assert!(async_client(Some(&config)).is_ok());
+        assert!(async_client(Some(&config), reqwest::redirect::Policy::default()).is_ok());
         assert!(blocking_client(reqwest::redirect::Policy::none(), Some(&config)).is_ok());
     }
 }

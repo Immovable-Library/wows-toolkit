@@ -1229,13 +1229,26 @@ impl WowsToolkitApp {
             // The bootstrap `TwitchState::default()` client (built before
             // settings were known) is unproxied; replace it in place so every
             // existing clone of the `Arc<RwLock<TwitchState>>` picks this up.
-            match crate::util::http::async_client(proxy.as_ref()) {
-                Ok(client) => state.tab_state.twitch_state.write().set_client(client),
-                Err(e) => {
-                    warn!(
-                        "failed to build proxied Twitch HTTP client, keeping the default: {}",
-                        crate::util::http::error_chain(&e)
-                    );
+            // Only when a proxy is actually configured: a user with none
+            // keeps exactly the client `TwitchState::default()` already gave
+            // them (twitch_api's own `ClientDefault`, e.g. its no-redirect
+            // policy), rather than being switched to this app's client for
+            // no reason.
+            if let Some(config) = proxy.as_ref() {
+                // `Policy::none()` matches twitch_api's own documented
+                // default (`ClientDefault::default_client_with_name`,
+                // twitch_api-0.7.2/src/client/reqwest_impl.rs:47-52): a
+                // captive-portal or proxy 3xx should surface as a visible
+                // redirect response, not be silently followed into an HTML
+                // page that then fails Helix JSON deserialization.
+                match crate::util::http::async_client(Some(config), reqwest::redirect::Policy::none()) {
+                    Ok(client) => state.tab_state.twitch_state.write().set_client(client),
+                    Err(e) => {
+                        warn!(
+                            "failed to build proxied Twitch HTTP client, keeping the default: {}",
+                            crate::util::http::error_chain(&e)
+                        );
+                    }
                 }
             }
             state.tab_state.proxy = proxy;
