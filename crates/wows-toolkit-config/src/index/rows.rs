@@ -188,6 +188,16 @@ pub struct IndexedVehicleRow {
     pub sniper_twitch_login: Option<String>,
 }
 
+/// How an upsert treats values an earlier pass already stored.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum IndexWriteMode {
+    /// Keep a stored rating and game mode id; update everything else.
+    Incremental,
+    /// Rewrite every column from this parse. Used by the forced refresh, where
+    /// an earlier pass may have decoded the results through the wrong tables.
+    Replace,
+}
+
 /// A search/recent result: objective match plus the chosen record's perspective.
 #[derive(Debug, Clone)]
 pub struct MatchHit {

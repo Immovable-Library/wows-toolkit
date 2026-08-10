@@ -18,6 +18,7 @@ use wows_replays::types::Relation;
 use crate::data::constants::ConstantsFit;
 use crate::db::index::query;
 use crate::db::index::rows::IndexError;
+use crate::db::index::rows::IndexWriteMode;
 use crate::db::index::rows::IndexedVehicleRow;
 use crate::db::index::rows::MatchOutcome;
 use crate::db::index::rows::ObjectiveMatch;
@@ -259,10 +260,10 @@ pub fn index_generation() -> u64 {
     INDEX_GENERATION.load(Ordering::Relaxed)
 }
 
-pub async fn write_index(pool: &SqlitePool, rows: &MappedRows) -> Result<(), IndexError> {
-    query::upsert_match(pool, &rows.objective).await?;
-    query::upsert_vehicles(pool, &rows.vehicles).await?;
-    query::upsert_record(pool, &rows.record).await?;
+pub async fn write_index(pool: &SqlitePool, rows: &MappedRows, mode: IndexWriteMode) -> Result<(), IndexError> {
+    query::upsert_match_with_mode(pool, &rows.objective, mode).await?;
+    query::upsert_vehicles_with_mode(pool, &rows.vehicles, mode).await?;
+    query::upsert_record_with_mode(pool, &rows.record, mode).await?;
     INDEX_GENERATION.fetch_add(1, Ordering::Relaxed);
     Ok(())
 }
@@ -322,6 +323,7 @@ fn fill_missing_pr(rows: &mut MappedRows, pr_data: &PersonalRatingData) {
 /// on-demand reindex/backfill path, so both benefit from persisted Twitch
 /// observations. Best-effort: errors are logged and swallowed so indexing
 /// never destabilizes the parser thread.
+#[allow(clippy::too_many_arguments)]
 pub fn index_replay_blocking(
     rt: &Runtime,
     pool: &SqlitePool,
@@ -330,14 +332,16 @@ pub fn index_replay_blocking(
     now: Timestamp,
     pr_data: &RwLock<PersonalRatingData>,
     fit: ConstantsFit,
+    mode: IndexWriteMode,
 ) {
-    if let Err(e) = index_replay_reporting(rt, pool, replay, source_id, now, pr_data, fit) {
+    if let Err(e) = index_replay_reporting(rt, pool, replay, source_id, now, pr_data, fit, mode) {
         warn!("failed to index replay: {e}");
     }
 }
 
 /// [`index_replay_blocking`] with the reason nothing was written returned
 /// rather than logged, for callers that report how many replays did not index.
+#[allow(clippy::too_many_arguments)]
 pub fn index_replay_reporting(
     rt: &Runtime,
     pool: &SqlitePool,
@@ -346,6 +350,7 @@ pub fn index_replay_reporting(
     now: Timestamp,
     pr_data: &RwLock<PersonalRatingData>,
     fit: ConstantsFit,
+    mode: IndexWriteMode,
 ) -> Result<(), Report> {
     let Some(mut rows) = map_rows(replay, source_id, now, fit) else {
         return Err(report!("replay carries no parsed report to index"));
@@ -361,7 +366,7 @@ pub fn index_replay_reporting(
             Ok(observations) => apply_sniper_flags(&mut rows.vehicles, &observations),
             Err(e) => warn!("failed to fetch twitch observations for sniper detection: {e}"),
         }
-        write_index(pool, &rows).await
+        write_index(pool, &rows, mode).await
     })
     .map_err(|e| report!("failed to write replay index rows: {e}"))
 }

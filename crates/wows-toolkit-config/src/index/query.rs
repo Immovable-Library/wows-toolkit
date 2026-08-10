@@ -22,6 +22,7 @@ use super::rows::DivisionMate;
 use super::rows::DivisionMateEncounter;
 use super::rows::IndexError;
 use super::rows::IndexSource;
+use super::rows::IndexWriteMode;
 use super::rows::IndexedVehicleRow;
 use super::rows::MatchFilter;
 use super::rows::MatchHit;
@@ -318,85 +319,117 @@ pub async fn forget_source(pool: &SqlitePool, source: SourceId) -> Result<(), In
     Ok(())
 }
 
-/// `game_mode_id` is `COALESCE(game_mode_id, ?)`, old-wins, for the same
-/// reason as `indexed_vehicle.pr` (see [`upsert_vehicles`]): the id recorded
-/// for a match is a point-in-time fact about that indexing pass, and a
-/// re-index must not restamp it.
+/// Incremental write; see [`upsert_match_with_mode`].
 pub async fn upsert_match(pool: &SqlitePool, m: &ObjectiveMatch) -> Result<(), IndexError> {
-    sqlx::query(
+    upsert_match_with_mode(pool, m, IndexWriteMode::Incremental).await
+}
+
+/// `game_mode_id` is old-wins under [`IndexWriteMode::Incremental`], for the
+/// same reason as `indexed_vehicle.pr` (see [`upsert_vehicles_with_mode`]): the
+/// id recorded for a match is a point-in-time fact about that indexing pass,
+/// and a re-index must not restamp it. [`IndexWriteMode::Replace`] does restamp
+/// it, because a pass that decoded it through constants from another build had
+/// no fact to record.
+pub async fn upsert_match_with_mode(
+    pool: &SqlitePool,
+    m: &ObjectiveMatch,
+    mode: IndexWriteMode,
+) -> Result<(), IndexError> {
+    let game_mode_id = match mode {
+        IndexWriteMode::Incremental => "game_mode_id=COALESCE(game_mode_id, ?5)",
+        IndexWriteMode::Replace => "game_mode_id=?5",
+    };
+    let sql = format!(
         "INSERT INTO indexed_match \
          (arena_id, timestamp, map, game_mode, game_mode_id, game_type, match_group, version_build) \
          VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8) \
          ON CONFLICT(arena_id) DO UPDATE SET \
-           timestamp=?2, map=?3, game_mode=?4, game_mode_id=COALESCE(game_mode_id, ?5), game_type=?6, \
-           match_group=?7, version_build=?8",
-    )
-    .bind(m.arena_id.raw())
-    .bind(m.timestamp.as_second())
-    .bind(&m.map)
-    .bind(&m.game_mode)
-    .bind(m.game_mode_id)
-    .bind(&m.game_type)
-    .bind(&m.match_group)
-    .bind(m.version_build.map(|v| v as i64))
-    .execute(pool)
-    .await?;
+           timestamp=?2, map=?3, game_mode=?4, {game_mode_id}, game_type=?6, \
+           match_group=?7, version_build=?8"
+    );
+    sqlx::query(&sql)
+        .bind(m.arena_id.raw())
+        .bind(m.timestamp.as_second())
+        .bind(&m.map)
+        .bind(&m.game_mode)
+        .bind(m.game_mode_id)
+        .bind(&m.game_type)
+        .bind(&m.match_group)
+        .bind(m.version_build.map(|v| v as i64))
+        .execute(pool)
+        .await?;
     Ok(())
 }
 
-/// `pr` is `COALESCE(pr, ?)`, old-wins: a stored rating is a point-in-time
-/// value and re-indexing must not restamp it. A rebuilt report always
-/// recomputes its rating against whatever expected values are loaded today, so
-/// a new-wins assignment would let one "Index all replays" rewrite every rating
-/// in the database, and the same battle would report a different number month
-/// to month. The fallback arm still fills a NULL from a re-index that carries a
-/// number, and the INSERT arm is unaffected.
+/// Incremental write; see [`upsert_vehicles_with_mode`].
+pub async fn upsert_vehicles(pool: &SqlitePool, rows: &[IndexedVehicleRow]) -> Result<(), IndexError> {
+    upsert_vehicles_with_mode(pool, rows, IndexWriteMode::Incremental).await
+}
+
+/// `pr` is old-wins under [`IndexWriteMode::Incremental`]: a stored rating is a
+/// point-in-time value and re-indexing must not restamp it. A rebuilt report
+/// always recomputes its rating against whatever expected values are loaded
+/// today, so a new-wins assignment would let one "Index all replays" rewrite
+/// every rating in the database, and the same battle would report a different
+/// number month to month. The fallback arm still fills a NULL from a re-index
+/// that carries a number, and the INSERT arm is unaffected.
 ///
 /// Cementing a stored value is safe because a rating can only exist where the
 /// parse had server results: without them `actual_damage` is `None` and
 /// `populate_personal_ratings` bails, so no rating computed against an unknown
-/// outcome can be made permanent here.
-pub async fn upsert_vehicles(pool: &SqlitePool, rows: &[IndexedVehicleRow]) -> Result<(), IndexError> {
+/// outcome can be made permanent here. [`IndexWriteMode::Replace`] is the
+/// deliberate exception: it rewrites `pr` too, because a pass that decoded it
+/// through constants from another build had no fact worth cementing.
+pub async fn upsert_vehicles_with_mode(
+    pool: &SqlitePool,
+    rows: &[IndexedVehicleRow],
+    mode: IndexWriteMode,
+) -> Result<(), IndexError> {
+    let pr = match mode {
+        IndexWriteMode::Incremental => "pr=COALESCE(pr, ?20)",
+        IndexWriteMode::Replace => "pr=?20",
+    };
+    let sql = format!(
+        "INSERT INTO indexed_vehicle \
+         (arena_id, account_id, player_name, clan, realm, ship_id, ship_index, ship_name, nation, species, \
+          tier, relation, division_id, survived, damage, kills, spotting, potential, received, pr, is_test_ship, \
+          disconnected, is_stream_sniper, sniper_twitch_login) \
+         VALUES (?1,?2,?3,?4,?5,?6,?7,?8,?9,?10,?11,?12,?13,?14,?15,?16,?17,?18,?19,?20,?21,?22,?23,?24) \
+         ON CONFLICT(arena_id, account_id, ship_id) DO UPDATE SET \
+           player_name=?3, clan=?4, realm=?5, ship_index=?7, ship_name=?8, nation=?9, species=?10, \
+           tier=?11, relation=?12, division_id=?13, survived=?14, damage=?15, kills=?16, spotting=?17, \
+           potential=?18, received=?19, {pr}, is_test_ship=?21, disconnected=?22, \
+           is_stream_sniper=?23, sniper_twitch_login=?24"
+    );
     let mut tx = pool.begin().await?;
     for v in rows {
-        sqlx::query(
-            "INSERT INTO indexed_vehicle \
-             (arena_id, account_id, player_name, clan, realm, ship_id, ship_index, ship_name, nation, species, \
-              tier, relation, division_id, survived, damage, kills, spotting, potential, received, pr, is_test_ship, \
-              disconnected, is_stream_sniper, sniper_twitch_login) \
-             VALUES (?1,?2,?3,?4,?5,?6,?7,?8,?9,?10,?11,?12,?13,?14,?15,?16,?17,?18,?19,?20,?21,?22,?23,?24) \
-             ON CONFLICT(arena_id, account_id, ship_id) DO UPDATE SET \
-               player_name=?3, clan=?4, realm=?5, ship_index=?7, ship_name=?8, nation=?9, species=?10, \
-               tier=?11, relation=?12, division_id=?13, survived=?14, damage=?15, kills=?16, spotting=?17, \
-               potential=?18, received=?19, pr=COALESCE(pr, ?20), is_test_ship=?21, disconnected=?22, \
-               is_stream_sniper=?23, sniper_twitch_login=?24",
-        )
-        .bind(v.arena_id.raw())
-        .bind(v.account_id.raw())
-        .bind(&v.player_name)
-        .bind(&v.clan)
-        .bind(v.realm.as_deref())
-        .bind(v.ship_id.raw() as i64)
-        .bind(&v.ship_index)
-        .bind(&v.ship_name)
-        .bind(&v.nation)
-        .bind(&v.species)
-        .bind(v.tier as i64)
-        .bind(v.relation.as_db_str())
-        .bind(v.division_id)
-        .bind(v.survived)
-        .bind(v.damage.map(|d| d as i64))
-        .bind(v.kills)
-        .bind(v.spotting.map(|d| d as i64))
-        .bind(v.potential.map(|d| d as i64))
-        .bind(v.received.map(|d| d as i64))
-        .bind(v.pr)
-        .bind(v.is_test_ship)
-        .bind(v.disconnected)
-        .bind(v.is_stream_sniper)
-        .bind(&v.sniper_twitch_login)
-        .execute(&mut *tx)
-        .await?;
+        sqlx::query(&sql)
+            .bind(v.arena_id.raw())
+            .bind(v.account_id.raw())
+            .bind(&v.player_name)
+            .bind(&v.clan)
+            .bind(v.realm.as_deref())
+            .bind(v.ship_id.raw() as i64)
+            .bind(&v.ship_index)
+            .bind(&v.ship_name)
+            .bind(&v.nation)
+            .bind(&v.species)
+            .bind(v.tier as i64)
+            .bind(v.relation.as_db_str())
+            .bind(v.division_id)
+            .bind(v.survived)
+            .bind(v.damage.map(|d| d as i64))
+            .bind(v.kills)
+            .bind(v.spotting.map(|d| d as i64))
+            .bind(v.potential.map(|d| d as i64))
+            .bind(v.received.map(|d| d as i64))
+            .bind(v.pr)
+            .bind(v.is_test_ship)
+            .bind(v.disconnected)
+            .bind(v.is_stream_sniper)
+            .bind(&v.sniper_twitch_login)
+            .execute(&mut *tx)
+            .await?;
     }
     tx.commit().await?;
     Ok(())
@@ -442,33 +475,48 @@ pub async fn prune_twitch_observations(pool: &SqlitePool, older_than_unix: i64) 
     Ok(result.rows_affected())
 }
 
-/// `self_pr` is coalesced for the same reason as `indexed_vehicle.pr`; see
-/// [`upsert_vehicles`].
+/// Incremental write; see [`upsert_record_with_mode`].
 pub async fn upsert_record(pool: &SqlitePool, r: &ReplayRecord) -> Result<(), IndexError> {
-    sqlx::query(
+    upsert_record_with_mode(pool, r, IndexWriteMode::Incremental).await
+}
+
+/// `self_pr` is old-wins under [`IndexWriteMode::Incremental`] for the same
+/// reason as `indexed_vehicle.pr`; see [`upsert_vehicles_with_mode`].
+/// [`IndexWriteMode::Replace`] rewrites it too, for the same reason.
+pub async fn upsert_record_with_mode(
+    pool: &SqlitePool,
+    r: &ReplayRecord,
+    mode: IndexWriteMode,
+) -> Result<(), IndexError> {
+    let self_pr = match mode {
+        IndexWriteMode::Incremental => "self_pr=COALESCE(self_pr, ?11)",
+        IndexWriteMode::Replace => "self_pr=?11",
+    };
+    let sql = format!(
         "INSERT INTO replay_record \
          (arena_id, source_id, replay_path, file_mtime, outcome, self_account_id, self_ship_id, self_survived, \
           self_damage, self_kills, self_pr, results_available, indexed_at) \
          VALUES (?1,?2,?3,?4,?5,?6,?7,?8,?9,?10,?11,?12,?13) \
          ON CONFLICT(source_id, replay_path) DO UPDATE SET \
            arena_id=?1, file_mtime=?4, outcome=?5, self_account_id=?6, self_ship_id=?7, self_survived=?8, \
-           self_damage=?9, self_kills=?10, self_pr=COALESCE(self_pr, ?11), results_available=?12, indexed_at=?13",
-    )
-    .bind(r.arena_id.raw())
-    .bind(r.source_id.0)
-    .bind(r.replay_path.to_string_lossy().to_string())
-    .bind(r.file_mtime)
-    .bind(r.outcome.as_db_str())
-    .bind(r.self_account_id.map(|a| a.raw()))
-    .bind(r.self_ship_id.map(|s| s.raw() as i64))
-    .bind(r.self_survived)
-    .bind(r.self_damage.map(|d| d as i64))
-    .bind(r.self_kills)
-    .bind(r.self_pr)
-    .bind(r.results_available)
-    .bind(r.indexed_at.as_second())
-    .execute(pool)
-    .await?;
+           self_damage=?9, self_kills=?10, {self_pr}, results_available=?12, indexed_at=?13"
+    );
+    sqlx::query(&sql)
+        .bind(r.arena_id.raw())
+        .bind(r.source_id.0)
+        .bind(r.replay_path.to_string_lossy().to_string())
+        .bind(r.file_mtime)
+        .bind(r.outcome.as_db_str())
+        .bind(r.self_account_id.map(|a| a.raw()))
+        .bind(r.self_ship_id.map(|s| s.raw() as i64))
+        .bind(r.self_survived)
+        .bind(r.self_damage.map(|d| d as i64))
+        .bind(r.self_kills)
+        .bind(r.self_pr)
+        .bind(r.results_available)
+        .bind(r.indexed_at.as_second())
+        .execute(pool)
+        .await?;
     Ok(())
 }
 

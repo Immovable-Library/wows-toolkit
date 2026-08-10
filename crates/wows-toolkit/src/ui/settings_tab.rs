@@ -473,7 +473,11 @@ impl ToolkitTabViewer<'_> {
                     {
                         crate::update_background_task!(
                             self.tab_state.background_tasks,
-                            Some(crate::task::start_reconcile_index(deps, false, self.tab_state.egui_ctx.clone()))
+                            Some(crate::task::start_reconcile_index(
+                                deps,
+                                crate::task::ReindexMode::FillGaps,
+                                self.tab_state.egui_ctx.clone()
+                            ))
                         );
                     }
 
@@ -488,7 +492,11 @@ impl ToolkitTabViewer<'_> {
                     {
                         crate::update_background_task!(
                             self.tab_state.background_tasks,
-                            Some(crate::task::start_reconcile_index(deps, true, self.tab_state.egui_ctx.clone()))
+                            Some(crate::task::start_reconcile_index(
+                                deps,
+                                crate::task::ReindexMode::RefreshAll,
+                                self.tab_state.egui_ctx.clone()
+                            ))
                         );
                     }
                 });
