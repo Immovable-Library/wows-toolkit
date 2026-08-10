@@ -949,6 +949,31 @@ fn log_targets() -> tracing_subscriber::filter::Targets {
         .with_target(wows_data_mgr::LOG_TARGET, tracing::Level::INFO)
 }
 
+/// Directory the rotating log file lives in: the executable's own directory,
+/// or the current directory if that cannot be determined.
+fn log_dir() -> PathBuf {
+    std::env::current_exe().ok().and_then(|p| p.parent().map(|p| p.to_path_buf())).unwrap_or_else(|| ".".into())
+}
+
+/// The most recent rotated log file in `dir`, by filename.
+///
+/// `tracing_appender` rotates hourly with a sortable `prefix.YYYY-MM-DD-HH`
+/// suffix, so the highest filename is the newest file; this avoids trusting
+/// mtimes, which a copy or a sync tool can rewrite.
+fn newest_log_file(dir: &std::path::Path) -> Option<PathBuf> {
+    let mut newest: Option<PathBuf> = None;
+    for entry in std::fs::read_dir(dir).ok()?.flatten() {
+        let path = entry.path();
+        if !path.file_name()?.to_string_lossy().starts_with("wows_toolkit.log") {
+            continue;
+        }
+        if newest.as_ref().is_none_or(|current| path.file_name() > current.file_name()) {
+            newest = Some(path);
+        }
+    }
+    newest
+}
+
 impl Default for WowsToolkitApp {
     fn default() -> Self {
         Self {
@@ -1507,10 +1532,7 @@ impl WowsToolkitApp {
         use tracing_subscriber::fmt::time::LocalTime;
         use tracing_subscriber::layer::SubscriberExt;
 
-        let log_dir = std::env::current_exe()
-            .ok()
-            .and_then(|p| p.parent().map(|p| p.to_path_buf()))
-            .unwrap_or_else(|| ".".into());
+        let log_dir = log_dir();
         let file_appender = tracing_appender::rolling::Builder::new()
             .rotation(Rotation::HOURLY)
             .max_log_files(3)
@@ -3565,6 +3587,41 @@ impl WowsToolkitApp {
         self.check_constants_version_mismatch();
     }
 
+    /// Read the newest rotated log file whole and put it on the clipboard,
+    /// with a one-line header naming the file. Copies only the log contents:
+    /// the persisted settings hold a raw proxy URL that can carry
+    /// credentials, and this is the path a user pastes into a bug report.
+    fn copy_latest_log(&mut self, ctx: &Context) {
+        let dir = log_dir();
+        let Some(path) = newest_log_file(&dir) else {
+            self.tab_state
+                .toasts
+                .lock()
+                .error(t!("ui.messages.log_copy_failed", error = format!("no log file found in {}", dir.display())));
+            return;
+        };
+
+        match std::fs::read_to_string(&path) {
+            Ok(contents) => {
+                let file_name = path
+                    .file_name()
+                    .expect("newest_log_file only returns paths with a file name")
+                    .to_string_lossy()
+                    .into_owned();
+                Context::copy_text(ctx, format!("# {file_name}\n\n{contents}"));
+                let kb = contents.len() as f64 / 1024.0;
+                self.tab_state.toasts.lock().success(t!(
+                    "ui.messages.log_copied",
+                    bytes = format!("{kb:.1}"),
+                    file = file_name
+                ));
+            }
+            Err(e) => {
+                self.tab_state.toasts.lock().error(t!("ui.messages.log_copy_failed", error = e.to_string()));
+            }
+        }
+    }
+
     fn show_err_window(&mut self, err: Report) {
         self.show_error_window = true;
         let formatted = err.format_with(&DefaultReportFormatter::ASCII);
@@ -4607,6 +4664,7 @@ impl WowsToolkitApp {
                 self.tab_state.persisted.write().settings.app.theme = choice;
                 crate::ui::theme::apply(ctx, choice);
             }
+            PaletteAction::CopyLatestLog => self.copy_latest_log(ctx),
             // Handled by the render loop before it reaches dispatch: entering a
             // sub-mode keeps the palette open instead of running an action.
             PaletteAction::EnterSub(_) => {}
@@ -6182,6 +6240,28 @@ mod logging_target_tests {
             !targets.would_enable("hyper_util", &tracing::Level::ERROR),
             "the filter must stay an allowlist, not turn into a catch-all"
         );
+    }
+}
+
+#[cfg(test)]
+mod newest_log_file_tests {
+    use super::newest_log_file;
+
+    #[test]
+    fn the_newest_log_file_is_the_one_picked() {
+        let dir = tempfile::tempdir().expect("temp dir");
+        for name in ["wows_toolkit.log.2026-08-10-09", "wows_toolkit.log.2026-08-10-11", "other.txt"] {
+            std::fs::write(dir.path().join(name), name).expect("write");
+        }
+        let picked = newest_log_file(dir.path()).expect("a log file");
+        assert_eq!(picked.file_name().unwrap(), "wows_toolkit.log.2026-08-10-11");
+    }
+
+    #[test]
+    fn a_directory_with_no_logs_yields_nothing() {
+        let dir = tempfile::tempdir().expect("temp dir");
+        std::fs::write(dir.path().join("notes.txt"), "x").expect("write");
+        assert!(newest_log_file(dir.path()).is_none());
     }
 }
 

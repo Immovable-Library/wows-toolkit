@@ -63,6 +63,8 @@ pub enum PaletteAction {
     OpenSearchWith(MatchExpr),
     /// Switch the app theme.
     SetTheme(crate::data::settings::ThemeChoice),
+    /// Copy the whole newest rotated log file to the clipboard for a bug report.
+    CopyLatestLog,
 }
 
 /// Which screen the palette is currently showing.
@@ -145,6 +147,8 @@ impl CommandPalette {
             rust_i18n::t!("ui.replay.refresh_persisted_data"),
             PaletteAction::RefreshPersistedReplayData,
         ));
+        entries
+            .push(egui_palette::Entry::new(rust_i18n::t!("ui.replay.copy_latest_log"), PaletteAction::CopyLatestLog));
         entries.push(egui_palette::Entry::new("Advanced search...", PaletteAction::OpenSearchTab));
         entries.push(egui_palette::Entry::new("Index all replays", PaletteAction::IndexAllReplays));
         entries.push(egui_palette::Entry::new(
@@ -312,6 +316,12 @@ mod tests {
         let entries = palette.root_entries();
         assert!(entries.iter().any(|e| matches!(e.data, PaletteAction::ImportConstantsFile)));
         assert!(entries.iter().any(|e| matches!(e.data, PaletteAction::RefreshPersistedReplayData)));
+    }
+
+    #[test]
+    fn root_entries_offer_copying_the_log() {
+        let palette = CommandPalette::default();
+        assert!(palette.root_entries().iter().any(|e| matches!(e.data, PaletteAction::CopyLatestLog)));
     }
 
     #[test]

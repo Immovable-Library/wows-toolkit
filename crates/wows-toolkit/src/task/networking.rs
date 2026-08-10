@@ -14,6 +14,7 @@ use octocrab::models::repos::Release;
 use octocrab::params::repos::Reference;
 use reqwest::Url;
 use rootcause::Report;
+use rootcause::hooks::builtin_hooks::report_formatter::DefaultReportFormatter;
 use rootcause::prelude::ResultExt;
 use tokio::runtime::Runtime;
 use tower::Layer;
@@ -479,8 +480,10 @@ impl NetworkingThread {
             }
             Err(e) => {
                 // rootcause::Report doesn't implement std::error::Error, so error_chain
-                // doesn't apply here; its Debug output already renders the full chain.
-                tracing::warn!(build = target_build, "failed to fetch versioned constants: {e:?}");
+                // doesn't apply here. ASCII formatting keeps the log file, which users
+                // paste into bug reports, free of Unicode box-drawing characters.
+                let formatted = e.format_with(&DefaultReportFormatter::ASCII);
+                tracing::warn!(build = target_build, "failed to fetch versioned constants: {formatted:?}");
                 let _ = self
                     .result_tx
                     .send(NetworkResult::VersionedConstantsFetchFailed { build: target_build, msg: format!("{e}") });
@@ -597,7 +600,10 @@ pub fn start_download_update_task(
             download_update(progress_tx, url, proxy.as_ref()).await.map(BackgroundTaskCompletion::UpdateDownloaded);
 
         if let Err(report) = &result {
-            tracing::warn!("update download failed: {report:?}");
+            // ASCII formatting keeps the log file, which users paste into bug
+            // reports, free of Unicode box-drawing characters.
+            let formatted = report.format_with(&DefaultReportFormatter::ASCII);
+            tracing::warn!("update download failed: {formatted:?}");
         }
 
         let _ = tx.send(result);
