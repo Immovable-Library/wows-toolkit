@@ -81,6 +81,7 @@ pub use replay_upload::SendReplayCachePolicy;
 pub use replays::BackgroundParserThread;
 pub use replays::DataExportSettings;
 pub use replays::ReconcileIndexDeps;
+pub use replays::ReindexMode;
 pub use replays::ReplayBackgroundParserThreadMessage;
 pub use replays::ReplayExportFormat;
 pub use replays::SourceSelector;

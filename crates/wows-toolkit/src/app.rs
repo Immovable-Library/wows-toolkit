@@ -4421,7 +4421,11 @@ impl WowsToolkitApp {
                 if let Some(deps) = crate::task::ReconcileIndexDeps::from_tab_state(&self.tab_state) {
                     update_background_task!(
                         self.tab_state.background_tasks,
-                        Some(crate::task::start_reconcile_index(deps, false, self.tab_state.egui_ctx.clone()))
+                        Some(crate::task::start_reconcile_index(
+                            deps,
+                            crate::task::ReindexMode::FillGaps,
+                            self.tab_state.egui_ctx.clone()
+                        ))
                     );
                 }
             }

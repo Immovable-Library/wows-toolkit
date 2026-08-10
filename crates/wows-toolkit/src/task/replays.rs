@@ -560,6 +560,7 @@ fn parse_replay_data_in_background(
                                 jiff::Timestamp::now(),
                                 &data.personal_rating_data,
                                 fit,
+                                crate::db::index::rows::IndexWriteMode::Incremental,
                             );
                         }
 
@@ -1287,6 +1288,7 @@ fn index_one_replay(
     path: &Path,
     deps: &ReconcileIndexDeps,
     source_id: crate::db::index::rows::SourceId,
+    mode: ReindexMode,
 ) -> ParseOutcome {
     let replay_file = match ReplayFile::from_file(path) {
         Ok(f) => f,
@@ -1367,9 +1369,30 @@ fn index_one_replay(
         jiff::Timestamp::now(),
         &deps.personal_rating_data,
         fit,
+        mode.write_mode(),
     );
 
     ParseOutcome::ParsedAndSent
+}
+
+/// Which replays a reconciliation pass parses, and how hard it writes.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum ReindexMode {
+    /// Skip replays already recorded for the source; only fill gaps.
+    FillGaps,
+    /// Re-parse every non-blacklisted replay and rewrite its stored row,
+    /// including values an incremental write keeps. This is how a user
+    /// corrects rows an earlier pass wrote with the wrong constants.
+    RefreshAll,
+}
+
+impl ReindexMode {
+    fn write_mode(self) -> crate::db::index::rows::IndexWriteMode {
+        match self {
+            Self::FillGaps => crate::db::index::rows::IndexWriteMode::Incremental,
+            Self::RefreshAll => crate::db::index::rows::IndexWriteMode::Replace,
+        }
+    }
 }
 
 /// Spawn the on-demand "Index all replays" reconciliation pass.
@@ -1381,13 +1404,14 @@ fn index_one_replay(
 /// through `index_one_replay`, wrapped in `reconcile_one` for panic isolation
 /// exactly like the startup pass.
 ///
-/// When `force_reindex` is false, replays already recorded for the default
-/// source are skipped (only gaps are filled). When true, already-indexed
-/// replays are re-parsed and re-upserted too, so newly added index columns
-/// (e.g. personal rating, disconnect state) backfill onto existing rows.
-/// Either way, files in the persistent `Unindexable` blacklist are never
-/// re-parsed.
-pub fn start_reconcile_index(deps: ReconcileIndexDeps, force_reindex: bool, egui_ctx: egui::Context) -> BackgroundTask {
+/// Under [`ReindexMode::FillGaps`], replays already recorded for the default
+/// source are skipped (only gaps are filled). Under [`ReindexMode::RefreshAll`],
+/// already-indexed replays are re-parsed and re-upserted too, so newly added
+/// index columns (e.g. personal rating, disconnect state) backfill onto
+/// existing rows, and columns an incremental write would otherwise keep
+/// (rating, game mode id) are rewritten from this parse. Either way, files in
+/// the persistent `Unindexable` blacklist are never re-parsed.
+pub fn start_reconcile_index(deps: ReconcileIndexDeps, mode: ReindexMode, egui_ctx: egui::Context) -> BackgroundTask {
     let (tx, rx) = super::completion_channel();
     // Throttled: already-indexed files are skipped in a tight loop, so the
     // per-file progress sends can come thousands per second.
@@ -1395,7 +1419,7 @@ pub fn start_reconcile_index(deps: ReconcileIndexDeps, force_reindex: bool, egui
         crate::ui_channel::throttled_channel(egui_ctx, std::time::Duration::from_millis(250));
 
     crate::util::thread::spawn_logged("reconcile-index", move || {
-        let _ = tx.send(run_reconcile_index(deps, force_reindex, &progress_tx));
+        let _ = tx.send(run_reconcile_index(deps, mode, &progress_tx));
     });
 
     BackgroundTask {
@@ -1406,7 +1430,7 @@ pub fn start_reconcile_index(deps: ReconcileIndexDeps, force_reindex: bool, egui
 
 fn run_reconcile_index(
     deps: ReconcileIndexDeps,
-    force_reindex: bool,
+    mode: ReindexMode,
     progress_tx: &crate::ui_channel::ThrottledSender<IndexProgress>,
 ) -> Result<BackgroundTaskCompletion, Report> {
     let Some(replays_dir) = deps.build_cache.loaded_builds().first().map(|d| d.read().replays_dir.clone()) else {
@@ -1437,17 +1461,17 @@ fn run_reconcile_index(
         if unindexable.contains(&path) {
             continue;
         }
-        let already_indexed = !force_reindex && indexed_paths.contains(path_str.as_ref());
+        let already_indexed = mode == ReindexMode::FillGaps && indexed_paths.contains(path_str.as_ref());
 
         // Upload reconciliation is satisfied: this task has no upload ledger of its own, so
         // the skip decision depends only on whether the replay is already indexed
-        // (which `force_reindex` short-circuits to false so every non-blacklisted
+        // (which `ReindexMode::RefreshAll` short-circuits to false so every non-blacklisted
         // file is re-parsed and re-upserted).
         let outcome = crate::data::replay_reconcile::reconcile_one(
             &path,
             already_indexed,
             crate::data::replay_reconcile::UploadReconciliation::Satisfied,
-            std::panic::AssertUnwindSafe(|| index_one_replay(&path, &deps, source_id)),
+            std::panic::AssertUnwindSafe(|| index_one_replay(&path, &deps, source_id, mode)),
         );
 
         match outcome {
@@ -2092,6 +2116,7 @@ fn index_ingested_replay(
                 jiff::Timestamp::now(),
                 &deps.personal_rating_data,
                 fit,
+                crate::db::index::rows::IndexWriteMode::Incremental,
             )
         },
         |replay| {
