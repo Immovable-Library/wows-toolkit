@@ -33,6 +33,7 @@ use crate::app::ToolkitTabViewer;
 use crate::data::build_data::BuildAssets;
 use crate::data::build_data::BuildData;
 use crate::data::build_data::SharedBuildData;
+use crate::data::constants::ConstantsFit;
 use crate::db::index::rows::DivisionMate;
 use crate::db::index::rows::MatchOutcome;
 use crate::db::index::rows::RowSummary;
@@ -104,7 +105,7 @@ fn shared_build_data(provider: Arc<GameMetadataProvider>, vfs: VfsPath) -> Share
         game_metadata: Some(provider),
         game_constants: Arc::new(wows_replays::game_constants::DEFAULT_GAME_CONSTANTS.clone()),
         replay_constants: Arc::new(RwLock::new(serde_json::Value::Null)),
-        replay_constants_exact_match: false,
+        constants_fit: ConstantsFit::Mismatched,
         full_version: None,
         patch_version: 0,
         build_number: 0,
