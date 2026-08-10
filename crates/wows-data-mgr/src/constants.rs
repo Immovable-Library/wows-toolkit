@@ -21,16 +21,82 @@ impl ConstantsVersion {
     }
 }
 
+/// GitHub API host every fetch in this module talks to, for log context.
+const GITHUB_HOST: &str = "api.github.com";
+
+/// Why a constants fetch did not produce data.
+#[derive(Debug, thiserror::Error)]
+pub enum ConstantsFetchError {
+    #[error("GitHub API rate limit is spent for this IP address; it resets hourly")]
+    RateLimited,
+    #[error("GitHub returned HTTP {status}")]
+    Http { status: u16 },
+    #[error("could not reach GitHub: {message}")]
+    Transport { message: String },
+    #[error("GitHub returned data that is not valid JSON: {source}")]
+    Malformed {
+        #[source]
+        source: serde_json::Error,
+    },
+}
+
+impl ConstantsFetchError {
+    /// Classify a GitHub response. A 403 with `x-ratelimit-remaining: 0` is the
+    /// shape a spent unauthenticated quota takes, which is worth naming since it
+    /// is shared per public IP address and resolves on its own.
+    pub fn from_status(status: u16, rate_limit_remaining: Option<&str>) -> Self {
+        if status == 403 && rate_limit_remaining == Some("0") {
+            return Self::RateLimited;
+        }
+        Self::Http { status }
+    }
+}
+
+/// Render `err` and its full `source()` chain on one line.
+fn error_chain(err: &dyn std::error::Error) -> String {
+    // Cap the walk so a pathological self-referencing source() can't loop forever.
+    const MAX_DEPTH: usize = 16;
+    let mut message = err.to_string();
+    let mut source = err.source();
+    let mut depth = 0;
+    while let Some(cause) = source {
+        depth += 1;
+        if depth > MAX_DEPTH {
+            message.push_str(": ...");
+            break;
+        }
+        message.push_str(": ");
+        message.push_str(&cause.to_string());
+        source = cause.source();
+    }
+    message
+}
+
 /// Fetch the repo's root manifest.json mapping build number -> friendly version.
-pub async fn fetch_constants_manifest() -> Option<std::collections::BTreeMap<u32, ConstantsVersion>> {
+pub async fn fetch_constants_manifest() -> Result<std::collections::BTreeMap<u32, ConstantsVersion>, ConstantsFetchError>
+{
     use http_body_util::BodyExt;
     use octocrab::params::repos::Reference;
 
+    const PATH: &str = "manifest.json";
+
     let response = octocrab::instance()
         .repos("padtrack", "wows-constants")
-        .raw_file(Reference::Branch("main".to_string()), "manifest.json")
+        .raw_file(Reference::Branch("main".to_string()), PATH)
         .await
-        .ok()?;
+        .map_err(|e| {
+            let err = ConstantsFetchError::Transport { message: error_chain(&e) };
+            tracing::warn!(host = GITHUB_HOST, path = PATH, %err, "fetching constants manifest");
+            err
+        })?;
+
+    let status = response.status();
+    if !status.is_success() {
+        let rate_limit_remaining = response.headers().get("x-ratelimit-remaining").and_then(|v| v.to_str().ok());
+        let err = ConstantsFetchError::from_status(status.as_u16(), rate_limit_remaining);
+        tracing::warn!(host = GITHUB_HOST, path = PATH, %err, "fetching constants manifest");
+        return Err(err);
+    }
 
     let mut body = response.into_body();
     let mut result = Vec::new();
@@ -42,13 +108,22 @@ pub async fn fetch_constants_manifest() -> Option<std::collections::BTreeMap<u32
                     result.extend_from_slice(data);
                 }
             }
-            Err(_) => return None,
+            Err(e) => {
+                let err = ConstantsFetchError::Transport { message: error_chain(&e) };
+                tracing::warn!(host = GITHUB_HOST, path = PATH, %err, "reading constants manifest body");
+                return Err(err);
+            }
         }
     }
 
     // Manifest keys are build numbers as strings.
-    let raw: std::collections::BTreeMap<String, ConstantsVersion> = serde_json::from_slice(&result).ok()?;
-    Some(raw.into_iter().filter_map(|(k, v)| k.parse::<u32>().ok().map(|b| (b, v))).collect())
+    let raw: std::collections::BTreeMap<String, ConstantsVersion> =
+        serde_json::from_slice(&result).map_err(|source| {
+            let err = ConstantsFetchError::Malformed { source };
+            tracing::warn!(host = GITHUB_HOST, path = PATH, %err, "parsing constants manifest");
+            err
+        })?;
+    Ok(raw.into_iter().filter_map(|(k, v)| k.parse::<u32>().ok().map(|b| (b, v))).collect())
 }
 
 /// Resolve which build's constants to fetch for a replay's (build, friendly_version),
@@ -89,11 +164,29 @@ pub async fn fetch_versioned_constants(
     target_build: u32,
     target_version: Option<&str>,
 ) -> Result<(serde_json::Value, u32), rootcause::Report> {
-    if let Some(manifest) = fetch_constants_manifest().await
+    let manifest = match fetch_constants_manifest().await {
+        Ok(manifest) => Some(manifest),
+        Err(e) => {
+            tracing::warn!(
+                build = target_build,
+                "constants manifest unavailable, falling back to version-blind lookup: {e}"
+            );
+            None
+        }
+    };
+
+    if let Some(manifest) = manifest
         && let Some(resolved) = resolve_manifest_build(target_build, target_version, &manifest)
-        && let Some(data) = fetch_build(resolved).await
     {
-        return Ok((data, resolved));
+        match fetch_build(resolved).await {
+            Ok(data) => return Ok((data, resolved)),
+            Err(e) => {
+                tracing::warn!(
+                    build = resolved,
+                    "constants build fetch failed, falling back to version-blind lookup: {e}"
+                );
+            }
+        }
     }
     // Fallback: version-blind exact-then-nearest-older.
     let available = list_available_builds().await?;
@@ -106,18 +199,20 @@ pub async fn fetch_versioned_constants(
 /// exact match first, otherwise nearest older build. Returns `None` only when
 /// nothing usable is published upstream.
 async fn pick_constants(target_build: u32, available: &[u32]) -> Option<(serde_json::Value, u32)> {
-    if available.contains(&target_build)
-        && let Some(data) = fetch_build(target_build).await
-    {
-        return Some((data, target_build));
+    if available.contains(&target_build) {
+        match fetch_build(target_build).await {
+            Ok(data) => return Some((data, target_build)),
+            Err(e) => tracing::warn!(build = target_build, "constants build fetch failed: {e}"),
+        }
     }
 
     for &build in available.iter().rev() {
         if build >= target_build {
             continue;
         }
-        if let Some(data) = fetch_build(build).await {
-            return Some((data, build));
+        match fetch_build(build).await {
+            Ok(data) => return Some((data, build)),
+            Err(e) => tracing::warn!(build, "constants build fetch failed: {e}"),
         }
     }
     None
@@ -139,7 +234,13 @@ impl ConstantsFetcher {
             .enable_all()
             .build()
             .attach_with(|| "Failed to create tokio runtime")?;
-        let manifest = runtime.block_on(fetch_constants_manifest());
+        let manifest = match runtime.block_on(fetch_constants_manifest()) {
+            Ok(manifest) => Some(manifest),
+            Err(e) => {
+                tracing::warn!("constants manifest unavailable, will use version-blind lookup: {e}");
+                None
+            }
+        };
         let available = runtime.block_on(list_available_builds())?;
         Ok(Self { runtime, manifest, available })
     }
@@ -150,9 +251,16 @@ impl ConstantsFetcher {
     pub fn fetch(&self, target_build: u32, target_version: Option<&str>) -> Option<(serde_json::Value, u32)> {
         if let Some(manifest) = self.manifest.as_ref()
             && let Some(resolved) = resolve_manifest_build(target_build, target_version, manifest)
-            && let Some(data) = self.runtime.block_on(fetch_build(resolved))
         {
-            return Some((data, resolved));
+            match self.runtime.block_on(fetch_build(resolved)) {
+                Ok(data) => return Some((data, resolved)),
+                Err(e) => {
+                    tracing::warn!(
+                        build = resolved,
+                        "constants build fetch failed, falling back to version-blind lookup: {e}"
+                    );
+                }
+            }
         }
         self.runtime.block_on(pick_constants(target_build, &self.available))
     }
@@ -175,8 +283,8 @@ pub async fn list_available_builds() -> Result<Vec<u32>, rootcause::Report> {
     Ok(builds)
 }
 
-/// Fetch constants JSON for a specific build number. Returns None if not found.
-pub async fn fetch_build(build: u32) -> Option<serde_json::Value> {
+/// Fetch constants JSON for a specific build number.
+pub async fn fetch_build(build: u32) -> Result<serde_json::Value, ConstantsFetchError> {
     use http_body_util::BodyExt;
     use octocrab::params::repos::Reference;
 
@@ -185,7 +293,19 @@ pub async fn fetch_build(build: u32) -> Option<serde_json::Value> {
         .repos("padtrack", "wows-constants")
         .raw_file(Reference::Branch("main".to_string()), &path)
         .await
-        .ok()?;
+        .map_err(|e| {
+            let err = ConstantsFetchError::Transport { message: error_chain(&e) };
+            tracing::warn!(host = GITHUB_HOST, path, %err, "fetching constants build");
+            err
+        })?;
+
+    let status = response.status();
+    if !status.is_success() {
+        let rate_limit_remaining = response.headers().get("x-ratelimit-remaining").and_then(|v| v.to_str().ok());
+        let err = ConstantsFetchError::from_status(status.as_u16(), rate_limit_remaining);
+        tracing::warn!(host = GITHUB_HOST, path, %err, "fetching constants build");
+        return Err(err);
+    }
 
     let mut body = response.into_body();
     let mut result = Vec::new();
@@ -197,11 +317,42 @@ pub async fn fetch_build(build: u32) -> Option<serde_json::Value> {
                     result.extend_from_slice(data);
                 }
             }
-            Err(_) => return None,
+            Err(e) => {
+                let err = ConstantsFetchError::Transport { message: error_chain(&e) };
+                tracing::warn!(host = GITHUB_HOST, path, %err, "reading constants build body");
+                return Err(err);
+            }
         }
     }
 
-    serde_json::from_slice(&result).ok()
+    serde_json::from_slice(&result).map_err(|source| {
+        let err = ConstantsFetchError::Malformed { source };
+        tracing::warn!(host = GITHUB_HOST, path, %err, "parsing constants build");
+        err
+    })
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn a_spent_rate_limit_is_named_as_one() {
+        let e = ConstantsFetchError::from_status(403, Some("0"));
+        assert!(matches!(e, ConstantsFetchError::RateLimited));
+        assert!(e.to_string().contains("rate limit"));
+    }
+
+    #[test]
+    fn a_forbidden_response_with_quota_left_is_not_a_rate_limit() {
+        assert!(matches!(ConstantsFetchError::from_status(403, Some("57")), ConstantsFetchError::Http { status: 403 }));
+        assert!(matches!(ConstantsFetchError::from_status(403, None), ConstantsFetchError::Http { status: 403 }));
+    }
+
+    #[test]
+    fn other_statuses_carry_their_code() {
+        assert!(matches!(ConstantsFetchError::from_status(404, None), ConstantsFetchError::Http { status: 404 }));
+    }
 }
 
 #[cfg(test)]
