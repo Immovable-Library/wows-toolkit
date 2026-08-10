@@ -365,6 +365,8 @@ pub struct WowsToolkitApp {
     #[serde(skip)]
     replay_migration_window_open: bool,
     #[serde(skip)]
+    refresh_persisted_data_window_open: bool,
+    #[serde(skip)]
     language_selection_open: bool,
     #[serde(skip)]
     latest_release: Option<Release>,
@@ -957,6 +959,7 @@ impl Default for WowsToolkitApp {
             panic_window_open: false,
             build_consent_window_open: false,
             replay_migration_window_open: false,
+            refresh_persisted_data_window_open: false,
             language_selection_open: false,
             latest_release: None,
             show_about_window: false,
@@ -3049,6 +3052,34 @@ impl WowsToolkitApp {
             });
         }
 
+        if std::mem::take(&mut self.tab_state.refresh_persisted_data_requested) {
+            self.refresh_persisted_data_window_open = true;
+        }
+
+        if self.refresh_persisted_data_window_open {
+            egui::Window::new(t!("ui.windows.refresh_persisted_data")).collapsible(false).show(ctx, |ui| {
+                ui.label(t!("ui.dialogs.refresh_persisted_data_message"));
+                ui.horizontal(|ui| {
+                    if ui.button(t!("ui.buttons.refresh_persisted_data_confirm")).clicked() {
+                        self.refresh_persisted_data_window_open = false;
+                        if let Some(deps) = crate::task::ReconcileIndexDeps::from_tab_state(&self.tab_state) {
+                            update_background_task!(
+                                self.tab_state.background_tasks,
+                                Some(crate::task::start_reconcile_index(
+                                    deps,
+                                    crate::task::ReindexMode::RefreshAll,
+                                    self.tab_state.egui_ctx.clone()
+                                ))
+                            );
+                        }
+                    }
+                    if ui.button(t!("ui.buttons.cancel")).clicked() {
+                        self.refresh_persisted_data_window_open = false;
+                    }
+                });
+            });
+        }
+
         self.service_directory_reingests();
         self.show_download_prompt(ctx);
 
@@ -3410,6 +3441,63 @@ impl WowsToolkitApp {
             }
             None => {}
         }
+    }
+
+    /// Install a user-picked `constants.json` for the build it names, then
+    /// rebuild that build so open replays re-read their results through it.
+    fn import_constants_file(&mut self, path: &std::path::Path) {
+        let parsed = match crate::data::constants::read_constants_file(path) {
+            Ok(parsed) => parsed,
+            Err(e) => {
+                warn!("constants import failed: {e}");
+                self.tab_state.toasts.lock().error(t!("ui.messages.constants_import_failed", error = e.to_string()));
+                return;
+            }
+        };
+
+        let cache_dir = self.tab_state.persisted.read().settings.game.game_data_cache_dir.clone();
+        let dump_base = crate::task::replays::game_data_dump_base_with_override(&cache_dir);
+        let storage_dir = crate::storage_dir();
+        let installed =
+            match crate::data::constants::install_constants(&parsed, storage_dir.as_deref(), dump_base.as_deref()) {
+                Ok(installed) => installed,
+                Err(e) => {
+                    warn!("constants import failed: {e}");
+                    self.tab_state
+                        .toasts
+                        .lock()
+                        .error(t!("ui.messages.constants_import_failed", error = e.to_string()));
+                    return;
+                }
+            };
+
+        if let Some(build_cache) = self.tab_state.build_cache.as_ref()
+            && let Some(data) = build_cache.get(installed.build)
+            && data.write().rebuild_with_new_constants()
+        {
+            for replay in self.tab_state.all_open_replays() {
+                replay.write().ui_report = None;
+            }
+        }
+
+        let loaded_build = self.tab_state.world_of_warships_data.as_ref().map(|data| data.read().build_number);
+        match loaded_build {
+            Some(loaded) if loaded != installed.build => {
+                self.tab_state.toasts.lock().warning(t!(
+                    "ui.messages.constants_imported_other_build",
+                    build = installed.build.to_string(),
+                    loaded = loaded.to_string()
+                ));
+            }
+            _ => {
+                self.tab_state
+                    .toasts
+                    .lock()
+                    .success(t!("ui.messages.constants_imported", build = installed.build.to_string()));
+            }
+        }
+
+        self.check_constants_version_mismatch();
     }
 
     fn show_err_window(&mut self, err: Report) {
@@ -4416,6 +4504,14 @@ impl WowsToolkitApp {
                 if let Some(root) = rfd::FileDialog::new().pick_folder() {
                     self.open_replay_directory(root);
                 }
+            }
+            PaletteAction::ImportConstantsFile => {
+                if let Some(path) = rfd::FileDialog::new().add_filter("Constants", &["json"]).pick_file() {
+                    self.import_constants_file(&path);
+                }
+            }
+            PaletteAction::RefreshPersistedReplayData => {
+                self.refresh_persisted_data_window_open = true;
             }
             PaletteAction::IndexAllReplays => {
                 if let Some(deps) = crate::task::ReconcileIndexDeps::from_tab_state(&self.tab_state) {

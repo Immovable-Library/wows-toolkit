@@ -56,6 +56,7 @@ dismiss = "Dismiss"
 retry = "Retry"
 check_all = "Check All"
 uncheck_all = "Uncheck All"
+refresh_persisted_data_confirm = "Refresh"
 
 # -- Menu items --
 
@@ -77,6 +78,7 @@ network_warning = "Network Warning"
 download_game_data = "Download Game Data"
 error = "Error"
 about = "About"
+refresh_persisted_data = "Refresh Persisted Replay Data"
 
 # -- Dialog / message text --
 
@@ -100,6 +102,7 @@ download_plan_pending = "Working out what needs fetching..."
 download_objects_to_fetch = "Objects to fetch for the ticked builds: %{count}"
 download_plan_failed = "Could not work out what needs fetching"
 download_plan_no_cache_dir = "No game data cache directory is set. Choose one in Settings, then try again."
+refresh_persisted_data_message = "Re-parse every replay in your replays directory and rewrite its stored data. Use this to correct entries recorded with the wrong replay data mapping. This can take a while."
 
 # -- Labels --
 
@@ -141,6 +144,9 @@ twitch_token_expired = "Twitch token is invalid or expired"
 versioned_constants_rebuild_failed = "Failed to fetch versioned constants during rebuild. Will retry later."
 constants_version_mismatch = "Replay data mapping file version does not match game version.\nPost-battle results may not be accurate. Please be patient while project maintainers update the mapping on the server."
 constants_updated = "Replay data mapping file updated successfully"
+constants_imported = "Installed replay data mapping for build %{build}"
+constants_imported_other_build = "Installed replay data mapping for build %{build}, which is not the build currently loaded (%{loaded})"
+constants_import_failed = "Could not import replay data mapping: %{error}"
 session_started = "Session started"
 user_joined = "%{name} joined"
 user_timeout = "%{name} timed out"
@@ -272,7 +278,7 @@ format_cbor = "CBOR"
 export_path_hint = "Data auto-export directory"
 index_all_replays = "Index All Replays"
 reindex_all_replays = "Re-index All Replays"
-reindex_all_replays_hover = "Re-parse and re-index every replay, including ones already indexed. Use this after an update adds new index data (e.g. Personal Rating, disconnect status) so it backfills onto existing entries."
+reindex_all_replays_hover = "Re-parse every replay and rewrite its stored data, including entries recorded with the wrong replay data mapping. Also backfills data added by an update, such as Personal Rating and disconnect status."
 
 [ui.settings.session]
 heading = "Session Settings"
@@ -322,6 +328,8 @@ team_damage = "Team Damage: "
 hide_my_stats = "Hide My Test Ship Stats"
 open_manually = "Manually Open Replay File..."
 open_directory = "Open Replay Directory..."
+import_constants = "Import constants.json File..."
+refresh_persisted_data = "Refresh Persisted Replay Data..."
 load_alt_perspective = "Load Other Team Perspective..."
 load_alt_perspective_tooltip = "Merge another player's recording of the same match into the current replay. Reveals enemy positions, builds, torpedoes, artillery, and consumables from the other perspective."
 load_alt_perspective_disabled_tooltip = "Open or focus a replay first."

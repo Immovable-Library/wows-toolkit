@@ -563,6 +563,9 @@ pub struct TabState {
     pub network_job_tx: Option<Sender<NetworkJob>>,
     /// Whether the Settings tab needs attention (e.g. invalid WoWs directory, invalid twitch token).
     pub settings_needs_attention: bool,
+    /// Set by the Settings tab to raise the refresh confirmation window, which
+    /// `app.rs` owns along with every other modal.
+    pub refresh_persisted_data_requested: bool,
     /// The resolved dark/light theme, refreshed from `Context::theme()` each
     /// frame before the dock area is built. `TabViewer::tab_style_override`
     /// has no `Context` of its own, so it reads this instead.
@@ -695,6 +698,7 @@ impl Default for TabState {
             suppress_gpu_encoder_warning: Arc::new(std::sync::atomic::AtomicBool::new(false)),
             network_job_tx: None,
             settings_needs_attention: false,
+            refresh_persisted_data_requested: false,
             active_theme: egui::Theme::Dark,
             dock_tab_rects: Vec::new(),
             game_data_updates: Vec::new(),

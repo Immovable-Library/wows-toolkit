@@ -488,16 +488,8 @@ impl ToolkitTabViewer<'_> {
                         )
                         .on_hover_text(t!("ui.settings.replay.reindex_all_replays_hover"))
                         .clicked()
-                        && let Some(deps) = reindex_deps
                     {
-                        crate::update_background_task!(
-                            self.tab_state.background_tasks,
-                            Some(crate::task::start_reconcile_index(
-                                deps,
-                                crate::task::ReindexMode::RefreshAll,
-                                self.tab_state.egui_ctx.clone()
-                            ))
-                        );
+                        self.tab_state.refresh_persisted_data_requested = true;
                     }
                 });
             });
