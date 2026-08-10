@@ -1,5 +1,6 @@
 pub mod build_data;
 pub mod cap_layout;
+pub mod constants;
 pub(crate) mod legacy_settings;
 pub(crate) mod match_stats;
 pub mod replay_index;
