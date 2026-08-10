@@ -131,6 +131,31 @@ impl Version {
             }
     }
 
+    /// Version from a constants file's `VERSION` block: the `VERSION` string
+    /// ("14.7") supplies major and minor, `PATCH` the third component, and
+    /// `BUILD` the build number when the file carries one.
+    ///
+    /// Mirrors the upstream manifest's `friendly_version()`, which is what the
+    /// constants resolver matches on, so both sides agree on what one release is.
+    pub fn from_constants_block(version: &str, patch: u32, build: Option<u32>) -> Option<Version> {
+        let (major, minor) = version.split_once('.')?;
+        Some(Version {
+            major: major.trim().parse().ok()?,
+            minor: minor.trim().parse().ok()?,
+            patch,
+            build: build.and_then(NonZeroU32::new),
+        })
+    }
+
+    /// Whether both name the same game release, ignoring build number.
+    ///
+    /// Regional clients ship one release under different build numbers and
+    /// their data is interchangeable; a different patch level is a different
+    /// release and is not.
+    pub fn same_release(&self, other: &Version) -> bool {
+        self.major == other.major && self.minor == other.minor && self.patch == other.patch
+    }
+
     pub fn is_at_least(&self, other: &Version) -> bool {
         if self.major > other.major {
             true
@@ -310,5 +335,40 @@ mod test {
     fn from_account_def_returns_none_on_missing() {
         let xml = r#"<root><Properties><someOtherNode/></Properties></root>"#;
         assert!(Version::from_account_def(xml).is_none());
+    }
+
+    #[test]
+    fn a_constants_block_parses_into_a_version() {
+        let v = Version::from_constants_block("14.7", 1, Some(10448683)).expect("parses");
+        assert_eq!((v.major, v.minor, v.patch), (14, 7, 1));
+        assert_eq!(v.build_number(), Some(10448683));
+    }
+
+    #[test]
+    fn a_constants_block_without_a_build_still_parses() {
+        let v = Version::from_constants_block("15.2", 0, None).expect("parses");
+        assert_eq!((v.major, v.minor, v.patch), (15, 2, 0));
+        assert_eq!(v.build_number(), None);
+    }
+
+    #[test]
+    fn a_malformed_constants_block_is_rejected() {
+        assert!(Version::from_constants_block("fourteen.seven", 0, None).is_none());
+        assert!(Version::from_constants_block("14", 0, None).is_none());
+    }
+
+    #[test]
+    fn the_same_release_under_different_builds_is_one_release() {
+        // The CN client ships a release under its own build number.
+        let row = Version::from_constants_block("14.7", 1, Some(24477)).unwrap();
+        let cn = Version::from_constants_block("14.7", 1, Some(25588)).unwrap();
+        assert!(row.same_release(&cn));
+    }
+
+    #[test]
+    fn a_different_patch_is_a_different_release() {
+        let a = Version::from_constants_block("14.7", 0, Some(10374819)).unwrap();
+        let b = Version::from_constants_block("14.7", 1, Some(10448683)).unwrap();
+        assert!(!a.same_release(&b));
     }
 }
