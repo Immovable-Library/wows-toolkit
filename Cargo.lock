@@ -11586,6 +11586,7 @@ dependencies = [
  "walkdir",
  "web-time",
  "wgpu",
+ "windows-registry",
  "windows-sys 0.61.2",
  "winresource",
  "wows-battle-world",

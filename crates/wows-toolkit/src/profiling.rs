@@ -116,7 +116,7 @@ fn headless_deps(build_cache: BuildDataCache) -> ReplayDependencies {
     std::mem::forget(rx);
     ReplayDependencies {
         build_cache,
-        shipbuilds_client: crate::data::shipbuilds::ShipBuildsClient::new()
+        shipbuilds_client: crate::data::shipbuilds::ShipBuildsClient::new(None)
             .expect("failed to build ShipBuilds HTTP client"),
         twitch_state: Arc::new(RwLock::new(Default::default())),
         replay_sort: Arc::new(Mutex::new(SortOrder::default())),

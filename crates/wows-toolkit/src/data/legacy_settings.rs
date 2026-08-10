@@ -219,6 +219,8 @@ impl LegacyWowsToolkitApp {
                 // install starts on the default rather than inheriting a
                 // choice that was never made.
                 code_integrity: crate::hardening::CodeIntegrityPreference::default(),
+                // Also predates the setting: nothing to migrate.
+                proxy_url: None,
             },
             game: GameSettings {
                 wows_dir: s.wows_dir,

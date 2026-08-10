@@ -42,6 +42,7 @@ pub fn start_game_data_download_task(
     force: bool,
     follow_up: Option<GameDataFollowUp>,
     egui_ctx: egui::Context,
+    proxy: Option<crate::util::proxy::ProxyConfig>,
 ) -> BackgroundTask {
     let (tx, rx) = crate::task::completion_channel();
     // Throttled: progress reports per downloaded chunk.
@@ -49,7 +50,7 @@ pub fn start_game_data_download_task(
         crate::ui_channel::throttled_channel(egui_ctx, std::time::Duration::from_millis(100));
 
     crate::util::thread::spawn_logged("download-game-data", move || {
-        let _ = tx.send(download(output_base, requests, &runtime, force, &progress_tx));
+        let _ = tx.send(download(output_base, requests, &runtime, force, &progress_tx, proxy.as_ref()));
     });
 
     BackgroundTask {
@@ -83,11 +84,12 @@ pub fn start_game_data_plan_task(
     output_base: PathBuf,
     builds: Vec<(u32, Option<String>)>,
     ticket: PlanTicket,
+    proxy: Option<crate::util::proxy::ProxyConfig>,
 ) -> BackgroundTask {
     let (tx, rx) = crate::task::completion_channel();
 
     crate::util::thread::spawn_logged("plan-game-data-download", move || {
-        let _ = tx.send(plan(output_base, builds, ticket));
+        let _ = tx.send(plan(output_base, builds, ticket, proxy.as_ref()));
     });
 
     BackgroundTask { receiver: Some(rx), kind: BackgroundTaskKind::PlanningGameDataDownload { ticket } }
@@ -96,11 +98,15 @@ pub fn start_game_data_plan_task(
 /// Check the repository for updates to builds already cached in `output_base`.
 /// `known_tip` is the repository commit recorded at the last check; when it is
 /// unchanged the check returns immediately with no per-build requests.
-pub fn start_game_data_update_check_task(output_base: PathBuf, known_tip: Option<String>) -> BackgroundTask {
+pub fn start_game_data_update_check_task(
+    output_base: PathBuf,
+    known_tip: Option<String>,
+    proxy: Option<crate::util::proxy::ProxyConfig>,
+) -> BackgroundTask {
     let (tx, rx) = crate::task::completion_channel();
 
     crate::util::thread::spawn_logged("check-game-data-updates", move || {
-        let _ = tx.send(check_for_updates(output_base, known_tip));
+        let _ = tx.send(check_for_updates(output_base, known_tip, proxy.as_ref()));
     });
 
     BackgroundTask { receiver: Some(rx), kind: BackgroundTaskKind::CheckingGameDataUpdates }
@@ -109,14 +115,18 @@ pub fn start_game_data_update_check_task(output_base: PathBuf, known_tip: Option
 /// Validate every cached build in `output_base` against the remote repository,
 /// the source of truth. Reports missing, corrupt, or stale builds so the user
 /// can re-download them.
-pub fn start_game_data_validation_task(output_base: PathBuf, egui_ctx: egui::Context) -> BackgroundTask {
+pub fn start_game_data_validation_task(
+    output_base: PathBuf,
+    egui_ctx: egui::Context,
+    proxy: Option<crate::util::proxy::ProxyConfig>,
+) -> BackgroundTask {
     let (tx, rx) = crate::task::completion_channel();
     // Throttled: progress reports per validated object.
     let (progress_tx, progress_rx) =
         crate::ui_channel::throttled_channel(egui_ctx, std::time::Duration::from_millis(100));
 
     crate::util::thread::spawn_logged("validate-game-data", move || {
-        let _ = tx.send(validate(output_base, &progress_tx));
+        let _ = tx.send(validate(output_base, &progress_tx, proxy.as_ref()));
     });
 
     BackgroundTask {
@@ -125,8 +135,8 @@ pub fn start_game_data_validation_task(output_base: PathBuf, egui_ctx: egui::Con
     }
 }
 
-fn build_client() -> Result<&'static reqwest::Client, Report> {
-    crate::util::http::shared_async_client().ok_or_else(|| report!("failed to build HTTP client"))
+fn build_client(proxy: Option<&crate::util::proxy::ProxyConfig>) -> Result<&'static reqwest::Client, Report> {
+    crate::util::http::shared_async_client(proxy).ok_or_else(|| report!("failed to build HTTP client"))
 }
 
 fn download(
@@ -135,8 +145,9 @@ fn download(
     runtime: &tokio::runtime::Runtime,
     force: bool,
     progress_tx: &crate::ui_channel::ThrottledSender<DownloadProgress>,
+    proxy: Option<&crate::util::proxy::ProxyConfig>,
 ) -> Result<BackgroundTaskCompletion, Report> {
-    let client = build_client()?;
+    let client = build_client(proxy)?;
 
     let plain: Vec<(u32, Option<String>)> =
         requests.iter().map(|r| (r.build_u32(), Some(r.friendly_version()))).collect();
@@ -171,12 +182,13 @@ fn plan(
     output_base: PathBuf,
     builds: Vec<(u32, Option<String>)>,
     ticket: PlanTicket,
+    proxy: Option<&crate::util::proxy::ProxyConfig>,
 ) -> Result<BackgroundTaskCompletion, Report> {
     let runtime = tokio::runtime::Builder::new_current_thread()
         .enable_all()
         .build()
         .attach_with(|| "failed to create download runtime")?;
-    let client = build_client()?;
+    let client = build_client(proxy)?;
     let cas_root = wows_data_mgr::cas::cas_root(&output_base);
 
     let plan = runtime.block_on(wows_data_mgr::download_repo::plan_download(
@@ -189,12 +201,16 @@ fn plan(
     Ok(BackgroundTaskCompletion::GameDataDownloadPlanned { ticket, plan })
 }
 
-fn check_for_updates(output_base: PathBuf, known_tip: Option<String>) -> Result<BackgroundTaskCompletion, Report> {
+fn check_for_updates(
+    output_base: PathBuf,
+    known_tip: Option<String>,
+    proxy: Option<&crate::util::proxy::ProxyConfig>,
+) -> Result<BackgroundTaskCompletion, Report> {
     let runtime = tokio::runtime::Builder::new_current_thread()
         .enable_all()
         .build()
         .attach_with(|| "failed to create download runtime")?;
-    let client = build_client()?;
+    let client = build_client(proxy)?;
 
     let result = runtime.block_on(wows_data_mgr::download_repo::check_for_updates(
         client,
@@ -209,12 +225,13 @@ fn check_for_updates(output_base: PathBuf, known_tip: Option<String>) -> Result<
 fn validate(
     output_base: PathBuf,
     progress_tx: &crate::ui_channel::ThrottledSender<DownloadProgress>,
+    proxy: Option<&crate::util::proxy::ProxyConfig>,
 ) -> Result<BackgroundTaskCompletion, Report> {
     let runtime = tokio::runtime::Builder::new_current_thread()
         .enable_all()
         .build()
         .attach_with(|| "failed to create download runtime")?;
-    let client = build_client()?;
+    let client = build_client(proxy)?;
 
     let result = runtime.block_on(wows_data_mgr::download_repo::validate_cache(
         client,

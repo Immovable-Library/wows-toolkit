@@ -462,6 +462,10 @@ pub struct TabState {
     pub sent_replays: Arc<RwLock<std::collections::HashSet<String>>>,
     pub replay_sort: Arc<Mutex<SortOrder>>,
     pub shipbuilds_client: crate::data::shipbuilds::ShipBuildsClient,
+    /// Resolved once at startup in `app.rs`, after settings are loaded, so
+    /// every HTTP client the app builds shares the same value. `None` means
+    /// direct connections, which is correct until proven otherwise.
+    pub proxy: Option<crate::util::proxy::ProxyConfig>,
 
     // ─── Transient / runtime-only state ──────────────────────────────────
     pub world_of_warships_data: Option<SharedBuildData>,
@@ -650,8 +654,12 @@ impl Default for TabState {
             player_tracker: Default::default(),
             sent_replays: Default::default(),
             replay_sort: Arc::new(Mutex::new(SortOrder::default())),
-            shipbuilds_client: crate::data::shipbuilds::ShipBuildsClient::new()
+            // Bootstrap client, built before settings (and so the manual proxy
+            // override) are known. `app.rs` rebuilds it with the resolved
+            // proxy before any real request is sent.
+            shipbuilds_client: crate::data::shipbuilds::ShipBuildsClient::new(None)
                 .expect("failed to build ShipBuilds HTTP client"),
+            proxy: None,
             world_of_warships_data: None,
             items_to_extract: Default::default(),
             translations: Default::default(),
@@ -1052,7 +1060,7 @@ impl TabState {
         self.checking_game_data_updates = true;
         update_background_task!(
             self.background_tasks,
-            Some(crate::task::start_game_data_update_check_task(output_base, known_tip))
+            Some(crate::task::start_game_data_update_check_task(output_base, known_tip, self.proxy.clone()))
         );
     }
 
@@ -1078,7 +1086,8 @@ impl TabState {
                 runtime,
                 true,
                 None,
-                self.egui_ctx.clone()
+                self.egui_ctx.clone(),
+                self.proxy.clone(),
             ))
         );
     }
@@ -1096,7 +1105,7 @@ impl TabState {
         self.validating_game_data_cache = true;
         update_background_task!(
             self.background_tasks,
-            Some(crate::task::start_game_data_validation_task(output_base, self.egui_ctx.clone()))
+            Some(crate::task::start_game_data_validation_task(output_base, self.egui_ctx.clone(), self.proxy.clone()))
         );
     }
 
@@ -1122,7 +1131,8 @@ impl TabState {
                 runtime,
                 true,
                 None,
-                self.egui_ctx.clone()
+                self.egui_ctx.clone(),
+                self.proxy.clone(),
             ))
         );
     }

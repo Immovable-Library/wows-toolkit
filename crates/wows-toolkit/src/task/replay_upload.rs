@@ -474,7 +474,7 @@ mod tests {
             )
             .unwrap();
         });
-        let client = ShipBuildsClient::new().unwrap();
+        let client = ShipBuildsClient::new(None).unwrap();
 
         let outcome = send_shipbuilds_requests(
             Path::new("redirect.wowsreplay"),
@@ -536,7 +536,7 @@ mod tests {
     #[test]
     fn a_missing_payload_candidate_is_not_sent_when_a_valid_candidate_remains() {
         let (url, server) = status_server(&[204]);
-        let client = ShipBuildsClient::new().unwrap();
+        let client = ShipBuildsClient::new(None).unwrap();
 
         let outcome = send_shipbuilds_payloads(
             Some(Path::new("partial-payloads.wowsreplay")),
@@ -630,7 +630,7 @@ mod tests {
             body_tx.send(request[header_end..header_end + content_length].to_vec()).unwrap();
             write!(stream, "HTTP/1.1 204 No Content\r\nContent-Length: 0\r\nConnection: close\r\n\r\n").unwrap();
         });
-        let client = ShipBuildsClient::new().unwrap();
+        let client = ShipBuildsClient::new(None).unwrap();
 
         let outcome = send_raw_replay_snapshot(&path, snapshot.bytes, &client, &url);
 

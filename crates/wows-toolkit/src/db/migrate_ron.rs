@@ -73,6 +73,7 @@ async fn save_settings(pool: &SqlitePool, ctx: &SaveContext) -> Result<(), sqlx:
         wows_dir,
         has_052_fix,
         constants_commit,
+        proxy_url,
         locale,
         check_updates,
         debug_mode,
@@ -110,6 +111,7 @@ async fn save_settings(pool: &SqlitePool, ctx: &SaveContext) -> Result<(), sqlx:
             s.game.wows_dir.clone(),
             s.game.has_052_game_params_fix,
             s.game.constants_file_commit.clone(),
+            s.app.proxy_url.clone(),
             s.app.locale.clone(),
             s.app.check_for_updates,
             s.app.debug_mode,
@@ -147,6 +149,7 @@ async fn save_settings(pool: &SqlitePool, ctx: &SaveContext) -> Result<(), sqlx:
     queries::set_setting(pool, "wows_dir", &wows_dir).await?;
     queries::set_setting(pool, "has_052_game_params_fix", &has_052_fix).await?;
     queries::set_setting(pool, "constants_file_commit", &constants_commit).await?;
+    queries::set_setting(pool, "proxy_url", &proxy_url).await?;
     queries::set_setting(pool, "locale", &locale).await?;
     queries::set_setting(pool, "check_for_updates", &check_updates).await?;
     queries::set_setting(pool, "debug_mode", &debug_mode).await?;

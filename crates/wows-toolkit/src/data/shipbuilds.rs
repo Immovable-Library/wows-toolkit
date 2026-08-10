@@ -6,9 +6,10 @@ pub struct ShipBuildsClient {
 }
 
 impl ShipBuildsClient {
-    pub fn new() -> Result<Self, reqwest::Error> {
+    pub fn new(proxy: Option<&crate::util::proxy::ProxyConfig>) -> Result<Self, reqwest::Error> {
         // Upload and match-stats callers classify 3xx responses explicitly.
-        crate::util::http::blocking_client(reqwest::redirect::Policy::none()).map(|http| Self { http: Arc::new(http) })
+        crate::util::http::blocking_client(reqwest::redirect::Policy::none(), proxy)
+            .map(|http| Self { http: Arc::new(http) })
     }
 
     pub fn http(&self) -> &reqwest::blocking::Client {
@@ -22,7 +23,7 @@ mod tests {
 
     #[test]
     fn clones_share_one_http_client() {
-        let original = ShipBuildsClient::new().expect("test HTTP client");
+        let original = ShipBuildsClient::new(None).expect("test HTTP client");
         let clone = original.clone();
         assert!(std::ptr::eq(original.http(), clone.http()));
     }

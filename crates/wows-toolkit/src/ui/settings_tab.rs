@@ -179,6 +179,24 @@ impl ToolkitTabViewer<'_> {
                     let _ = std::fs::create_dir_all(&dir);
                     crate::util::open_directory(&dir);
                 }
+
+                ui.horizontal(|ui| {
+                    ui.label(t!("ui.settings.app.proxy_url"));
+                    // `None` is "no manual override set", which the text field
+                    // shows as empty rather than as a placeholder value.
+                    let mut proxy_url =
+                        self.tab_state.persisted.read().settings.app.proxy_url.clone().unwrap_or_default();
+                    let response = ui.add(
+                        egui::TextEdit::singleline(&mut proxy_url)
+                            .hint_text(t!("ui.settings.app.proxy_url_hint"))
+                            .desired_width(ui.available_width()),
+                    );
+                    if response.changed() {
+                        let trimmed = proxy_url.trim();
+                        self.tab_state.persisted.write().settings.app.proxy_url =
+                            (!trimmed.is_empty()).then(|| trimmed.to_string());
+                    }
+                });
             });
 
             ui.add_space(12.0);

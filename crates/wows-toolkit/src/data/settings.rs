@@ -374,6 +374,10 @@ pub struct AppPreferences {
     /// startup, before the app exists, because the policy cannot be applied or
     /// lifted once a window is up.
     pub code_integrity: CodeIntegrityPreference,
+    /// Manual proxy override (`host:port` or a full URL). Takes precedence over
+    /// environment variables and the Windows proxy configuration. `None` means
+    /// auto-detect; applied once at startup.
+    pub proxy_url: Option<String>,
 }
 
 impl Default for AppPreferences {
@@ -390,6 +394,7 @@ impl Default for AppPreferences {
             zoom_factor: 1.15,
             theme: ThemeChoice::default(),
             code_integrity: CodeIntegrityPreference::default(),
+            proxy_url: None,
         }
     }
 }
