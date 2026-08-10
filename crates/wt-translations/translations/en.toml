@@ -168,6 +168,8 @@ loading_row_summaries = "Loading replay details..."
 reading_replay_directory = "Reading replay directory..."
 directory_replays_skipped = "Skipped %{skipped} replay(s) that could not be read"
 directory_replays_not_indexed = "Listed %{count} replay(s) without match details"
+log_copied = "Copied %{bytes} KB from %{file} to the clipboard"
+log_copy_failed = "Could not read a log file: %{error}"
 
 # -- Stat names --
 
@@ -332,6 +334,7 @@ open_manually = "Manually Open Replay File..."
 open_directory = "Open Replay Directory..."
 import_constants = "Import constants.json File..."
 refresh_persisted_data = "Refresh Persisted Replay Data..."
+copy_latest_log = "Copy Latest Log to Clipboard"
 load_alt_perspective = "Load Other Team Perspective..."
 load_alt_perspective_tooltip = "Merge another player's recording of the same match into the current replay. Reveals enemy positions, builds, torpedoes, artillery, and consumables from the other perspective."
 load_alt_perspective_disabled_tooltip = "Open or focus a replay first."
