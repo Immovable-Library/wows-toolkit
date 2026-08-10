@@ -16,30 +16,35 @@ pub enum ConstantsFit {
     Mismatched,
 }
 
+/// The release a constants file declares itself to be for.
+///
+/// `PATCH` absent reads as 0, matching the upstream manifest's
+/// `#[serde(default)]` on the same component.
+fn declared_version(constants: &Value) -> Option<Version> {
+    let block = constants.get("VERSION")?;
+    let version = block.get("VERSION")?.as_str()?;
+    let patch = block.get("PATCH").and_then(Value::as_f64).unwrap_or(0.0) as u32;
+    let build = block.get("BUILD").and_then(Value::as_u64).and_then(|b| u32::try_from(b).ok());
+    Version::from_constants_block(version, patch, build)
+}
+
 /// Judge `constants` against the build it is about to decode.
 ///
-/// `VERSION.BUILD` is the authoritative answer when present. Files old enough
-/// to omit it are judged on `VERSION.VERSION` against the build's own
-/// `major.minor`, which is the most a version-only file can prove. Anything
-/// that proves neither is `Mismatched`: an unverifiable file is exactly the
-/// case this type exists to keep out of the database.
+/// An exact build number settles it. Otherwise the file fits when it names the
+/// same release, which is how the resolver pairs a regional client with another
+/// region's file for the same release. Anything else is a mismatch, including
+/// the nearest-older file used when nothing better is published: still worth
+/// decoding with, never worth persisting results from.
 pub fn constants_fit(constants: &Value, build: u32, version: Option<Version>) -> ConstantsFit {
-    let version_block = constants.get("VERSION");
-
-    if let Some(file_build) = version_block.and_then(|v| v.get("BUILD")).and_then(Value::as_u64) {
-        return if file_build == u64::from(build) { ConstantsFit::Exact } else { ConstantsFit::Mismatched };
-    }
-
-    let (Some(file_version), Some(version)) =
-        (version_block.and_then(|v| v.get("VERSION")).and_then(Value::as_str), version)
-    else {
+    let Some(declared) = declared_version(constants) else {
         return ConstantsFit::Mismatched;
     };
-
-    if file_version == format!("{}.{}", version.major, version.minor) {
-        ConstantsFit::Exact
-    } else {
-        ConstantsFit::Mismatched
+    if declared.build_number() == Some(build) {
+        return ConstantsFit::Exact;
+    }
+    match version {
+        Some(version) if declared.same_release(&version) => ConstantsFit::Exact,
+        _ => ConstantsFit::Mismatched,
     }
 }
 
@@ -235,11 +240,31 @@ mod tests {
     }
 
     #[test]
-    fn the_build_number_wins_over_a_matching_game_version() {
-        // Same patch, different build (e.g. the China client): the file was
-        // dumped for another build and its indices cannot be trusted here.
+    fn a_different_build_of_the_same_release_fits() {
+        // Cross-region: same release, different build number, interchangeable
+        // files. The fetcher resolves these by friendly version and stores them
+        // under the target build, so the file keeps its origin build number.
+        let constants = json!({ "VERSION": { "VERSION": "14.7", "PATCH": 1.0, "BUILD": 24477 } });
+        let cn_build = Version { major: 14, minor: 7, patch: 1, build: std::num::NonZeroU32::new(25588) };
+        assert_eq!(constants_fit(&constants, 25588, Some(cn_build)), ConstantsFit::Exact);
+    }
+
+    #[test]
+    fn an_older_release_used_as_a_last_resort_does_not_fit() {
+        // Nearest-older fallback: usable as a data source when nothing better
+        // exists, never trusted enough to persist results from.
+        let constants = json!({ "VERSION": { "VERSION": "14.7", "PATCH": 0.0, "BUILD": 10374819 } });
+        let build = Version { major: 14, minor: 7, patch: 1, build: std::num::NonZeroU32::new(10448683) };
+        assert_eq!(constants_fit(&constants, 10448683, Some(build)), ConstantsFit::Mismatched);
+    }
+
+    #[test]
+    fn a_missing_patch_field_reads_as_patch_zero() {
+        // The upstream manifest defaults its patch component to 0; a constants
+        // file that omits PATCH is read the same way.
         let constants = json!({ "VERSION": { "VERSION": "15.2", "BUILD": 12116141 } });
-        assert_eq!(constants_fit(&constants, 12116999, Some(version(15, 2))), ConstantsFit::Mismatched);
+        let build = Version { major: 15, minor: 2, patch: 0, build: std::num::NonZeroU32::new(99) };
+        assert_eq!(constants_fit(&constants, 99, Some(build)), ConstantsFit::Exact);
     }
 
     #[test]
