@@ -426,9 +426,14 @@ fn parse_replay_data_in_background(
                     return ParseOutcome::Transient;
                 };
 
-                let (metadata_provider, game_version, gc) = {
+                let (metadata_provider, game_version, gc, fit) = {
                     let wows_data = wows_data_for_build.read();
-                    (wows_data.game_metadata.clone(), wows_data.patch_version, wows_data.game_constants.clone())
+                    (
+                        wows_data.game_metadata.clone(),
+                        wows_data.patch_version,
+                        wows_data.game_constants.clone(),
+                        wows_data.constants_fit,
+                    )
                 };
                 if let Some(metadata_provider) = metadata_provider {
                     // Populate cap layout cache in a separate thread so it
@@ -554,6 +559,7 @@ fn parse_replay_data_in_background(
                                 source_id,
                                 jiff::Timestamp::now(),
                                 &data.personal_rating_data,
+                                fit,
                             );
                         }
 
@@ -1299,9 +1305,14 @@ fn index_one_replay(
         );
         return ParseOutcome::Transient;
     };
-    let (metadata_provider, game_version, gc) = {
+    let (metadata_provider, game_version, gc, fit) = {
         let wows_data = wows_data_for_build.read();
-        (wows_data.game_metadata.clone(), wows_data.patch_version, wows_data.game_constants.clone())
+        (
+            wows_data.game_metadata.clone(),
+            wows_data.patch_version,
+            wows_data.game_constants.clone(),
+            wows_data.constants_fit,
+        )
     };
     let Some(metadata_provider) = metadata_provider else {
         return ParseOutcome::Transient;
@@ -1355,6 +1366,7 @@ fn index_one_replay(
         source_id,
         jiff::Timestamp::now(),
         &deps.personal_rating_data,
+        fit,
     );
 
     ParseOutcome::ParsedAndSent
@@ -2060,6 +2072,11 @@ fn index_ingested_replay(
 ) -> Result<(), Report> {
     let mut guard = replay.replay.write();
     let expected_build = replay.game_build.to_string();
+    let fit = u32::try_from(replay.game_build)
+        .ok()
+        .and_then(|build| deps.build_cache.get(build))
+        .map(|build_data| build_data.read().constants_fit)
+        .unwrap_or(crate::data::constants::ConstantsFit::Mismatched);
 
     reset_after(
         &mut *guard,
@@ -2074,6 +2091,7 @@ fn index_ingested_replay(
                 source,
                 jiff::Timestamp::now(),
                 &deps.personal_rating_data,
+                fit,
             )
         },
         |replay| {

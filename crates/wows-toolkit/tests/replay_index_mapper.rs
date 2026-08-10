@@ -27,6 +27,7 @@ use wows_replays::ReplayFile;
 use wows_replays::analyzer::Analyzer;
 use wows_replays::game_constants::GameConstants;
 use wows_toolkit::Replay;
+use wows_toolkit::data::constants::ConstantsFit;
 use wows_toolkit::replay_index::map_rows;
 use wows_toolkit_config::index::rows::SourceId;
 use wowsunpack::data::ResourceLoader;
@@ -94,6 +95,6 @@ fn map_rows_requires_ui_report() {
     replay.battle_report = Some(report);
     // replay.ui_report intentionally left None (see module docs above).
 
-    let rows = map_rows(&replay, SourceId(1), Timestamp::now());
+    let rows = map_rows(&replay, SourceId(1), Timestamp::now(), ConstantsFit::Exact);
     assert!(rows.is_none(), "map_rows must require ui_report, not just battle_report");
 }
