@@ -1,7 +1,10 @@
+pub use wowsunpack::game_types::AccountAttr;
+pub use wowsunpack::game_types::AccountAttrs;
 pub use wowsunpack::game_types::AccountId;
 pub use wowsunpack::game_types::AngularVelocity;
 pub use wowsunpack::game_types::ArenaId;
 pub use wowsunpack::game_types::AvatarId;
+pub use wowsunpack::game_types::BurningFlags;
 pub use wowsunpack::game_types::Direction;
 pub use wowsunpack::game_types::ElapsedClock;
 pub use wowsunpack::game_types::EntityId;

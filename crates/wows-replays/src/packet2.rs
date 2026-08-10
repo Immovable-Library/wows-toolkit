@@ -15,9 +15,9 @@ use std::collections::HashMap;
 use std::convert::TryInto;
 
 use crate::error::*;
+use crate::types::AccountAttrs;
 use crate::types::EntityId;
 use crate::types::GameClock;
-use crate::types::GameParamId;
 use crate::types::WeaponLockType;
 use crate::types::WeaponType;
 use wowsunpack::data::Version;
@@ -77,6 +77,11 @@ pub fn parse_rot3(i: &mut &[u8]) -> PResult<Rot3> {
     Ok(Rot3 { roll, pitch, yaw })
 }
 
+/// BigWorld spells "riding nothing" as entity id 0 on the wire.
+fn passenger_vehicle(raw: u32) -> Option<EntityId> {
+    (raw != 0).then(|| EntityId::from(raw))
+}
+
 #[derive(Debug, Serialize, Clone)]
 pub struct PositionPacket {
     pub pid: EntityId,
@@ -119,7 +124,9 @@ pub struct EntityCreatePacket<'argtype> {
     pub spec_idx: usize,
     pub entity_type: &'argtype str,
     pub space_id: u32,
-    pub vehicle_id: GameParamId,
+    /// The entity this one is riding, in BigWorld's vehicle/passenger sense.
+    /// Always `None` in WoWs: the feature is unused, so the field is always 0.
+    pub vehicle_id: Option<EntityId>,
     pub position: Vec3,
     pub rotation: Rot3,
     pub state_length: u32,
@@ -149,9 +156,19 @@ pub struct BasePlayerCreatePacket<'argtype> {
     pub entity_id: EntityId,
     pub entity_type: &'argtype str,
     pub props: HashMap<&'argtype str, ArgValue<'argtype>>,
-    /// Trailing data after base properties (likely BigWorld component state)
+    /// BigWorld entity-component section, following the base properties inside
+    /// the same length-delimited blob. See [`CellPlayerCreatePacket::component_data`].
     #[serde(skip_serializing_if = "<[u8]>::is_empty")]
     pub component_data: Vec<u8>,
+}
+
+impl BasePlayerCreatePacket<'_> {
+    /// Entitlements and roles of the account that recorded this replay, from the
+    /// Avatar's `attrs` property. `None` on packets that carry no base properties
+    /// (the 0x26 stub, and every entity type other than Avatar).
+    pub fn account_attrs(&self) -> Option<AccountAttrs> {
+        self.props.get("attrs")?.as_u64().map(AccountAttrs::new)
+    }
 }
 
 #[derive(Debug, Serialize)]
@@ -159,11 +176,21 @@ pub struct CellPlayerCreatePacket<'argtype> {
     pub entity_id: EntityId,
     pub entity_type: &'argtype str,
     pub space_id: u32,
-    pub vehicle_id: GameParamId,
+    /// The entity this one is riding, in BigWorld's vehicle/passenger sense.
+    /// Always `None` in WoWs: the feature is unused, so the field is always 0.
+    pub vehicle_id: Option<EntityId>,
     pub position: Vec3,
     pub rotation: Rot3,
     pub props: HashMap<&'argtype str, ArgValue<'argtype>>,
-    /// Trailing data after internal properties (likely BigWorld component state)
+    /// BigWorld entity-component section, following the internal properties.
+    ///
+    /// `PyEntity::initComponentsFromStream` reads a single byte here holding the
+    /// number of components declared for this entity type in `scripts/components.xml`
+    /// (via each `component_defs/*.def` `<ofEntity>` list), then streams each
+    /// component's attributes. Avatar declares `HotFixComponent` and
+    /// `DivisionsManagerComponentAvatar`, neither of which declares properties, so
+    /// in practice only the count byte is present. The section is absent entirely
+    /// when nothing remains in the blob, which is the case before ~0.9.
     #[serde(skip_serializing_if = "<[u8]>::is_empty")]
     pub component_data: Vec<u8>,
 }
@@ -177,7 +204,9 @@ pub struct EntityLeavePacket {
 pub struct EntityEnterPacket {
     pub entity_id: EntityId,
     pub space_id: u32,
-    pub vehicle_id: GameParamId,
+    /// The entity this one is riding, in BigWorld's vehicle/passenger sense.
+    /// Always `None` in WoWs: the feature is unused, so the field is always 0.
+    pub vehicle_id: Option<EntityId>,
 }
 
 #[derive(Debug, Serialize)]
@@ -1120,11 +1149,18 @@ impl<'argtype> Parser<'argtype> {
             .and_then(|idx| self.specs.get(idx))
             .ok_or_else(|| failure(ParseError::EntityTypeOutOfBounds { entity_type, spec_count: self.specs.len() }))?;
 
+        // The base properties and the trailing component section share one
+        // length-delimited blob. Skipping this prefix silently shifts every base
+        // property four bytes early.
+        let data_len = le_u32.parse_next(i)?;
+        let data: &'argtype [u8] = take(data_len as usize).parse_next(i)?;
+        let mut sub = data;
+
         let mut props: HashMap<&str, _> = HashMap::new();
         let mut stored_props: Vec<_> = vec![];
         for prop_id in 0..spec.base_properties.len() {
             let spec = &spec.base_properties[prop_id];
-            let value = match spec.prop_type.parse_value(i) {
+            let value = match spec.prop_type.parse_value(&mut sub) {
                 Ok(x) => x,
                 Err(e) => {
                     return Err(failure(ParseError::RpcValueParseFailed {
@@ -1140,9 +1176,7 @@ impl<'argtype> Parser<'argtype> {
             props.insert(&spec.name, value);
         }
 
-        let component_data = i.to_vec();
-        // Consume remaining input
-        *i = &[];
+        let component_data = sub.to_vec();
 
         self.entities.insert(
             entity_id,
@@ -1160,9 +1194,9 @@ impl<'argtype> Parser<'argtype> {
         }))
     }
 
-    /// Parse a bare BasePlayerCreate (packet 0x26) that carries no inline base properties.
-    /// Unlike packet 0x0, this packet only has entity_id + entity_type + a small data blob
-    /// (typically 4 zero bytes). The entity receives its real property values later via
+    /// Parse a bare BasePlayerCreate (packet 0x26). Same layout as packet 0x0, but the
+    /// length-delimited blob is always empty, so the entity carries neither base
+    /// properties nor components. It receives its real property values later via
     /// property-update packets or gets superseded by a full BasePlayerCreate (packet 0x0).
     fn parse_base_player_create_stub(&mut self, i: &mut &'argtype [u8]) -> PResult<PacketType<'argtype, 'argtype>> {
         let entity_id = le_u32.parse_next(i)?;
@@ -1172,8 +1206,9 @@ impl<'argtype> Parser<'argtype> {
             .and_then(|idx| self.specs.get(idx))
             .ok_or_else(|| failure(ParseError::EntityTypeOutOfBounds { entity_type, spec_count: self.specs.len() }))?;
 
-        let component_data = i.to_vec();
-        *i = &[];
+        let data_len = le_u32.parse_next(i)?;
+        let component_data: &'argtype [u8] = take(data_len as usize).parse_next(i)?;
+        let component_data = component_data.to_vec();
 
         self.entities.insert(entity_id, Entity { entity_type, properties: vec![] });
         Ok(PacketType::BasePlayerCreate(BasePlayerCreatePacket {
@@ -1187,8 +1222,8 @@ impl<'argtype> Parser<'argtype> {
     fn parse_entity_create(&mut self, i: &mut &'argtype [u8]) -> PResult<PacketType<'argtype, 'argtype>> {
         let entity_id = le_u32.parse_next(i)?;
         let entity_type = le_u16.parse_next(i)?;
-        let vehicle_id = le_u32.parse_next(i)?;
         let space_id = le_u32.parse_next(i)?;
+        let vehicle_id = le_u32.parse_next(i)?;
         let position = parse_vec3.parse_next(i)?;
         let rotation = parse_rot3.parse_next(i)?;
         let state_length = le_u32.parse_next(i)?;
@@ -1239,7 +1274,7 @@ impl<'argtype> Parser<'argtype> {
             spec_idx: entity_type as usize,
             entity_type: &entity_spec.name,
             space_id,
-            vehicle_id: vehicle_id.into(),
+            vehicle_id: passenger_vehicle(vehicle_id),
             position,
             rotation,
             state_length,
@@ -1305,7 +1340,7 @@ impl<'argtype> Parser<'argtype> {
         Ok(PacketType::CellPlayerCreate(CellPlayerCreatePacket {
             entity_id: entity_id.into(),
             entity_type: &spec.name,
-            vehicle_id: vehicle_id.into(),
+            vehicle_id: passenger_vehicle(vehicle_id),
             space_id,
             position,
             rotation,
@@ -1326,7 +1361,7 @@ impl<'argtype> Parser<'argtype> {
         Ok(PacketType::EntityEnter(EntityEnterPacket {
             entity_id: entity_id.into(),
             space_id,
-            vehicle_id: vehicle_id.into(),
+            vehicle_id: passenger_vehicle(vehicle_id),
         }))
     }
 
@@ -1455,6 +1490,32 @@ mod tests {
 
     fn version(major: u32, minor: u32, patch: u32) -> Version {
         Version::base(major, minor, patch)
+    }
+
+    /// The value here is the one every modern replay carries for a premium
+    /// account; `0x1050` is the same account without premium.
+    #[test]
+    fn account_attrs_read_from_base_player_props() {
+        let mut props: HashMap<&str, ArgValue<'_>> = HashMap::new();
+        props.insert("attrs", ArgValue::Uint64(0x1_0000_1050));
+        let packet = BasePlayerCreatePacket {
+            entity_id: EntityId::from(1u32),
+            entity_type: "Avatar",
+            props,
+            component_data: vec![2],
+        };
+        let attrs = packet.account_attrs().expect("attrs is a base property of Avatar");
+        assert!(attrs.is_premium());
+        assert_eq!(attrs.to_string(), "RATING|STATISTICS|PAYMENTS|PREMIUM");
+
+        // The 0x26 stub carries an empty blob, so there is nothing to read.
+        let stub = BasePlayerCreatePacket {
+            entity_id: EntityId::from(1u32),
+            entity_type: "Account",
+            props: HashMap::new(),
+            component_data: Vec::new(),
+        };
+        assert_eq!(stub.account_attrs(), None);
     }
 
     /// The layout boundary is at 12.6.0: 12.5.0 and earlier use the legacy

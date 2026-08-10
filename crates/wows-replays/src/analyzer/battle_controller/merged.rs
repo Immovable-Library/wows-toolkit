@@ -217,11 +217,9 @@ pub fn fold_props_into(
     version: Version,
     constants: &GameConstants,
 ) {
-    // The packet-level `vehicle_id` field on EntityCreate / CellPlayerCreate
-    // is misnamed in the wows_replays types: it's some BigWorld internal
-    // (likely the avatar's entity_id), not a GameParams ID. Multiple ships
-    // share the same value within a single replay. The only authoritative
-    // source for the ship class param ID is the parsed shipConfig blob.
+    // No create packet carries the ship class param ID. The `vehicle_id` field
+    // on EntityCreate / CellPlayerCreate is BigWorld's vehicle/passenger link,
+    // unused by WoWs. The only authoritative source is the parsed shipConfig blob.
     let parsed = VehicleProps::from_create_props(props, version, constants);
     let parsed_vehicle_id = parsed.ship_config().ship_params_id();
     let parsed_max_health = parsed.max_health();
