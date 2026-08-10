@@ -3594,10 +3594,7 @@ impl WowsToolkitApp {
     fn copy_latest_log(&mut self, ctx: &Context) {
         let dir = log_dir();
         let Some(path) = newest_log_file(&dir) else {
-            self.tab_state
-                .toasts
-                .lock()
-                .error(t!("ui.messages.log_copy_failed", error = format!("no log file found in {}", dir.display())));
+            self.tab_state.toasts.lock().error(t!("ui.messages.log_not_found", dir = dir.display().to_string()));
             return;
         };
 
@@ -3608,8 +3605,9 @@ impl WowsToolkitApp {
                     .expect("newest_log_file only returns paths with a file name")
                     .to_string_lossy()
                     .into_owned();
-                Context::copy_text(ctx, format!("# {file_name}\n\n{contents}"));
-                let kb = contents.len() as f64 / 1024.0;
+                let payload = format!("# {file_name}\n\n{contents}");
+                let kb = payload.len() as f64 / 1024.0;
+                Context::copy_text(ctx, payload);
                 self.tab_state.toasts.lock().success(t!(
                     "ui.messages.log_copied",
                     bytes = format!("{kb:.1}"),
