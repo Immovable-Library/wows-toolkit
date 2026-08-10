@@ -138,9 +138,11 @@ fn validate_expected_values(bytes: &[u8]) -> Result<(), FetchExpectedValuesError
 
 /// Fetch expected values from the API, returning the raw bytes only if the
 /// response is a valid, non-empty expected-values document.
-#[instrument]
-pub async fn fetch_expected_values() -> Result<Vec<u8>, FetchExpectedValuesError> {
-    let client = crate::util::http::async_client()?;
+#[instrument(skip(proxy))]
+pub async fn fetch_expected_values(
+    proxy: Option<&crate::util::proxy::ProxyConfig>,
+) -> Result<Vec<u8>, FetchExpectedValuesError> {
+    let client = crate::util::http::async_client(proxy)?;
     let response = crate::util::http::get_with_retry(&client, EXPECTED_VALUES_URL).await?;
     let bytes = response.bytes().await?.to_vec();
     validate_expected_values(&bytes)?;

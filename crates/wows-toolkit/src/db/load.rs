@@ -91,6 +91,9 @@ async fn load_settings(pool: &SqlitePool, ts: &mut TabState) -> Result<(), sqlx:
     if let Some(v) = queries::get_setting::<Option<String>>(pool, "constants_file_commit").await {
         s.game.constants_file_commit = v;
     }
+    if let Some(v) = queries::get_setting::<Option<String>>(pool, "proxy_url").await {
+        s.app.proxy_url = v;
+    }
     if let Some(v) = queries::get_setting::<bool>(pool, "debug_mode").await {
         s.app.debug_mode = v;
     }

@@ -72,12 +72,17 @@ struct NetworkingThread {
     result_tx: egui_inbox::UiInboxSender<NetworkResult>,
     runtime: Runtime,
     last_constants_check: Option<Instant>,
+    proxy: Option<crate::util::proxy::ProxyConfig>,
 }
 
 /// Start the background networking thread.
 ///
 /// Returns the sender for submitting jobs and the inbox results arrive on.
-pub fn start_networking_thread() -> (mpsc::Sender<NetworkJob>, egui_inbox::UiInbox<NetworkResult>) {
+/// `proxy` is the value resolved once at startup; this thread outlives the
+/// job loop, so it is captured here rather than re-resolved per call.
+pub fn start_networking_thread(
+    proxy: Option<crate::util::proxy::ProxyConfig>,
+) -> (mpsc::Sender<NetworkJob>, egui_inbox::UiInbox<NetworkResult>) {
     let (job_tx, job_rx) = mpsc::channel();
     let (result_tx, result_rx) = egui_inbox::UiInbox::channel();
 
@@ -92,7 +97,7 @@ pub fn start_networking_thread() -> (mpsc::Sender<NetworkJob>, egui_inbox::UiInb
                 }
             };
 
-            let mut thread = NetworkingThread { job_rx, result_tx, runtime, last_constants_check: None };
+            let mut thread = NetworkingThread { job_rx, result_tx, runtime, last_constants_check: None, proxy };
 
             thread.run();
         })
@@ -263,7 +268,7 @@ impl NetworkingThread {
 
     #[instrument(skip(self))]
     fn fetch_personal_rating_data(&mut self) {
-        let result = self.runtime.block_on(crate::util::personal_rating::fetch_expected_values());
+        let result = self.runtime.block_on(crate::util::personal_rating::fetch_expected_values(self.proxy.as_ref()));
 
         match result {
             Ok(data) => {
@@ -350,8 +355,9 @@ pub(crate) fn load_versioned_constants_from_disk(build: u32) -> Option<serde_jso
 async fn download_update(
     tx: crate::ui_channel::ThrottledSender<DownloadProgress>,
     file: Url,
+    proxy: Option<&crate::util::proxy::ProxyConfig>,
 ) -> Result<PathBuf, Report> {
-    let client = crate::util::http::async_client().context("failed to build HTTP client for update download")?;
+    let client = crate::util::http::async_client(proxy).context("failed to build HTTP client for update download")?;
     let mut body = client
         .get(file)
         .send()
@@ -404,7 +410,12 @@ async fn download_update(
 }
 
 #[cfg_attr(not(target_os = "windows"), allow(dead_code))]
-pub fn start_download_update_task(runtime: &Runtime, release: &Asset, egui_ctx: egui::Context) -> BackgroundTask {
+pub fn start_download_update_task(
+    runtime: &Runtime,
+    release: &Asset,
+    egui_ctx: egui::Context,
+    proxy: Option<crate::util::proxy::ProxyConfig>,
+) -> BackgroundTask {
     let (tx, rx) = crate::task::completion_channel();
 
     // Throttled: progress reports per downloaded chunk.
@@ -413,7 +424,8 @@ pub fn start_download_update_task(runtime: &Runtime, release: &Asset, egui_ctx: 
     let url = release.browser_download_url.clone();
 
     runtime.spawn(async move {
-        let result = download_update(progress_tx, url).await.map(BackgroundTaskCompletion::UpdateDownloaded);
+        let result =
+            download_update(progress_tx, url, proxy.as_ref()).await.map(BackgroundTaskCompletion::UpdateDownloaded);
 
         if let Err(report) = &result {
             tracing::warn!("update download failed: {report:?}");

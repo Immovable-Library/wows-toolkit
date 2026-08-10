@@ -1190,6 +1190,45 @@ impl WowsToolkitApp {
             }
         }
 
+        // Resolve the proxy once settings (and so the manual override) are
+        // known, and rebuild the one client built before that point. Every
+        // other HTTP client the app builds afterward reads this same value
+        // off `TabState`.
+        {
+            let manual = state.tab_state.persisted.read().settings.app.proxy_url.clone();
+            let proxy = crate::util::proxy::resolve_proxy(manual.as_deref());
+            match &proxy {
+                Some(config) => {
+                    let source = match config.source {
+                        crate::util::proxy::ProxySource::Manual => "the manual setting",
+                        crate::util::proxy::ProxySource::Environment => "an environment variable",
+                        crate::util::proxy::ProxySource::SystemRegistry => "the Windows proxy configuration",
+                    };
+                    let bypass = if config.bypass.is_empty() {
+                        "no bypass list".to_string()
+                    } else {
+                        format!("bypass list: {}", config.bypass.join(", "))
+                    };
+                    // Validated here, not just assumed: every client build
+                    // re-checks this independently and silently falls back to
+                    // direct on rejection, so this line must not claim a proxy
+                    // is in use when it is about to be rejected everywhere.
+                    if crate::util::http::reqwest_proxy(config).is_some() {
+                        info!("using proxy {} from {source} ({bypass})", config.url);
+                    } else {
+                        warn!(
+                            "detected proxy {} from {source} but the URL is not usable, connecting directly ({bypass})",
+                            config.url
+                        );
+                    }
+                }
+                None => info!("no proxy configured, connecting directly"),
+            }
+            state.tab_state.shipbuilds_client = crate::data::shipbuilds::ShipBuildsClient::new(proxy.as_ref())
+                .expect("failed to build ShipBuilds HTTP client");
+            state.tab_state.proxy = proxy;
+        }
+
         // Restore zoom factor from persisted settings.
         cc.egui_ctx.set_zoom_factor(state.tab_state.persisted.read().settings.app.zoom_factor);
 
@@ -1346,7 +1385,7 @@ impl WowsToolkitApp {
         use std::sync::Arc;
 
         // Start the networking thread
-        let (network_job_tx, network_result_rx) = task::start_networking_thread();
+        let (network_job_tx, network_result_rx) = task::start_networking_thread(self.tab_state.proxy.clone());
         self.tab_state.network_job_tx = Some(network_job_tx);
         self.network_result_rx = Some(network_result_rx);
 
@@ -3309,6 +3348,7 @@ impl WowsToolkitApp {
                                             &self.runtime,
                                             asset,
                                             self.tab_state.egui_ctx.clone(),
+                                            self.tab_state.proxy.clone(),
                                         ));
                                         update_background_task!(self.tab_state.background_tasks, task);
                                     }
@@ -3603,7 +3643,7 @@ impl WowsToolkitApp {
         };
         update_background_task!(
             self.tab_state.background_tasks,
-            Some(crate::task::start_game_data_plan_task(output_base, request, ticket))
+            Some(crate::task::start_game_data_plan_task(output_base, request, ticket, self.tab_state.proxy.clone()))
         );
     }
 
@@ -3706,6 +3746,7 @@ impl WowsToolkitApp {
                 false,
                 prompt.trigger.clone(),
                 self.tab_state.egui_ctx.clone(),
+                self.tab_state.proxy.clone(),
             ))
         );
         true

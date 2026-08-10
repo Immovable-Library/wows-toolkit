@@ -6,6 +6,7 @@ pub(crate) mod game_params;
 pub(crate) mod http;
 pub(crate) mod paths;
 pub(crate) mod personal_rating;
+pub mod proxy;
 #[cfg(windows)]
 pub(crate) mod registry;
 pub(crate) mod replay_export;

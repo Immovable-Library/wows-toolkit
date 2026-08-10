@@ -609,7 +609,7 @@ mod tests {
     }
 
     fn test_client() -> MatchStatsClient {
-        MatchStatsClient::new(crate::data::shipbuilds::ShipBuildsClient::new().expect("test HTTP client"))
+        MatchStatsClient::new(crate::data::shipbuilds::ShipBuildsClient::new(None).expect("test HTTP client"))
     }
 
     #[test]

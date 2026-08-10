@@ -2501,7 +2501,7 @@ mod tests {
                     "en".to_owned(),
                     String::new(),
                 ),
-                shipbuilds_client: crate::data::shipbuilds::ShipBuildsClient::new().unwrap(),
+                shipbuilds_client: crate::data::shipbuilds::ShipBuildsClient::new(None).unwrap(),
                 twitch_state: Arc::new(RwLock::new(crate::twitch::TwitchState::default())),
                 replay_sort: Arc::new(Mutex::new(SortOrder::default())),
                 background_task_sender,
