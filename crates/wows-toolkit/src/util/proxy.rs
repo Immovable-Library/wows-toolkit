@@ -54,10 +54,13 @@ impl std::fmt::Debug for ProxyConfig {
 /// through unredacted. A proxy URL is never expected to carry a meaningful
 /// path or query, so over-redacting a literal `@` that turns up in one is an
 /// acceptable trade against ever leaking a credential.
+///
+/// `ProxyConfig` is a plain public struct, so `url` is not guaranteed to
+/// have gone through `normalize_proxy_url` (and so is not guaranteed to
+/// contain `//` at all); when it doesn't, this still scans the whole string
+/// for a trailing `@` rather than giving up and returning it unredacted.
 fn redact_userinfo(url: &str) -> String {
-    let Some(authority_start) = url.find("//").map(|i| i + 2) else {
-        return url.to_string();
-    };
+    let authority_start = url.find("//").map(|i| i + 2).unwrap_or(0);
     match url[authority_start..].rfind('@') {
         Some(at) => format!("{}redacted@{}", &url[..authority_start], &url[authority_start + at + 1..]),
         None => url.to_string(),
@@ -271,5 +274,25 @@ mod tests {
         let debug = format!("{config:?}");
         assert!(!debug.contains("sekret"), "password leaked into: {debug}");
         assert!(debug.contains("redacted@proxy.corp:8080"), "expected redacted URL in: {debug}");
+    }
+
+    #[test]
+    fn a_url_with_no_scheme_separator_still_does_not_leak_credentials() {
+        // `ProxyConfig` is a plain public struct; nothing stops a caller
+        // (test code, or a future construction path) from building one whose
+        // `url` never went through `normalize_proxy_url`'s "//" guarantee.
+        let redacted = redact_userinfo("user:sekret@proxy.corp:8080");
+        assert!(!redacted.contains("sekret"), "password leaked into: {redacted}");
+        assert!(!redacted.contains("user:"), "username leaked into: {redacted}");
+    }
+
+    #[test]
+    fn redacted_url_is_the_public_entry_point_callers_actually_use() {
+        let config = ProxyConfig {
+            url: "http://user:sekret@proxy.corp:8080".to_string(),
+            bypass: Vec::new(),
+            source: ProxySource::Manual,
+        };
+        assert_eq!(config.redacted_url(), "http://redacted@proxy.corp:8080");
     }
 }

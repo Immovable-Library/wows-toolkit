@@ -136,7 +136,8 @@ pub fn start_game_data_validation_task(
 }
 
 fn build_client(proxy: Option<&crate::util::proxy::ProxyConfig>) -> Result<&'static reqwest::Client, Report> {
-    crate::util::http::shared_async_client(proxy).ok_or_else(|| report!("failed to build HTTP client"))
+    crate::util::http::shared_async_client(proxy, reqwest::redirect::Policy::default())
+        .ok_or_else(|| report!("failed to build HTTP client"))
 }
 
 fn download(

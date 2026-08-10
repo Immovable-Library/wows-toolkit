@@ -2011,7 +2011,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "c54e03a951783e8b327515db3f2a2fd0e3bed362a96b066f341ce66ed49b4ead"
 dependencies = [
  "data-encoding",
- "syn 3.0.3",
+ "syn 1.0.109",
 ]
 
 [[package]]
@@ -11627,6 +11627,7 @@ dependencies = [
  "tokio",
  "toml 1.1.4+spec-1.1.0",
  "tower 0.5.3",
+ "tower-http",
  "tracing",
  "tracing-appender",
  "tracing-subscriber",
