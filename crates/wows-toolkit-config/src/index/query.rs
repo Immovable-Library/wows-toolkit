@@ -35,6 +35,7 @@ use super::rows::PrRepair;
 use super::rows::PrTarget;
 use super::rows::RecordId;
 use super::rows::ReplayRecord;
+use super::rows::ResultsWrite;
 use super::rows::RowSummary;
 use super::rows::ShipFacet;
 use super::rows::SourceId;
@@ -361,33 +362,50 @@ pub async fn upsert_match_with_mode(
     Ok(())
 }
 
-/// Incremental write; see [`upsert_vehicles_with_mode`].
+/// Incremental write with trusted results; see [`upsert_vehicles_with_mode`].
 pub async fn upsert_vehicles(pool: &SqlitePool, rows: &[IndexedVehicleRow]) -> Result<(), IndexError> {
-    upsert_vehicles_with_mode(pool, rows, IndexWriteMode::Incremental).await
+    upsert_vehicles_with_mode(pool, rows, IndexWriteMode::Incremental, ResultsWrite::Store).await
 }
 
-/// `pr` is old-wins under [`IndexWriteMode::Incremental`]: a stored rating is a
-/// point-in-time value and re-indexing must not restamp it. A rebuilt report
-/// always recomputes its rating against whatever expected values are loaded
-/// today, so a new-wins assignment would let one "Index all replays" rewrite
-/// every rating in the database, and the same battle would report a different
-/// number month to month. The fallback arm still fills a NULL from a re-index
-/// that carries a number, and the INSERT arm is unaffected.
+/// `pr` is old-wins under [`IndexWriteMode::Incremental`] with [`ResultsWrite::Store`]:
+/// a stored rating is a point-in-time value and re-indexing must not restamp
+/// it. A rebuilt report always recomputes its rating against whatever expected
+/// values are loaded today, so a new-wins assignment would let one "Index all
+/// replays" rewrite every rating in the database, and the same battle would
+/// report a different number month to month. The fallback arm still fills a
+/// NULL from a re-index that carries a number, and the INSERT arm is
+/// unaffected.
 ///
 /// Cementing a stored value is safe because a rating can only exist where the
 /// parse had server results: without them `actual_damage` is `None` and
 /// `populate_personal_ratings` bails, so no rating computed against an unknown
 /// outcome can be made permanent here. [`IndexWriteMode::Replace`] is the
-/// deliberate exception: it rewrites `pr` too, because a pass that decoded it
-/// through constants from another build had no fact worth cementing.
+/// deliberate exception under [`ResultsWrite::Store`]: it rewrites `pr` too,
+/// because a pass that decoded it through constants from another build had no
+/// fact worth cementing.
+///
+/// `results` overrides all of the above: under [`ResultsWrite::Keep`] the pass
+/// cannot vouch for `damage`, `kills`, `spotting`, `potential`, `received`, or
+/// `pr` at all, so every one of those columns only fills a NULL a stored row
+/// already has, whatever `mode` says.
 pub async fn upsert_vehicles_with_mode(
     pool: &SqlitePool,
     rows: &[IndexedVehicleRow],
     mode: IndexWriteMode,
+    results: ResultsWrite,
 ) -> Result<(), IndexError> {
-    let pr = match mode {
-        IndexWriteMode::Incremental => "pr=COALESCE(pr, ?20)",
-        IndexWriteMode::Replace => "pr=?20",
+    let results_cols = match results {
+        ResultsWrite::Store => {
+            let pr = match mode {
+                IndexWriteMode::Incremental => "pr=COALESCE(pr, ?20)",
+                IndexWriteMode::Replace => "pr=?20",
+            };
+            format!("damage=?15, kills=?16, spotting=?17, potential=?18, received=?19, {pr}")
+        }
+        ResultsWrite::Keep => "damage=COALESCE(damage, ?15), kills=COALESCE(kills, ?16), \
+             spotting=COALESCE(spotting, ?17), potential=COALESCE(potential, ?18), \
+             received=COALESCE(received, ?19), pr=COALESCE(pr, ?20)"
+            .to_string(),
     };
     let sql = format!(
         "INSERT INTO indexed_vehicle \
@@ -397,8 +415,7 @@ pub async fn upsert_vehicles_with_mode(
          VALUES (?1,?2,?3,?4,?5,?6,?7,?8,?9,?10,?11,?12,?13,?14,?15,?16,?17,?18,?19,?20,?21,?22,?23,?24) \
          ON CONFLICT(arena_id, account_id, ship_id) DO UPDATE SET \
            player_name=?3, clan=?4, realm=?5, ship_index=?7, ship_name=?8, nation=?9, species=?10, \
-           tier=?11, relation=?12, division_id=?13, survived=?14, damage=?15, kills=?16, spotting=?17, \
-           potential=?18, received=?19, {pr}, is_test_ship=?21, disconnected=?22, \
+           tier=?11, relation=?12, division_id=?13, survived=?14, {results_cols}, is_test_ship=?21, disconnected=?22, \
            is_stream_sniper=?23, sniper_twitch_login=?24"
     );
     let mut tx = pool.begin().await?;
@@ -475,22 +492,39 @@ pub async fn prune_twitch_observations(pool: &SqlitePool, older_than_unix: i64) 
     Ok(result.rows_affected())
 }
 
-/// Incremental write; see [`upsert_record_with_mode`].
+/// Incremental write with trusted results; see [`upsert_record_with_mode`].
 pub async fn upsert_record(pool: &SqlitePool, r: &ReplayRecord) -> Result<(), IndexError> {
-    upsert_record_with_mode(pool, r, IndexWriteMode::Incremental).await
+    upsert_record_with_mode(pool, r, IndexWriteMode::Incremental, ResultsWrite::Store).await
 }
 
-/// `self_pr` is old-wins under [`IndexWriteMode::Incremental`] for the same
-/// reason as `indexed_vehicle.pr`; see [`upsert_vehicles_with_mode`].
-/// [`IndexWriteMode::Replace`] rewrites it too, for the same reason.
+/// `self_pr` is old-wins under [`IndexWriteMode::Incremental`] with
+/// [`ResultsWrite::Store`], for the same reason as `indexed_vehicle.pr`; see
+/// [`upsert_vehicles_with_mode`]. [`IndexWriteMode::Replace`] rewrites it too,
+/// for the same reason.
+///
+/// Under [`ResultsWrite::Keep`] the pass cannot vouch for `self_damage`,
+/// `self_kills`, or `self_pr`, so each only fills a NULL a stored row already
+/// has, whatever `mode` says. `results_available` is OR'd against its stored
+/// value rather than assigned, so a row that already had results is never
+/// downgraded to results-absent, while a row that did not can still be
+/// upgraded by a later trusted pass.
 pub async fn upsert_record_with_mode(
     pool: &SqlitePool,
     r: &ReplayRecord,
     mode: IndexWriteMode,
+    results: ResultsWrite,
 ) -> Result<(), IndexError> {
-    let self_pr = match mode {
-        IndexWriteMode::Incremental => "self_pr=COALESCE(self_pr, ?11)",
-        IndexWriteMode::Replace => "self_pr=?11",
+    let results_cols = match results {
+        ResultsWrite::Store => {
+            let self_pr = match mode {
+                IndexWriteMode::Incremental => "self_pr=COALESCE(self_pr, ?11)",
+                IndexWriteMode::Replace => "self_pr=?11",
+            };
+            format!("self_damage=?9, self_kills=?10, {self_pr}, results_available=?12")
+        }
+        ResultsWrite::Keep => "self_damage=COALESCE(self_damage, ?9), self_kills=COALESCE(self_kills, ?10), \
+             self_pr=COALESCE(self_pr, ?11), results_available=(results_available OR ?12)"
+            .to_string(),
     };
     let sql = format!(
         "INSERT INTO replay_record \
@@ -499,7 +533,7 @@ pub async fn upsert_record_with_mode(
          VALUES (?1,?2,?3,?4,?5,?6,?7,?8,?9,?10,?11,?12,?13) \
          ON CONFLICT(source_id, replay_path) DO UPDATE SET \
            arena_id=?1, file_mtime=?4, outcome=?5, self_account_id=?6, self_ship_id=?7, self_survived=?8, \
-           self_damage=?9, self_kills=?10, {self_pr}, results_available=?12, indexed_at=?13"
+           {results_cols}, indexed_at=?13"
     );
     sqlx::query(&sql)
         .bind(r.arena_id.raw())

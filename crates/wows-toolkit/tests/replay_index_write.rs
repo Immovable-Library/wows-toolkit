@@ -13,6 +13,7 @@ use wows_toolkit_config::index::rows::MatchFilter;
 use wows_toolkit_config::index::rows::MatchOutcome;
 use wows_toolkit_config::index::rows::ObjectiveMatch;
 use wows_toolkit_config::index::rows::ReplayRecord;
+use wows_toolkit_config::index::rows::ResultsWrite;
 use wows_toolkit_config::index::rows::VehicleRelation;
 
 #[tokio::test]
@@ -81,7 +82,7 @@ async fn write_index_persists_all_three_tables() {
         },
     };
 
-    write_index(&pool, &rows, IndexWriteMode::Incremental).await.unwrap();
+    write_index(&pool, &rows, IndexWriteMode::Incremental, ResultsWrite::Store).await.unwrap();
 
     let hits = query::search_matches(&pool, &MatchFilter::default()).await.unwrap();
     assert_eq!(hits.len(), 1);
@@ -135,7 +136,7 @@ async fn reindexing_with_results_upgrades_a_results_absent_row() {
             indexed_at: Timestamp::from_second(9001).unwrap(),
         },
     };
-    write_index(&pool, &pending_rows, IndexWriteMode::Incremental).await.unwrap();
+    write_index(&pool, &pending_rows, IndexWriteMode::Incremental, ResultsWrite::Store).await.unwrap();
 
     let hits = query::search_matches(&pool, &MatchFilter::default()).await.unwrap();
     assert_eq!(hits.len(), 1, "results-absent replay must still produce a match row");
@@ -164,7 +165,7 @@ async fn reindexing_with_results_upgrades_a_results_absent_row() {
             indexed_at: Timestamp::from_second(9500).unwrap(),
         },
     };
-    write_index(&pool, &complete_rows, IndexWriteMode::Incremental).await.unwrap();
+    write_index(&pool, &complete_rows, IndexWriteMode::Incremental, ResultsWrite::Store).await.unwrap();
 
     let hits = query::search_matches(&pool, &MatchFilter::default()).await.unwrap();
     assert_eq!(hits.len(), 1, "re-indexing must upgrade the existing row, not duplicate it");
@@ -189,7 +190,7 @@ async fn replace_mode_rewrites_values_an_incremental_write_would_keep() {
 
     // Seed a row the way a bad-constants pass would have left it.
     let mut rows = poisoned_rows(src);
-    write_index(&pool, &rows, IndexWriteMode::Incremental).await.unwrap();
+    write_index(&pool, &rows, IndexWriteMode::Incremental, ResultsWrite::Store).await.unwrap();
 
     // A corrected parse: different numbers, a rating, and a game mode id.
     rows.objective.game_mode_id = Some(9);
@@ -198,19 +199,57 @@ async fn replace_mode_rewrites_values_an_incremental_write_would_keep() {
     rows.record.self_damage = Some(88_888);
     rows.record.self_pr = Some(1234.0);
 
-    write_index(&pool, &rows, IndexWriteMode::Incremental).await.unwrap();
+    write_index(&pool, &rows, IndexWriteMode::Incremental, ResultsWrite::Store).await.unwrap();
     let (damage, pr, self_pr, mode_id) = stored_values(&pool).await;
     assert_eq!(damage, Some(88_888), "damage always overwrites");
     assert_eq!(pr, Some(4321.0), "incremental keeps the stored rating");
     assert_eq!(self_pr, Some(4321.0), "incremental keeps the stored self rating");
     assert_eq!(mode_id, Some(3), "incremental keeps the stored game mode id");
 
-    write_index(&pool, &rows, IndexWriteMode::Replace).await.unwrap();
+    write_index(&pool, &rows, IndexWriteMode::Replace, ResultsWrite::Store).await.unwrap();
     let (damage, pr, self_pr, mode_id) = stored_values(&pool).await;
     assert_eq!(damage, Some(88_888));
     assert_eq!(pr, Some(1234.0), "replace rewrites the rating");
     assert_eq!(self_pr, Some(1234.0), "replace rewrites the self rating");
     assert_eq!(mode_id, Some(9), "replace rewrites the game mode id");
+}
+
+#[tokio::test]
+async fn an_untrusted_pass_leaves_stored_results_alone() {
+    use wows_toolkit_config::index::rows::IndexWriteMode;
+    use wows_toolkit_config::index::rows::ResultsWrite;
+
+    let pool = SqlitePoolOptions::new().max_connections(1).connect("sqlite::memory:").await.unwrap();
+    sqlx::migrate!("../wows-toolkit-config/migrations").run(&pool).await.unwrap();
+    let src = query::ensure_default_source(
+        &pool,
+        std::path::Path::new("C:/wows/replays"),
+        Timestamp::from_second(1).unwrap(),
+    )
+    .await
+    .unwrap();
+
+    // A good pass stored real results.
+    let good = poisoned_rows(src);
+    write_index(&pool, &good, IndexWriteMode::Incremental, ResultsWrite::Store).await.unwrap();
+
+    // A later pass runs with constants that do not belong to the build, so
+    // map_rows suppressed every results column, and the user asked for a full
+    // refresh. The stored numbers must survive.
+    let mut untrusted = poisoned_rows(src);
+    wows_toolkit::data::replay_index::suppress_untrusted_results(&mut untrusted);
+    write_index(&pool, &untrusted, IndexWriteMode::Replace, ResultsWrite::Keep).await.unwrap();
+
+    let (damage, pr, self_pr, _) = stored_values(&pool).await;
+    assert_eq!(damage, Some(11_111), "an untrusted pass must not blank stored damage");
+    assert_eq!(pr, Some(4321.0), "nor the stored rating");
+    assert_eq!(self_pr, Some(4321.0), "nor the stored self rating");
+
+    let (available,): (bool,) = sqlx::query_as("SELECT results_available FROM replay_record WHERE arena_id = 501")
+        .fetch_one(&pool)
+        .await
+        .unwrap();
+    assert!(available, "a row that had results must not be downgraded to results-absent");
 }
 
 /// Rows carrying the wrong numbers a mismatched-constants pass produced.

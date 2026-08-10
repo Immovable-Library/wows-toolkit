@@ -25,6 +25,7 @@ use crate::db::index::rows::ObjectiveMatch;
 use crate::db::index::rows::PrInputs;
 use crate::db::index::rows::PrRepair;
 use crate::db::index::rows::ReplayRecord;
+use crate::db::index::rows::ResultsWrite;
 use crate::db::index::rows::SourceId;
 use crate::db::index::rows::VehicleRelation;
 use crate::ui::replay_parser::PlayerReport;
@@ -185,9 +186,11 @@ pub fn map_rows(replay: &Replay, source_id: SourceId, indexed_at: Timestamp, fit
 /// ordinary. Everything left untouched here comes from the packet stream or
 /// game params and is unaffected: roster, ship, map, mode, survival, outcome.
 ///
-/// This leaves rows in the same shape as a replay whose results never arrived,
-/// which the listing, the search UI, and `fill_missing_pr` already handle, and
-/// which a later pass upgrades in place once real constants exist.
+/// The blanked values are what these rows carry to the write path, but they are
+/// not necessarily what ends up stored: `write_index` is called with
+/// `ResultsWrite::Keep` for a mismatched pass, so on a brand-new row the blanks
+/// here are what gets recorded (there is nothing earlier to preserve), while on
+/// an existing row the upsert leaves what an earlier trusted pass stored.
 pub fn suppress_untrusted_results(rows: &mut MappedRows) {
     for vehicle in &mut rows.vehicles {
         vehicle.damage = None;
@@ -260,10 +263,15 @@ pub fn index_generation() -> u64 {
     INDEX_GENERATION.load(Ordering::Relaxed)
 }
 
-pub async fn write_index(pool: &SqlitePool, rows: &MappedRows, mode: IndexWriteMode) -> Result<(), IndexError> {
+pub async fn write_index(
+    pool: &SqlitePool,
+    rows: &MappedRows,
+    mode: IndexWriteMode,
+    results: ResultsWrite,
+) -> Result<(), IndexError> {
     query::upsert_match_with_mode(pool, &rows.objective, mode).await?;
-    query::upsert_vehicles_with_mode(pool, &rows.vehicles, mode).await?;
-    query::upsert_record_with_mode(pool, &rows.record, mode).await?;
+    query::upsert_vehicles_with_mode(pool, &rows.vehicles, mode, results).await?;
+    query::upsert_record_with_mode(pool, &rows.record, mode, results).await?;
     INDEX_GENERATION.fetch_add(1, Ordering::Relaxed);
     Ok(())
 }
@@ -361,12 +369,17 @@ pub fn index_replay_reporting(
     let window_start = match_ts - SNIPER_WINDOW_BEFORE_SECS;
     let window_end = match_ts + SNIPER_WINDOW_AFTER_SECS;
 
+    let results = match fit {
+        ConstantsFit::Exact => ResultsWrite::Store,
+        ConstantsFit::Mismatched => ResultsWrite::Keep,
+    };
+
     rt.block_on(async {
         match query::observations_in_window(pool, window_start, window_end).await {
             Ok(observations) => apply_sniper_flags(&mut rows.vehicles, &observations),
             Err(e) => warn!("failed to fetch twitch observations for sniper detection: {e}"),
         }
-        write_index(pool, &rows, mode).await
+        write_index(pool, &rows, mode, results).await
     })
     .map_err(|e| report!("failed to write replay index rows: {e}"))
 }

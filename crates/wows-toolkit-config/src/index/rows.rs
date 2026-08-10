@@ -198,6 +198,17 @@ pub enum IndexWriteMode {
     Replace,
 }
 
+/// Whether a pass is entitled to write the results columns it carries.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum ResultsWrite {
+    /// The constants decoding these results belong to the build; store them.
+    Store,
+    /// The constants do not belong to the build, so this pass has no results
+    /// worth recording. Existing stored values win, and a row that already had
+    /// results is not downgraded to results-absent.
+    Keep,
+}
+
 /// A search/recent result: objective match plus the chosen record's perspective.
 #[derive(Debug, Clone)]
 pub struct MatchHit {
