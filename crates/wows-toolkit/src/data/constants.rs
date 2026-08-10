@@ -139,6 +139,25 @@ pub fn install_constants(
     Ok(InstalledConstants { build: parsed.build, version: parsed.version.clone(), storage_path, dump_path })
 }
 
+/// Pick the constants a build loads, and judge them.
+///
+/// Preference order matches what the app reads from disk: the build's dump-local
+/// copy, then the versioned storage cache, then the embedded fallback. The
+/// chosen value is returned whatever its fit, because it is what the rest of the
+/// build decodes with; the fit says how far the results decoded from it can be
+/// trusted.
+pub fn resolve_replay_constants(
+    dump_constants: Option<Value>,
+    cached_constants: Option<Value>,
+    fallback: &Value,
+    build: u32,
+    version: Option<Version>,
+) -> (Value, ConstantsFit) {
+    let chosen = dump_constants.or(cached_constants).unwrap_or_else(|| fallback.clone());
+    let fit = constants_fit(&chosen, build, version);
+    (chosen, fit)
+}
+
 #[cfg(test)]
 mod tests {
     use super::ConstantsFit;
@@ -146,11 +165,61 @@ mod tests {
     use super::constants_fit;
     use super::install_constants;
     use super::read_constants_file;
+    use super::resolve_replay_constants;
     use serde_json::json;
     use wowsunpack::data::Version;
 
     fn version(major: u32, minor: u32) -> Version {
         Version { major, minor, patch: 0, build: std::num::NonZeroU32::new(12116141) }
+    }
+
+    #[test]
+    fn a_dump_local_file_is_preferred_and_judged() {
+        let dump = json!({ "VERSION": { "VERSION": "15.2", "BUILD": 12116141 } });
+        let cached = json!({ "VERSION": { "VERSION": "15.1", "BUILD": 11965230 } });
+        let fallback = json!({ "VERSION": { "VERSION": "15.0", "BUILD": 1 } });
+
+        let (chosen, fit) =
+            resolve_replay_constants(Some(dump.clone()), Some(cached), &fallback, 12116141, Some(version(15, 2)));
+
+        assert_eq!(chosen, dump);
+        assert_eq!(fit, ConstantsFit::Exact);
+    }
+
+    #[test]
+    fn a_dump_local_file_from_another_build_is_still_used_but_does_not_fit() {
+        // The dump copy is what the rest of the app decodes with, so it is
+        // still returned; only its trustworthiness changes.
+        let dump = json!({ "VERSION": { "VERSION": "15.1", "BUILD": 11965230 } });
+        let fallback = json!({ "VERSION": { "VERSION": "15.0", "BUILD": 1 } });
+
+        let (chosen, fit) =
+            resolve_replay_constants(Some(dump.clone()), None, &fallback, 12116141, Some(version(15, 2)));
+
+        assert_eq!(chosen, dump);
+        assert_eq!(fit, ConstantsFit::Mismatched);
+    }
+
+    #[test]
+    fn the_disk_cache_is_used_when_there_is_no_dump_copy() {
+        let cached = json!({ "VERSION": { "VERSION": "15.2", "BUILD": 12116141 } });
+        let fallback = json!({ "VERSION": { "VERSION": "15.0", "BUILD": 1 } });
+
+        let (chosen, fit) =
+            resolve_replay_constants(None, Some(cached.clone()), &fallback, 12116141, Some(version(15, 2)));
+
+        assert_eq!(chosen, cached);
+        assert_eq!(fit, ConstantsFit::Exact);
+    }
+
+    #[test]
+    fn the_fallback_is_used_last_and_rarely_fits() {
+        let fallback = json!({ "VERSION": { "VERSION": "15.0", "BUILD": 11565330 } });
+
+        let (chosen, fit) = resolve_replay_constants(None, None, &fallback, 12116141, Some(version(15, 2)));
+
+        assert_eq!(chosen, fallback);
+        assert_eq!(fit, ConstantsFit::Mismatched);
     }
 
     #[test]

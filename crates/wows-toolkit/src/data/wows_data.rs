@@ -20,6 +20,7 @@ use wowsunpack::game_params::provider::GameMetadataProvider;
 use wowsunpack::game_params::types::Species;
 use wowsunpack::vfs::VfsPath;
 
+use crate::data::constants::ConstantsFit;
 use crate::task::BackgroundTask;
 use crate::task::BackgroundTaskCompletion;
 use crate::task::BackgroundTaskKind;
@@ -542,7 +543,7 @@ impl BuildDataCache {
             debug!("Lazily loading game data for build {}", build);
             match BuildData::from_live_install(&self.wows_dir, build, &self.locale, &fallback_constants, version) {
                 Ok(wows_data) => {
-                    if !wows_data.replay_constants_exact_match
+                    if wows_data.constants_fit == ConstantsFit::Mismatched
                         && let Some(tx) = &self.network_job_tx
                     {
                         let version = version.map(|v| format!("{}.{}.{}", v.major, v.minor, v.patch));
@@ -582,7 +583,7 @@ impl BuildDataCache {
                 debug!("Loading game data for build {} from dump: {}", build, dump_dir.display());
                 match BuildData::from_dump(&dump_dir, build, &self.locale, &fallback_constants, version) {
                     Ok(wows_data) => {
-                        if !wows_data.replay_constants_exact_match
+                        if wows_data.constants_fit == ConstantsFit::Mismatched
                             && let Some(tx) = &self.network_job_tx
                         {
                             let version = version.map(|v| format!("{}.{}.{}", v.major, v.minor, v.patch));
@@ -651,7 +652,7 @@ mod build_resolution_tests {
             assets: crate::data::build_data::BuildAssets::default(),
             game_constants: Arc::new(GameConstants::defaults()),
             replay_constants: Arc::new(RwLock::new(serde_json::Value::Null)),
-            replay_constants_exact_match: false,
+            constants_fit: ConstantsFit::Mismatched,
             full_version: None,
             patch_version: 0,
             build_number: build,

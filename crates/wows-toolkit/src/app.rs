@@ -43,6 +43,7 @@ use wows_data_mgr::download_repo::DownloadPlan;
 use wows_data_mgr::download_repo::RemoteAvailability;
 use wowsunpack::data::Version;
 
+use crate::data::constants::ConstantsFit;
 use crate::data::settings::DataSharingMode;
 use crate::db::index::rows::SourceId;
 use crate::db::index::rows::WorkspaceId;
@@ -1821,7 +1822,7 @@ impl WowsToolkitApp {
                     // If we have this build loaded with inexact constants, rebuild it.
                     if let Some(build_cache) = self.tab_state.build_cache.as_ref()
                         && let Some(data) = build_cache.get(build)
-                        && !data.read().replay_constants_exact_match
+                        && data.read().constants_fit == ConstantsFit::Mismatched
                     {
                         debug!("Rebuilding build {} with newly fetched versioned constants", build);
                         if data.write().rebuild_with_new_constants() {
@@ -1931,7 +1932,7 @@ impl WowsToolkitApp {
                     }
 
                     // If the initial build used fallback constants, request the correct version
-                    if !wows_data_ref.read().replay_constants_exact_match {
+                    if wows_data_ref.read().constants_fit == ConstantsFit::Mismatched {
                         let version = wows_data_ref
                             .read()
                             .full_version
@@ -3362,7 +3363,7 @@ impl WowsToolkitApp {
                         let _ = std::fs::remove_file(path);
                     }
                     // Mark as inexact so the fetch/rebuild path works
-                    wows_data.write().replay_constants_exact_match = false;
+                    wows_data.write().constants_fit = ConstantsFit::Mismatched;
                     self.tab_state.send_network_job(NetworkJob::FetchVersionedConstants { build, version });
                 }
                 // Also clear the saved commit so FetchLatestConstants re-downloads

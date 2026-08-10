@@ -30,7 +30,9 @@ use wowsunpack::game_params::types::CrewSkillName;
 use wowsunpack::game_params::types::Species;
 use wowsunpack::vfs::VfsPath;
 
-use crate::task::networking::load_versioned_constants_from_disk_with_fallback;
+use crate::data::constants::ConstantsFit;
+use crate::data::constants::resolve_replay_constants;
+use crate::task::networking::load_versioned_constants_from_disk;
 use crate::task::replays::load_ribbon_icons;
 use crate::task::replays::load_ship_icons;
 use crate::task::replays::parse_dotted_version;
@@ -87,9 +89,9 @@ pub struct BuildData {
     /// Version-matched replay constants (from wows-constants repo).
     pub replay_constants: Arc<RwLock<serde_json::Value>>,
 
-    /// Whether the replay constants are an exact match for this build,
-    /// or a fallback from a previous build.
-    pub replay_constants_exact_match: bool,
+    /// How far this build's replay constants can be trusted. `Mismatched`
+    /// withholds every results-derived value from the replay index.
+    pub constants_fit: ConstantsFit,
 
     pub full_version: Option<Version>,
     pub patch_version: usize,
@@ -221,18 +223,12 @@ impl BuildData {
         debug!("Rebuilding BuildData for build {}", self.build_number);
 
         // Reload version-matched replay constants from disk only (no network I/O).
-        // If not on disk, use our current constants as fallback (better than failing).
-        let (new_replay_constants, exact_match) =
-            match load_versioned_constants_from_disk_with_fallback(self.build_number) {
-                Some((data, exact)) => (data, exact),
-                None => {
-                    debug!(
-                        "No cached versioned constants for build {} during rebuild, using current constants",
-                        self.build_number
-                    );
-                    (self.replay_constants.read().clone(), false)
-                }
-            };
+        // Keeping the current constants when disk has none is better than failing,
+        // and the fit that comes back says how far they can be trusted.
+        let cached = load_versioned_constants_from_disk(self.build_number);
+        let current = self.replay_constants.read().clone();
+        let (new_replay_constants, fit) =
+            resolve_replay_constants(None, cached, &current, self.build_number, self.full_version);
 
         // Rebuild game constants from VFS + new replay constants
         let new_game_constants =
@@ -256,7 +252,7 @@ impl BuildData {
         self.assets.signal_flag_icons = HashMap::new();
         self.game_constants = Arc::new(new_game_constants);
         *self.replay_constants.write() = new_replay_constants;
-        self.replay_constants_exact_match = exact_match;
+        self.constants_fit = fit;
 
         debug!("Rebuild complete for build {}", self.build_number);
         true
@@ -347,11 +343,13 @@ impl BuildData {
         // If not cached, use fallback constants. The networking thread will fetch
         // updated constants from GitHub in the background.
         debug!("Loading versioned constants for build {}", build);
-        let (replay_constants, replay_constants_exact_match) =
-            match load_versioned_constants_from_disk_with_fallback(build) {
-                Some((data, exact)) => (data, exact),
-                None => (fallback_constants.clone(), false),
-            };
+        let (replay_constants, constants_fit) = resolve_replay_constants(
+            None,
+            load_versioned_constants_from_disk(build),
+            fallback_constants,
+            build,
+            version,
+        );
 
         let game_constants = GameConstants::for_build(Some(&vfs), Some(&replay_constants), version);
         let game_constants = Arc::new(game_constants);
@@ -368,7 +366,7 @@ impl BuildData {
             assets: BuildAssets { ship_icons: icons, ribbon_icons, subribbon_icons, ..Default::default() },
             game_constants,
             replay_constants: Arc::new(RwLock::new(replay_constants)),
-            replay_constants_exact_match,
+            constants_fit,
             replays_dir: PathBuf::new(), // Set by caller
             build_dir,
             dump_dir: None,
@@ -474,26 +472,18 @@ impl BuildData {
         let ribbon_icons = load_ribbon_icons(&vfs, wowsunpack::game_assets::GuiAssetDir::Ribbons, version);
         let subribbon_icons = load_ribbon_icons(&vfs, wowsunpack::game_assets::GuiAssetDir::SubRibbons, version);
 
-        // Load constants: try dump dir first, then disk cache, then fallback
-        let (replay_constants, replay_constants_exact_match) = {
-            let dump_constants_path = dump_dir.join("constants.json");
-            if dump_constants_path.exists() {
-                if let Ok(data) = std::fs::read(&dump_constants_path)
-                    && let Ok(json) = serde_json::from_slice::<serde_json::Value>(&data)
-                {
-                    (json, true)
-                } else {
-                    (fallback_constants.clone(), false)
-                }
-            } else {
-                match load_versioned_constants_from_disk_with_fallback(build) {
-                    Some((data, exact)) => (data, exact),
-                    None => (fallback_constants.clone(), false),
-                }
-            }
-        };
         // Prefer the replay's own version; fall back to the version recovered from the dump.
         let constants_version = replay_version.or(full_version);
+        let dump_constants = std::fs::read(dump_dir.join("constants.json"))
+            .ok()
+            .and_then(|data| serde_json::from_slice::<serde_json::Value>(&data).ok());
+        let (replay_constants, constants_fit) = resolve_replay_constants(
+            dump_constants,
+            load_versioned_constants_from_disk(build),
+            fallback_constants,
+            build,
+            constants_version,
+        );
         let game_constants = GameConstants::for_build(Some(&vfs), Some(&replay_constants), constants_version);
 
         Ok(BuildData {
@@ -505,7 +495,7 @@ impl BuildData {
             assets: BuildAssets { ship_icons: icons, ribbon_icons, subribbon_icons, ..Default::default() },
             game_constants: Arc::new(game_constants),
             replay_constants: Arc::new(RwLock::new(replay_constants)),
-            replay_constants_exact_match,
+            constants_fit,
             replays_dir: PathBuf::new(),
             build_dir: dump_dir.to_path_buf(),
             dump_dir: Some(dump_dir.to_path_buf()),

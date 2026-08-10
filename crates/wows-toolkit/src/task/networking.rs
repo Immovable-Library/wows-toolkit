@@ -338,21 +338,6 @@ pub(crate) fn load_versioned_constants_from_disk(build: u32) -> Option<serde_jso
     }
 }
 
-/// Check disk cache only for versioned constants. Does NOT perform any network I/O.
-/// Used during initial game data loading to avoid blocking on network calls.
-///
-/// Returns `(constants_data, is_exact_match)` if found on disk, or None.
-#[instrument]
-pub fn load_versioned_constants_from_disk_with_fallback(target_build: u32) -> Option<(serde_json::Value, bool)> {
-    if let Some(data) = load_versioned_constants_from_disk(target_build) {
-        debug!("exact match found on disk");
-        return Some((data, true));
-    }
-
-    debug!("no cached constants on disk");
-    None
-}
-
 // --- Download update task (stays here, already async with progress) ---
 
 #[cfg_attr(not(target_os = "windows"), allow(dead_code))]
