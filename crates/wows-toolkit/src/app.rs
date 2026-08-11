@@ -1063,6 +1063,11 @@ impl WowsToolkitApp {
         }
 
         // Install the ring crypto provider for rustls before any networking happens.
+        // Load-bearing for both octocrab client paths (direct and proxied): both
+        // `ring` and `aws_lc_rs` are enabled in the dependency graph, so rustls
+        // 0.23's `CryptoProvider::get_default`/`from_crate_features` sees two
+        // candidates and returns `None`, which panics inside
+        // `ClientConfig::builder()` unless a default provider was installed first.
         let _ = rustls::crypto::ring::default_provider().install_default();
 
         // Include phosphor icons
@@ -1906,10 +1911,16 @@ impl WowsToolkitApp {
                 NetworkResult::PersonalRatingDataFetchFailed(msg) => {
                     warn!("PR data fetch failed: {}", msg);
                 }
-                NetworkResult::VersionedConstantsFetched { build } => {
-                    // Versioned constants were downloaded and saved to disk.
-                    // If we have this build loaded with inexact constants, rebuild it.
-                    if let Some(build_cache) = self.tab_state.build_cache.as_ref()
+                NetworkResult::VersionedConstantsFetched { build, source } => {
+                    // A rebuild is only worth paying for when the file's content
+                    // actually changed on this run. When the fetch job found the
+                    // file already on disk, the build was already loaded with it
+                    // (or the load path already resolved to Mismatched for another
+                    // reason a rebuild here cannot fix), so rebuilding would just
+                    // repeat itself on every load of this build without the fit
+                    // ever improving.
+                    if source == crate::task::networking::VersionedConstantsSource::Downloaded
+                        && let Some(build_cache) = self.tab_state.build_cache.as_ref()
                         && let Some(data) = build_cache.get(build)
                         && data.read().constants_fit == ConstantsFit::Mismatched
                     {
@@ -3440,20 +3451,20 @@ impl WowsToolkitApp {
 
     fn check_constants_version_mismatch(&mut self) {
         // Determine mismatch status under locks, then drop them before acting.
-        // Read the version from the loaded BuildData's replay constants
-        // rather than a separate copy.
+        // Judged with the same crate::data::constants::constants_fit that the
+        // load and rebuild paths use, so this is the same authority as
+        // BuildData::constants_fit rather than a second opinion that can disagree
+        // with it (it is patch-sensitive, unlike a bare major.minor string compare).
         let mismatch_status = {
             let Some(wows_data) = &self.tab_state.world_of_warships_data else { return };
             let wows_data = wows_data.read();
-            let Some(full_version) = &wows_data.full_version else { return };
+            let Some(full_version) = wows_data.full_version else { return };
 
             let replay_constants = wows_data.replay_constants.read();
-            let constants_version =
-                replay_constants.get("VERSION").and_then(|v| v.get("VERSION")).and_then(|v| v.as_str());
-            let Some(constants_version) = constants_version else { return };
-            let game_version = format!("{}.{}", full_version.major, full_version.minor);
+            let fit =
+                crate::data::constants::constants_fit(&replay_constants, wows_data.build_number, Some(full_version));
 
-            if constants_version != game_version {
+            if fit == ConstantsFit::Mismatched {
                 Some(true) // mismatch
             } else if self.constants_version_mismatch {
                 Some(false) // mismatch just resolved
@@ -3467,7 +3478,7 @@ impl WowsToolkitApp {
                 self.constants_version_mismatch = true;
                 self.tab_state.toasts.lock().warning(t!("ui.messages.constants_version_mismatch")).duration(None);
 
-                // The on-disk constants file is stale — delete it so the versioned
+                // The on-disk constants file is stale; delete it so the versioned
                 // system doesn't treat it as an exact match, then request a fresh fetch.
                 if let Some(wows_data) = &self.tab_state.world_of_warships_data {
                     let (build, version) = {

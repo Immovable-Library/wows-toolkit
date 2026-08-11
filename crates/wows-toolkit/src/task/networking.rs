@@ -212,10 +212,20 @@ pub enum NetworkResult {
     PersonalRatingDataFetched(Vec<u8>),
     /// PR data fetch failed.
     PersonalRatingDataFetchFailed(String),
-    /// Versioned constants fetched and saved to disk for a specific build.
-    VersionedConstantsFetched { build: u32 },
+    /// Versioned constants are on disk for a specific build, either just
+    /// downloaded or already cached there.
+    VersionedConstantsFetched { build: u32, source: VersionedConstantsSource },
     /// Versioned constants fetch failed.
     VersionedConstantsFetchFailed { build: u32, msg: String },
+}
+
+/// Where a build's versioned constants came from when a fetch job completed.
+/// Only `Downloaded` means the file's content changed on this run; a rebuild
+/// is wasted work otherwise.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum VersionedConstantsSource {
+    Downloaded,
+    AlreadyOnDisk,
 }
 
 /// State for the background networking thread.
@@ -458,7 +468,10 @@ impl NetworkingThread {
         // If already cached on disk, no need to download
         if load_versioned_constants_from_disk(target_build).is_some() {
             debug!("already on disk, skipping fetch");
-            let _ = self.result_tx.send(NetworkResult::VersionedConstantsFetched { build: target_build });
+            let _ = self.result_tx.send(NetworkResult::VersionedConstantsFetched {
+                build: target_build,
+                source: VersionedConstantsSource::AlreadyOnDisk,
+            });
             return;
         }
 
@@ -476,7 +489,10 @@ impl NetworkingThread {
                 } else {
                     debug!("fetched exact match from GitHub");
                 }
-                let _ = self.result_tx.send(NetworkResult::VersionedConstantsFetched { build: target_build });
+                let _ = self.result_tx.send(NetworkResult::VersionedConstantsFetched {
+                    build: target_build,
+                    source: VersionedConstantsSource::Downloaded,
+                });
             }
             Err(e) => {
                 // rootcause::Report doesn't implement std::error::Error, so error_chain

@@ -102,7 +102,7 @@ download_plan_pending = "Working out what needs fetching..."
 download_objects_to_fetch = "Objects to fetch for the ticked builds: %{count}"
 download_plan_failed = "Could not work out what needs fetching"
 download_plan_no_cache_dir = "No game data cache directory is set. Choose one in Settings, then try again."
-refresh_persisted_data_message = "Re-parse every replay in your replays directory and rewrite its stored data. Entries recorded with a replay data mapping that does not match their game build are left as they are. This can take a while."
+refresh_persisted_data_message = "Re-parse every replay in your replays directory and rewrite its stored data. Entries recorded with a replay data mapping that does not match their game build are left as they are, except that Personal Rating and game mode are recomputed from today's expected values for every replay. This can take a while."
 
 # -- Labels --
 
@@ -283,7 +283,7 @@ format_cbor = "CBOR"
 export_path_hint = "Data auto-export directory"
 index_all_replays = "Index All Replays"
 reindex_all_replays = "Re-index All Replays"
-reindex_all_replays_hover = "Re-parse every replay and rewrite its stored data, including entries recorded with the wrong replay data mapping. Also backfills data added by an update, such as Personal Rating and disconnect status."
+reindex_all_replays_hover = "Re-parse every replay and rewrite its stored data, including entries recorded with the wrong replay data mapping. Also backfills data added by an update, such as Personal Rating and disconnect status. Personal Rating and game mode are recomputed from today's expected values for every replay, not just entries missing them."
 
 [ui.settings.session]
 heading = "Session Settings"

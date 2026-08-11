@@ -173,6 +173,14 @@ pub fn map_rows(replay: &Replay, source_id: SourceId, indexed_at: Timestamp, fit
 
     let mut rows = MappedRows { objective, vehicles, record };
     if fit == ConstantsFit::Mismatched {
+        // Expected for old or newly-released builds without a matching
+        // constants file yet; logged so a stats-free listing has an
+        // explanation to point to instead of looking like silent data loss.
+        tracing::info!(
+            build = ?version.build_number(),
+            ?fit,
+            "suppressing results for arena {arena_id:?}: constants do not match this build"
+        );
         suppress_untrusted_results(&mut rows);
     }
     Some(rows)

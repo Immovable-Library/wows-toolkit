@@ -1770,9 +1770,16 @@ impl IngestFailures {
 /// A replay the walk read, with the build number of the game data its client
 /// version resolved to. Indexing parses the replay against that build, and the
 /// read has resolved it already.
+///
+/// `fit` is the resolved build data's `ConstantsFit` at the moment of the read,
+/// not a later re-lookup: the build cache is an LRU, and a build evicted
+/// between read and index would otherwise answer a fresh lookup with a
+/// conservative `Mismatched` for a replay that was actually decoded with
+/// exact-fit constants.
 struct ReadReplay {
     replay: Arc<RwLock<Replay>>,
     game_build: usize,
+    fit: crate::data::constants::ConstantsFit,
 }
 
 /// What a walk leaves behind once the replays it read have been sent.
@@ -2036,8 +2043,11 @@ fn run_read_directory(
         // flushing a replay, a race a directory read does not have.
         let (replay, wows_data) =
             crate::data::wows_data::ReplayLoader::build_replay_from_existing_file(&deps, path.to_path_buf())?;
-        let game_build = wows_data.read().patch_version;
-        Ok(ReadReplay { replay, game_build })
+        let guard = wows_data.read();
+        let game_build = guard.patch_version;
+        let fit = guard.constants_fit;
+        drop(guard);
+        Ok(ReadReplay { replay, game_build, fit })
     };
     let index = |replay: &ReadReplay, source| index_ingested_replay(replay, &deps, &pool, &tokio_runtime, source);
     let needs_index =
@@ -2096,11 +2106,7 @@ fn index_ingested_replay(
 ) -> Result<(), Report> {
     let mut guard = replay.replay.write();
     let expected_build = replay.game_build.to_string();
-    let fit = u32::try_from(replay.game_build)
-        .ok()
-        .and_then(|build| deps.build_cache.get(build))
-        .map(|build_data| build_data.read().constants_fit)
-        .unwrap_or(crate::data::constants::ConstantsFit::Mismatched);
+    let fit = replay.fit;
 
     reset_after(
         &mut *guard,
@@ -2980,9 +2986,15 @@ mod tests {
     }
 
     /// A replay the read step produced, tagged with `game_build` so a test can
-    /// tell one of them from another wherever the walk hands it on.
+    /// tell one of them from another wherever the walk hands it on. `fit` is
+    /// `Exact` because these tests exercise the walk's control flow, not the
+    /// fit it carries; use `read_replay_with_fit` for tests about the fit itself.
     fn read_replay(game_build: usize) -> ReadReplay {
-        ReadReplay { replay: test_replay(), game_build }
+        read_replay_with_fit(game_build, crate::data::constants::ConstantsFit::Exact)
+    }
+
+    fn read_replay_with_fit(game_build: usize, fit: crate::data::constants::ConstantsFit) -> ReadReplay {
+        ReadReplay { replay: test_replay(), game_build, fit }
     }
 
     /// Walk `paths` with steps the test supplies, returning everything the walk
@@ -3072,6 +3084,35 @@ mod tests {
             "both replays must reach the listing"
         );
         assert_eq!(outcome.failures.not_indexed, 0);
+    }
+
+    /// The fit is captured once, at read time, and must reach indexing
+    /// unchanged -- not re-derived from a fresh build-cache lookup that could
+    /// answer differently if the build were evicted between the two steps.
+    #[test]
+    fn the_fit_the_read_step_captured_is_what_indexing_sees() {
+        use crate::data::constants::ConstantsFit;
+
+        let seen = std::cell::RefCell::new(Vec::new());
+        let (_updates, _outcome) = run_walk(
+            &["a.wowsreplay", "b.wowsreplay"],
+            |_| true,
+            |path| {
+                let fit =
+                    if path == Path::new("a.wowsreplay") { ConstantsFit::Exact } else { ConstantsFit::Mismatched };
+                Ok(read_replay_with_fit(11, fit))
+            },
+            |replay, _| {
+                seen.borrow_mut().push(replay.fit);
+                Ok(())
+            },
+        );
+
+        assert_eq!(
+            seen.into_inner(),
+            vec![ConstantsFit::Exact, ConstantsFit::Mismatched],
+            "each replay's fit must be the one its own read produced"
+        );
     }
 
     /// Re-opening a directory must cost a read per replay, not a re-parse of
