@@ -1051,6 +1051,33 @@ fn should_arm_wows_dir_error(invalid: bool, field_focused: bool, already_shown: 
     arm_sticky_error(invalid, already_shown)
 }
 
+/// Whether a `VersionedConstantsFetched` reply is worth a full rebuild
+/// (icon reloads plus a `GameConstants` rebuild, then invalidating every
+/// open replay's report).
+///
+/// `Downloaded` always is: the build's constants genuinely just changed.
+/// `AlreadyOnDisk` does not by itself mean the loaded build is already using
+/// that file -- dump resolution can load a nearest-older dump's own
+/// `constants.json` (`resolve_replay_constants` prefers `dump_constants` over
+/// the storage cache) even though the exact-fit file this build asked for is
+/// sitting in the storage cache under its own name. So `AlreadyOnDisk` only
+/// rebuilds when the on-disk file actually fits this build while what is
+/// currently loaded does not; skipping that case would leave a dump-resolved
+/// build `Mismatched`, with its results suppressed, for every session after
+/// the first download.
+fn should_rebuild_for_constants(
+    source: crate::task::networking::VersionedConstantsSource,
+    loaded_fit: ConstantsFit,
+    on_disk_fit: ConstantsFit,
+) -> bool {
+    match source {
+        crate::task::networking::VersionedConstantsSource::Downloaded => true,
+        crate::task::networking::VersionedConstantsSource::AlreadyOnDisk => {
+            loaded_fit == ConstantsFit::Mismatched && on_disk_fit == ConstantsFit::Exact
+        }
+    }
+}
+
 impl WowsToolkitApp {
     /// Called once before the first frame.
     pub fn new(cc: &eframe::CreationContext<'_>) -> Self {
@@ -1912,23 +1939,32 @@ impl WowsToolkitApp {
                     warn!("PR data fetch failed: {}", msg);
                 }
                 NetworkResult::VersionedConstantsFetched { build, source } => {
-                    // A rebuild is only worth paying for when the file's content
-                    // actually changed on this run. When the fetch job found the
-                    // file already on disk, the build was already loaded with it
-                    // (or the load path already resolved to Mismatched for another
-                    // reason a rebuild here cannot fix), so rebuilding would just
-                    // repeat itself on every load of this build without the fit
-                    // ever improving.
-                    if source == crate::task::networking::VersionedConstantsSource::Downloaded
-                        && let Some(build_cache) = self.tab_state.build_cache.as_ref()
+                    if let Some(build_cache) = self.tab_state.build_cache.as_ref()
                         && let Some(data) = build_cache.get(build)
-                        && data.read().constants_fit == ConstantsFit::Mismatched
                     {
-                        debug!("Rebuilding build {} with newly fetched versioned constants", build);
-                        if data.write().rebuild_with_new_constants() {
-                            // Invalidate cached reports so they rebuild with correct constants
-                            for replay in self.tab_state.all_open_replays() {
-                                replay.write().ui_report = None;
+                        let (loaded_fit, version) = {
+                            let guard = data.read();
+                            (guard.constants_fit, guard.full_version)
+                        };
+                        // Cheap next to the rebuild it gates (icon reloads plus a
+                        // GameConstants rebuild), so reading the small on-disk file
+                        // here on every reply costs nothing that matters. Needed
+                        // because AlreadyOnDisk does not imply the loaded build is
+                        // using that file: dump resolution can load a nearest-older
+                        // dump's own constants.json (see resolve_replay_constants
+                        // preferring dump_constants) even though the exact-fit file
+                        // this build asked for is sitting in the storage cache.
+                        let on_disk_fit = crate::task::networking::load_versioned_constants_from_disk(build)
+                            .map(|constants| crate::data::constants::constants_fit(&constants, build, version))
+                            .unwrap_or(ConstantsFit::Mismatched);
+
+                        if should_rebuild_for_constants(source, loaded_fit, on_disk_fit) {
+                            debug!("Rebuilding build {} with newly fetched versioned constants", build);
+                            if data.write().rebuild_with_new_constants() {
+                                // Invalidate cached reports so they rebuild with correct constants
+                                for replay in self.tab_state.all_open_replays() {
+                                    replay.write().ui_report = None;
+                                }
                             }
                         }
                     }
@@ -6404,6 +6440,66 @@ mod sticky_error_tests {
             !should_arm_wows_dir_error(true, false, &mut shown),
             "blurring again with the same problem must not re-arm"
         );
+    }
+}
+
+#[cfg(test)]
+mod versioned_constants_rebuild_tests {
+    use super::ConstantsFit;
+    use super::should_rebuild_for_constants;
+    use crate::task::networking::VersionedConstantsSource;
+
+    /// The regression this predicate exists to fix: dump resolution can load
+    /// a nearest-older dump's own constants.json for a build with no dump of
+    /// its own, so the loaded fit reads Mismatched even though
+    /// constants_{build}.json sitting in the storage cache fits exactly.
+    /// Skipping the rebuild here would leave that build Mismatched, with its
+    /// results suppressed, for the rest of every session after the first
+    /// download.
+    #[test]
+    fn an_on_disk_file_that_actually_fits_rebuilds_even_when_it_was_not_freshly_downloaded() {
+        assert!(should_rebuild_for_constants(
+            VersionedConstantsSource::AlreadyOnDisk,
+            ConstantsFit::Mismatched,
+            ConstantsFit::Exact
+        ));
+    }
+
+    /// The pointless cycle the AlreadyOnDisk gate exists to stop: nothing on
+    /// disk would change the fit, so rebuilding again would just repeat
+    /// itself on every load of this build.
+    #[test]
+    fn an_on_disk_file_that_still_does_not_fit_does_not_rebuild() {
+        assert!(!should_rebuild_for_constants(
+            VersionedConstantsSource::AlreadyOnDisk,
+            ConstantsFit::Mismatched,
+            ConstantsFit::Mismatched
+        ));
+    }
+
+    /// A build that is already loaded correctly has nothing to gain from a
+    /// rebuild, whatever the on-disk file's own fit says.
+    #[test]
+    fn an_already_exact_load_never_rebuilds_for_a_cached_reply() {
+        for on_disk_fit in [ConstantsFit::Exact, ConstantsFit::Mismatched] {
+            assert!(!should_rebuild_for_constants(
+                VersionedConstantsSource::AlreadyOnDisk,
+                ConstantsFit::Exact,
+                on_disk_fit
+            ));
+        }
+    }
+
+    /// A build whose constants genuinely just arrived over the network must
+    /// always rebuild: that is the one case the file's content is known to
+    /// have changed on this run.
+    #[test]
+    fn a_freshly_downloaded_file_always_rebuilds() {
+        for loaded_fit in [ConstantsFit::Exact, ConstantsFit::Mismatched] {
+            for on_disk_fit in [ConstantsFit::Exact, ConstantsFit::Mismatched] {
+                assert!(should_rebuild_for_constants(VersionedConstantsSource::Downloaded, loaded_fit, on_disk_fit));
+            }
+        }
     }
 }
 
