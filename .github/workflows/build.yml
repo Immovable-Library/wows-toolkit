@@ -114,8 +114,6 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - uses: Swatinem/rust-cache@v2
-
       - name: Install system dependencies
         run: |
           sudo apt-get update
@@ -140,7 +138,21 @@ jobs:
           toolchain: 1.92.0
           targets: x86_64-unknown-linux-gnu
 
+      # Keyed to match warm-release-cache.yml, which populates this key from
+      # main. Runs here are tag-scoped, and a tag's cache is unreachable from
+      # every later run, so writing one back would only cost upload time.
+      # Must sit after the toolchain install: the key embeds the rustc version
+      # and would otherwise be computed against the runner image's default.
+      - uses: Swatinem/rust-cache@v2
+        with:
+          shared-key: linux-release
+          save-if: "false"
+
       - name: Build release binary
+        # Four concurrent release-mode rustc processes on the largest crates
+        # exhaust the 16 GB runner and it gets killed with no diagnostic.
+        env:
+          CARGO_BUILD_JOBS: "2"
         run: cargo build --release --target x86_64-unknown-linux-gnu -p wows_toolkit --features av1-asm
 
       - name: Set up Flatpak
@@ -192,7 +204,7 @@ jobs:
         with:
           files: WoWs_Toolkit-x86_64.flatpak
 
-  # ── macOS (universal .app in .dmg) ────────────────────────────────────
+  # ── macOS (Apple Silicon .app in .dmg) ────────────────────────────
   macos:
     name: macOS
     needs: create-release
@@ -206,22 +218,13 @@ jobs:
         uses: dtolnay/rust-toolchain@master
         with:
           toolchain: 1.92.0
-          targets: aarch64-apple-darwin,x86_64-apple-darwin
+          targets: aarch64-apple-darwin
 
       - name: Install NASM
         run: brew install nasm
 
-      - name: Build release binaries
-        run: |
-          cargo build --release --target aarch64-apple-darwin -p wows_toolkit --features av1-asm
-          cargo build --release --target x86_64-apple-darwin -p wows_toolkit --features av1-asm
-
-      - name: Create universal binary
-        run: |
-          lipo -create \
-            target/aarch64-apple-darwin/release/wows_toolkit \
-            target/x86_64-apple-darwin/release/wows_toolkit \
-            -output wows_toolkit_universal
+      - name: Build release binary
+        run: cargo build --release --target aarch64-apple-darwin -p wows_toolkit --features av1-asm
 
       - name: Generate .icns icon
         run: |
@@ -246,7 +249,7 @@ jobs:
           mkdir -p "$APP/Contents/MacOS"
           mkdir -p "$APP/Contents/Resources"
 
-          cp wows_toolkit_universal "$APP/Contents/MacOS/wows_toolkit"
+          cp target/aarch64-apple-darwin/release/wows_toolkit "$APP/Contents/MacOS/wows_toolkit"
           chmod +x "$APP/Contents/MacOS/wows_toolkit"
           cp wows_toolkit.icns "$APP/Contents/Resources/"
           cp -r crates/wt-translations/translations "$APP/Contents/MacOS/translations"
