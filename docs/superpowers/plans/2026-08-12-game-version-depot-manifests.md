@@ -76,7 +76,7 @@ Run: `cargo test -p wows-data-mgr manifest::test --lib`
 
 Expected: all manifest tests pass.
 
-Run: `cargo run --release -p wows-data-mgr -- versions`
+Run: `cargo run --release -p wows-data-mgr -- list`
 
 Expected: the real `game_versions.toml` parses; compilation may still identify stale CLI display fields to be handled in Task 2.
 
@@ -131,9 +131,9 @@ Make `download_requests` return available pinned depots in client, content, loca
 
 Always attempt temporary file-list removal after the loop or after an execution failure without replacing the primary error.
 
-- [ ] **Step 4: Update CLI versions display**
+- [ ] **Step 4: Update CLI list display**
 
-Replace `entry.manifest_id` in the versions table with `entry.content.as_ref().unwrap_or(&entry.client).manifest_id`. This fallback is correct because the table needs one representative downloadable game-data manifest and historical entries may lack content.
+Replace `entry.manifest_id` in the `list` table with `entry.content.as_ref().unwrap_or(&entry.client).manifest_id`. This fallback is correct because the table needs one representative downloadable game-data manifest and historical entries may lack content.
 
 - [ ] **Step 5: Run focused tests and compile the executable**
 
@@ -147,11 +147,11 @@ Expected: exit 0 with no stale single-depot field accesses.
 
 - [ ] **Step 6: Reproduce the original command through the parse boundary**
 
-Run: `cargo run --release -p wows-data-mgr -- versions`
+Run: `cargo run --release -p wows-data-mgr -- list`
 
 Expected: exit 0 after listing versions from the real split-depot manifest.
 
-Do not run the original `dump-renderer-data --latest` command as verification because it performs authenticated network downloads and writes outside the repository. The shared manifest load path and release binary are exercised by `versions`.
+Do not run the original `dump-renderer-data --latest` command as verification because it performs authenticated network downloads and writes outside the repository. The shared manifest load path and release binary are exercised by `list`.
 
 - [ ] **Step 7: Request adversarial review and commit**
 
@@ -221,9 +221,9 @@ Expected: exit 0 with zero failed tests.
 
 - [ ] **Step 8: Run the release parse smoke test**
 
-Run: `cargo run --release -p wows-data-mgr -- versions`
+Run: `cargo run --release -p wows-data-mgr -- list`
 
-Expected: exit 0 and output includes build `13015711` with version `15.7.0`.
+Expected: exit 0 and output lists the entries from `game_versions.toml`.
 
 - [ ] **Step 9: Final adversarial review**
 
