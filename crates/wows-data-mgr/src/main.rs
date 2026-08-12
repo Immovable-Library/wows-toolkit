@@ -11,9 +11,9 @@ use wows_data_mgr::dump;
 use wows_data_mgr::manifest;
 use wows_data_mgr::registry;
 
-/// Corrupt objects described in full per build before the rest are summarised.
-/// A build can reference dozens of them and each message names files.
-const NAMED_CORRUPT_OBJECTS: usize = 3;
+/// Problem paths described in full per build before the rest are summarised.
+/// A build can hit hundreds of them and each message names files.
+const NAMED_PROBLEM_PATHS: usize = 3;
 
 #[derive(Parser)]
 #[command(name = "wows-data-mgr", about = "Download and manage World of Warships game data")]
@@ -121,6 +121,33 @@ enum Commands {
         /// stay on disk until `wows-data-mgr gc` runs.
         #[arg(long)]
         no_gc: bool,
+    },
+
+    /// Index content a build tree holds that `metadata.toml` never recorded: a
+    /// store link whose path has no entry. Nothing keeps such an object alive
+    /// and no consistency check reads it, so it is one `gc` away from being
+    /// lost. Links with no object behind them are reported, never indexed.
+    Reindex {
+        /// Directory containing dumps (same as dump-renderer-data --output)
+        #[arg(short, long)]
+        output: PathBuf,
+
+        /// Reindex only this build number (default: all builds)
+        #[arg(long)]
+        build: Option<u32>,
+    },
+
+    /// Re-materialise build trees from `metadata.toml`, repointing any link
+    /// that names something other than what its entry says. Metadata is the
+    /// authority; a link left over from an earlier extraction is not.
+    Relink {
+        /// Directory containing dumps (same as dump-renderer-data --output)
+        #[arg(short, long)]
+        output: PathBuf,
+
+        /// Relink only this build number (default: all builds)
+        #[arg(long)]
+        build: Option<u32>,
     },
 
     /// Delete content-addressed objects no longer referenced by any dumped
@@ -399,13 +426,54 @@ fn main() -> Result<(), Report> {
     match &args.command {
         Commands::RefreshDerived { output, build, no_gc } => {
             println!("Refreshing derived data...");
-            dump::refresh_derived(output, *build)?;
-            if !*no_gc {
+            let summary = dump::refresh_derived(output, *build)?;
+            if *no_gc {
+                println!("Skipping garbage collection (--no-gc).");
+            } else if summary.safe_to_gc() {
                 println!("Garbage-collecting orphaned CAS objects...");
                 dump::gc_cas(output)?;
             } else {
-                println!("Skipping garbage collection (--no-gc).");
+                let damaged: usize = summary.damaged.values().map(Vec::len).sum();
+                println!(
+                    "Skipping garbage collection: {} build(s) reference {damaged} object(s) missing from the store \
+                     and {} build(s) failed to refresh. Run `verify --check-hashes`, restore the store, then `gc`.",
+                    summary.damaged.len(),
+                    summary.failed.len()
+                );
             }
+            return Ok(());
+        }
+        Commands::Reindex { output, build } => {
+            let reports = dump::reindex_builds(output, *build)?;
+            if reports.is_empty() {
+                println!("Every file in every build tree is already indexed.");
+                return Ok(());
+            }
+            for (dir, report) in &reports {
+                println!("  {dir} - indexed {} file(s), {} unbacked", report.added.len(), report.unbacked.len());
+                for path in report.unbacked.iter().take(NAMED_PROBLEM_PATHS) {
+                    println!("         unbacked: {path}");
+                }
+                let rest = report.unbacked.len().saturating_sub(NAMED_PROBLEM_PATHS);
+                if rest > 0 {
+                    println!("         and {rest} more unbacked file(s)");
+                }
+            }
+            let added: usize = reports.values().map(|r| r.added.len()).sum();
+            println!("Indexed {added} file(s) across {} build(s).", reports.len());
+            return Ok(());
+        }
+        Commands::Relink { output, build } => {
+            let repointed = dump::relink_builds(output, *build)?;
+            if repointed.is_empty() {
+                println!("Every build tree already matches its metadata.");
+                return Ok(());
+            }
+            for (dir, paths) in &repointed {
+                println!("  {dir} - repointed {} link(s)", paths.len());
+            }
+            let total: usize = repointed.values().map(Vec::len).sum();
+            println!("Repointed {total} link(s) across {} build(s).", repointed.len());
             return Ok(());
         }
         Commands::Gc { output } => {
@@ -460,16 +528,24 @@ fn main() -> Result<(), Report> {
                             "hashes not checked".to_string()
                         };
                         println!(
-                            "  FAIL {} - {}/{} objects missing, {corrupt}, {} broken link(s)",
+                            "  FAIL {} - {}/{} objects missing, {corrupt}, {} broken link(s), {} un-indexed file(s)",
                             r.dir,
                             r.missing_objects.len(),
                             r.referenced,
-                            r.broken_links.len()
+                            r.broken_links.len(),
+                            r.unindexed.len()
                         );
-                        for corrupt in r.corrupt_objects.iter().take(NAMED_CORRUPT_OBJECTS) {
+                        for path in r.unindexed.iter().take(NAMED_PROBLEM_PATHS) {
+                            println!("         un-indexed: {path}");
+                        }
+                        let rest = r.unindexed.len().saturating_sub(NAMED_PROBLEM_PATHS);
+                        if rest > 0 {
+                            println!("         and {rest} more un-indexed file(s)");
+                        }
+                        for corrupt in r.corrupt_objects.iter().take(NAMED_PROBLEM_PATHS) {
                             println!("         {corrupt}");
                         }
-                        let rest = r.corrupt_objects.len().saturating_sub(NAMED_CORRUPT_OBJECTS);
+                        let rest = r.corrupt_objects.len().saturating_sub(NAMED_PROBLEM_PATHS);
                         if rest > 0 {
                             println!("         and {rest} more corrupt object(s)");
                         }
@@ -653,6 +729,8 @@ fn main() -> Result<(), Report> {
         }
 
         Commands::RefreshDerived { .. }
+        | Commands::Reindex { .. }
+        | Commands::Relink { .. }
         | Commands::Gc { .. }
         | Commands::RequiredPaths
         | Commands::Update { .. }

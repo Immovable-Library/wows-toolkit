@@ -148,6 +148,24 @@ pub fn link_file(cas_root: &Path, hash: &str, link_path: &Path) -> Result<(), ro
     Ok(())
 }
 
+/// The content hash a link into the store points at, or `None` when the path is
+/// not a symlink aimed at a [`CAS_DIR`] object.
+///
+/// A link's target names the object the extraction stored for that path, which
+/// is the only record left when metadata never got the entry.
+pub fn link_target_hash(link_path: &Path) -> Option<String> {
+    let target = std::fs::read_link(link_path).ok()?;
+    let mut components = target.components().rev();
+    let name = components.next()?.as_os_str().to_str()?.to_string();
+    let fanout = components.next()?.as_os_str().to_str()?;
+    let store = components.next()?.as_os_str().to_str()?;
+    if store != CAS_DIR && store != LEGACY_CAS_DIR {
+        return None;
+    }
+    let hash = format!("{fanout}{name}");
+    (hash.len() == HASH_LEN && hash.chars().all(|c| c.is_ascii_hexdigit())).then_some(hash)
+}
+
 /// Compute a relative path from `from_dir` to `to_path`.
 fn relative_path(from_dir: &Path, to_path: &Path) -> PathBuf {
     // Canonicalize-lite: just use the paths as-is since they share a common root.
