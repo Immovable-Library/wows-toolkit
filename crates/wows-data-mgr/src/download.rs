@@ -4,12 +4,13 @@ use std::process::Command;
 
 use rootcause::prelude::*;
 
+use crate::manifest::DepotManifest;
 use crate::manifest::GameVersionEntry;
 
 const APP_ID: u32 = 552990;
 
 /// Download game data for a specific build via DepotDownloader.
-/// If `entry` is Some, uses depot_id and manifest_id for a pinned download.
+/// If `entry` is Some, downloads each pinned depot.
 /// If `entry` is None, downloads the latest public branch.
 pub fn download_build(
     build: u32,
@@ -31,39 +32,58 @@ pub fn download_build(
     // Write filelist for selective download
     let filelist = write_filelist(data_dir)?;
 
-    // Build command
-    let mut cmd = Command::new(&dd_cmd);
-    cmd.arg("-app").arg(APP_ID.to_string());
-
-    if let Some(entry) = entry {
-        cmd.arg("-depot").arg(entry.depot_id.to_string());
-        cmd.arg("-manifest").arg(&entry.manifest_id);
-    }
-
-    cmd.arg("-dir").arg(&output_dir);
-    cmd.arg("-filelist").arg(&filelist);
-    cmd.arg("-username").arg(&username);
-    cmd.arg("-remember-password");
-
     println!("Downloading build {build} to {}", output_dir.display());
-    if let Some(entry) = entry {
-        println!("  depot: {}, manifest: {}", entry.depot_id, entry.manifest_id);
-    } else {
-        println!("  (latest public branch)");
-    }
-    println!();
 
-    let status = cmd.status().attach_with(|| "Failed to run DepotDownloader")?;
+    let download_result: Result<(), Report> = (|| {
+        for request in download_requests(entry) {
+            let mut cmd = Command::new(&dd_cmd);
+            cmd.arg("-app").arg(APP_ID.to_string());
 
-    // Clean up filelist
+            if let Some(depot) = request {
+                cmd.arg("-depot").arg(depot.depot_id.0.to_string());
+                cmd.arg("-manifest").arg(&depot.manifest_id.0);
+                println!("  depot: {}, manifest: {}", depot.depot_id.0, depot.manifest_id.0);
+            } else {
+                println!("  (latest public branch)");
+            }
+            println!();
+
+            cmd.arg("-dir").arg(&output_dir);
+            cmd.arg("-filelist").arg(&filelist);
+            cmd.arg("-username").arg(&username);
+            cmd.arg("-remember-password");
+
+            let status = cmd.status().attach_with(|| "Failed to run DepotDownloader")?;
+
+            if !status.success() {
+                if let Some(depot) = request {
+                    bail!(
+                        "DepotDownloader exited with status {status} for depot {} (manifest {})",
+                        depot.depot_id.0,
+                        depot.manifest_id.0
+                    );
+                }
+                bail!("DepotDownloader exited with status {status}");
+            }
+        }
+        Ok(())
+    })();
+
     let _ = std::fs::remove_file(&filelist);
-
-    if !status.success() {
-        bail!("DepotDownloader exited with status {status}");
-    }
+    download_result?;
 
     println!("Download complete.");
     Ok(())
+}
+
+fn download_requests(entry: Option<&GameVersionEntry>) -> Vec<Option<&DepotManifest>> {
+    let Some(entry) = entry else {
+        return vec![None];
+    };
+
+    let mut requests = vec![Some(&entry.client)];
+    requests.extend([entry.content.as_ref(), entry.localization.as_ref()].into_iter().flatten().map(Some));
+    requests
 }
 
 fn find_depot_downloader() -> Result<String, Report> {
@@ -135,4 +155,48 @@ fn write_filelist(data_dir: &Path) -> Result<std::path::PathBuf, Report> {
     std::fs::write(&filelist_path, content)
         .attach_with(|| format!("Failed to write filelist to {}", filelist_path.display()))?;
     Ok(filelist_path)
+}
+
+#[cfg(test)]
+mod test {
+    use super::*;
+    use crate::manifest::DepotId;
+    use crate::manifest::DepotManifest;
+    use crate::manifest::ManifestId;
+
+    fn entry_with_all_depots() -> GameVersionEntry {
+        GameVersionEntry {
+            version: "15.7.0".to_string(),
+            client: DepotManifest::new(DepotId(552993), ManifestId("client".to_string())),
+            content: Some(DepotManifest::new(DepotId(552991), ManifestId("content".to_string()))),
+            localization: Some(DepotManifest::new(DepotId(552994), ManifestId("localization".to_string()))),
+        }
+    }
+
+    #[test]
+    fn pinned_download_selects_every_available_depot() {
+        let entry = entry_with_all_depots();
+
+        assert_eq!(
+            download_requests(Some(&entry)),
+            vec![Some(&entry.client), entry.content.as_ref(), entry.localization.as_ref()]
+        );
+    }
+
+    #[test]
+    fn historical_download_selects_only_the_client_depot() {
+        let entry = GameVersionEntry {
+            version: "0.6.13".to_string(),
+            client: DepotManifest::new(DepotId(552993), ManifestId("client".to_string())),
+            content: None,
+            localization: None,
+        };
+
+        assert_eq!(download_requests(Some(&entry)), vec![Some(&entry.client)]);
+    }
+
+    #[test]
+    fn public_download_has_one_unpinned_request() {
+        assert_eq!(download_requests(None), vec![None]);
+    }
 }
