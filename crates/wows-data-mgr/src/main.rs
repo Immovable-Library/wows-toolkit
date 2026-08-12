@@ -81,9 +81,9 @@ enum Commands {
         #[arg(long)]
         force: bool,
 
-        /// Dump directly from this game install directory, skipping the
-        /// version manifest and registry. Use together with --build.
-        #[arg(long, conflicts_with_all = &["latest", "version"])]
+        /// Override the game data source with this game install directory.
+        /// May be combined with any selector.
+        #[arg(long)]
         game_dir: Option<PathBuf>,
     },
 
@@ -255,6 +255,41 @@ fn resolve_data_dir(args_data_dir: &Option<PathBuf>) -> Result<PathBuf, Report> 
     }
 }
 
+fn select_game_dir_build<F>(
+    available_builds: &[u32],
+    latest: bool,
+    build: Option<u32>,
+    version: Option<&str>,
+    mut version_for_build: F,
+) -> Result<u32, Report>
+where
+    F: FnMut(u32) -> Result<String, Report>,
+{
+    if let Some(build) = build {
+        return Ok(build);
+    }
+
+    if latest {
+        return available_builds
+            .iter()
+            .copied()
+            .max()
+            .ok_or_else(|| rootcause::report!("No builds available in the game directory"));
+    }
+
+    if let Some(query) = version {
+        let mut matched = None;
+        for candidate in available_builds.iter().copied() {
+            if manifest::version_matches(&version_for_build(candidate)?, query) {
+                matched = Some(matched.map_or(candidate, |current: u32| current.max(candidate)));
+            }
+        }
+        return matched
+            .ok_or_else(|| rootcause::report!("No build found matching version '{query}' in the game directory"));
+    }
+
+    bail!("Specify --latest, --build, or --version");
+}
 fn main() -> Result<(), Report> {
     tracing_subscriber::fmt()
         .with_target(false)
@@ -384,9 +419,17 @@ fn main() -> Result<(), Report> {
             println!("Done: {copied} copied, {} up to date.", synced.len() - copied);
             return Ok(());
         }
-        // An explicit build + game directory dumps without manifest or registry.
-        Commands::DumpRendererData { build: Some(b), game_dir: Some(gd), output, force, .. } => {
-            let build = *b;
+        Commands::DumpRendererData { latest, build, version, game_dir: Some(gd), output, force } => {
+            let available_builds = if build.is_some() {
+                Vec::new()
+            } else {
+                wowsunpack::game_data::list_available_builds(gd)
+                    .attach_with(|| format!("Could not list builds at {}", gd.display()))?
+            };
+            let build = select_game_dir_build(&available_builds, *latest, *build, version.as_deref(), |candidate| {
+                detect::detect_version_at_path(gd, candidate)
+                    .attach_with(|| format!("Could not detect version for build {candidate} at {}", gd.display()))
+            })?;
             let version_str = detect::detect_version_at_path(gd, build)
                 .attach_with(|| format!("Could not detect version for build {build} at {}", gd.display()))?;
             let dir = dump::dump_dir(output, &version_str, build);
@@ -660,4 +703,47 @@ fn main() -> Result<(), Report> {
     }
 
     Ok(())
+}
+
+#[cfg(test)]
+mod tests {
+    use super::Args;
+    use super::select_game_dir_build;
+    use clap::Parser;
+
+    #[test]
+    fn game_dir_accepts_each_dump_selector() {
+        for args in [
+            &["wows-data-mgr", "dump-renderer-data", "--output", "out", "--game-dir", r"G:\game", "--latest"][..],
+            &["wows-data-mgr", "dump-renderer-data", "--output", "out", "--game-dir", r"G:\game", "--version", "15.7"]
+                [..],
+            &[
+                "wows-data-mgr",
+                "dump-renderer-data",
+                "--output",
+                "out",
+                "--game-dir",
+                r"G:\game",
+                "--build",
+                "13015711",
+            ][..],
+        ] {
+            assert!(Args::try_parse_from(args).is_ok());
+        }
+    }
+
+    #[test]
+    fn game_dir_selects_the_latest_available_build() {
+        let build = select_game_dir_build(&[12_999_999, 13_015_711], true, None, None, |_| unreachable!()).unwrap();
+
+        assert_eq!(build, 13_015_711);
+    }
+
+    #[test]
+    fn game_dir_selects_the_highest_build_matching_a_version() {
+        let build = select_game_dir_build(&[13_015_712, 13_015_711], false, None, Some("15.7"), |_| Ok("15.7.0".to_string()))
+            .unwrap();
+
+        assert_eq!(build, 13_015_712);
+    }
 }
