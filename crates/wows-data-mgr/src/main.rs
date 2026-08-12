@@ -473,7 +473,13 @@ fn main() -> Result<(), Report> {
                     "not available".to_string()
                 };
 
-                println!("{:<12} {:<10} {:<24} {}", build_str, entry.version, entry.manifest_id, status);
+                println!(
+                    "{:<12} {:<10} {:<24} {}",
+                    build_str,
+                    entry.version,
+                    entry.content.as_ref().unwrap_or(&entry.client).manifest_id.0,
+                    status
+                );
             }
 
             // Also show registry entries not in the manifest
