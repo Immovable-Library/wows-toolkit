@@ -1,6 +1,7 @@
 use clap::Parser;
 use clap::Subcommand;
 use rootcause::prelude::*;
+use std::path::Path;
 use std::path::PathBuf;
 
 mod detect;
@@ -255,65 +256,133 @@ fn resolve_data_dir(args_data_dir: &Option<PathBuf>) -> Result<PathBuf, Report> 
     }
 }
 
-fn select_game_dir_build<F>(
-    available_builds: &[u32],
+#[derive(Debug, Clone, PartialEq, Eq)]
+enum DumpDataSource {
+    Supplied(PathBuf),
+    Registry,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+enum ExistingDumpPolicy {
+    Preserve,
+    Replace,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq)]
+enum DumpVersionPlan {
+    UseManifest(String),
+    ValidateSourceThenUseManifest(String),
+    DetectFromSource,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq)]
+struct DumpRendererPlan {
+    target: u32,
+    version: DumpVersionPlan,
+    source: DumpDataSource,
+    output: PathBuf,
+    existing_dump: ExistingDumpPolicy,
+}
+
+fn resolve_dump_renderer_plan(
+    manifest: &manifest::GameVersionManifest,
     latest: bool,
     build: Option<u32>,
     version: Option<&str>,
-    mut version_for_build: F,
-) -> Result<u32, Report>
-where
-    F: FnMut(u32) -> Result<String, Report>,
-{
-    if let Some(build) = build {
-        return Ok(build);
-    }
+    game_dir: Option<&Path>,
+    output: &Path,
+    force: bool,
+) -> Result<DumpRendererPlan, Report> {
+    let target = if latest {
+        manifest.latest_build().ok_or_else(|| rootcause::report!("No versions in game_versions.toml"))?
+    } else if let Some(build) = build {
+        build
+    } else if let Some(version) = version {
+        manifest
+            .find_by_version(version)
+            .ok_or_else(|| rootcause::report!("No build found matching version '{version}'"))?
+    } else {
+        bail!("Specify --latest, --build, or --version");
+    };
 
-    if latest {
-        return available_builds
-            .iter()
-            .copied()
-            .max()
-            .ok_or_else(|| rootcause::report!("No builds available in the game directory"));
-    }
+    let manifest_version = manifest.get(target).map(|entry| entry.version.clone());
+    let version = match (manifest_version, force) {
+        (Some(version), true) => DumpVersionPlan::ValidateSourceThenUseManifest(version),
+        (Some(version), false) => DumpVersionPlan::UseManifest(version),
+        (None, _) => DumpVersionPlan::DetectFromSource,
+    };
 
-    if let Some(query) = version {
-        let mut matched = None;
-        let mut detected_builds = 0usize;
-        let mut detection_failures = Vec::new();
-        for candidate in available_builds.iter().copied() {
-            let detected = match version_for_build(candidate) {
-                Ok(detected) => detected,
-                Err(error) => {
-                    detection_failures.push(format!("{candidate}: {error}"));
-                    continue;
-                }
-            };
-            detected_builds += 1;
-            if manifest::version_matches(&detected, query) {
-                matched = Some(matched.map_or(candidate, |current: u32| current.max(candidate)));
-            }
-        }
-        if let Some(matched) = matched {
-            return Ok(matched);
-        }
-        if detected_builds == 0 && !detection_failures.is_empty() {
-            bail!(
-                "Could not detect a version from any build in the game directory: {}",
-                detection_failures.join("; ")
-            );
-        }
-        if detection_failures.is_empty() {
-            bail!("No build found matching version '{query}' in the game directory");
-        }
-        bail!(
-            "No build found matching version '{query}' in the game directory; version detection failed for: {}",
-            detection_failures.join("; ")
-        );
-    }
-
-    bail!("Specify --latest, --build, or --version");
+    Ok(DumpRendererPlan {
+        target,
+        version,
+        source: game_dir.map_or(DumpDataSource::Registry, |path| DumpDataSource::Supplied(path.to_path_buf())),
+        output: output.to_path_buf(),
+        existing_dump: if force { ExistingDumpPolicy::Replace } else { ExistingDumpPolicy::Preserve },
+    })
 }
+
+fn execute_dump_renderer_plan(plan: DumpRendererPlan, data_dir: &Path) -> Result<(), Report> {
+    let game_dir = match plan.source {
+        DumpDataSource::Supplied(path) => path,
+        DumpDataSource::Registry => {
+            let registry = registry::load_registry(&data_dir.join("versions.toml"));
+            registry
+                .game_dir_for_build(plan.target, data_dir)
+                .ok_or_else(|| rootcause::report!("Build {} not available locally", plan.target))?
+        }
+    };
+    let version = match plan.version {
+        DumpVersionPlan::UseManifest(version) => version,
+        DumpVersionPlan::ValidateSourceThenUseManifest(version) => {
+            detect_source_version(&game_dir, plan.target)?;
+            version
+        }
+        DumpVersionPlan::DetectFromSource => detect_source_version(&game_dir, plan.target)?,
+    };
+
+    if plan.existing_dump == ExistingDumpPolicy::Replace {
+        remove_existing_dump(&plan.output, plan.target, &version)?;
+    }
+
+    println!("Dumping build {} ({version}) from {}", plan.target, game_dir.display());
+    let progress = dump::create_progress_bar(&game_dir);
+    dump::dump_renderer_data(&game_dir, plan.target, &version, &plan.output, progress.as_ref(), false)?;
+    println!("Dumped renderer data to {}", dump::dump_dir(&plan.output, &version, plan.target).display());
+    Ok(())
+}
+
+fn detect_source_version(game_dir: &Path, target: u32) -> Result<String, Report> {
+    detect::detect_version_at_path(game_dir, target)
+        .attach_with(|| format!("Could not detect version for build {target} at {}", game_dir.display()))
+}
+
+fn remove_existing_dump(output: &Path, target: u32, version: &str) -> Result<(), Report> {
+    let builds_path = output.join("builds.toml");
+    let mut index = wows_data_mgr::builds::BuildsIndex::load(&builds_path);
+    if let Some(old_entry) = index.find_by_build(target).cloned() {
+        let old_dir = output.join(&old_entry.dir);
+        if old_dir.exists() {
+            println!("Removing old dump at {}...", old_dir.display());
+            std::fs::remove_dir_all(&old_dir)?;
+        }
+        index.remove_build(target);
+        index.save(&builds_path)?;
+    }
+
+    let existing_dir = dump::dump_dir(output, version, target);
+    if existing_dir.exists() {
+        println!("Removing existing dump at {}...", existing_dir.display());
+        std::fs::remove_dir_all(&existing_dir)?;
+    }
+    Ok(())
+}
+
+fn unknown_build_manifest_entry(build: u32, version: &str) -> String {
+    format!(
+        "[versions.{build}]\nversion = \"{version}\"\nclient_depot_id = 552993\nclient_manifest_id = \"<look up on SteamDB>\""
+    )
+}
+
 fn main() -> Result<(), Report> {
     tracing_subscriber::fmt()
         .with_target(false)
@@ -443,34 +512,24 @@ fn main() -> Result<(), Report> {
             println!("Done: {copied} copied, {} up to date.", synced.len() - copied);
             return Ok(());
         }
-        Commands::DumpRendererData { latest, build, version, game_dir: Some(gd), output, force } => {
-            let available_builds = if build.is_some() {
-                Vec::new()
-            } else {
-                wowsunpack::game_data::list_available_builds(gd)
-                    .attach_with(|| format!("Could not list builds at {}", gd.display()))?
-            };
-            let build = select_game_dir_build(&available_builds, *latest, *build, version.as_deref(), |candidate| {
-                detect::detect_version_at_path(gd, candidate)
-                    .attach_with(|| format!("Could not detect version for build {candidate} at {}", gd.display()))
-            })?;
-            let version_str = detect::detect_version_at_path(gd, build)
-                .attach_with(|| format!("Could not detect version for build {build} at {}", gd.display()))?;
-            let dir = dump::dump_dir(output, &version_str, build);
-            if *force && dir.exists() {
-                println!("Removing existing dump at {}...", dir.display());
-                std::fs::remove_dir_all(&dir)?;
-            }
-            println!("Dumping build {build} ({version_str}) from {}", gd.display());
-            let pb = dump::create_progress_bar(gd);
-            dump::dump_renderer_data(gd, build, &version_str, output, pb.as_ref(), false)?;
-            println!("Dumped to {}", dir.display());
-            return Ok(());
-        }
         _ => {}
     }
 
     let manifest = manifest::load_manifest(&repo_root.join("game_versions.toml"))?;
+    if let Commands::DumpRendererData { latest, build, version, output, force, game_dir } = &args.command {
+        let plan = resolve_dump_renderer_plan(
+            &manifest,
+            *latest,
+            *build,
+            version.as_deref(),
+            game_dir.as_deref(),
+            output,
+            *force,
+        )?;
+        execute_dump_renderer_plan(plan, &data_dir)?;
+        return Ok(());
+    }
+
     let mut reg = registry::load_registry(&data_dir.join("versions.toml"));
 
     match args.command {
@@ -503,10 +562,7 @@ fn main() -> Result<(), Report> {
                 println!();
                 println!("This build is not in game_versions.toml. Add it with:");
                 println!();
-                println!("[versions.{target}]");
-                println!("version = \"{version_str}\"");
-                println!("depot_id = 552991");
-                println!("manifest_id = \"<look up on SteamDB>\"");
+                println!("{}", unknown_build_manifest_entry(target, &version_str));
             }
         }
 
@@ -528,6 +584,8 @@ fn main() -> Result<(), Report> {
             for build_str in builds {
                 let entry = &manifest.versions[build_str];
                 let build: u32 = build_str.parse().unwrap_or(0);
+                // Content represents game data; client is required when content is absent.
+                let display_manifest = entry.content.as_ref().unwrap_or(&entry.client);
                 let status = if let Some(local) = reg.get(build) {
                     if let Some(ref path) = local.path {
                         format!("{} (registered)", path.display())
@@ -540,13 +598,7 @@ fn main() -> Result<(), Report> {
                     "not available".to_string()
                 };
 
-                println!(
-                    "{:<12} {:<10} {:<24} {}",
-                    build_str,
-                    entry.version,
-                    entry.content.as_ref().unwrap_or(&entry.client).manifest_id.0,
-                    status
-                );
+                println!("{:<12} {:<10} {:<24} {}", build_str, entry.version, display_manifest.manifest_id.0, status);
             }
 
             // Also show registry entries not in the manifest
@@ -575,61 +627,6 @@ fn main() -> Result<(), Report> {
                 registry::save_registry(&reg, &data_dir.join("versions.toml"))?;
                 println!("\nRegistry updated.");
             }
-        }
-
-        Commands::DumpRendererData { latest, build, version, output, force, game_dir: _ } => {
-            let target = if latest {
-                let builds = reg.available_builds();
-                *builds.last().ok_or_else(|| rootcause::report!("No builds available"))?
-            } else if let Some(b) = build {
-                b
-            } else if let Some(ref v) = version {
-                manifest
-                    .find_by_version(v)
-                    .ok_or_else(|| rootcause::report!("No build found matching version '{v}'"))?
-            } else {
-                bail!("Specify --latest, --build, or --version");
-            };
-
-            let game_dir = reg
-                .game_dir_for_build(target, &data_dir)
-                .ok_or_else(|| rootcause::report!("Build {target} not available locally"))?;
-
-            let version_str = if let Some(entry) = manifest.get(target) {
-                entry.version.clone()
-            } else {
-                detect::detect_version_at_path(&game_dir, target).unwrap_or_else(|_| "unknown".to_string())
-            };
-
-            if force {
-                // Remove stale builds.toml entry for this build
-                let builds_path = output.join("builds.toml");
-                let mut index = wows_data_mgr::builds::BuildsIndex::load(&builds_path);
-                if index.find_by_build(target).is_some() {
-                    // Find and remove the old directory
-                    if let Some(old_entry) = index.find_by_build(target).cloned() {
-                        let old_dir = output.join(&old_entry.dir);
-                        if old_dir.exists() {
-                            println!("Removing old dump at {}...", old_dir.display());
-                            std::fs::remove_dir_all(&old_dir)?;
-                        }
-                    }
-                    index.remove_build(target);
-                    index.save(&builds_path)?;
-                }
-
-                // Also remove the new version dir if it exists
-                let existing_dir = dump::dump_dir(&output, &version_str, target);
-                if existing_dir.exists() {
-                    println!("Removing existing dump at {}...", existing_dir.display());
-                    std::fs::remove_dir_all(&existing_dir)?;
-                }
-            }
-
-            println!("Building VFS from game directory...");
-            let pb = dump::create_progress_bar(&game_dir);
-            dump::dump_renderer_data(&game_dir, target, &version_str, &output, pb.as_ref(), false)?;
-            println!("Dumped renderer data to {}", dump::dump_dir(&output, &version_str, target).display());
         }
 
         Commands::Remove { build, version, output } => {
@@ -663,6 +660,10 @@ fn main() -> Result<(), Report> {
         | Commands::MigrateCas { .. }
         | Commands::CompleteBuild { .. } => {
             unreachable!("handled before manifest load")
+        }
+
+        Commands::DumpRendererData { .. } => {
+            unreachable!("handled after manifest load")
         }
 
         Commands::Register { latest, version, build, path } => {
@@ -732,8 +733,16 @@ fn main() -> Result<(), Report> {
 #[cfg(test)]
 mod tests {
     use super::Args;
-    use super::select_game_dir_build;
+    use super::DumpDataSource;
+    use super::DumpVersionPlan;
+    use super::ExistingDumpPolicy;
+    use super::resolve_dump_renderer_plan;
+    use super::unknown_build_manifest_entry;
     use clap::Parser;
+    use std::path::Path;
+    use wows_data_mgr::manifest::DepotId;
+    use wows_data_mgr::manifest::GameVersionManifest;
+    use wows_data_mgr::manifest::ManifestId;
 
     #[test]
     fn game_dir_accepts_each_dump_selector() {
@@ -757,57 +766,105 @@ mod tests {
     }
 
     #[test]
-    fn game_dir_selects_the_latest_available_build() {
-        let build = select_game_dir_build(&[12_999_999, 13_015_711], true, None, None, |_| unreachable!()).unwrap();
+    fn game_dir_plan_resolves_each_selector_from_the_manifest() {
+        let manifest = manifest_fixture();
 
-        assert_eq!(build, 13_015_711);
-    }
-
-    #[test]
-    fn game_dir_selects_the_highest_build_matching_a_version() {
-        let build = select_game_dir_build(&[13_015_712, 13_015_711], false, None, Some("15.7"), |_| Ok("15.7.0".to_string()))
+        for (latest, build, version, expected_build, expected_version) in [
+            (true, None, None, 13_100_000, "15.8.0"),
+            (false, Some(13_015_711), None, 13_015_711, "15.7.0"),
+            (false, None, Some("15.7"), 13_015_712, "15.7.1"),
+        ] {
+            let plan = resolve_dump_renderer_plan(
+                &manifest,
+                latest,
+                build,
+                version,
+                Some(Path::new("supplied-game")),
+                Path::new("dump-output"),
+                false,
+            )
             .unwrap();
 
-        assert_eq!(build, 13_015_712);
+            assert_eq!(plan.target, expected_build);
+            assert_eq!(plan.version, DumpVersionPlan::UseManifest(expected_version.to_string()));
+        }
     }
 
     #[test]
-    fn game_dir_version_selection_skips_undetectable_builds() {
-        let mut inspected = Vec::new();
-        let build = select_game_dir_build(
-            &[12_830_008, 13_015_711, 13_015_712, 13_015_713],
+    fn game_dir_plan_bypasses_registry_and_keeps_the_shared_cleanup_policy() {
+        let manifest = manifest_fixture();
+        let override_plan = resolve_dump_renderer_plan(
+            &manifest,
             false,
             None,
             Some("15.7"),
-            |candidate| {
-                inspected.push(candidate);
-                match candidate {
-                    12_830_008 => Err(rootcause::report!("stale build directory")),
-                    13_015_711 => Ok("15.7.0".to_string()),
-                    13_015_712 => Ok("15.7.1".to_string()),
-                    13_015_713 => Ok("15.8.0".to_string()),
-                    _ => unreachable!(),
-                }
-            },
+            Some(Path::new("supplied-game")),
+            Path::new("dump-output"),
+            true,
         )
         .unwrap();
+        let registry_plan =
+            resolve_dump_renderer_plan(&manifest, false, None, Some("15.7"), None, Path::new("dump-output"), true)
+                .unwrap();
 
-        assert_eq!(build, 13_015_712);
-        assert_eq!(inspected, [12_830_008, 13_015_711, 13_015_712, 13_015_713]);
+        assert_eq!(override_plan.source, DumpDataSource::Supplied(Path::new("supplied-game").to_path_buf()));
+        assert_eq!(registry_plan.source, DumpDataSource::Registry);
+        assert_eq!(override_plan.target, registry_plan.target);
+        assert_eq!(override_plan.output, registry_plan.output);
+        assert_eq!(override_plan.existing_dump, ExistingDumpPolicy::Replace);
+        assert_eq!(override_plan.existing_dump, registry_plan.existing_dump);
     }
 
     #[test]
-    fn game_dir_version_selection_reports_undetectable_builds_when_no_match_exists() {
-        let error = select_game_dir_build(&[12_830_008, 13_015_712], false, None, Some("15.7"), |candidate| {
-            match candidate {
-                12_830_008 => Err(rootcause::report!("stale build directory")),
-                13_015_712 => Ok("15.8.0".to_string()),
-                _ => unreachable!(),
-            }
-        })
-        .unwrap_err();
-        let message = error.to_string();
+    fn forced_game_dir_plan_validates_source_before_using_the_manifest_version() {
+        let manifest = manifest_fixture();
 
-        assert!(message.contains("12830008"));
-        assert!(message.contains("stale build directory"));
-    }}
+        let plan = resolve_dump_renderer_plan(
+            &manifest,
+            false,
+            None,
+            Some("15.7"),
+            Some(Path::new("supplied-game")),
+            Path::new("dump-output"),
+            true,
+        )
+        .unwrap();
+
+        assert_eq!(plan.version, DumpVersionPlan::ValidateSourceThenUseManifest("15.7.1".to_string()));
+    }
+
+    #[test]
+    fn unknown_build_guidance_uses_a_parseable_client_manifest_pair() {
+        let suggestion = unknown_build_manifest_entry(13_015_799, "15.7.9");
+
+        let manifest: GameVersionManifest = toml::from_str(&suggestion).unwrap();
+        let entry = manifest.get(13_015_799).unwrap();
+        assert_eq!(entry.version, "15.7.9");
+        assert_eq!(entry.client.depot_id, DepotId(552993));
+        assert_eq!(entry.client.manifest_id, ManifestId("<look up on SteamDB>".to_string()));
+        assert_eq!(entry.content, None);
+        assert_eq!(entry.localization, None);
+    }
+
+    fn manifest_fixture() -> GameVersionManifest {
+        toml::from_str(
+            r#"
+            [versions.13015711]
+            version = "15.7.0"
+            client_depot_id = 552993
+            client_manifest_id = "client-15.7.0"
+
+            [versions.13015712]
+            version = "15.7.1"
+            client_depot_id = 552993
+            client_manifest_id = "client-15.7.1"
+
+            [versions.13100000]
+            version = "15.8.0"
+            client_depot_id = 552993
+            client_manifest_id = "client-15.8.0"
+            "#,
+        )
+        .unwrap()
+    }
+}
