@@ -1,3 +1,4 @@
+use std::ffi::OsString;
 use std::io::Write;
 use std::path::Path;
 use std::process::Command;
@@ -37,23 +38,17 @@ pub fn download_build(
     let download_result: Result<(), Report> = (|| {
         for request in download_requests(entry) {
             let mut cmd = Command::new(&dd_cmd);
-            cmd.arg("-app").arg(APP_ID.to_string());
 
             if let Some(depot) = request {
-                cmd.arg("-depot").arg(depot.depot_id.0.to_string());
-                cmd.arg("-manifest").arg(&depot.manifest_id.0);
                 println!("  depot: {}, manifest: {}", depot.depot_id.0, depot.manifest_id.0);
             } else {
                 println!("  (latest public branch)");
             }
             println!();
 
-            cmd.arg("-dir").arg(&output_dir);
-            cmd.arg("-filelist").arg(&filelist);
-            cmd.arg("-username").arg(&username);
-            cmd.arg("-remember-password");
+            cmd.args(depot_downloader_args(request, &output_dir, &filelist, &username));
 
-            let status = cmd.status().attach_with(|| "Failed to run DepotDownloader")?;
+            let status = cmd.status().attach_with(|| depot_downloader_spawn_context(request))?;
 
             if !status.success() {
                 if let Some(depot) = request {
@@ -84,6 +79,42 @@ fn download_requests(entry: Option<&GameVersionEntry>) -> Vec<Option<&DepotManif
     let mut requests = vec![Some(&entry.client)];
     requests.extend([entry.content.as_ref(), entry.localization.as_ref()].into_iter().flatten().map(Some));
     requests
+}
+
+fn depot_downloader_args(
+    request: Option<&DepotManifest>,
+    output_dir: &Path,
+    filelist: &Path,
+    username: &str,
+) -> Vec<OsString> {
+    let mut args = vec![OsString::from("-app"), OsString::from(APP_ID.to_string())];
+    if let Some(depot) = request {
+        args.extend([
+            OsString::from("-depot"),
+            OsString::from(depot.depot_id.0.to_string()),
+            OsString::from("-manifest"),
+            OsString::from(&depot.manifest_id.0),
+        ]);
+    }
+    args.extend([
+        OsString::from("-dir"),
+        output_dir.as_os_str().to_owned(),
+        OsString::from("-filelist"),
+        filelist.as_os_str().to_owned(),
+        OsString::from("-username"),
+        OsString::from(username),
+        OsString::from("-remember-password"),
+    ]);
+    args
+}
+
+fn depot_downloader_spawn_context(request: Option<&DepotManifest>) -> String {
+    match request {
+        Some(depot) => {
+            format!("Failed to run DepotDownloader for depot {} (manifest {})", depot.depot_id.0, depot.manifest_id.0)
+        }
+        None => "Failed to run DepotDownloader for the latest public branch".to_string(),
+    }
 }
 
 fn find_depot_downloader() -> Result<String, Report> {
@@ -163,6 +194,7 @@ mod test {
     use crate::manifest::DepotId;
     use crate::manifest::DepotManifest;
     use crate::manifest::ManifestId;
+    use std::ffi::OsString;
 
     fn entry_with_all_depots() -> GameVersionEntry {
         GameVersionEntry {
@@ -184,9 +216,9 @@ mod test {
     }
 
     #[test]
-    fn historical_download_selects_only_the_client_depot() {
+    fn client_only_download_selects_only_the_client_depot() {
         let entry = GameVersionEntry {
-            version: "0.6.13".to_string(),
+            version: "0.1.0".to_string(),
             client: DepotManifest::new(DepotId(552993), ManifestId("client".to_string())),
             content: None,
             localization: None,
@@ -196,7 +228,124 @@ mod test {
     }
 
     #[test]
+    fn historical_content_without_localization_selects_both_available_depots() {
+        let entry = GameVersionEntry {
+            version: "9.3.1".to_string(),
+            client: DepotManifest::new(DepotId(552993), ManifestId("728775844461842480".to_string())),
+            content: Some(DepotManifest::new(DepotId(552991), ManifestId("1770346061135014060".to_string()))),
+            localization: None,
+        };
+
+        assert_eq!(download_requests(Some(&entry)), vec![Some(&entry.client), entry.content.as_ref()]);
+    }
+
+    #[test]
     fn public_download_has_one_unpinned_request() {
         assert_eq!(download_requests(None), vec![None]);
+    }
+
+    #[test]
+    fn pinned_download_builds_exact_commands_for_each_depot() {
+        let entry = entry_with_all_depots();
+        let commands: Vec<Vec<OsString>> = download_requests(Some(&entry))
+            .into_iter()
+            .map(|request| {
+                depot_downloader_args(
+                    request,
+                    Path::new("game-data/builds/13015711"),
+                    Path::new("game-data/filelist.txt"),
+                    "captain",
+                )
+            })
+            .collect();
+
+        assert_eq!(
+            commands,
+            vec![
+                os_args(&[
+                    "-app",
+                    "552990",
+                    "-depot",
+                    "552993",
+                    "-manifest",
+                    "client",
+                    "-dir",
+                    "game-data/builds/13015711",
+                    "-filelist",
+                    "game-data/filelist.txt",
+                    "-username",
+                    "captain",
+                    "-remember-password",
+                ]),
+                os_args(&[
+                    "-app",
+                    "552990",
+                    "-depot",
+                    "552991",
+                    "-manifest",
+                    "content",
+                    "-dir",
+                    "game-data/builds/13015711",
+                    "-filelist",
+                    "game-data/filelist.txt",
+                    "-username",
+                    "captain",
+                    "-remember-password",
+                ]),
+                os_args(&[
+                    "-app",
+                    "552990",
+                    "-depot",
+                    "552994",
+                    "-manifest",
+                    "localization",
+                    "-dir",
+                    "game-data/builds/13015711",
+                    "-filelist",
+                    "game-data/filelist.txt",
+                    "-username",
+                    "captain",
+                    "-remember-password",
+                ]),
+            ]
+        );
+    }
+
+    #[test]
+    fn public_download_builds_exact_unpinned_command() {
+        assert_eq!(
+            depot_downloader_args(
+                None,
+                Path::new("game-data/builds/13015711"),
+                Path::new("game-data/filelist.txt"),
+                "captain",
+            ),
+            os_args(&[
+                "-app",
+                "552990",
+                "-dir",
+                "game-data/builds/13015711",
+                "-filelist",
+                "game-data/filelist.txt",
+                "-username",
+                "captain",
+                "-remember-password",
+            ])
+        );
+    }
+
+    #[test]
+    fn pinned_spawn_error_context_names_depot_and_manifest() {
+        let entry = entry_with_all_depots();
+
+        assert_eq!(
+            depot_downloader_spawn_context(Some(&entry.content.unwrap())),
+            "Failed to run DepotDownloader for depot 552991 (manifest content)"
+        );
+        assert_eq!(depot_downloader_spawn_context(None), "Failed to run DepotDownloader for the latest public branch");
+    }
+
+    fn os_args(values: &[&str]) -> Vec<OsString> {
+        values.iter().map(OsString::from).collect()
     }
 }

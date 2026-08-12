@@ -40,6 +40,7 @@ pub struct GameVersionEntry {
 }
 
 #[derive(Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
 struct FlatGameVersionEntry {
     version: String,
     client_depot_id: DepotId,
@@ -234,19 +235,44 @@ mod test {
     }
 
     #[test]
-    fn rejects_incomplete_content_depot_manifest() {
+    fn rejects_each_incomplete_optional_depot_manifest() {
+        for (optional_field, missing_field) in [
+            ("content_depot_id = 552991", "content_manifest_id"),
+            ("content_manifest_id = \"content\"", "content_depot_id"),
+            ("localization_depot_id = 552994", "localization_manifest_id"),
+            ("localization_manifest_id = \"localization\"", "localization_depot_id"),
+        ] {
+            let source = format!(
+                r#"
+                [versions.13015711]
+                version = "15.7.0"
+                client_depot_id = 552993
+                client_manifest_id = "client"
+                {optional_field}
+                "#
+            );
+
+            let error = toml::from_str::<GameVersionManifest>(&source).unwrap_err();
+
+            assert!(error.to_string().contains(missing_field));
+        }
+    }
+
+    #[test]
+    fn rejects_misspelled_optional_depot_fields() {
         let error = toml::from_str::<GameVersionManifest>(
             r#"
             [versions.13015711]
             version = "15.7.0"
             client_depot_id = 552993
             client_manifest_id = "client"
-            content_depot_id = 552991
+            localisation_depot_id = 552994
+            localisation_manifest_id = "localization"
             "#,
         )
         .unwrap_err();
 
-        assert!(error.to_string().contains("content"));
+        assert!(error.to_string().contains("localisation_depot_id"));
     }
 
     #[test]
@@ -271,6 +297,46 @@ mod test {
         assert!(serialized.contains("localization_depot_id = 552994"));
         assert!(serialized.contains("localization_manifest_id = \"localization\""));
         assert!(!serialized.contains("[versions.13015711.client]"));
+    }
+
+    #[test]
+    fn round_trips_all_optional_depot_shapes() {
+        let original: GameVersionManifest = toml::from_str(
+            r#"
+            [versions.13015711]
+            version = "15.7.0"
+            client_depot_id = 552993
+            client_manifest_id = "client"
+            content_depot_id = 552991
+            content_manifest_id = "content"
+            localization_depot_id = 552994
+            localization_manifest_id = "localization"
+
+            [versions.2466969]
+            version = "9.3.1"
+            client_depot_id = 552993
+            client_manifest_id = "728775844461842480"
+            content_depot_id = 552991
+            content_manifest_id = "1770346061135014060"
+
+            [versions.1000000]
+            version = "0.1.0"
+            client_depot_id = 552993
+            client_manifest_id = "client-only"
+            "#,
+        )
+        .unwrap();
+
+        let serialized = toml::to_string(&original).unwrap();
+        let reparsed: GameVersionManifest = toml::from_str(&serialized).unwrap();
+
+        assert_eq!(reparsed.versions, original.versions);
+        let historical = reparsed.get(2466969).unwrap();
+        assert_eq!(
+            historical.content,
+            Some(DepotManifest::new(DepotId(552991), ManifestId("1770346061135014060".to_string())))
+        );
+        assert_eq!(historical.localization, None);
     }
 
     #[test]
