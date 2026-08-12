@@ -11351,7 +11351,7 @@ dependencies = [
 
 [[package]]
 name = "wows-battle-world"
-version = "0.12.1"
+version = "0.13.0"
 dependencies = [
  "bevy_ecs",
  "criterion",
@@ -11371,7 +11371,7 @@ dependencies = [
 
 [[package]]
 name = "wows-core"
-version = "0.12.1"
+version = "0.13.0"
 dependencies = [
  "rkyv",
  "roxmltree 0.21.1",
@@ -11381,7 +11381,7 @@ dependencies = [
 
 [[package]]
 name = "wows-data-mgr"
-version = "0.20.1"
+version = "0.21.0"
 dependencies = [
  "clap",
  "futures",
@@ -11406,7 +11406,7 @@ dependencies = [
 
 [[package]]
 name = "wows-replay-insights"
-version = "0.12.0"
+version = "0.13.0"
 dependencies = [
  "data-encoding",
  "flate2",
@@ -11441,7 +11441,7 @@ dependencies = [
 
 [[package]]
 name = "wows_minimap_renderer"
-version = "0.38.0"
+version = "0.39.0"
 dependencies = [
  "ab_glyph",
  "clap",
@@ -11482,7 +11482,7 @@ dependencies = [
 
 [[package]]
 name = "wows_replays"
-version = "0.45.1"
+version = "0.46.0"
 dependencies = [
  "bon",
  "flate2",
@@ -11608,7 +11608,7 @@ dependencies = [
 
 [[package]]
 name = "wowsunpack"
-version = "0.44.1"
+version = "0.45.0"
 dependencies = [
  "async-std",
  "async-trait",
@@ -11707,7 +11707,7 @@ dependencies = [
 
 [[package]]
 name = "wt-translations"
-version = "0.15.1"
+version = "0.16.0"
 dependencies = [
  "wows-core",
 ]
