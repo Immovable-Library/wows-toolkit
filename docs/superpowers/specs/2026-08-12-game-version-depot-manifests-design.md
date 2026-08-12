@@ -44,6 +44,14 @@ Pinned downloads report each depot and manifest pair that will be downloaded.
 The versions listing displays the content manifest when present. If content is
 absent, it displays the client manifest so historical entries remain useful.
 
+## Local game directory selection
+
+`dump-renderer-data --game-dir` is a source override, not a build selector.
+It may be combined with `--latest`, `--version`, or `--build`. The selected
+build and version are resolved normally from `game_versions.toml`, while data
+is read directly from the supplied directory without registry lookup or a
+download.
+
 ## Tests
 
 Add manifest tests that prove:
@@ -52,6 +60,7 @@ Add manifest tests that prove:
 - omitted content and localization pairs deserialize as `None`;
 - a half-present optional pair is rejected;
 - version lookup behavior remains unchanged with the new model.
+- `--game-dir` parses successfully with each build selector.
 
 Add download command construction tests so pinned builds produce one command
 per available depot with matching IDs, while unpinned builds retain one public

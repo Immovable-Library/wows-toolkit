@@ -16,6 +16,7 @@
 - Use ASCII only in code, comments, UI strings, and commit messages.
 - Use `jj`, with one focused commit per logical milestone and no AI attribution.
 - Preserve unrelated working-copy changes.
+- Treat `dump-renderer-data --game-dir` as a source override that may accompany `--latest`, `--version`, or `--build`.
 
 ---
 
@@ -163,13 +164,46 @@ jj commit 'crates/wows-data-mgr/src/download.rs' 'crates/wows-data-mgr/src/main.
 ### Task 3: Final verification
 
 **Files:**
-- Verify only
+- Modify: `crates/wows-data-mgr/src/main.rs`
 
 **Interfaces:**
 - Consumes the complete implementation from Tasks 1 and 2.
 - Produces verification evidence only.
 
-- [ ] **Step 1: Format and inspect scope**
+- [ ] **Step 1: Write failing CLI compatibility tests**
+
+Use `Cli::try_parse_from` with literal argument arrays and assert that
+`dump-renderer-data` accepts `--game-dir G:\\game` together with each of
+`--latest`, `--version 15.7`, and `--build 13015711`. These tests catch any
+Clap conflict reintroduced between the source override and selectors.
+
+- [ ] **Step 2: Run tests and verify RED**
+
+Run: `cargo test -p wows-data-mgr game_dir --bin wows-data-mgr`
+
+Expected: the latest and version cases fail because Clap rejects the argument combination.
+
+- [ ] **Step 3: Remove selector conflicts from `game_dir`**
+
+Keep `game_dir: Option<PathBuf>` and its existing execution behavior, but
+remove its `conflicts_with_all` attribute. Update the help text to say it
+overrides the game data source and may be combined with any selector.
+
+- [ ] **Step 4: Run focused CLI tests**
+
+Run: `cargo test -p wows-data-mgr game_dir --bin wows-data-mgr`
+
+Expected: all three selector combinations pass.
+
+- [ ] **Step 5: Request adversarial review and commit**
+
+Dispatch a fresh reviewer to check Clap behavior and confirm the source
+override still bypasses registry and download lookup for every selector.
+Resolve Critical and Important findings, rerun the focused tests, then commit
+only the related `main.rs` change together with any Task 2 edits already
+scheduled for that file.
+
+- [ ] **Step 6: Format and inspect scope**
 
 Run: `cargo fmt --all -- --check`
 
@@ -179,18 +213,18 @@ Run: `jj diff --stat`
 
 Expected: unrelated pre-existing changes remain in the working copy and the milestone commits contain only their named files.
 
-- [ ] **Step 2: Run the crate test suite**
+- [ ] **Step 7: Run the crate test suite**
 
 Run: `cargo test -p wows-data-mgr --all-targets`
 
 Expected: exit 0 with zero failed tests.
 
-- [ ] **Step 3: Run the release parse smoke test**
+- [ ] **Step 8: Run the release parse smoke test**
 
 Run: `cargo run --release -p wows-data-mgr -- versions`
 
 Expected: exit 0 and output includes build `13015711` with version `15.7.0`.
 
-- [ ] **Step 4: Final adversarial review**
+- [ ] **Step 9: Final adversarial review**
 
 Dispatch a fresh reviewer over both milestone commits and the design spec. Ask them to identify requirement gaps, accidental changes to user work, weak tests, or violations of repository modeling and missing-data rules. Resolve all Critical and Important findings, then rerun every command in this task before reporting completion.
