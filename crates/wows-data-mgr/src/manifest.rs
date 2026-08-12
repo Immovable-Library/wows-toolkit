@@ -3,7 +3,27 @@ use std::path::Path;
 
 use rootcause::prelude::*;
 use serde::Deserialize;
+use serde::Deserializer;
 use serde::Serialize;
+use serde::Serializer;
+
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+pub struct DepotId(pub u32);
+
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+pub struct ManifestId(pub String);
+
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+pub struct DepotManifest {
+    pub depot_id: DepotId,
+    pub manifest_id: ManifestId,
+}
+
+impl DepotManifest {
+    pub fn new(depot_id: DepotId, manifest_id: ManifestId) -> Self {
+        Self { depot_id, manifest_id }
+    }
+}
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct GameVersionManifest {
@@ -11,11 +31,89 @@ pub struct GameVersionManifest {
     pub versions: BTreeMap<String, GameVersionEntry>,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, PartialEq, Eq)]
 pub struct GameVersionEntry {
     pub version: String,
-    pub depot_id: u32,
-    pub manifest_id: String,
+    pub client: DepotManifest,
+    pub content: Option<DepotManifest>,
+    pub localization: Option<DepotManifest>,
+}
+
+#[derive(Serialize, Deserialize)]
+struct FlatGameVersionEntry {
+    version: String,
+    client_depot_id: DepotId,
+    client_manifest_id: ManifestId,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    content_depot_id: Option<DepotId>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    content_manifest_id: Option<ManifestId>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    localization_depot_id: Option<DepotId>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    localization_manifest_id: Option<ManifestId>,
+}
+
+impl<'de> Deserialize<'de> for GameVersionEntry {
+    fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
+    where
+        D: Deserializer<'de>,
+    {
+        let flat = FlatGameVersionEntry::deserialize(deserializer)?;
+        let content = depot_manifest_from_pair(flat.content_depot_id, flat.content_manifest_id, "content")?;
+        let localization =
+            depot_manifest_from_pair(flat.localization_depot_id, flat.localization_manifest_id, "localization")?;
+
+        Ok(Self {
+            version: flat.version,
+            client: DepotManifest::new(flat.client_depot_id, flat.client_manifest_id),
+            content,
+            localization,
+        })
+    }
+}
+
+impl Serialize for GameVersionEntry {
+    fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
+    where
+        S: Serializer,
+    {
+        let (content_depot_id, content_manifest_id) = match &self.content {
+            Some(manifest) => (Some(manifest.depot_id.clone()), Some(manifest.manifest_id.clone())),
+            None => (None, None),
+        };
+        let (localization_depot_id, localization_manifest_id) = match &self.localization {
+            Some(manifest) => (Some(manifest.depot_id.clone()), Some(manifest.manifest_id.clone())),
+            None => (None, None),
+        };
+
+        FlatGameVersionEntry {
+            version: self.version.clone(),
+            client_depot_id: self.client.depot_id.clone(),
+            client_manifest_id: self.client.manifest_id.clone(),
+            content_depot_id,
+            content_manifest_id,
+            localization_depot_id,
+            localization_manifest_id,
+        }
+        .serialize(serializer)
+    }
+}
+
+fn depot_manifest_from_pair<E>(
+    depot_id: Option<DepotId>,
+    manifest_id: Option<ManifestId>,
+    depot_name: &str,
+) -> Result<Option<DepotManifest>, E>
+where
+    E: serde::de::Error,
+{
+    match (depot_id, manifest_id) {
+        (Some(depot_id), Some(manifest_id)) => Ok(Some(DepotManifest::new(depot_id, manifest_id))),
+        (None, None) => Ok(None),
+        (Some(_), None) => Err(E::custom(format!("{depot_name}_manifest_id is required"))),
+        (None, Some(_)) => Err(E::custom(format!("{depot_name}_depot_id is required"))),
+    }
 }
 
 impl GameVersionManifest {
@@ -96,15 +194,105 @@ mod test {
     }
 
     #[test]
+    fn parses_split_depot_manifests() {
+        let manifest: GameVersionManifest = toml::from_str(
+            r#"
+            [versions.13015711]
+            version = "15.7.0"
+            client_depot_id = 552993
+            client_manifest_id = "client"
+            content_depot_id = 552991
+            content_manifest_id = "content"
+            localization_depot_id = 552994
+            localization_manifest_id = "localization"
+            "#,
+        )
+        .unwrap();
+
+        let entry = manifest.get(13015711).unwrap();
+        assert_eq!(entry.client, DepotManifest::new(DepotId(552993), ManifestId("client".into())));
+        assert_eq!(entry.content, Some(DepotManifest::new(DepotId(552991), ManifestId("content".into()))));
+        assert_eq!(entry.localization, Some(DepotManifest::new(DepotId(552994), ManifestId("localization".into()))));
+    }
+
+    #[test]
+    fn parses_client_only_depot_manifest() {
+        let manifest: GameVersionManifest = toml::from_str(
+            r#"
+            [versions.13015711]
+            version = "15.7.0"
+            client_depot_id = 552993
+            client_manifest_id = "client"
+            "#,
+        )
+        .unwrap();
+
+        let entry = manifest.get(13015711).unwrap();
+        assert_eq!(entry.client, DepotManifest::new(DepotId(552993), ManifestId("client".into())));
+        assert_eq!(entry.content, None);
+        assert_eq!(entry.localization, None);
+    }
+
+    #[test]
+    fn rejects_incomplete_content_depot_manifest() {
+        let error = toml::from_str::<GameVersionManifest>(
+            r#"
+            [versions.13015711]
+            version = "15.7.0"
+            client_depot_id = 552993
+            client_manifest_id = "client"
+            content_depot_id = 552991
+            "#,
+        )
+        .unwrap_err();
+
+        assert!(error.to_string().contains("content"));
+    }
+
+    #[test]
+    fn serializes_split_depot_manifests_to_flat_schema() {
+        let mut versions = BTreeMap::new();
+        versions.insert(
+            "13015711".to_string(),
+            GameVersionEntry {
+                version: "15.7.0".to_string(),
+                client: DepotManifest::new(DepotId(552993), ManifestId("client".to_string())),
+                content: Some(DepotManifest::new(DepotId(552991), ManifestId("content".to_string()))),
+                localization: Some(DepotManifest::new(DepotId(552994), ManifestId("localization".to_string()))),
+            },
+        );
+
+        let serialized = toml::to_string(&GameVersionManifest { versions }).unwrap();
+
+        assert!(serialized.contains("client_depot_id = 552993"));
+        assert!(serialized.contains("client_manifest_id = \"client\""));
+        assert!(serialized.contains("content_depot_id = 552991"));
+        assert!(serialized.contains("content_manifest_id = \"content\""));
+        assert!(serialized.contains("localization_depot_id = 552994"));
+        assert!(serialized.contains("localization_manifest_id = \"localization\""));
+        assert!(!serialized.contains("[versions.13015711.client]"));
+    }
+
+    #[test]
     fn find_by_version_picks_highest() {
         let mut versions = BTreeMap::new();
         versions.insert(
             "11791718".to_string(),
-            GameVersionEntry { version: "15.0.0".to_string(), depot_id: 552991, manifest_id: "aaa".to_string() },
+            GameVersionEntry {
+                version: "15.0.0".to_string(),
+                client: DepotManifest::new(DepotId(552991), ManifestId("aaa".to_string())),
+                content: None,
+                localization: None,
+            },
         );
         versions.insert(
             "11965230".to_string(),
-            GameVersionEntry { version: "15.1.0".to_string(), depot_id: 552991, manifest_id: "bbb".to_string() },
+            GameVersionEntry {
+                version: "15.1.0".to_string(),
+                client: DepotManifest::new(DepotId(552991), ManifestId("bbb".to_string())),
+                content: None,
+                localization: None,
+            },
         );
         let manifest = GameVersionManifest { versions };
 
