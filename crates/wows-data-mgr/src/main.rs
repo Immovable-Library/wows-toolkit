@@ -279,13 +279,37 @@ where
 
     if let Some(query) = version {
         let mut matched = None;
+        let mut detected_builds = 0usize;
+        let mut detection_failures = Vec::new();
         for candidate in available_builds.iter().copied() {
-            if manifest::version_matches(&version_for_build(candidate)?, query) {
+            let detected = match version_for_build(candidate) {
+                Ok(detected) => detected,
+                Err(error) => {
+                    detection_failures.push(format!("{candidate}: {error}"));
+                    continue;
+                }
+            };
+            detected_builds += 1;
+            if manifest::version_matches(&detected, query) {
                 matched = Some(matched.map_or(candidate, |current: u32| current.max(candidate)));
             }
         }
-        return matched
-            .ok_or_else(|| rootcause::report!("No build found matching version '{query}' in the game directory"));
+        if let Some(matched) = matched {
+            return Ok(matched);
+        }
+        if detected_builds == 0 && !detection_failures.is_empty() {
+            bail!(
+                "Could not detect a version from any build in the game directory: {}",
+                detection_failures.join("; ")
+            );
+        }
+        if detection_failures.is_empty() {
+            bail!("No build found matching version '{query}' in the game directory");
+        }
+        bail!(
+            "No build found matching version '{query}' in the game directory; version detection failed for: {}",
+            detection_failures.join("; ")
+        );
     }
 
     bail!("Specify --latest, --build, or --version");
@@ -746,4 +770,44 @@ mod tests {
 
         assert_eq!(build, 13_015_712);
     }
-}
+
+    #[test]
+    fn game_dir_version_selection_skips_undetectable_builds() {
+        let mut inspected = Vec::new();
+        let build = select_game_dir_build(
+            &[12_830_008, 13_015_711, 13_015_712, 13_015_713],
+            false,
+            None,
+            Some("15.7"),
+            |candidate| {
+                inspected.push(candidate);
+                match candidate {
+                    12_830_008 => Err(rootcause::report!("stale build directory")),
+                    13_015_711 => Ok("15.7.0".to_string()),
+                    13_015_712 => Ok("15.7.1".to_string()),
+                    13_015_713 => Ok("15.8.0".to_string()),
+                    _ => unreachable!(),
+                }
+            },
+        )
+        .unwrap();
+
+        assert_eq!(build, 13_015_712);
+        assert_eq!(inspected, [12_830_008, 13_015_711, 13_015_712, 13_015_713]);
+    }
+
+    #[test]
+    fn game_dir_version_selection_reports_undetectable_builds_when_no_match_exists() {
+        let error = select_game_dir_build(&[12_830_008, 13_015_712], false, None, Some("15.7"), |candidate| {
+            match candidate {
+                12_830_008 => Err(rootcause::report!("stale build directory")),
+                13_015_712 => Ok("15.8.0".to_string()),
+                _ => unreachable!(),
+            }
+        })
+        .unwrap_err();
+        let message = error.to_string();
+
+        assert!(message.contains("12830008"));
+        assert!(message.contains("stale build directory"));
+    }}
