@@ -596,8 +596,18 @@ fn store_and_relink(data: &[u8], link_path: &Path, cas_root: &Path) -> Result<St
 /// consulted as a fallback when the extracted vfs is missing or conversion
 /// fails. Each artifact is stored in the CAS, linked back into `build_dir`,
 /// and recorded in `metadata.derived`. Idempotent.
-pub fn refresh_build_derived(build_dir: &Path, cas_root: &Path, metadata: &mut BuildMetadata) -> Result<(), Report> {
-    metadata.derived.clear();
+///
+/// Artifacts that cannot be regenerated keep the entry they already had:
+/// `metadata.toml`, not the build directory, is the record of what a build
+/// owns, and a build whose materialised tree has been pruned has every artifact
+/// in the store and none on disk. Returns the recorded paths whose backing
+/// object is missing from the store, which means the store is damaged.
+pub fn refresh_build_derived(
+    build_dir: &Path,
+    cas_root: &Path,
+    metadata: &mut BuildMetadata,
+) -> Result<Vec<String>, Report> {
+    let recorded = std::mem::take(&mut metadata.derived);
 
     let rkyv_path = build_dir.join("game_params.rkyv");
     let rkyv_bytes = derive_game_params_rkyv(&build_dir.join("vfs"));
@@ -655,13 +665,47 @@ pub fn refresh_build_derived(build_dir: &Path, cas_root: &Path, metadata: &mut B
         metadata.derived.insert(format!("{mo_rel}.zst"), hash);
     }
 
-    Ok(())
+    let mut missing_objects = Vec::new();
+    for (rel, hash) in recorded {
+        if metadata.derived.contains_key(&rel) {
+            continue;
+        }
+        if !cas::object_exists(cas_root, &hash) {
+            missing_objects.push(rel.clone());
+        }
+        metadata.derived.insert(rel, hash);
+    }
+    missing_objects.sort();
+
+    Ok(missing_objects)
+}
+
+/// What a refresh across a dump base found.
+#[derive(Debug, Default)]
+pub struct RefreshSummary {
+    /// Builds the refresh ran over.
+    pub builds: usize,
+    /// Build directory -> recorded derived paths whose backing object is not in
+    /// the store.
+    pub damaged: BTreeMap<String, Vec<String>>,
+    /// Build directories whose refresh failed outright.
+    pub failed: Vec<String>,
+}
+
+impl RefreshSummary {
+    /// Whether the metadata across the base is a trustworthy statement of what
+    /// the store must keep. GC deletes every object no build references, so
+    /// collecting against a record known to be damaged or incomplete turns a
+    /// recoverable inconsistency into deleted content.
+    pub fn safe_to_gc(&self) -> bool {
+        self.damaged.is_empty() && self.failed.is_empty()
+    }
 }
 
 /// Regenerate derived artifacts for every dumped build (or one build when
-/// `only_build` is given), then garbage-collect CAS objects no longer
-/// referenced by any build.
-pub fn refresh_derived(output_base: &Path, only_build: Option<u32>) -> Result<(), Report> {
+/// `only_build` is given). The caller decides whether to garbage-collect
+/// afterwards; consult [`RefreshSummary::safe_to_gc`] first.
+pub fn refresh_derived(output_base: &Path, only_build: Option<u32>) -> Result<RefreshSummary, Report> {
     let index = BuildsIndex::load(&output_base.join("builds.toml"));
     let cas_root = cas::cas_root(output_base);
 
@@ -673,17 +717,16 @@ pub fn refresh_derived(output_base: &Path, only_build: Option<u32>) -> Result<()
         bail!("No matching builds found in {}", output_base.join("builds.toml").display());
     }
 
-    // Build a single fetcher up front so the GitHub listing only runs once
-    // even when backfilling constants for many builds. `None` here just skips
-    // the constants step rather than failing the whole refresh.
+    // One fetcher serves every build so the GitHub listing runs at most once,
+    // and it is only built once a build actually needs constants: a base whose
+    // builds all have theirs stays offline. `None` skips the constants step
+    // rather than failing the whole refresh.
     #[cfg(feature = "constants")]
-    let constants_fetcher = match crate::constants::ConstantsFetcher::new() {
-        Ok(f) => Some(f),
-        Err(e) => {
-            eprintln!("WARN: Could not initialize constants fetcher: {e:?}");
-            None
-        }
-    };
+    let mut constants_fetcher: Option<crate::constants::ConstantsFetcher> = None;
+    #[cfg(feature = "constants")]
+    let mut fetcher_failed = false;
+
+    let mut summary = RefreshSummary { builds: targets.len(), ..Default::default() };
 
     for entry in &targets {
         let build_dir = output_base.join(&entry.dir);
@@ -695,27 +738,53 @@ pub fn refresh_derived(output_base: &Path, only_build: Option<u32>) -> Result<()
         });
 
         #[cfg(feature = "constants")]
-        let constants_added = if let Some(fetcher) = constants_fetcher.as_ref() {
-            update_constants_if_missing(&build_dir, entry.build, Some(entry.version.as_str()), fetcher)
-        } else {
+        let constants_added = if build_dir.join("constants.json").exists() {
             false
+        } else {
+            if constants_fetcher.is_none() && !fetcher_failed {
+                match crate::constants::ConstantsFetcher::new() {
+                    Ok(f) => constants_fetcher = Some(f),
+                    Err(e) => {
+                        eprintln!("WARN: Could not initialize constants fetcher: {e:?}");
+                        fetcher_failed = true;
+                    }
+                }
+            }
+            match constants_fetcher.as_ref() {
+                Some(fetcher) => {
+                    write_constants_for_build(&build_dir, entry.build, Some(entry.version.as_str()), fetcher)
+                }
+                None => false,
+            }
         };
 
         match refresh_build_derived(&build_dir, &cas_root, &mut metadata) {
-            Ok(()) => {
+            Ok(missing_objects) => {
                 metadata.save(&meta_path)?;
                 #[cfg(feature = "constants")]
                 let constants_note = if constants_added { " + constants" } else { "" };
                 #[cfg(not(feature = "constants"))]
                 let constants_note = "";
                 println!("  {} - {} derived artifact(s){}", entry.dir, metadata.derived.len(), constants_note);
+                if !missing_objects.is_empty() {
+                    eprintln!(
+                        "WARN: {} - {} recorded artifact(s) have no object in the store, starting with {}",
+                        entry.dir,
+                        missing_objects.len(),
+                        missing_objects[0]
+                    );
+                    summary.damaged.insert(entry.dir.clone(), missing_objects);
+                }
             }
-            Err(e) => eprintln!("WARN: {} - failed to refresh derived data: {e:?}", entry.dir),
+            Err(e) => {
+                eprintln!("WARN: {} - failed to refresh derived data: {e:?}", entry.dir);
+                summary.failed.push(entry.dir.clone());
+            }
         }
     }
 
-    println!("Refreshed {} build(s).", targets.len());
-    Ok(())
+    println!("Refreshed {} build(s).", summary.builds);
+    Ok(summary)
 }
 
 /// Write `constants.json` into `build_dir` if upstream has constants for this
@@ -749,21 +818,87 @@ fn write_constants_for_build(
     true
 }
 
-/// Fetch and write `constants.json` only when the build doesn't already have
-/// one. Returns `true` if a new file was written. Constants for already-shipped
-/// builds don't change upstream, so leaving existing files alone keeps repeat
-/// refreshes idempotent and fast.
-#[cfg(feature = "constants")]
-fn update_constants_if_missing(
-    build_dir: &Path,
-    build: u32,
-    version: Option<&str>,
-    fetcher: &crate::constants::ConstantsFetcher,
-) -> bool {
-    if build_dir.join("constants.json").exists() {
-        return false;
+/// Re-materialise a build tree from `metadata.toml`: every indexed path gets a
+/// link at the object the entry names. Paths whose object is not in the store
+/// are left alone, since a link to nothing is what `verify` already reports.
+/// Returns the paths that had to be repointed.
+pub fn relink_build(build_dir: &Path, cas_root: &Path, metadata: &BuildMetadata) -> Result<Vec<String>, Report> {
+    let mut repointed = Vec::new();
+    for (rel, hash) in metadata.files.iter().chain(metadata.derived.iter()) {
+        if !cas::object_exists(cas_root, hash) {
+            continue;
+        }
+        // `files` materialise under vfs/, `derived` at the build root.
+        let link = if metadata.files.contains_key(rel) { build_dir.join("vfs").join(rel) } else { build_dir.join(rel) };
+        if cas::link_target_hash(&link).as_ref() == Some(hash) && link.exists() {
+            continue;
+        }
+        cas::link_file(cas_root, hash, &link)?;
+        repointed.push(rel.clone());
     }
-    write_constants_for_build(build_dir, build, version, fetcher)
+    repointed.sort();
+    Ok(repointed)
+}
+
+/// Re-materialise every dumped build (or one build when `only_build` is given)
+/// from its metadata. Returns the repointed paths per build that needed any.
+pub fn relink_builds(output_base: &Path, only_build: Option<u32>) -> Result<BTreeMap<String, Vec<String>>, Report> {
+    let index = BuildsIndex::load(&output_base.join("builds.toml"));
+    let cas_root = cas::cas_root(output_base);
+
+    let targets: Vec<&BuildEntry> = match only_build {
+        Some(b) => index.builds.iter().filter(|e| e.build == b).collect(),
+        None => index.builds.iter().collect(),
+    };
+    if targets.is_empty() {
+        bail!("No matching builds found in {}", output_base.join("builds.toml").display());
+    }
+
+    let mut repointed = BTreeMap::new();
+    for entry in targets {
+        let build_dir = output_base.join(&entry.dir);
+        let Some(metadata) = BuildMetadata::load(&build_dir.join("metadata.toml")) else {
+            bail!("{} has no readable metadata.toml", entry.dir);
+        };
+        let paths = relink_build(&build_dir, &cas_root, &metadata)?;
+        if !paths.is_empty() {
+            repointed.insert(entry.dir.clone(), paths);
+        }
+    }
+    Ok(repointed)
+}
+
+/// Reindex every dumped build (or one build when `only_build` is given),
+/// persisting the entries recovered. Returns a report per build that had
+/// anything to report at all.
+pub fn reindex_builds(output_base: &Path, only_build: Option<u32>) -> Result<BTreeMap<String, ReindexReport>, Report> {
+    let index = BuildsIndex::load(&output_base.join("builds.toml"));
+    let cas_root = cas::cas_root(output_base);
+
+    let targets: Vec<&BuildEntry> = match only_build {
+        Some(b) => index.builds.iter().filter(|e| e.build == b).collect(),
+        None => index.builds.iter().collect(),
+    };
+    if targets.is_empty() {
+        bail!("No matching builds found in {}", output_base.join("builds.toml").display());
+    }
+
+    let mut reports = BTreeMap::new();
+    for entry in targets {
+        let build_dir = output_base.join(&entry.dir);
+        let meta_path = build_dir.join("metadata.toml");
+        let Some(mut metadata) = BuildMetadata::load(&meta_path) else {
+            bail!("{} has no readable metadata.toml", entry.dir);
+        };
+        let report = reindex_build(&build_dir, &cas_root, &mut metadata)?;
+        if !report.added.is_empty() {
+            metadata.save(&meta_path)?;
+        }
+        if !report.added.is_empty() || !report.unbacked.is_empty() {
+            reports.insert(entry.dir.clone(), report);
+        }
+    }
+    Ok(reports)
 }
 
 /// Remove content-addressed objects no longer referenced by any build. An
@@ -801,6 +936,10 @@ pub struct BuildVerification {
     pub corrupt_objects: Vec<CorruptObject>,
     /// VFS-relative paths whose symlink target does not resolve to a file.
     pub broken_links: Vec<String>,
+    /// Build-relative paths present in the build tree that no metadata entry
+    /// points at. Nothing keeps their objects alive and no other check reads
+    /// them, so they are content the build has effectively lost.
+    pub unindexed: Vec<String>,
     /// True when `metadata.toml` was missing or unparseable.
     pub metadata_unreadable: bool,
 }
@@ -811,6 +950,7 @@ impl BuildVerification {
             && self.missing_objects.is_empty()
             && self.corrupt_objects.is_empty()
             && self.broken_links.is_empty()
+            && self.unindexed.is_empty()
     }
 }
 
@@ -863,10 +1003,94 @@ fn audit_object_on_disk(cas_root: &Path, hash: &str) -> ObjectAudit {
     }
 }
 
+/// Files in a build tree that no metadata entry points at.
+///
+/// A build tree is a materialisation of `metadata.toml`: `vfs/<rel>` for
+/// `files`, build-relative paths for `derived`. Anything else is content the
+/// index has lost track of, which no other check can see and no GC will keep
+/// alive. Symlinks are leaves here, never directories to descend into.
+fn unindexed_paths(build_dir: &Path, meta: &BuildMetadata) -> Result<Vec<String>, Report> {
+    let mut unindexed = Vec::new();
+    let mut stack = vec![build_dir.to_path_buf()];
+    while let Some(dir) = stack.pop() {
+        let entries = match std::fs::read_dir(&dir) {
+            Ok(entries) => entries,
+            Err(e) if e.kind() == std::io::ErrorKind::NotFound => continue,
+            Err(e) => return Err(report!("Failed to read {}: {e}", dir.display())),
+        };
+        for entry in entries.flatten() {
+            let path = entry.path();
+            let file_type = entry.file_type().attach_with(|| format!("Failed to stat {}", path.display()))?;
+            if file_type.is_dir() {
+                stack.push(path);
+                continue;
+            }
+            let rel = path
+                .strip_prefix(build_dir)
+                .expect("walked path is under build_dir")
+                .to_string_lossy()
+                .replace('\\', "/");
+            if NOT_BUILD_CONTENT.contains(&rel.as_str()) {
+                continue;
+            }
+            let indexed = match rel.strip_prefix("vfs/") {
+                Some(vfs_rel) => meta.files.contains_key(vfs_rel),
+                None => meta.derived.contains_key(&rel),
+            };
+            if !indexed {
+                unindexed.push(rel);
+            }
+        }
+    }
+    unindexed.sort();
+    Ok(unindexed)
+}
+
+/// Build-root files that describe a build rather than being indexed content.
+const NOT_BUILD_CONTENT: [&str; 2] = ["metadata.toml", "constants.json"];
+
+/// What a reindex found in a build tree.
+#[derive(Debug, Default)]
+pub struct ReindexReport {
+    /// VFS-relative paths added to `metadata.files`.
+    pub added: Vec<String>,
+    /// Build-relative paths the tree holds that could not be indexed: the store
+    /// has no object behind them, so recording them would have metadata claim
+    /// content nothing can read.
+    pub unbacked: Vec<String>,
+}
+
+/// Record content a build tree holds that `metadata.toml` never indexed.
+///
+/// A store link whose path has no entry is unreachable through metadata, which
+/// means no GC keeps its object alive and no consistency check reads it. Adding
+/// the entry is only sound when the object is actually there; anything else is
+/// reported for the caller to deal with.
+pub fn reindex_build(build_dir: &Path, cas_root: &Path, metadata: &mut BuildMetadata) -> Result<ReindexReport, Report> {
+    let mut report = ReindexReport::default();
+    for rel in unindexed_paths(build_dir, metadata)? {
+        let Some(vfs_rel) = rel.strip_prefix("vfs/") else {
+            report.unbacked.push(rel);
+            continue;
+        };
+        let hash = cas::link_target_hash(&build_dir.join(&rel));
+        match hash {
+            Some(hash) if cas::object_exists(cas_root, &hash) => {
+                metadata.files.insert(vfs_rel.to_string(), hash);
+                report.added.push(vfs_rel.to_string());
+            }
+            _ => report.unbacked.push(rel),
+        }
+    }
+    report.added.sort();
+    report.unbacked.sort();
+    Ok(report)
+}
+
 /// Verify that every build in `builds.toml` is internally consistent: its
 /// `metadata.toml` parses, every referenced content object exists in the shared
 /// store, and (when `check_links` is set) every reconstructed symlink resolves
-/// to a readable file. Returns a report per build; the caller decides how to act.
+/// to a readable file and every file in the tree is one metadata indexes. Returns a report per build; the caller decides how to act.
 ///
 /// With `check_hashes` set, every referenced object is read and re-hashed rather
 /// than merely checked for presence, which is the only way to catch an object
@@ -920,6 +1144,7 @@ fn verify_builds_audited(
                 missing_objects: Vec::new(),
                 corrupt_objects: Vec::new(),
                 broken_links: Vec::new(),
+                unindexed: Vec::new(),
                 metadata_unreadable: true,
             });
             continue;
@@ -947,6 +1172,7 @@ fn verify_builds_audited(
         corrupt_objects.sort_by(|a, b| a.hash.cmp(&b.hash));
 
         let mut broken_links = Vec::new();
+        let mut unindexed = Vec::new();
         if check_links {
             for (rel, _) in meta.files.iter().chain(meta.derived.iter()) {
                 let path = build_dir.join("vfs").join(rel);
@@ -957,6 +1183,7 @@ fn verify_builds_audited(
                 }
             }
             broken_links.sort();
+            unindexed = unindexed_paths(&build_dir, &meta)?;
         }
 
         reports.push(BuildVerification {
@@ -967,6 +1194,7 @@ fn verify_builds_audited(
             missing_objects,
             corrupt_objects,
             broken_links,
+            unindexed,
             metadata_unreadable: false,
         });
     }
@@ -1154,7 +1382,8 @@ fn migrate_build_to_cas(build_dir: &Path, cas_root: &Path, metadata: &mut BuildM
             metadata.files.insert(rel, hash);
         }
     }
-    refresh_build_derived(build_dir, cas_root, metadata)
+    refresh_build_derived(build_dir, cas_root, metadata)?;
+    Ok(())
 }
 
 fn extract_vfs_dir_cas(
@@ -1601,5 +1830,185 @@ mod maintenance_tests {
         assert!(std::fs::symlink_metadata(&mo).unwrap().file_type().is_symlink());
         assert_eq!(std::fs::read(&mo).unwrap(), b"catalog bytes");
         assert!(meta.derived.contains_key("translations/ru/LC_MESSAGES/global.mo"));
+    }
+
+    /// A build whose materialised tree was pruned still owns its artifacts:
+    /// they live in the store and `metadata.toml` is the only record of them.
+    /// Dropping those entries orphans the objects, and the next GC deletes them.
+    #[test]
+    fn refresh_derived_keeps_artifacts_that_live_only_in_the_store() {
+        let dir = tempfile::tempdir().unwrap();
+        let base = dir.path();
+        let cas_root = base.join(cas::CAS_DIR);
+        let build_dir = base.join("1.0.0_100");
+
+        let mo_hash = cas::store(&cas_root, b"catalog bytes").unwrap();
+        let rkyv_hash = cas::store(&cas_root, b"params blob").unwrap();
+        // Pruning leaves the directory skeleton behind but removes every link.
+        std::fs::create_dir_all(build_dir.join("translations/ru/LC_MESSAGES")).unwrap();
+
+        let mut meta = BuildMetadata { version: "1.0.0".into(), build: 100, ..Default::default() };
+        meta.derived.insert("translations/ru/LC_MESSAGES/global.mo".into(), mo_hash.clone());
+        meta.derived.insert("game_params.rkyv".into(), rkyv_hash.clone());
+
+        refresh_build_derived(&build_dir, &cas_root, &mut meta).unwrap();
+
+        assert_eq!(meta.derived.get("translations/ru/LC_MESSAGES/global.mo"), Some(&mo_hash));
+        assert_eq!(meta.derived.get("game_params.rkyv"), Some(&rkyv_hash));
+    }
+
+    /// A missing object is damage to the store, not evidence the build never
+    /// owned the artifact. The entry stays so `verify` can flag it, and the
+    /// caller hears about it so it does not GC against a damaged record.
+    #[test]
+    fn refresh_derived_reports_entries_whose_object_vanished() {
+        let dir = tempfile::tempdir().unwrap();
+        let base = dir.path();
+        let cas_root = base.join(cas::CAS_DIR);
+        let build_dir = base.join("1.0.0_100");
+        std::fs::create_dir_all(&build_dir).unwrap();
+
+        let mut meta = BuildMetadata { version: "1.0.0".into(), build: 100, ..Default::default() };
+        meta.derived.insert("game_params.rkyv".into(), "0123456789abcdef0123".into());
+
+        let missing = refresh_build_derived(&build_dir, &cas_root, &mut meta).unwrap();
+
+        assert_eq!(missing, vec!["game_params.rkyv".to_string()]);
+        assert_eq!(meta.derived.get("game_params.rkyv"), Some(&"0123456789abcdef0123".to_string()));
+    }
+
+    #[test]
+    fn reindex_records_a_store_link_the_metadata_never_had() {
+        let dir = tempfile::tempdir().unwrap();
+        let base = dir.path();
+        let cas_root = cas::cas_root(base);
+        let hash = cas::store(&cas_root, b"icon bytes").unwrap();
+        let build_dir = base.join("1.0.0_100");
+        cas::link_file(&cas_root, &hash, &build_dir.join("vfs/gui/stray.png")).unwrap();
+        let mut meta = BuildMetadata { version: "1.0.0".into(), build: 100, ..Default::default() };
+
+        let report = reindex_build(&build_dir, &cas_root, &mut meta).unwrap();
+
+        assert_eq!(report.added, vec!["gui/stray.png".to_string()]);
+        assert_eq!(meta.files.get("gui/stray.png"), Some(&hash));
+    }
+
+    /// A link left pointing at superseded content contradicts the entry that
+    /// names the path. Metadata is the authority, so the tree gets repointed at
+    /// what it says, not the other way round.
+    #[test]
+    fn relink_repoints_a_link_that_disagrees_with_metadata() {
+        let dir = tempfile::tempdir().unwrap();
+        let base = dir.path();
+        let cas_root = cas::cas_root(base);
+        let current = cas::store(&cas_root, b"current bytes").unwrap();
+        let build_dir = base.join("1.0.0_100");
+        let link = build_dir.join("vfs/gui/icon.png");
+        cas::link_file(&cas_root, "0123456789abcdef0123", &link).unwrap();
+        let mut meta = BuildMetadata { version: "1.0.0".into(), build: 100, ..Default::default() };
+        meta.files.insert("gui/icon.png".into(), current.clone());
+
+        let repointed = relink_build(&build_dir, &cas_root, &meta).unwrap();
+
+        assert_eq!(repointed, vec!["gui/icon.png".to_string()]);
+        assert_eq!(std::fs::read(&link).unwrap(), b"current bytes");
+    }
+
+    #[test]
+    fn reindex_over_a_base_persists_the_new_entries() {
+        let dir = tempfile::tempdir().unwrap();
+        let base = dir.path();
+        let cas_root = cas::cas_root(base);
+        let hash = cas::store(&cas_root, b"icon bytes").unwrap();
+        let build_dir = base.join("1.0.0_100");
+        cas::link_file(&cas_root, &hash, &build_dir.join("vfs/gui/stray.png")).unwrap();
+        write_build_metadata(&build_dir, "1.0.0", 100, &[]);
+        register(base, "1.0.0", 100);
+
+        let reports = reindex_builds(base, None).unwrap();
+
+        assert_eq!(reports["1.0.0_100"].added, vec!["gui/stray.png".to_string()]);
+        let saved = BuildMetadata::load(&build_dir.join("metadata.toml")).unwrap();
+        assert_eq!(saved.files.get("gui/stray.png"), Some(&hash));
+    }
+
+    /// A link with no object behind it names content the store does not have.
+    /// Indexing it would make `metadata.toml` claim content that cannot be
+    /// read, so it is reported and left alone.
+    #[test]
+    fn reindex_will_not_index_a_link_whose_object_is_gone() {
+        let dir = tempfile::tempdir().unwrap();
+        let base = dir.path();
+        let cas_root = cas::cas_root(base);
+        let build_dir = base.join("1.0.0_100");
+        cas::link_file(&cas_root, "0123456789abcdef0123", &build_dir.join("vfs/gui/stray.png")).unwrap();
+        let mut meta = BuildMetadata { version: "1.0.0".into(), build: 100, ..Default::default() };
+
+        let report = reindex_build(&build_dir, &cas_root, &mut meta).unwrap();
+
+        assert_eq!(report.unbacked, vec!["vfs/gui/stray.png".to_string()]);
+        assert!(report.added.is_empty());
+        assert!(meta.files.is_empty());
+    }
+
+    /// A file in the build tree that no entry points at is unreachable through
+    /// metadata, so nothing keeps its object alive and no consistency check
+    /// looks at it. It rots silently until something tries to read it.
+    #[test]
+    fn verify_reports_a_file_the_metadata_never_indexed() {
+        let dir = tempfile::tempdir().unwrap();
+        let base = dir.path();
+        let cas_root = cas::cas_root(base);
+        let hash = cas::store(&cas_root, b"icon bytes").unwrap();
+        let build_dir = base.join("1.0.0_100");
+        cas::link_file(&cas_root, &hash, &build_dir.join("vfs/gui/known.png")).unwrap();
+        cas::link_file(&cas_root, &hash, &build_dir.join("vfs/gui/stray.png")).unwrap();
+        write_build_metadata(&build_dir, "1.0.0", 100, &[("gui/known.png", &hash)]);
+        register(base, "1.0.0", 100);
+
+        let reports = verify_builds(base, true, false).unwrap();
+
+        assert_eq!(reports[0].unindexed, vec!["vfs/gui/stray.png".to_string()]);
+        assert!(!reports[0].is_ok());
+    }
+
+    /// Set up a dump base holding one registered build with the given derived
+    /// entries. The `constants.json` keeps the refresh offline; fetching
+    /// constants is not what these tests are about.
+    fn base_with_build(base: &Path, derived: &[(&str, &str)]) {
+        let build_dir = base.join("1.0.0_100");
+        std::fs::create_dir_all(&build_dir).unwrap();
+        std::fs::write(build_dir.join("constants.json"), b"{}").unwrap();
+        let mut meta = BuildMetadata { version: "1.0.0".into(), build: 100, ..Default::default() };
+        for (rel, hash) in derived {
+            meta.derived.insert((*rel).to_string(), (*hash).to_string());
+        }
+        meta.save(&build_dir.join("metadata.toml")).unwrap();
+        register(base, "1.0.0", 100);
+    }
+
+    #[test]
+    fn refresh_derived_withholds_gc_when_an_object_is_missing() {
+        let dir = tempfile::tempdir().unwrap();
+        let base = dir.path();
+        base_with_build(base, &[("game_params.rkyv", "0123456789abcdef0123")]);
+
+        let summary = refresh_derived(base, None).unwrap();
+
+        assert!(!summary.safe_to_gc());
+        assert_eq!(summary.damaged.get("1.0.0_100"), Some(&vec!["game_params.rkyv".to_string()]));
+    }
+
+    #[test]
+    fn refresh_derived_vouches_for_a_base_whose_objects_are_all_present() {
+        let dir = tempfile::tempdir().unwrap();
+        let base = dir.path();
+        let hash = cas::store(&cas::cas_root(base), b"params blob").unwrap();
+        base_with_build(base, &[("game_params.rkyv", &hash)]);
+
+        let summary = refresh_derived(base, None).unwrap();
+
+        assert!(summary.safe_to_gc());
+        assert!(summary.damaged.is_empty());
     }
 }
