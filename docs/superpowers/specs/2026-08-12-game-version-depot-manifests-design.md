@@ -41,7 +41,7 @@ later depots. Temporary file-list cleanup remains best effort.
 ## CLI output
 
 Pinned downloads report each depot and manifest pair that will be downloaded.
-The versions listing displays the content manifest when present. If content is
+The `list` command displays the content manifest when present. If content is
 absent, it displays the client manifest so historical entries remain useful.
 
 ## Local game directory selection
