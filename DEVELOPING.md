@@ -108,4 +108,4 @@ Release builds (`.github/workflows/build.yml`) run on GitHub release creation an
 
 - **Windows**: Signed `.exe` + `.pdb` in a zip
 - **Linux**: Flatpak bundle
-- **macOS**: Universal binary (aarch64 + x86_64) in a `.dmg`
+- **macOS**: Apple Silicon (aarch64) binary in a `.dmg`
