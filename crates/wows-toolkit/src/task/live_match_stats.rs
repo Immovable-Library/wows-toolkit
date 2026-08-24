@@ -1,6 +1,7 @@
 //! Reads the roster off the replay a live battle is writing, then fetches
 //! that roster's stats. Runs on the background replay-parser thread.
 
+use std::collections::HashMap;
 use std::path::Path;
 use std::path::PathBuf;
 use std::sync::Arc;
@@ -16,7 +17,9 @@ use wows_replays::ReplayFile;
 use wows_replays::analyzer::arena_scan::ArenaState;
 use wows_replays::analyzer::arena_scan::scan_arena_state;
 use wows_replays::analyzer::decoder::PlayerStateData;
+use wows_replays::types::AccountId;
 use wows_replays::types::ArenaId;
+use wows_replays::types::GameParamId;
 use wowsunpack::data::ResourceLoader;
 use wowsunpack::data::Version;
 
@@ -25,8 +28,11 @@ use crate::data::match_stats::MatchStatsError;
 use crate::data::match_stats::MatchStatsRequest;
 use crate::data::match_stats::PlayerRef;
 use crate::data::match_stats::Region;
+use crate::data::wargaming::WargamingClient;
 use crate::data::wows_data::BuildDataCache;
 use crate::ui::player_tracker::MatchStatsState;
+use crate::ui::player_tracker::OperationsPlayerStats;
+use crate::ui::player_tracker::OperationsStatsState;
 use crate::ui::player_tracker::PlayerTracker;
 use crate::ui::player_tracker::live::LiveIdentities;
 
@@ -96,7 +102,10 @@ pub(crate) fn resolve_and_fetch(
     build_cache: &BuildDataCache,
     tracker: &Arc<RwLock<PlayerTracker>>,
     client: &mut MatchStatsClient,
+    wargaming_client: &WargamingClient,
 ) {
+    let fetch_operations = tracker.read().live_match.as_ref().is_some_and(|live| live.is_operations());
+
     if !tracker.write().set_match_stats_for(started_at, MatchStatsState::Resolving) {
         debug!("live roster scan: abandoned before it started, the match already changed");
         return;
@@ -141,6 +150,12 @@ pub(crate) fn resolve_and_fetch(
         debug!("live roster scan: abandoned before the fetch, the match already changed");
         return;
     }
+    if fetch_operations {
+        if !tracker.write().set_operations_stats_for(started_at, OperationsStatsState::Fetching) {
+            debug!("live roster scan: abandoned before the operations fetch, the match already changed");
+            return;
+        }
+    }
 
     let outcome = build_request(state.arena_id, &state.players).and_then(|request| client.fetch(&request));
     let next = match outcome {
@@ -153,6 +168,120 @@ pub(crate) fn resolve_and_fetch(
     if !tracker.write().set_match_stats_for(started_at, next) {
         debug!("live roster scan: result dropped, the match already changed");
     }
+
+    if fetch_operations {
+        let operations_next = match fetch_operations_stats_for(&state, wargaming_client) {
+            Ok(by_account) => {
+                persist_operations_samples(started_at, state.arena_id, &state.players, &by_account);
+                OperationsStatsState::Ready(by_account)
+            }
+            Err(reason) => OperationsStatsState::Failed(reason),
+        };
+        if !tracker.write().set_operations_stats_for(started_at, operations_next) {
+            debug!("live roster scan: operations result dropped, the match already changed");
+        }
+    }
+}
+
+/// Fetch account-wide and current-ship Operations stats for the roster's
+/// humans. Best-effort: any failure lands as a `Failed` reason, never toasts,
+/// and never erases the PVP result already written.
+fn fetch_operations_stats_for(
+    state: &ArenaState,
+    client: &WargamingClient,
+) -> Result<HashMap<AccountId, OperationsPlayerStats>, String> {
+    let Some((region, roster)) = operations_roster(state) else {
+        return Ok(HashMap::new());
+    };
+
+    let account_ids: Vec<AccountId> = roster.iter().map(|(account_id, _)| *account_id).collect();
+    let account_stats = client.fetch_operations_stats(region, &account_ids).map_err(|error| error.to_string())?;
+
+    let mut by_account = HashMap::new();
+    for (account_id, ship_id) in roster {
+        let ship =
+            client.fetch_ship_operations_stats(region, account_id).ok().and_then(|ships| ships.get(&ship_id).cloned());
+        if let Some(account) = account_stats.get(&account_id).cloned() {
+            by_account.insert(account_id, OperationsPlayerStats { account, ship });
+        }
+    }
+    Ok(by_account)
+}
+
+/// The Operations lookup roster: a shared region plus each human's account id
+/// and current ship id. `None` when there are no eligible humans or the realm
+/// is unsupported.
+fn operations_roster(state: &ArenaState) -> Option<(Region, Vec<(AccountId, GameParamId)>)> {
+    let mut region = None;
+    let mut roster = Vec::new();
+    for player in state.players.iter().filter(|player| !player.is_bot()) {
+        let Some(realm) = player.realm() else {
+            continue;
+        };
+        let Some(player_region) = Region::from_realm(realm) else {
+            return None;
+        };
+        region = Some(player_region);
+        let Some(ship_id) = player.ship_params_id() else {
+            continue;
+        };
+        roster.push((player.db_id(), ship_id));
+    }
+    let region = region?;
+    (!roster.is_empty()).then_some((region, roster))
+}
+
+/// One persisted Operations sample for later account-vs-match analysis.
+#[derive(serde::Serialize)]
+struct OperationsSample {
+    ts: i64,
+    arena_id: i64,
+    account_id: i64,
+    ship_id: u64,
+    account: crate::data::wargaming::WowsOperationsStats,
+    ship: Option<crate::data::wargaming::WowsOperationsStats>,
+}
+
+/// Append one JSON line per player to `ops_samples.jsonl` in the app data
+/// directory. Best-effort: a failure to write must not affect the live table.
+fn persist_operations_samples(
+    started_at: Timestamp,
+    arena_id: ArenaId,
+    players: &[PlayerStateData],
+    by_account: &HashMap<AccountId, OperationsPlayerStats>,
+) {
+    let Some(dir) = crate::storage_dir() else {
+        return;
+    };
+    let path = dir.join("ops_samples.jsonl");
+    let Ok(file) = std::fs::OpenOptions::new().create(true).append(true).open(&path) else {
+        debug!("operations samples: could not open {}", path.display());
+        return;
+    };
+
+    use std::io::Write;
+    let mut writer = std::io::BufWriter::new(file);
+    for player in players.iter().filter(|player| !player.is_bot()) {
+        let account_id = player.db_id();
+        let Some(ship_id) = player.ship_params_id() else {
+            continue;
+        };
+        let Some(stats) = by_account.get(&account_id) else {
+            continue;
+        };
+        let sample = OperationsSample {
+            ts: started_at.as_second(),
+            arena_id: arena_id.raw(),
+            account_id: account_id.raw(),
+            ship_id: ship_id.raw(),
+            account: stats.account.clone(),
+            ship: stats.ship.clone(),
+        };
+        if let Ok(line) = serde_json::to_string(&sample) {
+            let _ = writeln!(writer, "{line}");
+        }
+    }
+    let _ = writer.flush();
 }
 
 /// The text a `MatchStatsError` shows on the Current Match status line.

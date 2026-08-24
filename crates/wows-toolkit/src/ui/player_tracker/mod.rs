@@ -41,6 +41,7 @@ use wows_replays::types::ArenaId;
 
 use crate::app::ToolkitTabViewer;
 use crate::data::match_stats::PlayerStatsOut;
+use crate::data::wargaming::WowsOperationsStats;
 use crate::data::wows_data::BuildData;
 use crate::ui::replay_parser::Replay;
 use crate::util;
@@ -75,6 +76,25 @@ pub(crate) enum MatchStatsState {
     Ready(HashMap<AccountId, PlayerStatsOut>),
     /// A rendered reason. The structured `MatchStatsError` is matched on in
     /// the worker; only its text crosses to the UI.
+    Failed(String),
+}
+
+/// Operations stats for one player: account-wide, plus the current ship when
+/// its ship id resolved.
+#[derive(Debug, Clone)]
+pub(crate) struct OperationsPlayerStats {
+    pub account: WowsOperationsStats,
+    pub ship: Option<WowsOperationsStats>,
+}
+
+/// How far the current match's Operations stats have got.
+#[derive(Debug, Clone, Default)]
+pub(crate) enum OperationsStatsState {
+    #[default]
+    Idle,
+    Fetching,
+    Ready(HashMap<AccountId, OperationsPlayerStats>),
+    /// A rendered reason. Only its text crosses to the UI.
     Failed(String),
 }
 
@@ -159,6 +179,8 @@ pub struct PlayerTracker {
     pub(crate) live_identities: Option<LiveIdentities>,
     #[serde(skip)]
     pub(crate) match_stats: MatchStatsState,
+    #[serde(skip)]
+    pub(crate) operations_stats: OperationsStatsState,
 }
 
 impl PlayerTracker {
@@ -169,6 +191,7 @@ impl PlayerTracker {
         // gathered.
         self.live_identities = None;
         self.match_stats = MatchStatsState::Idle;
+        self.operations_stats = OperationsStatsState::Idle;
     }
 
     /// The current roster, resolved against `wows_data` and tracked history.
@@ -221,6 +244,16 @@ impl PlayerTracker {
             return false;
         }
         self.match_stats = state;
+        true
+    }
+
+    /// Applies `state` if `started_at` still names the current match,
+    /// otherwise leaves the tracker untouched and returns `false`.
+    pub(crate) fn set_operations_stats_for(&mut self, started_at: Timestamp, state: OperationsStatsState) -> bool {
+        if self.live_match.as_ref().map(|live| live.started_at) != Some(started_at) {
+            return false;
+        }
+        self.operations_stats = state;
         true
     }
 
@@ -468,7 +501,14 @@ mod tests {
     use super::*;
 
     fn live_match_at(started_at: Timestamp) -> LiveMatch {
-        LiveMatch { started_at, build: None, players: Vec::new() }
+        LiveMatch {
+            started_at,
+            build: None,
+            game_mode: wowsunpack::game_types::GameMode::from_id(-1),
+            game_type: None,
+            match_group: None,
+            players: Vec::new(),
+        }
     }
 
     fn identities() -> LiveIdentities {

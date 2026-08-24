@@ -10,6 +10,9 @@ use wowsunpack::data::ResourceLoader;
 use wowsunpack::data::TranslationKey;
 use wowsunpack::data::Version;
 use wowsunpack::game_params::types::Species;
+use wowsunpack::game_types::BattleType;
+use wowsunpack::game_types::GameMode;
+use wowsunpack::recognized::Recognized;
 
 use super::TrackedPlayer;
 use crate::data::match_stats::Region;
@@ -25,6 +28,15 @@ pub(crate) struct LiveMatch {
     /// when the client version string carries no build number, in which case
     /// ships stay unresolved rather than being guessed from another build.
     pub build: Option<u32>,
+    /// Numeric `gameMode` from the replay metadata, decoded with the same id
+    /// table the search grammar uses.
+    pub game_mode: Recognized<GameMode, i32>,
+    /// String `gameType` from the replay metadata, decoded into a battle type
+    /// when it names one this build recognizes.
+    pub game_type: Option<Recognized<BattleType, String>>,
+    /// Raw `matchGroup` from the replay metadata, kept because it distinguishes
+    /// mode families that the numeric ids do not.
+    pub match_group: Option<String>,
     pub players: Vec<LiveMatchPlayer>,
 }
 
@@ -64,7 +76,10 @@ pub(crate) struct LiveRosterRow {
 
 impl LiveMatch {
     pub(crate) fn from_meta(meta: &ReplayMeta) -> Self {
-        let build = Version::try_from_client_exe(&meta.clientVersionFromExe).and_then(|v| v.build_number());
+        let version = Version::from_client_exe(&meta.clientVersionFromExe);
+        let build = version.build_number();
+        let game_mode = GameMode::from_id(meta.gameMode as i32);
+        let game_type = meta.gameType.as_deref().map(|game_type| BattleType::from_value(game_type, version));
         let players = meta
             .vehicles
             .iter()
@@ -75,7 +90,25 @@ impl LiveMatch {
             })
             .collect();
 
-        Self { started_at: crate::util::replay_timestamp(meta), build, players }
+        Self {
+            started_at: crate::util::replay_timestamp(meta),
+            build,
+            game_mode,
+            game_type,
+            match_group: meta.matchGroup.clone(),
+            players,
+        }
+    }
+
+    /// Whether the live match metadata describes Operations mode.
+    ///
+    /// Uses the same signals the debug line shows: `PVEBattle` battle type,
+    /// the `pve` match group, or the `Pve` numeric game mode. Kept in one
+    /// place so the fetch path and the renderer cannot disagree.
+    pub(crate) fn is_operations(&self) -> bool {
+        self.game_type.as_ref().is_some_and(|game_type| game_type.known() == Some(&BattleType::Pve))
+            || self.game_mode.known() == Some(&GameMode::Pve)
+            || self.match_group.as_deref().is_some_and(|group| group.eq_ignore_ascii_case("pve"))
     }
 }
 
@@ -532,5 +565,46 @@ mod tests {
         let resolved = resolve_roster(&live, &HashMap::new(), Some(&identities), None);
 
         assert_eq!(resolved.enemy[0].account_id, None);
+    }
+
+    fn live_match(
+        game_mode: Recognized<GameMode, i32>,
+        game_type: Option<Recognized<BattleType, String>>,
+        match_group: Option<String>,
+    ) -> LiveMatch {
+        LiveMatch { started_at: Timestamp::now(), build: None, game_mode, game_type, match_group, players: Vec::new() }
+    }
+
+    #[test]
+    fn pve_battle_type_is_operations() {
+        let live =
+            live_match(Recognized::Unknown(0), Some(Recognized::Known(BattleType::Pve)), Some("pvp".to_string()));
+
+        assert!(live.is_operations());
+    }
+
+    #[test]
+    fn pve_match_group_is_operations_case_insensitively() {
+        let live = live_match(Recognized::Unknown(0), None, Some("PVE".to_string()));
+
+        assert!(live.is_operations());
+    }
+
+    #[test]
+    fn pve_game_mode_is_operations() {
+        let live = live_match(Recognized::Known(GameMode::Pve), None, Some("pvp".to_string()));
+
+        assert!(live.is_operations());
+    }
+
+    #[test]
+    fn random_battle_is_not_operations() {
+        let live = live_match(
+            Recognized::Known(GameMode::Domination),
+            Some(Recognized::Known(BattleType::Random)),
+            Some("pvp".to_string()),
+        );
+
+        assert!(!live.is_operations());
     }
 }

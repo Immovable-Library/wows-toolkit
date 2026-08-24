@@ -8,4 +8,5 @@ pub mod replay_reconcile;
 pub(crate) mod session_stats;
 pub(crate) mod settings;
 pub(crate) mod shipbuilds;
+pub(crate) mod wargaming;
 pub(crate) mod wows_data;

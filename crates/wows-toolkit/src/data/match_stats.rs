@@ -45,6 +45,15 @@ impl Region {
             Self::Asia => "ASIA",
         }
     }
+
+    /// The Wargaming public API host for this region.
+    pub fn wargaming_api_host(self) -> &'static str {
+        match self {
+            Self::Eu => "https://api.worldofwarships.eu",
+            Self::Na => "https://api.worldofwarships.com",
+            Self::Asia => "https://api.worldofwarships.asia",
+        }
+    }
 }
 
 #[derive(Debug, Clone, Serialize)]

@@ -710,6 +710,7 @@ pub struct BackgroundParserThread {
     pub sent_replays: Arc<RwLock<HashSet<String>>>,
     pub build_cache: crate::data::wows_data::BuildDataCache,
     pub shipbuilds_client: crate::data::shipbuilds::ShipBuildsClient,
+    pub wargaming_client: crate::data::wargaming::WargamingClient,
     pub twitch_state: Arc<RwLock<TwitchState>>,
     pub persisted: SharedPersistedState,
     pub data_export_settings: DataExportSettings,
@@ -901,6 +902,7 @@ pub fn start_background_parsing_thread(mut data: BackgroundParserThread) -> std:
                             &data.build_cache,
                             &data.player_tracker,
                             &mut match_stats_client,
+                            &data.wargaming_client,
                         );
                     }));
                     if let Err(payload) = outcome {
@@ -2656,6 +2658,8 @@ mod tests {
             sent_replays: Arc::clone(&sent_replays),
             build_cache: crate::data::wows_data::BuildDataCache::new(PathBuf::new(), "en".to_owned(), String::new()),
             shipbuilds_client: first_launch.shipbuilds_client.clone(),
+            wargaming_client: crate::data::wargaming::WargamingClient::new(None)
+                .expect("failed to build Wargaming HTTP client"),
             twitch_state: Arc::clone(&first_launch.twitch_state),
             persisted: Arc::clone(&first_launch.persisted),
             data_export_settings: DataExportSettings {

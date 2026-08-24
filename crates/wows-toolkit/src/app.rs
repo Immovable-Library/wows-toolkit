@@ -2240,6 +2240,7 @@ impl WowsToolkitApp {
                         ) {
                             self.tab_state.persisted.write().session_stats.add_game(stat);
                         }
+                        crate::data::session_stats::persist_operations_result(&replay_guard);
                         drop(replay_guard);
                     }
                     if update_ui {

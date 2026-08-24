@@ -1466,6 +1466,8 @@ impl TabState {
                 sent_replays: Arc::clone(&self.sent_replays),
                 build_cache,
                 shipbuilds_client: self.shipbuilds_client.clone(),
+                wargaming_client: crate::data::wargaming::WargamingClient::new(self.proxy.as_ref())
+                    .expect("failed to build Wargaming HTTP client"),
                 twitch_state: Arc::clone(&self.twitch_state),
                 persisted: Arc::clone(&self.persisted),
                 data_export_settings: DataExportSettings {

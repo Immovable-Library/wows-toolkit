@@ -11,7 +11,6 @@ use egui::Vec2;
 use egui_taffy::TuiBuilderLogic as _;
 use egui_taffy::taffy;
 use egui_taffy::taffy::prelude::auto;
-use egui_taffy::taffy::prelude::fr;
 use egui_taffy::taffy::prelude::length;
 use egui_taffy::taffy::prelude::percent;
 use jiff::Timestamp;
@@ -25,6 +24,8 @@ use wowsunpack::data::Version;
 use crate::app::ToolkitTabViewer;
 use crate::data::match_stats::PlayerStatsOut;
 use crate::data::match_stats::PlayerStatsStatus;
+use crate::data::match_stats::Region;
+use crate::data::wargaming::WowsOperationsStats;
 use crate::data::wows_data::BuildData;
 use crate::icons;
 use crate::task::live_match_stats::LiveRosterSource;
@@ -42,6 +43,8 @@ use crate::util::personal_rating::PersonalRatingCategorySwatch;
 
 use super::CurrentMatchViewMode;
 use super::MatchStatsState;
+use super::OperationsPlayerStats;
+use super::OperationsStatsState;
 use super::PlayerTracker;
 use super::TrackedPlayer;
 use super::WinRateMode;
@@ -54,6 +57,9 @@ const ROW_EDGE_PADDING_Y: i8 = 3;
 const DETAIL_LINE_GAP: f32 = 2.0;
 const ROW_COLUMN_GAP: f32 = 4.0;
 const CLASS_COLUMN_WIDTH: f32 = 24.0;
+/// Fixed width for the identity cell: enough for a clan tag plus a long name
+/// before the label truncates.
+const PLAYER_COLUMN_WIDTH: f32 = 150.0;
 const SHIP_COLUMN_WIDTH: f32 = 112.0;
 const WIN_RATE_COLUMN_WIDTH: f32 = 48.0;
 const PERSONAL_RATING_COLUMN_WIDTH: f32 = 48.0;
@@ -62,6 +68,15 @@ const BATTLES_COLUMN_WIDTH: f32 = 48.0;
 const DAMAGE_COLUMN_WIDTH: f32 = 56.0;
 const ENCOUNTERS_COLUMN_WIDTH: f32 = 60.0;
 const ACTIONS_COLUMN_WIDTH: f32 = 24.0;
+/// Wide enough for `100.0% / 100.0%` (the longest win-rate pair) without
+/// truncating the joined PVP/Operations text.
+const WIN_RATE_OPS_COLUMN_WIDTH: f32 = 108.0;
+/// Wide enough for `3000 / 100.0%` (PR over five-star rate).
+const PERSONAL_RATING_OPS_COLUMN_WIDTH: f32 = 96.0;
+/// Wide enough for `40,000 / 40,000` (grouped account and Operations counts).
+const BATTLES_OPS_COLUMN_WIDTH: f32 = 112.0;
+/// Wide enough for `165,432 / 2,209` (grouped damage over average XP).
+const DAMAGE_OPS_COLUMN_WIDTH: f32 = 112.0;
 
 /// Below this width, the fixed stat columns leave too little space for both
 /// identity cells, so the teams stack instead.
@@ -83,6 +98,9 @@ const TEAM_MAX_WIDTH: f32 = 620.0;
 impl ToolkitTabViewer<'_> {
     pub(crate) fn build_current_match_sub_tab(&mut self, ui: &mut egui::Ui) {
         self.debug_replay_picker(ui);
+        self.debug_wargaming_lookup(ui);
+        self.debug_operations_lookup(ui);
+        self.debug_match_mode(ui);
 
         // Collected during the table pass and applied after, because the
         // player-tracker lock is held while rendering rows.
@@ -109,6 +127,8 @@ impl ToolkitTabViewer<'_> {
                 win_rate_mode,
                 current_match_view_mode,
                 match_stats,
+                operations_stats,
+                live_match,
                 ..
             } = &*player_tracker;
             let Some(roster) = resolved_roster.as_ref() else {
@@ -118,6 +138,7 @@ impl ToolkitTabViewer<'_> {
 
             let mode = *win_rate_mode;
             let view_mode = *current_match_view_mode;
+            let show_operations = live_match.as_ref().is_some_and(|live| live.is_operations());
 
             ui.horizontal(|ui| {
                 let mut new_mode = mode;
@@ -166,12 +187,33 @@ impl ToolkitTabViewer<'_> {
                         );
                     }
                 }
+
+                ui.separator();
+
+                if show_operations {
+                    match operations_stats {
+                        OperationsStatsState::Idle => {}
+                        OperationsStatsState::Fetching => {
+                            ui.spinner();
+                            ui.label("Ops");
+                        }
+                        OperationsStatsState::Ready(_) => {}
+                        OperationsStatsState::Failed(reason) => {
+                            ui.label(RichText::new(format!("Ops failed: {reason}")).color(ui.sem().warn));
+                        }
+                    }
+                }
             });
 
             let empty_stats = HashMap::new();
             let stats = match match_stats {
                 MatchStatsState::Ready(by_account) => by_account,
                 _ => &empty_stats,
+            };
+            let empty_operations = HashMap::new();
+            let operations_stats = match operations_stats {
+                OperationsStatsState::Ready(by_account) => by_account,
+                _ => &empty_operations,
             };
 
             let locale = rust_i18n::locale().to_string();
@@ -184,6 +226,8 @@ impl ToolkitTabViewer<'_> {
                 now,
                 filter_range,
                 stats,
+                operations_stats,
+                show_operations,
                 mode,
                 view_mode,
                 locale: &locale,
@@ -284,6 +328,241 @@ impl ToolkitTabViewer<'_> {
             })
         });
     }
+
+    /// Debug-only probe for the Wargaming account-list API.
+    ///
+    /// Takes a player name and shows the account id and nickname returned by
+    /// the exact-match lookup. This is the smallest surface that proves the
+    /// live API path works without being in a battle.
+    fn debug_wargaming_lookup(&mut self, ui: &mut egui::Ui) {
+        if !self.tab_state.persisted.read().settings.app.debug_mode {
+            return;
+        }
+
+        let input_id = egui::Id::new("current_match_debug_wargaming_search");
+        let result_id = egui::Id::new("current_match_debug_wargaming_result");
+        let roster_result_id = egui::Id::new("current_match_debug_wargaming_roster_result");
+        let region_id = egui::Id::new("current_match_debug_wargaming_region");
+        let mut search = ui.data(|d| d.get_temp::<String>(input_id)).unwrap_or_default();
+        let mut result: Option<String> = ui.data(|d| d.get_temp::<String>(result_id));
+        let mut selected_region: Region = ui.data(|d| d.get_temp(region_id)).unwrap_or(Region::Asia);
+        let inferred_region = {
+            let tracker = self.tab_state.player_tracker.read();
+            tracker
+                .live_identities
+                .as_ref()
+                .and_then(|identities| identities.by_name.values().find_map(|identity| identity.region))
+        };
+
+        ui.horizontal(|ui| {
+            ui.label("Region");
+            egui::ComboBox::from_id_salt(region_id).selected_text(selected_region.as_wire()).show_ui(ui, |ui| {
+                for region in [Region::Asia, Region::Eu, Region::Na] {
+                    ui.selectable_value(&mut selected_region, region, region.as_wire());
+                }
+            });
+            if let Some(region) = inferred_region {
+                ui.label(format!("inferred: {}", region.as_wire()));
+            }
+        });
+
+        let mut next_result = None;
+        ui.horizontal(|ui| {
+            ui.label("WG account lookup");
+            ui.text_edit_singleline(&mut search);
+            if ui.button("Resolve").clicked() {
+                let proxy = self.tab_state.proxy.clone();
+                let client = crate::data::wargaming::WargamingClient::new(proxy.as_ref());
+                let region = selected_region;
+                next_result = Some(match client {
+                    Ok(client) => match client.find_exact_account(region, &search) {
+                        Ok(Some(account)) => {
+                            format!("account_id={} nickname={}", account.account_id, account.nickname)
+                        }
+                        Ok(None) => "no exact match".to_string(),
+                        Err(error) => format!("API error: {error}"),
+                    },
+                    Err(error) => format!("client error: {error}"),
+                });
+            }
+        });
+
+        if let Some(message) = next_result {
+            result = Some(message);
+        }
+        if let Some(message) = &result {
+            ui.label(message);
+        }
+
+        ui.separator();
+
+        let names = {
+            let tracker = self.tab_state.player_tracker.read();
+            match tracker.live_match.as_ref() {
+                Some(live_match) => {
+                    let mut names = Vec::new();
+                    for player in &live_match.players {
+                        if !names.contains(&player.name) {
+                            names.push(player.name.clone());
+                        }
+                    }
+                    names
+                }
+                None => Vec::new(),
+            }
+        };
+
+        let roster_result: Option<Vec<String>> = ui.data(|d| d.get_temp(roster_result_id));
+        let roster_region = inferred_region.unwrap_or(selected_region);
+        ui.horizontal(|ui| {
+            ui.label(format!("Roster WG lookup ({}) using {}", names.len(), roster_region.as_wire()));
+            if ui.add_enabled(!names.is_empty(), egui::Button::new("Query roster")).clicked() {
+                ui.data_mut(|d| d.insert_temp(roster_result_id, vec!["Querying...".to_string()]));
+
+                let proxy = self.tab_state.proxy.clone();
+                let ctx = ui.ctx().clone();
+                let names = names.clone();
+                let region = roster_region;
+                crate::util::thread::spawn_logged("wg-roster-lookup", move || {
+                    let mut lines = Vec::new();
+                    let client = crate::data::wargaming::WargamingClient::new(proxy.as_ref());
+                    match client {
+                        Ok(client) => match client.find_exact_accounts(region, &names) {
+                            Ok(accounts) => {
+                                for name in &names {
+                                    match accounts.iter().find(|account| account.nickname.eq_ignore_ascii_case(name)) {
+                                        Some(account) => lines.push(format!(
+                                            "{name} -> account_id={} nickname={}",
+                                            account.account_id, account.nickname
+                                        )),
+                                        None => lines.push(format!("{name} -> no exact match")),
+                                    }
+                                }
+                            }
+                            Err(error) => lines.push(format!("API error: {error}")),
+                        },
+                        Err(error) => lines.push(format!("client error: {error}")),
+                    }
+                    ctx.data_mut(|d| d.insert_temp(roster_result_id, lines));
+                    ctx.request_repaint();
+                });
+            }
+        });
+
+        if let Some(lines) = &roster_result {
+            egui::ScrollArea::vertical().max_height(180.0).show(ui, |ui| {
+                for line in lines {
+                    ui.label(line);
+                }
+            });
+        }
+
+        ui.data_mut(|d| {
+            d.insert_temp(input_id, search);
+            d.insert_temp(region_id, selected_region);
+            if let Some(result) = result {
+                d.insert_temp(result_id, result);
+            }
+            if let Some(roster_result) = roster_result {
+                d.insert_temp(roster_result_id, roster_result);
+            }
+        });
+    }
+
+    /// Debug-only probe for the Wargaming account-info Operations API.
+    ///
+    /// Takes a comma-separated account id list and prints each account's solo
+    /// Operations stats, proving the live API path without being in a battle.
+    fn debug_operations_lookup(&mut self, ui: &mut egui::Ui) {
+        if !self.tab_state.persisted.read().settings.app.debug_mode {
+            return;
+        }
+
+        let input_id = egui::Id::new("current_match_debug_operations_ids");
+        let result_id = egui::Id::new("current_match_debug_operations_result");
+        let region_id = egui::Id::new("current_match_debug_operations_region");
+        let mut ids = ui.data(|d| d.get_temp::<String>(input_id)).unwrap_or_default();
+        let mut result: Option<Vec<String>> = ui.data(|d| d.get_temp(result_id));
+        let mut selected_region: Region = ui.data(|d| d.get_temp(region_id)).unwrap_or(Region::Asia);
+
+        ui.horizontal(|ui| {
+            ui.label("Region");
+            egui::ComboBox::from_id_salt(region_id).selected_text(selected_region.as_wire()).show_ui(ui, |ui| {
+                for region in [Region::Asia, Region::Eu, Region::Na] {
+                    ui.selectable_value(&mut selected_region, region, region.as_wire());
+                }
+            });
+            ui.label("Ops account ids");
+            ui.text_edit_singleline(&mut ids);
+            if ui.button("Query operations").clicked() {
+                let account_ids: Vec<AccountId> =
+                    ids.split(',').filter_map(|part| part.trim().parse::<i64>().ok()).map(AccountId).collect();
+                let proxy = self.tab_state.proxy.clone();
+                let client = crate::data::wargaming::WargamingClient::new(proxy.as_ref());
+                let region = selected_region;
+                result = Some(match client {
+                    Ok(client) => match client.fetch_operations_stats(region, &account_ids) {
+                        Ok(stats) => {
+                            if stats.is_empty() {
+                                vec!["no operations stats returned".to_string()]
+                            } else {
+                                account_ids
+                                    .iter()
+                                    .map(|id| match stats.get(id) {
+                                        Some(entry) => format_operations_stats(*id, entry),
+                                        None => format!("{id} -> no operations stats"),
+                                    })
+                                    .collect()
+                            }
+                        }
+                        Err(error) => vec![format!("API error: {error}")],
+                    },
+                    Err(error) => vec![format!("client error: {error}")],
+                });
+            }
+        });
+
+        if let Some(lines) = &result {
+            for line in lines {
+                ui.label(line);
+            }
+        }
+
+        ui.data_mut(|d| {
+            d.insert_temp(input_id, ids);
+            d.insert_temp(region_id, selected_region);
+            if let Some(result) = result {
+                d.insert_temp(result_id, result);
+            }
+        });
+    }
+
+    /// Debug-only summary of the current match's mode fields.
+    fn debug_match_mode(&mut self, ui: &mut egui::Ui) {
+        if !self.tab_state.persisted.read().settings.app.debug_mode {
+            return;
+        }
+
+        let tracker = self.tab_state.player_tracker.read();
+        let Some(live_match) = tracker.live_match.as_ref() else {
+            return;
+        };
+
+        let game_mode = match live_match.game_mode.known() {
+            Some(mode) => mode.as_token().to_string(),
+            None => format!("unknown({})", live_match.game_mode.unknown().copied().unwrap_or(-1)),
+        };
+        let battle_type = match live_match.game_type.as_ref() {
+            Some(recognized) => match recognized.known() {
+                Some(battle_type) => battle_type.name().to_string(),
+                None => recognized.unknown().cloned().unwrap_or_else(|| "<missing>".to_string()),
+            },
+            None => "<missing>".to_string(),
+        };
+        let match_group = live_match.match_group.as_deref().unwrap_or("<missing>");
+
+        ui.label(format!("Mode: {game_mode} | Battle type: {battle_type} | Match group: {match_group}"));
+    }
 }
 
 /// Parses the `dd.mm.yyyy HH:MM:SS` stamp `replay_timestamp` uses, without
@@ -303,6 +582,11 @@ struct TeamContext<'a> {
     now: Timestamp,
     filter_range: Option<Timestamp>,
     stats: &'a HashMap<AccountId, PlayerStatsOut>,
+    operations_stats: &'a HashMap<AccountId, OperationsPlayerStats>,
+    /// Whether the current match is Operations. Controls whether the
+    /// Operations summary line is drawn at all; PVP columns stay visible in
+    /// both modes.
+    show_operations: bool,
     mode: WinRateMode,
     view_mode: CurrentMatchViewMode,
     locale: &'a str,
@@ -320,8 +604,8 @@ struct TeamActions {
 
 /// What one row shows, once the mode has chosen between the account and ship
 /// scopes. Every figure here belongs to the chosen scope, so a row can never
-/// pair one scope's number with another's. The band follows the rate that is
-/// actually shown, so the row colour and the number cannot disagree either.
+/// pair one scope's number with another's. The band follows PR, which drives
+/// the row's background fill.
 #[derive(Debug, Clone, Copy, Default, PartialEq)]
 pub(crate) struct RowStats {
     pub win_rate: Option<f64>,
@@ -340,7 +624,7 @@ pub(crate) fn row_stats(stats: Option<&PlayerStatsOut>, mode: WinRateMode) -> Ro
         WinRateMode::Ship => (stats.ship_win_rate, stats.ship_battles, stats.ship_avg_damage, stats.ship_pr),
     };
 
-    RowStats { win_rate, battles, avg_damage, pr, band: win_rate.map(PersonalRatingCategory::from_win_rate) }
+    RowStats { win_rate, battles, avg_damage, pr, band: pr.map(PersonalRatingCategory::from_pr) }
 }
 
 fn visible_stat_modes(view_mode: CurrentMatchViewMode, selected_mode: WinRateMode) -> Vec<WinRateMode> {
@@ -371,6 +655,10 @@ fn render_rosters(
     actions: &mut TeamActions,
 ) {
     let available_width = ui.available_width();
+    if ctx.show_operations || enemy.is_empty() {
+        render_team(ui, friendly_heading, friendly_color, friendly, "current_match_friendly", ctx, actions);
+        return;
+    }
     if available_width >= STACK_TEAMS_BELOW_WIDTH {
         let width = team_width(available_width, ui.spacing().item_spacing.x);
         ui.horizontal_top(|ui| {
@@ -457,8 +745,20 @@ fn clan_color_from_raw(raw: i64, fallback: PlayerTint) -> ClanColor {
 /// use its alpha as designed.
 const ROW_FILL_ALPHA_SCALE: f32 = 0.5;
 
-/// A row's background: its win-rate band tint when it has one, otherwise the
-/// striped fallback so a roster with no stats yet still reads as a list.
+/// The band that fills a row's background. PvP rows key off PR, which reads
+/// better at a glance than win rate. Operations rows will later key off their
+/// own quantified score; that swap is contained in this one function rather
+/// than in the row renderer.
+fn row_fill_band(
+    stats_entry: Option<&PlayerStatsOut>,
+    _operations_entry: Option<&OperationsPlayerStats>,
+    ctx: &TeamContext<'_>,
+) -> Option<PersonalRatingCategory> {
+    row_stats(stats_entry, ctx.mode).band
+}
+
+/// A row's background: its band tint when it has one, otherwise the striped
+/// fallback so a roster with no stats yet still reads as a list.
 /// Each player picks this straight from its own index; there is no header row
 /// to offset past any more.
 fn row_fill(band: Option<PersonalRatingCategory>, index: usize, visuals: &egui::Visuals) -> Option<Color32> {
@@ -511,13 +811,20 @@ fn render_team(
         }
     });
 
-    render_team_header(ui, id_salt, grid_width, ctx.view_mode);
+    render_team_header(ui, id_salt, grid_width, ctx);
+
+    let (win_rate_width, personal_rating_width, battles_width, damage_width) = if ctx.show_operations {
+        (WIN_RATE_OPS_COLUMN_WIDTH, PERSONAL_RATING_OPS_COLUMN_WIDTH, BATTLES_OPS_COLUMN_WIDTH, DAMAGE_OPS_COLUMN_WIDTH)
+    } else {
+        (WIN_RATE_COLUMN_WIDTH, PERSONAL_RATING_COLUMN_WIDTH, BATTLES_COLUMN_WIDTH, DAMAGE_COLUMN_WIDTH)
+    };
 
     contiguous_row_layout(ui, |ui| {
         ui.push_id(id_salt, |ui| {
             for (index, row_data) in rows.iter().enumerate() {
                 let stats_entry = row_data.account_id.and_then(|id| ctx.stats.get(&id));
-                let band = row_stats(stats_entry, ctx.mode).band;
+                let operations_entry = row_data.account_id.and_then(|id| ctx.operations_stats.get(&id));
+                let band = row_fill_band(stats_entry, operations_entry, ctx);
                 let fill = row_fill(band, index, ui.visuals()).unwrap_or(Color32::TRANSPARENT);
 
                 let background = ui.painter().add(egui::Shape::Noop);
@@ -526,7 +833,7 @@ fn render_team(
                     .show(ui, |ui| {
                         egui_taffy::tui(ui, ui.id().with(index))
                             .reserve_width(grid_width)
-                            .style(roster_row_style(ctx.view_mode))
+                            .style(roster_row_style(ctx.view_mode, ctx.show_operations))
                             .show(|tui| {
                                 tui.style(class_column_style()).wrap_mode(egui::TextWrapMode::Truncate).ui(|ui| {
                                     render_class_icon(ui, row_data, ctx);
@@ -537,26 +844,26 @@ fn render_team(
                                 tui.style(ship_column_style()).wrap_mode(egui::TextWrapMode::Truncate).ui(|ui| {
                                     render_ship_name(ui, row_data, ctx);
                                 });
-                                tui.style(fixed_column_style(WIN_RATE_COLUMN_WIDTH))
+                                tui.style(fixed_column_style(win_rate_width))
                                     .wrap_mode(egui::TextWrapMode::Truncate)
                                     .ui(|ui| {
-                                        render_win_rate_cell(ui, stats_entry, ctx);
+                                        render_win_rate_cell(ui, stats_entry, operations_entry, ctx);
                                     });
-                                tui.style(fixed_column_style(PERSONAL_RATING_COLUMN_WIDTH))
+                                tui.style(fixed_column_style(personal_rating_width))
                                     .wrap_mode(egui::TextWrapMode::Truncate)
                                     .ui(|ui| {
-                                        render_personal_rating_cell(ui, stats_entry, ctx);
+                                        render_personal_rating_cell(ui, stats_entry, operations_entry, ctx);
                                     });
-                                tui.style(fixed_column_style(BATTLES_COLUMN_WIDTH))
+                                tui.style(fixed_column_style(battles_width))
                                     .wrap_mode(egui::TextWrapMode::Truncate)
                                     .ui(|ui| {
-                                        render_battles_cell(ui, stats_entry, ctx);
+                                        render_battles_cell(ui, stats_entry, operations_entry, ctx);
                                     });
-                                tui.style(fixed_column_style(DAMAGE_COLUMN_WIDTH))
-                                    .wrap_mode(egui::TextWrapMode::Truncate)
-                                    .ui(|ui| {
-                                        render_damage_cell(ui, stats_entry, ctx);
-                                    });
+                                tui.style(fixed_column_style(damage_width)).wrap_mode(egui::TextWrapMode::Truncate).ui(
+                                    |ui| {
+                                        render_damage_cell(ui, stats_entry, operations_entry, ctx);
+                                    },
+                                );
                                 tui.style(fixed_column_style(ENCOUNTERS_COLUMN_WIDTH))
                                     .wrap_mode(egui::TextWrapMode::Truncate)
                                     .ui(|ui| {
@@ -578,11 +885,27 @@ fn render_team(
     });
 }
 
-fn render_team_header(ui: &mut egui::Ui, id_salt: &'static str, grid_width: f32, view_mode: CurrentMatchViewMode) {
+fn render_team_header(ui: &mut egui::Ui, id_salt: &'static str, grid_width: f32, ctx: &TeamContext<'_>) {
+    let (win_rate_width, personal_rating_width, battles_width, damage_width) = if ctx.show_operations {
+        (WIN_RATE_OPS_COLUMN_WIDTH, PERSONAL_RATING_OPS_COLUMN_WIDTH, BATTLES_OPS_COLUMN_WIDTH, DAMAGE_OPS_COLUMN_WIDTH)
+    } else {
+        (WIN_RATE_COLUMN_WIDTH, PERSONAL_RATING_COLUMN_WIDTH, BATTLES_COLUMN_WIDTH, DAMAGE_COLUMN_WIDTH)
+    };
+    let (win_rate_label, personal_rating_label, battles_label, damage_label) = if ctx.show_operations {
+        ("胜率/行动".to_string(), "PR/五星率".to_string(), "场数/行动".to_string(), "伤害/经验".to_string())
+    } else {
+        (
+            t!("ui.player_tracker.column.win_rate").into_owned(),
+            t!("ui.player_tracker.column.personal_rating").into_owned(),
+            t!("ui.player_tracker.column.battles").into_owned(),
+            t!("ui.player_tracker.column.avg_damage").into_owned(),
+        )
+    };
+
     egui::Frame::new().inner_margin(egui::Margin::symmetric(ROW_EDGE_PADDING_X, 0)).show(ui, |ui| {
         egui_taffy::tui(ui, ui.id().with((id_salt, "header")))
             .reserve_width(grid_width)
-            .style(roster_row_style(view_mode))
+            .style(roster_row_style(ctx.view_mode, ctx.show_operations))
             .show(|tui| {
                 tui.style(class_column_style())
                     .wrap_mode(egui::TextWrapMode::Truncate)
@@ -593,18 +916,16 @@ fn render_team_header(ui: &mut egui::Ui, id_salt: &'static str, grid_width: f32,
                 tui.style(ship_column_style())
                     .wrap_mode(egui::TextWrapMode::Truncate)
                     .small(t!("ui.replay.column.ship_name"));
-                tui.style(fixed_column_style(WIN_RATE_COLUMN_WIDTH))
+                tui.style(fixed_column_style(win_rate_width))
                     .wrap_mode(egui::TextWrapMode::Truncate)
-                    .small(t!("ui.player_tracker.column.win_rate"));
-                tui.style(fixed_column_style(PERSONAL_RATING_COLUMN_WIDTH))
+                    .small(win_rate_label);
+                tui.style(fixed_column_style(personal_rating_width))
                     .wrap_mode(egui::TextWrapMode::Truncate)
-                    .small(t!("ui.player_tracker.column.personal_rating"));
-                tui.style(fixed_column_style(BATTLES_COLUMN_WIDTH))
+                    .small(personal_rating_label);
+                tui.style(fixed_column_style(battles_width))
                     .wrap_mode(egui::TextWrapMode::Truncate)
-                    .small(t!("ui.player_tracker.column.battles"));
-                tui.style(fixed_column_style(DAMAGE_COLUMN_WIDTH))
-                    .wrap_mode(egui::TextWrapMode::Truncate)
-                    .small(t!("ui.player_tracker.column.avg_damage"));
+                    .small(battles_label);
+                tui.style(fixed_column_style(damage_width)).wrap_mode(egui::TextWrapMode::Truncate).small(damage_label);
                 tui.style(fixed_column_style(ENCOUNTERS_COLUMN_WIDTH))
                     .wrap_mode(egui::TextWrapMode::Truncate)
                     .small(t!("ui.player_tracker.column.encounters"));
@@ -613,7 +934,13 @@ fn render_team_header(ui: &mut egui::Ui, id_salt: &'static str, grid_width: f32,
     });
 }
 
-fn roster_row_style(view_mode: CurrentMatchViewMode) -> taffy::Style {
+fn roster_row_style(view_mode: CurrentMatchViewMode, show_operations: bool) -> taffy::Style {
+    let (win_rate_width, personal_rating_width, battles_width, damage_width) = if show_operations {
+        (WIN_RATE_OPS_COLUMN_WIDTH, PERSONAL_RATING_OPS_COLUMN_WIDTH, BATTLES_OPS_COLUMN_WIDTH, DAMAGE_OPS_COLUMN_WIDTH)
+    } else {
+        (WIN_RATE_COLUMN_WIDTH, PERSONAL_RATING_COLUMN_WIDTH, BATTLES_COLUMN_WIDTH, DAMAGE_COLUMN_WIDTH)
+    };
+
     taffy::Style {
         display: taffy::Display::Grid,
         align_items: Some(match view_mode {
@@ -624,12 +951,12 @@ fn roster_row_style(view_mode: CurrentMatchViewMode) -> taffy::Style {
         size: taffy::Size { width: percent(1.0_f32), height: auto() },
         grid_template_columns: vec![
             length(CLASS_COLUMN_WIDTH),
-            fr(1.0_f32),
+            length(PLAYER_COLUMN_WIDTH),
             length(SHIP_COLUMN_WIDTH),
-            length(WIN_RATE_COLUMN_WIDTH),
-            length(PERSONAL_RATING_COLUMN_WIDTH),
-            length(BATTLES_COLUMN_WIDTH),
-            length(DAMAGE_COLUMN_WIDTH),
+            length(win_rate_width),
+            length(personal_rating_width),
+            length(battles_width),
+            length(damage_width),
             length(ENCOUNTERS_COLUMN_WIDTH),
             length(ACTIONS_COLUMN_WIDTH),
         ],
@@ -646,12 +973,7 @@ fn ship_column_style() -> taffy::Style {
 }
 
 fn player_column_style() -> taffy::Style {
-    taffy::Style {
-        flex_grow: 1.0,
-        flex_shrink: 1.0,
-        min_size: taffy::Size { width: length(0.0_f32), height: auto() },
-        ..Default::default()
-    }
+    fixed_column_style(PLAYER_COLUMN_WIDTH)
 }
 
 fn contiguous_row_layout<R>(ui: &mut egui::Ui, add_rows: impl FnOnce(&mut egui::Ui) -> R) -> R {
@@ -734,10 +1056,21 @@ fn render_player_identity(
     actions: &mut TeamActions,
 ) {
     if ctx.view_mode == CurrentMatchViewMode::Detailed {
-        first_detail_line(ui, |ui| render_player_identity_line(ui, row_data, stats_entry, ctx, actions));
+        ui.vertical(|ui| {
+            ui.spacing_mut().item_spacing.y = DETAIL_LINE_GAP;
+            first_detail_line(ui, |ui| render_player_identity_line(ui, row_data, stats_entry, ctx, actions));
+        });
         return;
     }
     render_player_identity_line(ui, row_data, stats_entry, ctx, actions);
+}
+
+/// A shared empty Operations map for fixtures that render no Operations data.
+#[cfg(test)]
+fn empty_operations_map() -> &'static HashMap<AccountId, OperationsPlayerStats> {
+    use std::sync::OnceLock;
+    static EMPTY: OnceLock<HashMap<AccountId, OperationsPlayerStats>> = OnceLock::new();
+    EMPTY.get_or_init(HashMap::new)
 }
 
 fn render_player_identity_line(
@@ -780,14 +1113,37 @@ fn render_clan(ui: &mut egui::Ui, row_data: &LiveRosterRow) {
     ui.add(egui::Label::new(RichText::new(format!("[{clan}]")).color(color)).truncate());
 }
 
-fn render_win_rate_cell(ui: &mut egui::Ui, stats_entry: Option<&PlayerStatsOut>, ctx: &TeamContext<'_>) {
-    render_scoped_cell(ui, ctx, |ui, mode| render_win_rate(ui, stats_entry, ctx, mode));
+fn render_win_rate_cell(
+    ui: &mut egui::Ui,
+    stats_entry: Option<&PlayerStatsOut>,
+    operations_entry: Option<&OperationsPlayerStats>,
+    ctx: &TeamContext<'_>,
+) {
+    render_scoped_cell(ui, ctx, |ui, mode| render_win_rate(ui, stats_entry, operations_entry, ctx, mode));
 }
 
-fn render_win_rate(ui: &mut egui::Ui, stats_entry: Option<&PlayerStatsOut>, ctx: &TeamContext<'_>, mode: WinRateMode) {
+fn render_win_rate(
+    ui: &mut egui::Ui,
+    stats_entry: Option<&PlayerStatsOut>,
+    operations_entry: Option<&OperationsPlayerStats>,
+    ctx: &TeamContext<'_>,
+    mode: WinRateMode,
+) {
     let resolved = row_stats(stats_entry, mode);
+    if ctx.show_operations {
+        let pvp = resolved.win_rate.map(|rate| {
+            let band = PersonalRatingCategory::from_win_rate(rate);
+            (format!("{rate:.1}%"), Some(band.swatch(ui.visuals()).text))
+        });
+        let ops = operations_for_mode(operations_entry, mode)
+            .and_then(|ops| ops.win_rate())
+            .map(|rate| format!("{rate:.1}%"));
+        render_combined_stat(ui, pvp, ops);
+        return;
+    }
+
     if let Some(rate) = resolved.win_rate {
-        let band = resolved.band.expect("a resolved win rate always has a band");
+        let band = PersonalRatingCategory::from_win_rate(rate);
         let response = ui.label(RichText::new(format!("{rate:.1}%")).color(band.swatch(ui.visuals()).text));
         if let Some(hover) = win_rate_hover(stats_entry, ctx.locale) {
             response.on_hover_text(hover);
@@ -801,15 +1157,37 @@ fn render_win_rate(ui: &mut egui::Ui, stats_entry: Option<&PlayerStatsOut>, ctx:
     }
 }
 
-fn render_personal_rating_cell(ui: &mut egui::Ui, stats_entry: Option<&PlayerStatsOut>, ctx: &TeamContext<'_>) {
-    render_scoped_cell(ui, ctx, |ui, mode| render_personal_rating(ui, stats_entry, mode));
+fn render_personal_rating_cell(
+    ui: &mut egui::Ui,
+    stats_entry: Option<&PlayerStatsOut>,
+    operations_entry: Option<&OperationsPlayerStats>,
+    ctx: &TeamContext<'_>,
+) {
+    render_scoped_cell(ui, ctx, |ui, mode| render_personal_rating(ui, stats_entry, operations_entry, ctx, mode));
 }
 
 /// PR is the one figure here left ungrouped. Every other `pr_chip` in the app
 /// renders the bare rating, and a chip that grouped its digits on only this
 /// surface would read as a different quantity.
-fn render_personal_rating(ui: &mut egui::Ui, stats_entry: Option<&PlayerStatsOut>, mode: WinRateMode) {
-    let Some(pr) = row_stats(stats_entry, mode).pr else {
+fn render_personal_rating(
+    ui: &mut egui::Ui,
+    stats_entry: Option<&PlayerStatsOut>,
+    operations_entry: Option<&OperationsPlayerStats>,
+    ctx: &TeamContext<'_>,
+    mode: WinRateMode,
+) {
+    let pr = row_stats(stats_entry, mode).pr;
+    if ctx.show_operations {
+        let pvp =
+            pr.map(|pr| (format!("{pr:.0}"), Some(PersonalRatingCategory::from_pr(pr).swatch(ui.visuals()).text)));
+        let ops = operations_for_mode(operations_entry, mode)
+            .and_then(|ops| ops.five_star_rate())
+            .map(|rate| format!("{rate:.1}%"));
+        render_combined_stat(ui, pvp, ops);
+        return;
+    }
+
+    let Some(pr) = pr else {
         ui.label(RichText::new("-").weak());
         return;
     };
@@ -821,12 +1199,33 @@ fn render_personal_rating(ui: &mut egui::Ui, stats_entry: Option<&PlayerStatsOut
         .on_hover_text(hover);
 }
 
-fn render_battles_cell(ui: &mut egui::Ui, stats_entry: Option<&PlayerStatsOut>, ctx: &TeamContext<'_>) {
-    render_scoped_cell(ui, ctx, |ui, mode| render_battles(ui, stats_entry, ctx, mode));
+fn render_battles_cell(
+    ui: &mut egui::Ui,
+    stats_entry: Option<&PlayerStatsOut>,
+    operations_entry: Option<&OperationsPlayerStats>,
+    ctx: &TeamContext<'_>,
+) {
+    render_scoped_cell(ui, ctx, |ui, mode| render_battles(ui, stats_entry, operations_entry, ctx, mode));
 }
 
-fn render_battles(ui: &mut egui::Ui, stats_entry: Option<&PlayerStatsOut>, ctx: &TeamContext<'_>, mode: WinRateMode) {
-    let Some(battles) = row_stats(stats_entry, mode).battles else {
+fn render_battles(
+    ui: &mut egui::Ui,
+    stats_entry: Option<&PlayerStatsOut>,
+    operations_entry: Option<&OperationsPlayerStats>,
+    ctx: &TeamContext<'_>,
+    mode: WinRateMode,
+) {
+    let battles = row_stats(stats_entry, mode).battles;
+    if ctx.show_operations {
+        let pvp = battles.map(|battles| (separate_number(battles, Some(ctx.locale)), None));
+        let ops = operations_for_mode(operations_entry, mode)
+            .and_then(|ops| ops.battles)
+            .map(|battles| separate_number(battles, Some(ctx.locale)));
+        render_combined_stat(ui, pvp, ops);
+        return;
+    }
+
+    let Some(battles) = battles else {
         ui.label(RichText::new("-").weak());
         return;
     };
@@ -834,17 +1233,78 @@ fn render_battles(ui: &mut egui::Ui, stats_entry: Option<&PlayerStatsOut>, ctx: 
     ui.label(separate_number(battles, Some(ctx.locale))).on_hover_text(hover);
 }
 
-fn render_damage_cell(ui: &mut egui::Ui, stats_entry: Option<&PlayerStatsOut>, ctx: &TeamContext<'_>) {
-    render_scoped_cell(ui, ctx, |ui, mode| render_damage(ui, stats_entry, ctx, mode));
+fn render_damage_cell(
+    ui: &mut egui::Ui,
+    stats_entry: Option<&PlayerStatsOut>,
+    operations_entry: Option<&OperationsPlayerStats>,
+    ctx: &TeamContext<'_>,
+) {
+    render_scoped_cell(ui, ctx, |ui, mode| render_damage(ui, stats_entry, operations_entry, ctx, mode));
 }
 
-fn render_damage(ui: &mut egui::Ui, stats_entry: Option<&PlayerStatsOut>, ctx: &TeamContext<'_>, mode: WinRateMode) {
-    let Some(damage) = row_stats(stats_entry, mode).avg_damage else {
+fn render_damage(
+    ui: &mut egui::Ui,
+    stats_entry: Option<&PlayerStatsOut>,
+    operations_entry: Option<&OperationsPlayerStats>,
+    ctx: &TeamContext<'_>,
+    mode: WinRateMode,
+) {
+    let damage = row_stats(stats_entry, mode).avg_damage;
+    if ctx.show_operations {
+        let pvp = damage.map(|damage| (separate_number(damage, Some(ctx.locale)), None));
+        let ops = operations_for_mode(operations_entry, mode)
+            .and_then(|ops| ops.avg_xp())
+            .map(|xp| separate_number(xp.round() as i64, Some(ctx.locale)));
+        render_combined_stat(ui, pvp, ops);
+        return;
+    }
+
+    let Some(damage) = damage else {
         ui.label(RichText::new("-").weak());
         return;
     };
     let hover = format!("{}: {}", scope_label(mode), t!("ui.player_tracker.avg_damage"));
     ui.label(separate_number(damage, Some(ctx.locale))).on_hover_text(hover);
+}
+
+/// Select the Operations summary matching a PVP scope: account-wide for
+/// Overall, current ship for Ship.
+fn operations_for_mode<'a>(
+    operations_entry: Option<&'a OperationsPlayerStats>,
+    mode: WinRateMode,
+) -> Option<&'a WowsOperationsStats> {
+    match mode {
+        WinRateMode::Overall => operations_entry.map(|entry| &entry.account),
+        WinRateMode::Ship => operations_entry.and_then(|entry| entry.ship.as_ref()),
+    }
+}
+
+/// Render `PVP/Operations` as one compact, non-truncated pair.
+fn render_combined_stat(ui: &mut egui::Ui, pvp: Option<(String, Option<Color32>)>, ops: Option<String>) {
+    ui.horizontal(|ui| {
+        ui.spacing_mut().item_spacing.x = 0.0;
+        match pvp {
+            Some((text, color)) => {
+                let mut rich = RichText::new(text);
+                if let Some(color) = color {
+                    rich = rich.color(color);
+                }
+                ui.label(rich);
+            }
+            None => {
+                ui.label(RichText::new("-").weak());
+            }
+        }
+        ui.label(RichText::new("/").weak());
+        match ops {
+            Some(text) => {
+                ui.label(text);
+            }
+            None => {
+                ui.label(RichText::new("-").weak());
+            }
+        }
+    });
 }
 
 /// Draws a stat cell once per scope the view mode shows: the selected scope
@@ -984,6 +1444,24 @@ fn win_rate_hover(stats: Option<&PlayerStatsOut>, locale: &str) -> Option<String
     if lines.is_empty() { None } else { Some(lines.join("\n")) }
 }
 
+/// One line of solo Operations stats for the debug probe.
+fn format_operations_stats(id: AccountId, entry: &WowsOperationsStats) -> String {
+    let battles = entry.battles.unwrap_or(0);
+    let wins = entry.wins.unwrap_or(0);
+    let win_rate = if battles > 0 { format!("{:.1}%", 100.0 * wins as f64 / battles as f64) } else { "-".to_string() };
+    format!(
+        "{} -> battles={} wins={} losses={} win_rate={} survived={}/{} xp={}",
+        id,
+        battles,
+        wins,
+        entry.losses.unwrap_or(0),
+        win_rate,
+        entry.survived_wins.unwrap_or(0),
+        entry.survived_battles.unwrap_or(0),
+        entry.xp.unwrap_or(0),
+    )
+}
+
 #[cfg(test)]
 mod tests {
     use egui_kittest::Harness;
@@ -1045,12 +1523,12 @@ mod tests {
         let overall = row_stats(Some(&stats), WinRateMode::Overall);
         assert_eq!(overall.win_rate, Some(48.0));
         assert_eq!(overall.battles, Some(9000));
-        assert_eq!(overall.band, Some(PersonalRatingCategory::BelowAverage));
+        assert_eq!(overall.band, Some(PersonalRatingCategory::Great));
 
         let ship = row_stats(Some(&stats), WinRateMode::Ship);
         assert_eq!(ship.win_rate, Some(61.0));
         assert_eq!(ship.battles, Some(120));
-        assert_eq!(ship.band, Some(PersonalRatingCategory::Unicum));
+        assert_eq!(ship.band, Some(PersonalRatingCategory::SuperUnicum));
     }
 
     /// Every figure in a row belongs to one scope, so PR and average damage
@@ -1089,7 +1567,8 @@ mod tests {
 
     #[test]
     fn a_hidden_profile_has_no_rate_and_no_band() {
-        let stats = stats(PlayerStatsStatus::Hidden, None, None);
+        let mut stats = stats(PlayerStatsStatus::Hidden, None, None);
+        stats.pr = None;
 
         let resolved = row_stats(Some(&stats), WinRateMode::Overall);
 
@@ -1101,7 +1580,8 @@ mod tests {
     /// rate. That is an absent rate, not a zero one.
     #[test]
     fn an_unplayed_ship_has_no_ship_rate() {
-        let stats = stats(PlayerStatsStatus::Ok, Some(52.5), None);
+        let mut stats = stats(PlayerStatsStatus::Ok, Some(52.5), None);
+        stats.ship_pr = None;
 
         let resolved = row_stats(Some(&stats), WinRateMode::Ship);
 
@@ -1280,6 +1760,8 @@ mod tests {
             now,
             filter_range: None,
             stats: &stats_by_account,
+            operations_stats: empty_operations_map(),
+            show_operations: false,
             mode: WinRateMode::Overall,
             view_mode: CurrentMatchViewMode::Compact,
             locale: "en",
@@ -1399,6 +1881,8 @@ mod tests {
             now,
             filter_range: None,
             stats: &stats_by_account,
+            operations_stats: empty_operations_map(),
+            show_operations: false,
             mode: WinRateMode::Overall,
             view_mode: CurrentMatchViewMode::Detailed,
             locale: "en",
@@ -1494,6 +1978,8 @@ mod tests {
             now,
             filter_range: None,
             stats: &stats_by_account,
+            operations_stats: empty_operations_map(),
+            show_operations: false,
             mode: WinRateMode::Ship,
             view_mode: CurrentMatchViewMode::Detailed,
             locale: "en",
@@ -1559,6 +2045,8 @@ mod tests {
             now,
             filter_range: None,
             stats: &stats_by_account,
+            operations_stats: empty_operations_map(),
+            show_operations: false,
             mode: WinRateMode::Overall,
             view_mode: CurrentMatchViewMode::Compact,
             locale: "en",
@@ -1617,7 +2105,7 @@ mod tests {
 
     #[test]
     fn roster_rows_use_one_fixed_track_grid() {
-        let style = roster_row_style(CurrentMatchViewMode::Compact);
+        let style = roster_row_style(CurrentMatchViewMode::Compact, false);
 
         assert_eq!(style.display, taffy::Display::Grid);
         assert_eq!(style.grid_template_columns.len(), 9);
@@ -1636,9 +2124,9 @@ mod tests {
         assert_eq!(ship.size.width, length(SHIP_COLUMN_WIDTH));
         assert_eq!(ship.min_size.width, length(SHIP_COLUMN_WIDTH));
         assert_eq!(ship.max_size.width, length(SHIP_COLUMN_WIDTH));
-        assert_eq!(player.flex_grow, 1.0);
-        assert_eq!(player.flex_shrink, 1.0);
-        assert_eq!(player.min_size.width, length(0.0_f32));
+        assert_eq!(player.size.width, length(PLAYER_COLUMN_WIDTH));
+        assert_eq!(player.min_size.width, length(PLAYER_COLUMN_WIDTH));
+        assert_eq!(player.max_size.width, length(PLAYER_COLUMN_WIDTH));
     }
 
     #[test]

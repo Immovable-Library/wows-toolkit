@@ -192,6 +192,116 @@ impl PerGameStat {
     }
 }
 
+/// The recording player's post-battle result for one Operations match.
+/// One human's post-battle result for one Operations match.
+///
+/// Written to `ops_results.jsonl` after the match ends so it can be joined to
+/// the pre-battle snapshot in `ops_samples.jsonl` on `arena_id`, `account_id`,
+/// `ship_id`, and `ts`. The snapshot is the prediction input and this is the
+/// label, so the two files stay separate and the result never leaks into the
+/// snapshot.
+#[derive(serde::Serialize)]
+pub struct OperationsMatchResult {
+    pub ts: i64,
+    pub arena_id: i64,
+    pub account_id: i64,
+    pub ship_id: u64,
+    pub is_win: bool,
+    pub is_draw: bool,
+    pub damage: Option<u64>,
+    pub frags: Option<i64>,
+    pub raw_xp: Option<i64>,
+    pub base_xp: Option<i64>,
+}
+
+/// Extract every human's match result from a finished Operations replay.
+///
+/// Operations is one seven-player team against bots, so the win/draw flag is
+/// shared, while damage, frags and XP stay individual. The replay does not
+/// record the per-match star count, so the label is limited to those
+/// individually observable figures.
+pub fn operations_match_results(replay: &Replay) -> Vec<OperationsMatchResult> {
+    if !is_operations_meta(&replay.replay_file.meta) {
+        return Vec::new();
+    }
+    let Some(ui_report) = replay.ui_report.as_ref() else {
+        return Vec::new();
+    };
+    let Some(arena_id) = replay.battle_report().map(|report| report.arena_id()) else {
+        return Vec::new();
+    };
+    let arena_id = arena_id.raw();
+    let ts = crate::util::replay_timestamp(&replay.replay_file.meta).as_second();
+    let battle_result = replay.battle_result();
+    let is_win = matches!(battle_result, Some(BattleResult::Win(_)));
+    let is_draw = matches!(battle_result, Some(BattleResult::Draw));
+
+    let mut results = Vec::new();
+    let mut seen = std::collections::HashSet::new();
+    for report in ui_report.player_reports().iter().filter(|report| !report.player.initial_state().is_bot()) {
+        // A human can appear more than once: once before the server result
+        // lands (every result field `None`) and again once it has. Keep the
+        // copy that carries a result, and one row per account.
+        if report.raw_xp().is_none() {
+            continue;
+        }
+        let account_id = report.player.initial_state().db_id();
+        if !seen.insert(account_id.raw()) {
+            continue;
+        }
+        let Some(ship_id) = report.player.initial_state().ship_params_id() else {
+            continue;
+        };
+        results.push(OperationsMatchResult {
+            ts,
+            arena_id,
+            account_id: account_id.raw(),
+            ship_id: ship_id.raw(),
+            is_win,
+            is_draw,
+            damage: report.actual_damage(),
+            frags: report.kills(),
+            raw_xp: report.raw_xp(),
+            base_xp: report.base_xp(),
+        });
+    }
+    results
+}
+
+/// Append each human's Operations match result to `ops_results.jsonl` in the
+/// app data directory. Best-effort: a write failure must not disturb session
+/// stats.
+pub fn persist_operations_result(replay: &Replay) {
+    let results = operations_match_results(replay);
+    if results.is_empty() {
+        return;
+    }
+    let Some(dir) = crate::storage_dir() else {
+        return;
+    };
+    let path = dir.join("ops_results.jsonl");
+    let Ok(file) = std::fs::OpenOptions::new().create(true).append(true).open(&path) else {
+        tracing::debug!("operations results: could not open {}", path.display());
+        return;
+    };
+
+    use std::io::Write;
+    let mut writer = std::io::BufWriter::new(file);
+    for result in &results {
+        if let Ok(line) = serde_json::to_string(result) {
+            let _ = writeln!(writer, "{line}");
+        }
+    }
+    let _ = writer.flush();
+}
+
+/// Whether replay metadata describes Operations mode, matching the same
+/// `gameType`/`matchGroup` signals the live player tracker keys on.
+fn is_operations_meta(meta: &wows_replays::ReplayMeta) -> bool {
+    meta.matchGroup.as_deref().is_some_and(|group| group.eq_ignore_ascii_case("pve"))
+        || meta.gameType.as_deref().is_some_and(|game_type| game_type.eq_ignore_ascii_case("PVEBattle"))
+}
+
 /// Performance statistics for a single ship aggregated from multiple games
 #[derive(Default)]
 pub struct PerformanceInfo {
@@ -709,6 +819,44 @@ mod tests {
     use super::*;
     use std::collections::HashSet;
     use std::path::PathBuf;
+
+    fn ops_meta(match_group: Option<&str>, game_type: Option<&str>) -> wows_replays::ReplayMeta {
+        wows_replays::ReplayMeta {
+            matchGroup: match_group.map(str::to_string),
+            gameMode: 0,
+            gameType: game_type.map(str::to_string),
+            clientVersionFromExe: "0,0,0,0".to_string(),
+            scenarioUiCategoryId: None,
+            mapDisplayName: String::new(),
+            mapId: 0,
+            clientVersionFromXml: String::new(),
+            weatherParams: None,
+            duration: 0,
+            gameLogic: None,
+            name: String::new(),
+            scenario: String::new(),
+            playerID: wows_replays::types::AccountId(0),
+            vehicles: Vec::new(),
+            playersPerTeam: 0,
+            dateTime: String::new(),
+            mapName: String::new(),
+            playerName: String::new(),
+            scenarioConfigId: 0,
+            teamsCount: 0,
+            logic: None,
+            playerVehicle: String::new(),
+            battleDuration: None,
+        }
+    }
+
+    #[test]
+    fn operations_meta_matches_the_pve_signals() {
+        assert!(is_operations_meta(&ops_meta(Some("pve"), None)));
+        assert!(is_operations_meta(&ops_meta(None, Some("PVEBattle"))));
+        assert!(is_operations_meta(&ops_meta(Some("PVE"), Some("PVEBattle"))));
+        assert!(!is_operations_meta(&ops_meta(Some("pvp"), Some("RandomBattle"))));
+        assert!(!is_operations_meta(&ops_meta(None, None)));
+    }
 
     /// Helper: create a PerGameStat with the given parameters.
     #[allow(clippy::too_many_arguments)]
