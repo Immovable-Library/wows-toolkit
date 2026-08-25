@@ -1,0 +1,31 @@
+# Keeps the fork's main branch in sync with the upstream repository.
+# Lives on the sync-workflow branch, which is the fork's default branch,
+# because GitHub only runs scheduled workflows from the default branch.
+# main itself stays a pristine mirror of upstream so it can be merged into
+# feature branches without dragging this file into pull requests.
+name: Sync main with upstream
+
+on:
+  schedule:
+    - cron: '17 3,15 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Fast-forward fork main from upstream
+        run: |
+          git remote add upstream https://github.com/landaire/wows-toolkit.git
+          git fetch upstream main
+          git push origin upstream/main:main
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
