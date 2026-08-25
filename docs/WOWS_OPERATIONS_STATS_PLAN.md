@@ -447,7 +447,26 @@ problem is easier than PR because the samples can carry hand labels
 (supervised), so the weights and floors can be chosen to separate skill tiers
 rather than hand-tuned.
 
-### 8.4 Open calibration decisions
+### 8.4 Metric mapping from PR inputs
+
+PR's three inputs map to Operations metrics as follows:
+
+| PR input | PR weight | Operations counterpart | Notes |
+|----------|-----------|------------------------|-------|
+| `damage_dealt` | 700 | average XP (`xp / battles`) | XP is the only individual output metric; per-ship expected XP fixes the low-tier/high-tier pool gap |
+| `frags` | 300 | five-star rate (`wins_by_tasks["5"] / battles`) | Operations-only quality signal; PR has no equivalent |
+| `wins` | 150 | win rate | downweighted further; the seven-player team dilutes it and the ceiling is 85-90% |
+
+Survival rate (`survived_battles / battles`) is an optional Operations-only
+signal with no PR equivalent; sample analysis shows it is inverted relative to
+XP and star rate, so keep it low-weight or excluded.
+
+The frame (expected-value normalization, floor, weighted sum) transfers from
+PR, but both the inputs and the expected table must be re-derived. There is no
+public Operations expected table, so expected XP and expected five-star rate
+are fitted from the collected samples.
+
+### 8.5 Open calibration decisions
 
 - Expected XP denominator: per-tier first while data is small, then per-ship
   once enough samples exist.
