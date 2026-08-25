@@ -46,3 +46,9 @@ profile.json.gz
 **/tests/snapshots/**/*.diff.png
 **/tests/snapshots/**/*.new.png
 **/tests/snapshots/**/*.old.png
+# Wargaming API bulk cache (large; regenerate with scripts/mass_collect.py)
+cache/
+# raw replay files (large)
+replays/
+# node deps for the wows-numbers scraper helper
+tools/wowsnumbers-scrape/node_modules/
