@@ -1,3 +1,5 @@
+> **更新：** 舰种系数已补齐 95% 置信区间与「相同效率」口径的潜艇诊断，见 `WOWS_OPERATIONS_INTERIM.md`。
+
 # Operations XP Formula: Validation and Final Coefficients
 
 ## Data
@@ -71,3 +73,4 @@ about 1.66-1.67x, close to the community 1.75x figure.
 The pure-proportional community formula `x = 1.75y/(1+0.75y)` matches subs
 well in new operations (MAE 0.038 vs 0.050 no-bonus) but over-predicts in
 legacy operations (MAE 0.064 vs 0.050) because it omits the equal floor.
+

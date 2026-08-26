@@ -23,6 +23,7 @@ pip install cryptography
 
 - `scripts/extract_ops_replays.py` —— 解析 + 落库主脚本
 - `scripts/player_report.py` —— 玩家解析报告生成器
+- `scripts/extract_ops_efficiency.py` —— 剧情「吃船效率」提取（PR/经验分配分析输入）
 - `constants_cache/` —— 各 build 的字段索引表（13.10+ 已内置；脚本可自动从 `padtrack/wows-constants` 抓取缺失 build）
 
 ### 1. 解析并落库（幂等追加）
@@ -85,3 +86,25 @@ python scripts/extract_ops_replays.py "D:\replays\skmon" --db ..\replays.db --wo
 # 报告
 python scripts/player_report.py --db ..\replays.db --player SKmon
 ```
+
+
+## 提取「吃船效率」供剧情分析
+
+从剧情 replay 额外重建社区口径的「吃船效率」：对每艘敌舰累加 (你对其伤害 / 其最大血量)，
+击沉船合计约为 1、未沉船按比例计。这是 PR 与经验分配分析的核心输入，和 `player_report.py` 的
+人均聚合报告互补。
+
+```bash
+python scripts/extract_ops_efficiency.py "D:\replays" \
+  --out ops_efficiency.jsonl --constants-dir constants_cache \
+  --ship-cache ships_cache.json --workers 8
+```
+
+- 只处理剧情场景（`WW2_OPERATION` / `PCVO` / `OP_` / 等）且 `build >= 9129736`。
+- 输出人均一行 JSONL，在 `extract_ops_replays.py` 字段之上额外追加：
+  `efficiency`（吃船效率）、`sum_dmg_check`、`n_victims`，以及本局全队聚合
+  `team_raw` / `team_eff` / `team_damage` / `team_frags`。
+- 字段索引按 build 读取 `constants_cache/<build>.json` 的
+  `CLIENT_PUBLIC_RESULTS_INDICES` 与 `CLIENT_VEH_INTERACTION_DETAILS`；缺失 build 会自动抓取，
+  抓不到时该 build 的 `efficiency` 退化为 0，人工补 cache 后重跑即可。
+

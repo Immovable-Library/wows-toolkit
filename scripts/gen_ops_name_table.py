@@ -3,19 +3,19 @@ import json
 
 # Internal scenario key -> (Chinese name, base matchup bracket label, tier range).
 # Map codenames come from replay metadata / corpus golden snapshots:
-#   Ridge -> Mountain Range (Aegis), NavalBase -> Newport, Labyrinth -> Raptor,
-#   Naval_Defense -> Hermes, Advance -> Ultimate Frontier, Atoll -> Narai,
-#   USS_CL -> Cherry Blossom, LePVE -> Killer Whale.
+#   Ridge -> Mountain Range (Aegis), NavalBase -> Killer Whale, Labyrinth -> Raptor Rescue,
+#   Naval_Defense -> Newport, Advance -> Narai, Atoll -> Rouen Atoll (Ultimate Frontier),
+#   USS_CL -> Cherry Blossom, LePVE -> Hermes.
 # The three new WW2 operations are numbered in release order:
 #   OP1 Arctic Convoy, OP2 Tokyo Express, OP3 Pacific Offensive.
 NAME = {
     "Ridge": "神盾",
-    "NavalBase": "防守纽波特",
-    "Labyrinth": "猛禽救援",
-    "Naval_Defense": "赫尔墨斯",
-    "Advance": "最终前线",
-    "Atoll": "纳莱",
-    "LePVE": "杀人鲸",
+    "NavalBase": "杀人鲸",
+    "Labyrinth": "营救猛禽",
+    "Naval_Defense": "防守纽波特",
+    "Advance": "那莱",
+    "Atoll": "最终前线",
+    "LePVE": "赫尔墨斯",
     "USS_CL": "樱花绽放",
 }
 

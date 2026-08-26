@@ -1,3 +1,5 @@
+> **注意：** 败局倍数已由 x0.5 修正为 x0.44（95%CI x0.433-0.452）并补齐置信区间，见 `WOWS_OPERATIONS_INTERIM.md`。finish_type 在现有样本中与胜负完全共线，无法拆「超时 vs 被团灭」，详见中期报告 2.3。
+
 # Operations Total XP Pool: Fitted Model
 
 ## Data
@@ -60,3 +62,4 @@ operation and flagships/random modifiers.
 
 Secondary tasks are already represented by stars (0-5). Team efficiency is
 minor; stars and win/loss dominate.
+

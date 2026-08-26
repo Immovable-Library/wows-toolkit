@@ -1,0 +1,36 @@
+<!DOCTYPE html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>04_剧情地图_行动名映射核验</title><style>body{font-family:-apple-system,'Segoe UI','PingFang SC','Microsoft YaHei',sans-serif;max-width:980px;margin:24px auto;padding:0 20px;color:#222;line-height:1.75;font-size:15px;}h1{font-size:24px;border-bottom:2px solid #333;padding-bottom:8px;}h2{font-size:20px;border-bottom:1px solid #ccc;padding-bottom:6px;margin-top:28px;}h3{font-size:17px;margin-top:22px;}code{background:#f4f4f4;padding:2px 5px;border-radius:4px;font-family:monospace;font-size:13px;}pre{background:#f7f7f7;padding:12px 14px;border-radius:6px;overflow:auto;border:1px solid #e5e5e5;}pre code{background:none;padding:0;}table{border-collapse:collapse;margin:14px 0;width:100%;}th,td{border:1px solid #ccc;padding:7px 10px;text-align:left;vertical-align:top;}th{background:#f0f0f0;}blockquote{margin:14px 0;padding:8px 14px;border-left:4px solid #999;background:#fafafa;color:#555;}hr{border:none;border-top:1px solid #ddd;margin:22px 0;}</style></head><body><h1>剧情场景映射核验：地图名 + 行动名（修正后）</h1>
+<blockquote>目的：用回放解析器取到的内部场景码 + 官方 wiki 的「地图名 / 行动名」，验证修正后中文名映射是否一致。</blockquote>
+<h2>结论</h2>
+<p><strong>一致。</strong> 8 个老剧情场景（PCVO）的内部地图码 → 官方地图名 → 官方行动名 → 中文行动名，四层一一对应，无冲突。</p>
+<h2>证据链（可复现）</h2>
+<ol>
+<li>回放头部 <code>mapName</code> / <code>mapDisplayName</code> 给出内部地图码（例：<code>s02_Naval_Defense</code>、<code>s06_Atoll</code>）。</li>
+<li>回放 <code>playersPublicInfo</code> 中 bot 的 <code>name</code> 字段给出 <code>IDS_OP_XX_YY_*</code>，<code>XX_YY</code> 与 <code>scenario</code> 里的 <code>OP_XX_YY</code> 一致，用于锁定行动编号。</li>
+<li>WG 官方 wiki <code>Ship:Scenarios</code> 给出「Map: X」→「Operation: Y」的权威对应。</li>
+<li>逐图敌军/友军船型签名独立印证（如 列克星敦 + 密苏里 + 5 艘运输船 = 那莱）。</li>
+</ol>
+<h2>修正前后对照表</h2>
+<table><thead><tr><th>场景代码</th><th>官方地图名</th><th>官方行动名（英文）</th><th>中文行动名（修正后）</th><th>修正前（错误）</th></tr></thead><tbody>
+<tr><td><code>Ridge</code></td><td>Mountain Range</td><td>Aegis</td><td>神盾</td><td>神盾（无误）</td></tr>
+<tr><td><code>NavalBase</code></td><td>Naval Base</td><td>Killer Whale</td><td>杀人鲸</td><td>防守纽波特</td></tr>
+<tr><td><code>Labyrinth</code></td><td>Labyrinth</td><td>Raptor Rescue</td><td>营救猛禽</td><td>猛禽救援</td></tr>
+<tr><td><code>Naval_Defense</code></td><td>Newport</td><td>Defense of Naval Station Newport</td><td>防守纽波特</td><td>赫尔墨斯</td></tr>
+<tr><td><code>Advance</code></td><td>Sunda Islands</td><td>Narai</td><td>那莱</td><td>纳莱</td></tr>
+<tr><td><code>Atoll</code></td><td>Ultimate Frontier</td><td>The Ultimate Frontier</td><td>最终前线</td><td>终极前线</td></tr>
+<tr><td><code>LePVE</code></td><td>Hermes（同行动名题）</td><td>Hermes</td><td>赫尔墨斯</td><td>杀人鲸</td></tr>
+<tr><td><code>USS_CL</code></td><td>Cherry Blossom（同行动名题）</td><td>Cherry Blossom</td><td>樱花绽放</td><td>樱花绽放（无误）</td></tr>
+</tbody></table>
+<blockquote>说明：Hermes 与 Cherry Blossom 在 wiki「Scenarios」总表里未单独列出「Map:」字段，其地图与行动名同题，故根据内部码 <code>LePVE</code> / <code>USS_CL</code> 码定，地图显示名与行动名一致。</blockquote>
+<h2>那莱（Narai / Advance）专判</h2>
+<ul>
+<li>bot 键 <code>IDS_OP_02_03_*</code>：运输船 <code>IDS_OP_02_03_AT_TRANSPORT_A_1..5</code>，合 5 艘；另有 <code>IDS_OP_02_03_AT_COMMUNICATION</code>、<code>IDS_OP_02_03_AT_SHIP_DEFENDER_*</code>。</li>
+<li>敌军签名（回放 <code>playersPublicInfo</code>）：Lexington×1、Missouri×1、Bretagne×1（玩家称“白劳易”）、New York×1、Queen Elizabeth×2、Leander×2，与玩家提供的“列克星敦 + 密苏里 + 白劳易 + 纽约 + 伊丽莎白女王 + 利安得”完全吻合。</li>
+<li>官方地图名 = Sunda Islands（巽他群岛），行动名 = Narai（那莱）。</li>
+<li>常态队列仅 6-8 档，无中/高级变体（与玩家“那莱没有高级模式”一致）。</li>
+</ul>
+<h2>附：WW2 新行动映射</h2>
+<table><thead><tr><th>内部场景</th><th>中文行动名</th><th>英文行动名</th></tr></thead><tbody>
+<tr><td><code>WW2_OPERATION_1</code></td><td>北极护航</td><td>Arctic Convoy</td></tr>
+<tr><td><code>WW2_OPERATION_2</code></td><td>东京快车</td><td>Tokyo Express</td></tr>
+<tr><td><code>WW2_OPERATION_3</code></td><td>太平洋攻势</td><td>Pacific Offensive</td></tr>
+</tbody></table></body></html>

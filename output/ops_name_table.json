@@ -1,7 +1,7 @@
 [
   {
     "scenario": "PCVO010_OP_09_s09_LePVE_HIGH_LVL_Flagships_Random",
-    "name": "杀人鲸",
+    "name": "赫尔墨斯",
     "bracket": "9-10",
     "variant": "旗舰",
     "base_pool": 14006.0,
@@ -9,7 +9,7 @@
   },
   {
     "scenario": "PCVO009_OP_02_02_s06_Atoll_HIGH_LVL_Flagships_Random",
-    "name": "纳莱",
+    "name": "最终前线",
     "bracket": "9-10",
     "variant": "旗舰",
     "base_pool": 13596.0,
@@ -17,7 +17,7 @@
   },
   {
     "scenario": "PCVO003_OP_01_03_s03_Labyrinth_HIGH_LVL_Flagships_Random",
-    "name": "猛禽救援",
+    "name": "营救猛禽",
     "bracket": "9-10",
     "variant": "旗舰",
     "base_pool": 13543.0,
@@ -25,7 +25,7 @@
   },
   {
     "scenario": "PCVO004_OP_01_04_s02_Naval_Defense_HIGH_LVL_Flagships_Random",
-    "name": "赫尔墨斯",
+    "name": "防守纽波特",
     "bracket": "9-10",
     "variant": "旗舰",
     "base_pool": 13509.0,
@@ -49,7 +49,7 @@
   },
   {
     "scenario": "PCVO004_OP_01_04_s02_Naval_Defense_HIGH_LVL_Flagships_Fire",
-    "name": "赫尔墨斯",
+    "name": "防守纽波特",
     "bracket": "9-10",
     "variant": "旗舰",
     "base_pool": 13031.0,
@@ -65,7 +65,7 @@
   },
   {
     "scenario": "PCVO009_OP_02_02_s06_Atoll_HIGH_LVL_Flagships_Drop",
-    "name": "纳莱",
+    "name": "最终前线",
     "bracket": "9-10",
     "variant": "旗舰",
     "base_pool": 12919.0,
@@ -73,7 +73,7 @@
   },
   {
     "scenario": "PCVO003_OP_01_03_s03_Labyrinth_HIGH_LVL_Flagships_Focus",
-    "name": "猛禽救援",
+    "name": "营救猛禽",
     "bracket": "9-10",
     "variant": "旗舰",
     "base_pool": 12784.0,
@@ -81,7 +81,7 @@
   },
   {
     "scenario": "PCVO009_OP_02_02_s06_Atoll_HIGH_LVL_Flagships_Fire",
-    "name": "纳莱",
+    "name": "最终前线",
     "bracket": "9-10",
     "variant": "旗舰",
     "base_pool": 12700.0,
@@ -89,7 +89,7 @@
   },
   {
     "scenario": "PCVO010_OP_09_s09_LePVE_HIGH_LVL_Flagships_Fire",
-    "name": "杀人鲸",
+    "name": "赫尔墨斯",
     "bracket": "9-10",
     "variant": "旗舰",
     "base_pool": 12557.0,
@@ -97,7 +97,7 @@
   },
   {
     "scenario": "PCVO003_OP_01_03_s03_Labyrinth_HIGH_LVL_Flagships_Fire",
-    "name": "猛禽救援",
+    "name": "营救猛禽",
     "bracket": "9-10",
     "variant": "旗舰",
     "base_pool": 12549.0,
@@ -105,7 +105,7 @@
   },
   {
     "scenario": "PCVO010_OP_09_s09_LePVE_HIGH_LVL_Flagships_Drop",
-    "name": "杀人鲸",
+    "name": "赫尔墨斯",
     "bracket": "9-10",
     "variant": "旗舰",
     "base_pool": 12409.0,
@@ -113,7 +113,7 @@
   },
   {
     "scenario": "PCVO004_OP_01_04_s02_Naval_Defense_HIGH_LVL_Flagships_Drop",
-    "name": "赫尔墨斯",
+    "name": "防守纽波特",
     "bracket": "9-10",
     "variant": "旗舰",
     "base_pool": 12382.0,
@@ -121,7 +121,7 @@
   },
   {
     "scenario": "PCVO009_OP_02_02_s06_Atoll_HIGH_LVL_Flagships_Focus",
-    "name": "纳莱",
+    "name": "最终前线",
     "bracket": "9-10",
     "variant": "旗舰",
     "base_pool": 12232.0,
@@ -129,7 +129,7 @@
   },
   {
     "scenario": "PCVO003_OP_01_03_s03_Labyrinth_HIGH_LVL_Flagships_Drop",
-    "name": "猛禽救援",
+    "name": "营救猛禽",
     "bracket": "9-10",
     "variant": "旗舰",
     "base_pool": 12155.0,
@@ -145,7 +145,7 @@
   },
   {
     "scenario": "PCVO004_OP_01_04_s02_Naval_Defense_HIGH_LVL_Flagships_Focus",
-    "name": "赫尔墨斯",
+    "name": "防守纽波特",
     "bracket": "9-10",
     "variant": "旗舰",
     "base_pool": 12032.0,
@@ -193,7 +193,7 @@
   },
   {
     "scenario": "PCVO003_OP_01_03_s03_Labyrinth_HIGH_LVL",
-    "name": "猛禽救援",
+    "name": "营救猛禽",
     "bracket": "8-11",
     "variant": "高级",
     "base_pool": 9834.0,
@@ -201,7 +201,7 @@
   },
   {
     "scenario": "PCVO004_OP_01_04_s02_Naval_Defense_HIGH_LVL",
-    "name": "赫尔墨斯",
+    "name": "防守纽波特",
     "bracket": "8-11",
     "variant": "高级",
     "base_pool": 9799.0,
@@ -209,7 +209,7 @@
   },
   {
     "scenario": "PCVO010_OP_09_s09_LePVE_HIGH_LVL",
-    "name": "杀人鲸",
+    "name": "赫尔墨斯",
     "bracket": "8-11",
     "variant": "高级",
     "base_pool": 9798.0,
@@ -217,7 +217,7 @@
   },
   {
     "scenario": "PCVO009_OP_02_02_s06_Atoll_HIGH_LVL",
-    "name": "纳莱",
+    "name": "最终前线",
     "bracket": "8-11",
     "variant": "高级",
     "base_pool": 9772.0,
@@ -241,7 +241,7 @@
   },
   {
     "scenario": "PCVO004_OP_01_04_s02_Naval_Defense_MEDIUM_LVL",
-    "name": "赫尔墨斯",
+    "name": "防守纽波特",
     "bracket": "7-9",
     "variant": "中级",
     "base_pool": 8795.0,
@@ -249,7 +249,7 @@
   },
   {
     "scenario": "PCVO010_OP_09_s09_LePVE_MEDIUM_LVL",
-    "name": "杀人鲸",
+    "name": "赫尔墨斯",
     "bracket": "7-9",
     "variant": "中级",
     "base_pool": 8792.0,
@@ -273,7 +273,7 @@
   },
   {
     "scenario": "PCVO003_OP_01_03_s03_Labyrinth_MEDIUM_LVL",
-    "name": "猛禽救援",
+    "name": "营救猛禽",
     "bracket": "7-9",
     "variant": "中级",
     "base_pool": 8673.0,
@@ -297,7 +297,7 @@
   },
   {
     "scenario": "PCVO009_OP_02_02_s06_Atoll_MEDIUM_LVL",
-    "name": "纳莱",
+    "name": "最终前线",
     "bracket": "7-9",
     "variant": "中级",
     "base_pool": 8552.0,
@@ -305,7 +305,7 @@
   },
   {
     "scenario": "PCVO002_OP_01_02_s01_NavalBase",
-    "name": "防守纽波特",
+    "name": "杀人鲸",
     "bracket": "6-8",
     "variant": "普通",
     "base_pool": 8352.0,
@@ -313,7 +313,7 @@
   },
   {
     "scenario": "PCVO009_OP_02_02_s06_Atoll",
-    "name": "纳莱",
+    "name": "最终前线",
     "bracket": "6-8",
     "variant": "普通",
     "base_pool": 8109.0,
@@ -321,7 +321,7 @@
   },
   {
     "scenario": "PCVO008_OP_02_03_s07_Advance",
-    "name": "最终前线",
+    "name": "那莱",
     "bracket": "6-8",
     "variant": "普通",
     "base_pool": 8051.0,
@@ -329,7 +329,7 @@
   },
   {
     "scenario": "PCVO004_OP_01_04_s02_Naval_Defense",
-    "name": "赫尔墨斯",
+    "name": "防守纽波特",
     "bracket": "6-8",
     "variant": "普通",
     "base_pool": 8048.0,
@@ -337,7 +337,7 @@
   },
   {
     "scenario": "PCVO010_OP_09_s09_LePVE",
-    "name": "杀人鲸",
+    "name": "赫尔墨斯",
     "bracket": "6-8",
     "variant": "普通",
     "base_pool": 7937.0,
@@ -345,7 +345,7 @@
   },
   {
     "scenario": "PCVO003_OP_01_03_s03_Labyrinth",
-    "name": "猛禽救援",
+    "name": "营救猛禽",
     "bracket": "6-8",
     "variant": "普通",
     "base_pool": 7915.0,

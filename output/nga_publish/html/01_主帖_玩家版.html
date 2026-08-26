@@ -1,0 +1,52 @@
+<!DOCTYPE html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>01_主帖_玩家版</title><style>body{font-family:-apple-system,'Segoe UI','PingFang SC','Microsoft YaHei',sans-serif;max-width:980px;margin:24px auto;padding:0 20px;color:#222;line-height:1.75;font-size:15px;}h1{font-size:24px;border-bottom:2px solid #333;padding-bottom:8px;}h2{font-size:20px;border-bottom:1px solid #ccc;padding-bottom:6px;margin-top:28px;}h3{font-size:17px;margin-top:22px;}code{background:#f4f4f4;padding:2px 5px;border-radius:4px;font-family:monospace;font-size:13px;}pre{background:#f7f7f7;padding:12px 14px;border-radius:6px;overflow:auto;border:1px solid #e5e5e5;}pre code{background:none;padding:0;}table{border-collapse:collapse;margin:14px 0;width:100%;}th,td{border:1px solid #ccc;padding:7px 10px;text-align:left;vertical-align:top;}th{background:#f0f0f0;}blockquote{margin:14px 0;padding:8px 14px;border-left:4px solid #999;background:#fafafa;color:#555;}hr{border:none;border-top:1px solid #ddd;margin:22px 0;}</style></head><body><h1>剧情（行动）经验机制实测：结论通俗版</h1>
+<blockquote>面向普通玩家。不写推导过程，想看公式和置信区间请看《精英版》。</blockquote>
+<h2>一、先说结论</h2>
+<ol>
+<li>剧情经验 = <strong>保底均分 + 按贡献多劳多得</strong>。一局里约一半经验是大家平分的“保底”，另一半按你个人的“吃船效率”分，而且不同舰种权重不一样。</li>
+<li>潜艇加成确实存在，但不是无脑强：以驱逐为基准，潜艇的“效率权重”高约 <strong>1.68 倍（1.58~1.78）</strong>，社区流传的“1.75 倍”基本成立——但加成的基底是“吃船效率”，不是裸伤害。</li>
+<li>航母权重反而低（约 <strong>0.43</strong>），但它打出的大量点亮伤害会通过战功补回一部分，所以体感没那么“吃亏”。</li>
+<li>一局总经验池主要看三样：<strong>地图 × 星级 × 输赢</strong>。每颗星约 +9%，输局经验池约为赢局的 <strong>0.44 倍</strong>。</li>
+<li>队友挂机/暴毙会让全队池子略微缩水（每人约 <strong>-3%</strong>），远不是某些说法里的“-30%”。</li>
+</ol>
+<h2>二、经验是怎么分的</h2>
+<p>先解释“吃船效率”：你对每艘敌舰造成的伤害 ÷ 那艘船的最大血量，累加起来就是你的“吃船效率”。简单说，<strong>把船打死 / 打到残血，比只蹭伤害更“值钱”</strong>（一艘被击沉船的全队效率合计约等于 1，谁打得多谁拿得多）。</p>
+<p>分配模型一句话：<strong>约一半经验人人平分做保底，另一半按“舰种系数 × 个人效率”在全队占比来分</strong>。</p>
+<h2>三、潜艇 1.75 到底成不成立</h2>
+<p>成立，但要说清口径。</p>
+<ul>
+<li>以驱逐为基准，潜艇的效率权重约 <strong>1.68 倍</strong>，95% 区间 1.58~1.78，<strong>1.75 落在区间里</strong>。</li>
+<li>旧说法里“潜艇只比别人多 10% 经验”，那是按“相同伤害”硬比的，没算进潜艇“吃船效率”的特性，所以两个数字不矛盾，问的不是同一件事。</li>
+<li>换一种更直观的验证：在“吃船效率”相同的情况下，潜艇拿到的保底外经验大约是水面船的 <strong>1.40~1.48 倍</strong>，和模型系数对得上。</li>
+</ul>
+<p>简单总结：<strong>潜艇的加成是加在“效率”上的，不是加在裸伤害上</strong>，所以玩得是否“会吃船”很关键。</p>
+<h2>四、一局总经验池由什么决定</h2>
+<table><thead><tr><th>星级（任务完成度，0~5）</th><th>平均基础经验池</th><th>样本局数</th></tr></thead><tbody>
+<tr><td>0（基本输局）</td><td>约 2873</td><td>156</td></tr>
+<tr><td>1</td><td>约 6668</td><td>23</td></tr>
+<tr><td>2</td><td>约 7436</td><td>119</td></tr>
+<tr><td>3</td><td>约 8175</td><td>276</td></tr>
+<tr><td>4</td><td>约 8782</td><td>526</td></tr>
+<tr><td>5</td><td>约 9577</td><td>958</td></tr>
+</tbody></table>
+<ul>
+<li>每多一颗星，总池子约 <strong>×1.09</strong>（+9%）。</li>
+<li>输局整体约为赢局的 <strong>×0.44</strong>。</li>
+<li>地图基线（基础池）常态约 7500~10000；旗舰/Flagships 是限时模式，池子明显更高（约高级的 1.3~1.4 倍），不并入常态对比。</li>
+</ul>
+<p>也就是说，<strong>想刷经验，最有效的是把任务做满（星级拉满）+别输</strong>，队伍打多少伤害反而是次要的（它解释不了多少池子差异）。</p>
+<h2>五、挂机/暴毙的影响</h2>
+<p>团队里每多一个“挂机/暴毙”（未存活、0 击杀、伤害极低）的玩家，全队池子约缩水 <strong>3%</strong>（大体 -9%~-18% 那种说法有过头，并且混入了任务没做满的影响）。它会让全队总池子变矮，而不是单单扣挂机者自己的那一份。</p>
+<h2>六、数据可信度说明（大白话）</h2>
+<ul>
+<li>样本：<strong>2060 局</strong>剧情回放（本地回放 + 回放分享站抓取），去重后 <strong>14420</strong> 条玩家记录。</li>
+<li>口径：全部用“基础经验”（不含高账 1.65 倍和首胜加成），避免混淆。</li>
+<li>一个已知短板：抓来的回放<strong>赢局偏多</strong>（只有约 151 局败局），所以“输局 ×0.44”这个数偏重败局里的某一种情况，超时输局样本几乎没有。方向可靠，但不要当成精确到小数点后两位的真理。</li>
+</ul>
+<hr>
+<p><strong>给三类玩家的三句话：</strong></p>
+<ul>
+<li>刷经验党：先保星、别输，比多打那点伤害有用。</li>
+<li>潜艇玩家：效率加成是真的，但新随机图削弱了“背板收益”，硬吃船才有优势。</li>
+<li>航母玩家：系数虽低，点亮战功能补，别只看伤害面板。</li>
+</ul>
+<blockquote>完整公式、系数置信区间、复现脚本见《精英版》。</blockquote></body></html>

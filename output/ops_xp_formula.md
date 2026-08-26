@@ -1,3 +1,5 @@
+> **更新：** 舰种系数已补齐 95% 置信区间，见 `WOWS_OPERATIONS_INTERIM.md`。
+
 # Operations XP Allocation: Fitted Formula
 
 ## Data
@@ -65,3 +67,4 @@ Where:
    confirmed: about half the pool (`a` around 0.5) is distributed equally.
 3. Carrier coefficient is the opposite of submarine: about 0.44-0.50x.
 4. Cruisers and battleships get a small premium (about 1.19-1.25x).
+

@@ -1,0 +1,128 @@
+<!DOCTYPE html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>02_精英版_公式与可复现</title><style>body{font-family:-apple-system,'Segoe UI','PingFang SC','Microsoft YaHei',sans-serif;max-width:980px;margin:24px auto;padding:0 20px;color:#222;line-height:1.75;font-size:15px;}h1{font-size:24px;border-bottom:2px solid #333;padding-bottom:8px;}h2{font-size:20px;border-bottom:1px solid #ccc;padding-bottom:6px;margin-top:28px;}h3{font-size:17px;margin-top:22px;}code{background:#f4f4f4;padding:2px 5px;border-radius:4px;font-family:monospace;font-size:13px;}pre{background:#f7f7f7;padding:12px 14px;border-radius:6px;overflow:auto;border:1px solid #e5e5e5;}pre code{background:none;padding:0;}table{border-collapse:collapse;margin:14px 0;width:100%;}th,td{border:1px solid #ccc;padding:7px 10px;text-align:left;vertical-align:top;}th{background:#f0f0f0;}blockquote{margin:14px 0;padding:8px 14px;border-left:4px solid #999;background:#fafafa;color:#555;}hr{border:none;border-top:1px solid #ddd;margin:22px 0;}</style></head><body><h1>剧情（行动）经验机制：模型、系数与可复现验证（精英版）</h1>
+<blockquote>面向追求可复现、可挑错的读者。全程使用“基础经验”（不含高账 1.65x、首胜）口径。</blockquote>
+<h2>1. 结论速览</h2>
+<p>剧情经验分配可分解成“保底均分 + 舰种加权的吃船效率”，总经验池主要由“地图 + 星级 + 输赢”决定。</p>
+<table><thead><tr><th>舰种</th><th>系数 K（CL/CA=1.00）</th><th>95% CI（match 聚类 bootstrap）</th></tr></thead><tbody>
+<tr><td>DD 驱逐</td><td>0.830</td><td>[0.813, 0.844]</td></tr>
+<tr><td>CL/CA 巡洋</td><td>1.000</td><td>基准</td></tr>
+<tr><td>BB 战列</td><td>0.953</td><td>[0.944, 0.961]</td></tr>
+<tr><td>CV 航母</td><td>0.432</td><td>[0.407, 0.462]</td></tr>
+<tr><td>SS 潜艇</td><td>1.395</td><td>[1.332, 1.449]</td></tr>
+</tbody></table>
+<ul>
+<li><strong>潜艇相对驱逐</strong>：K[SS]/K[DD] = 1.395/0.830 = <strong>1.68，95% CI [1.58, 1.78]</strong>，社区“1.75x”落在区间内。</li>
+<li><strong>总经验池</strong>：<code>team_raw ≈ base[scenario] × 1.09^stars × (赢 ? 1 : 0.44)</code>，目标项拟合 R²=0.9595。</li>
+</ul>
+<h2>2. 数据与口径</h2>
+<ul>
+<li><strong>来源</strong>：本地回放 + replayswows.com 分享站 PVE 回放，按 <code>(arena_id, account_id)</code> 去重。</li>
+<li><strong>规模</strong>：2060 局（新剧情 317、老剧情 1743），14420 玩家行。</li>
+<li><strong>舰种分布</strong>：BB 6217、CL/CA 5726、DD 1845、CV 260、SS 372。</li>
+<li><strong>经验口径</strong>：一律用回放的 <code>raw_exp</code>（= 局主 <code>init_economics.exp</code>，即基础经验）。</li>
+<li>WG API 的 <code>oper_solo.xp</code> 含高账 1.65x，对齐时需 <code>÷1.65</code>。</li>
+<li>1.5x 是随机 PvP 胜方加成，与剧情无关。</li>
+<li><strong>已知偏置</strong>：抓取源赢局偏多（败局仅 151/2058 ≈ 7.3%），且无超时败局样本，见第 7 节。</li>
+</ul>
+<h2>3. 模型一：经验分配</h2>
+<h3>3.1 吃船效率</h3>
+<p>对每艘敌舰累加「你对它造成的伤害 ÷ 它的最大 HP」：</p>
+<pre><code>ship_eff_i = sum_over_enemies( damage_i_to_k / max_hp_k )</code></pre>
+<p>击沉船全队合计约 1；未沉船按比例计，剩余血量不计入任何人。</p>
+<p>提取自回放 <code>playersPublicInfo[attacker].interactions[victim]</code>（索引取</p>
+<p><code>CLIENT_VEH_INTERACTION_DETAILS</code> 的 <code>damage_*</code> 字段），victim 血量取</p>
+<p><code>CLIENT_PUBLIC_RESULTS_INDICES.max_health</code>。</p>
+<h3>3.2 分配式</h3>
+<pre><code>contribution_i = ship_eff_i + lambda * (scouting_damage_i / 100000)
+
+XP_share_i = a/n + (1-a) * K[class_i] * contribution_i
+                       / sum_j(K[class_j] * contribution_j)
+
+base_XP_i = XP_share_i * team_base_XP</code></pre>
+<ul>
+<li><code>a</code>：均分地板（约一半经验人人平分）。</li>
+<li><code>lambda</code>：点亮伤害在“贡献”里的权重（每 10 万点亮 = 1 个船等效）。</li>
+<li><code>K[class]</code>：舰种在效率项上的权重，CL/CA 固定为 1.00。</li>
+</ul>
+<h3>3.3 拟合方法</h3>
+<ol>
+<li>网格搜索 <code>a ∈ {0,0.02,...,0.92}</code>、<code>lambda ∈ {0,0.1,...,2.0}</code>。</li>
+<li>每个格点上，用「局内去均值」的 log-ratio 回归估计 K：</li>
+</ol>
+<p><code>Y = log(xp_share - a/n) - log(contribution)</code>，对舰种哑变量做 OLS（DD 为基准，局内 demeaning 消除局固定效应），<code>K = exp(coef)</code>。</p>
+<ol>
+<li>以全样本 SSE 最小选 (a, lambda)，对应 K 即为点估计。</li>
+</ol>
+<h3>3.4 结果</h3>
+<table><thead><tr><th>样本</th><th>n 局</th><th>a</th><th>lambda</th><th>R²</th><th>DD</th><th>CL/CA</th><th>BB</th><th>CV</th><th>SS</th></tr></thead><tbody>
+<tr><td>新剧情 only</td><td>317</td><td>0.48</td><td>1.9</td><td>0.922</td><td>0.811</td><td>1.000</td><td>0.963</td><td>0.385</td><td>1.379</td></tr>
+<tr><td>老剧情 only</td><td>1743</td><td>0.50</td><td>1.2</td><td>0.906</td><td>0.834</td><td>1.000</td><td>0.951</td><td>0.444</td><td>1.415</td></tr>
+<tr><td>合并</td><td>2060</td><td>0.50</td><td>1.2</td><td>0.908</td><td>0.830</td><td>1.000</td><td>0.953</td><td>0.432</td><td>1.395</td></tr>
+</tbody></table>
+<p>系数跨三档稳定，因此可给出一组统一 K。合并口径 95% CI 见第 1 节表。</p>
+<blockquote>说明：<code>K[CV]=0.43</code> 只是“效率项”的权重低；航母点亮伤害通常高，会通过 <code>lambda * scouting</code> 补回一部分，所以真实收益不等于 0.43。</blockquote>
+<h2>4. 潜艇 1.75 辨析</h2>
+<p>两个“矛盾”的数字其实是两个问题：</p>
+<ul>
+<li>社区 1.75x = 相对驱逐的效率权重。实测 <strong>K[SS]/K[DD] = 1.68 [1.58, 1.78]</strong>，<strong>成立</strong>。</li>
+<li>早前“潜艇只多 +10%” = 相同<strong>伤害</strong>下的经验比。潜艇效率与伤害不成正比，该口径不是对 1.75 的正确检验。</li>
+</ul>
+<p>非参数交叉验证（局内把每艘潜艇与“贡献值”最接近的水面舰配对，比保底外份额）：</p>
+<table><thead><tr><th>样本</th><th>n</th><th>mean</th><th>median</th></tr></thead><tbody>
+<tr><td>新剧情</td><td>68</td><td>1.422</td><td>1.342</td></tr>
+<tr><td>老剧情</td><td>233</td><td>1.485</td><td>1.404</td></tr>
+<tr><td>合并</td><td>300</td><td>1.481</td><td>1.403</td></tr>
+</tbody></table>
+<p>合并中位数 1.403 落在 K[SS]/K[水面均值] 附近，佐证 K[SS] 不是回归伪影。</p>
+<p><strong>新老剧情差异（随机性）</strong>：新剧情地图更随机，削弱潜艇“背板”：</p>
+<p>潜艇效率占比 12.6%→8.6%（约 -46%），伤害 169.6k→108.9k（约 -36%）。这只降低“贡献量”，</p>
+<p>不改变 K[SS]（新老均在 1.38~1.42 之间）。</p>
+<h2>5. 模型二：总经验池</h2>
+<h3>5.1 式与系数</h3>
+<p>对 <code>log(team_raw)</code> 做 OLS，含场景固定效应：</p>
+<pre><code>team_raw ~ base[scenario] * 1.09^stars * (win ? 1 : 0.44)</code></pre>
+<table><thead><tr><th>项</th><th>coef</th><th>95% CI</th><th>倍数</th></tr></thead><tbody>
+<tr><td>stars（0~5）</td><td>0.0865</td><td>[0.0829, 0.0903]</td><td>每星 ×1.090</td></tr>
+<tr><td>secondary_completed</td><td>0.0226</td><td>[0.0185, 0.0264]</td><td>与星级冗余，弃用</td></tr>
+<tr><td>is_win</td><td>0.8178</td><td>[0.7947, 0.8367]</td><td>赢/输 ×2.263；输/赢 ×0.442</td></tr>
+<tr><td>team_eff（每船等效）</td><td>0.0031</td><td>-</td><td>×1.003，可忽略</td></tr>
+<tr><td>n_inactive（挂机/暴毙）</td><td>-0.0283</td><td>-</td><td>每人 ×0.972</td></tr>
+</tbody></table>
+<ul>
+<li>目标项（场景 + 星级 + 胜负）R²=0.9595；加入队伍效率/伤害仅升到 0.9709 → 池子是目标导向。</li>
+<li><code>base[scenario]</code> 地图基线：常态约 7500~10000；旗舰(Flagships)为限时模式，约 11800~14006（约高级的 1.3~1.4 倍），不计入常态。</li>
+<li>星级均池（合并样本）：0星≈2873、1星≈6668、2星≈7436、3星≈8175、4星≈8782、5星≈9577。</li>
+</ul>
+<h3>5.2 finish_type 无法再分</h3>
+<p>样本 <code>finish_type</code> 与胜负完全共线：</p>
+<table><thead><tr><th>finish_type</th><th>胜负</th><th>n</th></tr></thead><tbody>
+<tr><td>PROTECTED_TARGETS_DESTROYED</td><td>赢</td><td>1907</td></tr>
+<tr><td>BASE（目标被毁）</td><td>输</td><td>151</td></tr>
+</tbody></table>
+<p>无 TIMEOUT(13) / SCORE_ON_TIMEOUT(18) 样本，抓取源又偏赢局。因此「超时输 vs 被团灭输」</p>
+<p>的惩罚差异在当前数据下不可识别；×0.44 为败局整体惩罚。</p>
+<h2>6. 复现</h2>
+<p>依赖仅 Python 3 + numpy（无 scipy）。</p>
+<pre><code># 系数 K + bootstrap CI + 潜艇匹配效率诊断
+python scripts/ci_allocation.py      # -&gt; output/allocation_ci.json
+
+# 总经验池 finish_type 交叉表 + bootstrap CI
+python scripts/ci_pool.py            # -&gt; output/pool_fit.json
+
+# 原始网格搜索 / 池子描述基线
+python scripts/fit_class_efficiency.py --scope all
+python scripts/fit_xp_pool.py</code></pre>
+<p>置信区间方法：以<strong>局</strong>为聚类单元，500 次有放回重采样，重估 K 或池子系数，</p>
+<p>取 2.5/97.5 百分位。原始吃船效率提取见 <code>scripts/extract_ops_efficiency.py</code>。</p>
+<h2>7. 局限与待办</h2>
+<ol>
+<li><strong>输局样本少且单一</strong>：败局仅 151 局、且全是 BASE 结束，无超时败局 → ×0.44 与“输局无法细分”需谨慎外推。</li>
+<li><strong>抓取偏赢</strong>：结论对“中低完成度/失败”这类局可能偏乐观。</li>
+<li><strong>经验模型是拟合结果</strong>，反映回放数据规律，不等于 WG 服务端公式；可用于预测/评分，不宜当作官方定式。</li>
+<li><strong>待办</strong>：用本次 K 系数与池子公式反哺剧情 PR 评分；补足败局/超时样本后再拆 finish_type。</li>
+</ol>
+<hr>
+<ul>
+<li>通俗版：<code>output/report_nga_player.md</code></li>
+<li>中期完整结论：<code>output/WOWS_OPERATIONS_INTERIM.md</code></li>
+<li>机器可读结果：<code>output/allocation_ci.json</code>、<code>output/pool_fit.json</code></li>
+</ul></body></html>
