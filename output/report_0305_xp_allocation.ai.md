@@ -71,6 +71,19 @@ victim_tier_effect:
     t8_9: 0.0124
     t10_11: 0.0145
   conclusion: no monotonic tier premium; reward is per ship-equivalent, independent of victim tier
+noncombat_and_buildings:
+  player_level_n: 14420
+  within_match_demean: true
+  class_dummies: true
+  share_coef:
+    eff_ship: 0.01313
+    eff_noncombat: 0.00892
+    scouting_per_100k: 0.01525
+    building_damage_per_100k: 0.00745
+    building_kill: 0.00255
+  conclusion: >
+    transports/torpedo boats count as ship-equivalent but at ~68% of a combat
+    ship; building damage and building kills are near-zero contributors.
 ```
 
 ## 脚本 / 数据
@@ -81,3 +94,4 @@ victim_tier_effect:
 - result json: `output/class_efficiency_fit.json`
 - frags analysis: `scripts/analyze_frags.py` -> `output/frags_analysis.json`
 - victim tier analysis: `scripts/analyze_victim_tier.py` -> `output/victim_tier_analysis.json`
+- noncombat/building analysis: `scripts/analyze_noncombat.py` -> `output/noncombat_analysis.json`

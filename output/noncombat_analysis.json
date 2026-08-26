@@ -1,0 +1,13 @@
+{
+  "n": 14420,
+  "r2_base": 0.8244,
+  "r2_noncombat": 0.8277,
+  "r2_full": 0.8287,
+  "coef": {
+    "eff_ship": 0.01313,
+    "eff_noncombat": 0.00892,
+    "scout": 0.01525,
+    "bdmg": 0.00745,
+    "bkill": 0.00255
+  }
+}
