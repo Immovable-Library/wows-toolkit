@@ -1,0 +1,1135 @@
+{
+  "within_match": {
+    "n": 14420,
+    "r2_base": 0.8203,
+    "r2_full": 0.8284,
+    "survival_coef_xp": 178.12
+  },
+  "per_scenario": [
+    {
+      "scenario": "PCVO001_OP_01_01_37_Ridge_HIGH_LVL",
+      "label": "神盾 8-11",
+      "n": 1421,
+      "corr": 0.52,
+      "mean_xp": 1218.7,
+      "binned": [
+        {
+          "bucket": "0-25%",
+          "n": 62,
+          "mean_xp": 582.3
+        },
+        {
+          "bucket": "25-50%",
+          "n": 177,
+          "mean_xp": 886.2
+        },
+        {
+          "bucket": "50-75%",
+          "n": 121,
+          "mean_xp": 1051.8
+        },
+        {
+          "bucket": "75-99%",
+          "n": 244,
+          "mean_xp": 1273.6
+        },
+        {
+          "bucket": "100%",
+          "n": 817,
+          "mean_xp": 1347.4
+        }
+      ]
+    },
+    {
+      "scenario": "PCVO011_OP_10_s10_USS_CL_HIGH_LVL",
+      "label": "樱花绽放 8-11",
+      "n": 1281,
+      "corr": 0.416,
+      "mean_xp": 1241.5,
+      "binned": [
+        {
+          "bucket": "0-25%",
+          "n": 51,
+          "mean_xp": 554.8
+        },
+        {
+          "bucket": "25-50%",
+          "n": 77,
+          "mean_xp": 884.8
+        },
+        {
+          "bucket": "50-75%",
+          "n": 105,
+          "mean_xp": 1065.1
+        },
+        {
+          "bucket": "75-99%",
+          "n": 214,
+          "mean_xp": 1158.0
+        },
+        {
+          "bucket": "100%",
+          "n": 834,
+          "mean_xp": 1360.0
+        }
+      ]
+    },
+    {
+      "scenario": "PCVO004_OP_01_04_s02_Naval_Defense_HIGH_LVL",
+      "label": "防守纽波特 8-11",
+      "n": 1281,
+      "corr": 0.422,
+      "mean_xp": 1260.8,
+      "binned": [
+        {
+          "bucket": "0-25%",
+          "n": 17,
+          "mean_xp": 544.6
+        },
+        {
+          "bucket": "25-50%",
+          "n": 91,
+          "mean_xp": 896.2
+        },
+        {
+          "bucket": "50-75%",
+          "n": 96,
+          "mean_xp": 1056.0
+        },
+        {
+          "bucket": "75-99%",
+          "n": 300,
+          "mean_xp": 1150.0
+        },
+        {
+          "bucket": "100%",
+          "n": 777,
+          "mean_xp": 1387.3
+        }
+      ]
+    },
+    {
+      "scenario": "PCVO009_OP_02_02_s06_Atoll_HIGH_LVL",
+      "label": "最终前线 8-11",
+      "n": 1281,
+      "corr": 0.517,
+      "mean_xp": 1316.0,
+      "binned": [
+        {
+          "bucket": "0-25%",
+          "n": 57,
+          "mean_xp": 669.2
+        },
+        {
+          "bucket": "25-50%",
+          "n": 77,
+          "mean_xp": 949.7
+        },
+        {
+          "bucket": "50-75%",
+          "n": 113,
+          "mean_xp": 1133.6
+        },
+        {
+          "bucket": "75-99%",
+          "n": 417,
+          "mean_xp": 1324.0
+        },
+        {
+          "bucket": "100%",
+          "n": 617,
+          "mean_xp": 1449.4
+        }
+      ]
+    },
+    {
+      "scenario": "PCVO003_OP_01_03_s03_Labyrinth_HIGH_LVL",
+      "label": "营救猛禽 8-11",
+      "n": 1043,
+      "corr": 0.32,
+      "mean_xp": 1318.4,
+      "binned": [
+        {
+          "bucket": "0-25%",
+          "n": 6,
+          "mean_xp": 714.0
+        },
+        {
+          "bucket": "25-50%",
+          "n": 74,
+          "mean_xp": 1054.1
+        },
+        {
+          "bucket": "50-75%",
+          "n": 127,
+          "mean_xp": 1121.3
+        },
+        {
+          "bucket": "75-99%",
+          "n": 111,
+          "mean_xp": 1309.5
+        },
+        {
+          "bucket": "100%",
+          "n": 725,
+          "mean_xp": 1386.2
+        }
+      ]
+    },
+    {
+      "scenario": "PCVO010_OP_09_s09_LePVE_HIGH_LVL",
+      "label": "赫尔墨斯 8-11",
+      "n": 938,
+      "corr": 0.369,
+      "mean_xp": 1218.9,
+      "binned": [
+        {
+          "bucket": "0-25%",
+          "n": 8,
+          "mean_xp": 426.2
+        },
+        {
+          "bucket": "25-50%",
+          "n": 48,
+          "mean_xp": 750.9
+        },
+        {
+          "bucket": "50-75%",
+          "n": 26,
+          "mean_xp": 1027.0
+        },
+        {
+          "bucket": "75-99%",
+          "n": 171,
+          "mean_xp": 1276.3
+        },
+        {
+          "bucket": "100%",
+          "n": 685,
+          "mean_xp": 1253.9
+        }
+      ]
+    },
+    {
+      "scenario": "WW2_OPERATION_1_1011LVL",
+      "label": "北极护航 9-11",
+      "n": 476,
+      "corr": 0.38,
+      "mean_xp": 1163.6,
+      "binned": [
+        {
+          "bucket": "0-25%",
+          "n": 4,
+          "mean_xp": 471.5
+        },
+        {
+          "bucket": "25-50%",
+          "n": 32,
+          "mean_xp": 772.2
+        },
+        {
+          "bucket": "50-75%",
+          "n": 59,
+          "mean_xp": 907.9
+        },
+        {
+          "bucket": "75-99%",
+          "n": 87,
+          "mean_xp": 1212.9
+        },
+        {
+          "bucket": "100%",
+          "n": 294,
+          "mean_xp": 1252.3
+        }
+      ]
+    },
+    {
+      "scenario": "PCVO008_OP_02_03_s07_Advance",
+      "label": "那莱 6-8",
+      "n": 462,
+      "corr": 0.446,
+      "mean_xp": 941.3,
+      "binned": [
+        {
+          "bucket": "0-25%",
+          "n": 9,
+          "mean_xp": 290.8
+        },
+        {
+          "bucket": "25-50%",
+          "n": 28,
+          "mean_xp": 572.2
+        },
+        {
+          "bucket": "50-75%",
+          "n": 53,
+          "mean_xp": 750.5
+        },
+        {
+          "bucket": "75-99%",
+          "n": 98,
+          "mean_xp": 949.7
+        },
+        {
+          "bucket": "100%",
+          "n": 274,
+          "mean_xp": 1034.2
+        }
+      ]
+    },
+    {
+      "scenario": "WW2_OPERATION_3_1011LVL",
+      "label": "太平洋攻势 9-11",
+      "n": 420,
+      "corr": 0.402,
+      "mean_xp": 1185.2,
+      "binned": [
+        {
+          "bucket": "0-25%",
+          "n": 3,
+          "mean_xp": 285.7
+        },
+        {
+          "bucket": "25-50%",
+          "n": 13,
+          "mean_xp": 666.4
+        },
+        {
+          "bucket": "50-75%",
+          "n": 28,
+          "mean_xp": 834.4
+        },
+        {
+          "bucket": "75-99%",
+          "n": 111,
+          "mean_xp": 954.8
+        },
+        {
+          "bucket": "100%",
+          "n": 265,
+          "mean_xp": 1354.5
+        }
+      ]
+    },
+    {
+      "scenario": "PCVO004_OP_01_04_s02_Naval_Defense_MEDIUM_LVL",
+      "label": "防守纽波特 7-9",
+      "n": 399,
+      "corr": 0.411,
+      "mean_xp": 1194.9,
+      "binned": [
+        {
+          "bucket": "0-25%",
+          "n": 8,
+          "mean_xp": 500.2
+        },
+        {
+          "bucket": "25-50%",
+          "n": 30,
+          "mean_xp": 856.8
+        },
+        {
+          "bucket": "50-75%",
+          "n": 31,
+          "mean_xp": 1002.7
+        },
+        {
+          "bucket": "75-99%",
+          "n": 66,
+          "mean_xp": 1215.8
+        },
+        {
+          "bucket": "100%",
+          "n": 264,
+          "mean_xp": 1271.7
+        }
+      ]
+    },
+    {
+      "scenario": "PCVO002_OP_01_02_s01_NavalBase",
+      "label": "杀人鲸 6-8",
+      "n": 343,
+      "corr": 0.353,
+      "mean_xp": 1045.3,
+      "binned": [
+        {
+          "bucket": "0-25%",
+          "n": 9,
+          "mean_xp": 539.9
+        },
+        {
+          "bucket": "25-50%",
+          "n": 16,
+          "mean_xp": 664.3
+        },
+        {
+          "bucket": "50-75%",
+          "n": 16,
+          "mean_xp": 937.8
+        },
+        {
+          "bucket": "75-99%",
+          "n": 72,
+          "mean_xp": 1071.1
+        },
+        {
+          "bucket": "100%",
+          "n": 230,
+          "mean_xp": 1091.0
+        }
+      ]
+    },
+    {
+      "scenario": "PCVO011_OP_10_s10_USS_CL",
+      "label": "樱花绽放 6-8",
+      "n": 329,
+      "corr": 0.313,
+      "mean_xp": 1062.0,
+      "binned": [
+        {
+          "bucket": "0-25%",
+          "n": 5,
+          "mean_xp": 555.0
+        },
+        {
+          "bucket": "25-50%",
+          "n": 17,
+          "mean_xp": 700.8
+        },
+        {
+          "bucket": "50-75%",
+          "n": 23,
+          "mean_xp": 971.9
+        },
+        {
+          "bucket": "75-99%",
+          "n": 45,
+          "mean_xp": 1129.5
+        },
+        {
+          "bucket": "100%",
+          "n": 239,
+          "mean_xp": 1094.3
+        }
+      ]
+    },
+    {
+      "scenario": "WW2_OPERATION_2_1011LVL",
+      "label": "东京快车 9-11",
+      "n": 315,
+      "corr": 0.489,
+      "mean_xp": 1241.5,
+      "binned": [
+        {
+          "bucket": "25-50%",
+          "n": 29,
+          "mean_xp": 736.6
+        },
+        {
+          "bucket": "50-75%",
+          "n": 52,
+          "mean_xp": 1057.9
+        },
+        {
+          "bucket": "75-99%",
+          "n": 47,
+          "mean_xp": 1286.4
+        },
+        {
+          "bucket": "100%",
+          "n": 185,
+          "mean_xp": 1368.6
+        }
+      ]
+    },
+    {
+      "scenario": "PCVO011_OP_10_s10_USS_CL_MEDIUM_LVL",
+      "label": "樱花绽放 7-9",
+      "n": 301,
+      "corr": 0.335,
+      "mean_xp": 1156.6,
+      "binned": [
+        {
+          "bucket": "0-25%",
+          "n": 6,
+          "mean_xp": 495.2
+        },
+        {
+          "bucket": "25-50%",
+          "n": 14,
+          "mean_xp": 829.4
+        },
+        {
+          "bucket": "50-75%",
+          "n": 24,
+          "mean_xp": 945.1
+        },
+        {
+          "bucket": "75-99%",
+          "n": 40,
+          "mean_xp": 1097.1
+        },
+        {
+          "bucket": "100%",
+          "n": 217,
+          "mean_xp": 1230.4
+        }
+      ]
+    },
+    {
+      "scenario": "WW2_OPERATION_2_89LVL",
+      "label": "东京快车 7-9",
+      "n": 301,
+      "corr": 0.406,
+      "mean_xp": 1135.8,
+      "binned": [
+        {
+          "bucket": "25-50%",
+          "n": 10,
+          "mean_xp": 575.1
+        },
+        {
+          "bucket": "50-75%",
+          "n": 34,
+          "mean_xp": 1000.3
+        },
+        {
+          "bucket": "75-99%",
+          "n": 53,
+          "mean_xp": 1085.6
+        },
+        {
+          "bucket": "100%",
+          "n": 202,
+          "mean_xp": 1207.8
+        }
+      ]
+    },
+    {
+      "scenario": "PCVO010_OP_09_s09_LePVE_MEDIUM_LVL",
+      "label": "赫尔墨斯 7-9",
+      "n": 287,
+      "corr": 0.366,
+      "mean_xp": 1035.3,
+      "binned": [
+        {
+          "bucket": "0-25%",
+          "n": 4,
+          "mean_xp": 354.0
+        },
+        {
+          "bucket": "25-50%",
+          "n": 17,
+          "mean_xp": 589.8
+        },
+        {
+          "bucket": "50-75%",
+          "n": 16,
+          "mean_xp": 818.6
+        },
+        {
+          "bucket": "75-99%",
+          "n": 48,
+          "mean_xp": 1096.0
+        },
+        {
+          "bucket": "100%",
+          "n": 202,
+          "mean_xp": 1089.1
+        }
+      ]
+    },
+    {
+      "scenario": "WW2_OPERATION_3_89LVL",
+      "label": "太平洋攻势 7-9",
+      "n": 287,
+      "corr": 0.373,
+      "mean_xp": 1197.4,
+      "binned": [
+        {
+          "bucket": "25-50%",
+          "n": 10,
+          "mean_xp": 761.4
+        },
+        {
+          "bucket": "50-75%",
+          "n": 15,
+          "mean_xp": 1073.9
+        },
+        {
+          "bucket": "75-99%",
+          "n": 48,
+          "mean_xp": 1145.5
+        },
+        {
+          "bucket": "100%",
+          "n": 213,
+          "mean_xp": 1243.2
+        }
+      ]
+    },
+    {
+      "scenario": "PCVO009_OP_02_02_s06_Atoll_MEDIUM_LVL",
+      "label": "最终前线 7-9",
+      "n": 280,
+      "corr": 0.453,
+      "mean_xp": 1117.4,
+      "binned": [
+        {
+          "bucket": "0-25%",
+          "n": 9,
+          "mean_xp": 542.6
+        },
+        {
+          "bucket": "25-50%",
+          "n": 21,
+          "mean_xp": 811.9
+        },
+        {
+          "bucket": "50-75%",
+          "n": 26,
+          "mean_xp": 873.9
+        },
+        {
+          "bucket": "75-99%",
+          "n": 69,
+          "mean_xp": 1202.4
+        },
+        {
+          "bucket": "100%",
+          "n": 155,
+          "mean_xp": 1195.2
+        }
+      ]
+    },
+    {
+      "scenario": "PCVO009_OP_02_02_s06_Atoll",
+      "label": "最终前线 6-8",
+      "n": 273,
+      "corr": 0.523,
+      "mean_xp": 1114.6,
+      "binned": [
+        {
+          "bucket": "0-25%",
+          "n": 14,
+          "mean_xp": 511.5
+        },
+        {
+          "bucket": "25-50%",
+          "n": 13,
+          "mean_xp": 683.7
+        },
+        {
+          "bucket": "50-75%",
+          "n": 22,
+          "mean_xp": 1003.0
+        },
+        {
+          "bucket": "75-99%",
+          "n": 82,
+          "mean_xp": 1158.0
+        },
+        {
+          "bucket": "100%",
+          "n": 142,
+          "mean_xp": 1205.7
+        }
+      ]
+    },
+    {
+      "scenario": "WW2_OPERATION_1_89LVL",
+      "label": "北极护航 7-9",
+      "n": 266,
+      "corr": 0.279,
+      "mean_xp": 1068.6,
+      "binned": [
+        {
+          "bucket": "25-50%",
+          "n": 11,
+          "mean_xp": 742.5
+        },
+        {
+          "bucket": "50-75%",
+          "n": 24,
+          "mean_xp": 919.3
+        },
+        {
+          "bucket": "75-99%",
+          "n": 29,
+          "mean_xp": 1227.6
+        },
+        {
+          "bucket": "100%",
+          "n": 201,
+          "mean_xp": 1084.7
+        }
+      ]
+    },
+    {
+      "scenario": "PCVO001_OP_01_01_37_Ridge_MEDIUM_LVL",
+      "label": "神盾 7-9",
+      "n": 238,
+      "corr": 0.507,
+      "mean_xp": 1129.8,
+      "binned": [
+        {
+          "bucket": "0-25%",
+          "n": 9,
+          "mean_xp": 611.1
+        },
+        {
+          "bucket": "25-50%",
+          "n": 24,
+          "mean_xp": 827.5
+        },
+        {
+          "bucket": "50-75%",
+          "n": 20,
+          "mean_xp": 777.8
+        },
+        {
+          "bucket": "75-99%",
+          "n": 31,
+          "mean_xp": 1226.4
+        },
+        {
+          "bucket": "100%",
+          "n": 154,
+          "mean_xp": 1233.6
+        }
+      ]
+    },
+    {
+      "scenario": "PCVO003_OP_01_03_s03_Labyrinth_MEDIUM_LVL",
+      "label": "营救猛禽 7-9",
+      "n": 231,
+      "corr": 0.209,
+      "mean_xp": 1122.1,
+      "binned": [
+        {
+          "bucket": "25-50%",
+          "n": 15,
+          "mean_xp": 857.1
+        },
+        {
+          "bucket": "50-75%",
+          "n": 24,
+          "mean_xp": 1084.3
+        },
+        {
+          "bucket": "75-99%",
+          "n": 6,
+          "mean_xp": 756.8
+        },
+        {
+          "bucket": "100%",
+          "n": 184,
+          "mean_xp": 1167.8
+        }
+      ]
+    },
+    {
+      "scenario": "PCVO001_OP_01_01_37_Ridge",
+      "label": "神盾 6-8",
+      "n": 231,
+      "corr": 0.565,
+      "mean_xp": 1009.2,
+      "binned": [
+        {
+          "bucket": "0-25%",
+          "n": 10,
+          "mean_xp": 460.7
+        },
+        {
+          "bucket": "25-50%",
+          "n": 32,
+          "mean_xp": 734.3
+        },
+        {
+          "bucket": "50-75%",
+          "n": 14,
+          "mean_xp": 805.6
+        },
+        {
+          "bucket": "75-99%",
+          "n": 23,
+          "mean_xp": 1016.9
+        },
+        {
+          "bucket": "100%",
+          "n": 152,
+          "mean_xp": 1120.7
+        }
+      ]
+    },
+    {
+      "scenario": "PCVO001_OP_01_01_37_Ridge_HIGH_LVL_Flagships_Random",
+      "label": "神盾 9-10",
+      "n": 231,
+      "corr": 0.53,
+      "mean_xp": 1475.0,
+      "binned": [
+        {
+          "bucket": "0-25%",
+          "n": 22,
+          "mean_xp": 762.9
+        },
+        {
+          "bucket": "25-50%",
+          "n": 48,
+          "mean_xp": 1044.9
+        },
+        {
+          "bucket": "50-75%",
+          "n": 30,
+          "mean_xp": 1230.7
+        },
+        {
+          "bucket": "75-99%",
+          "n": 37,
+          "mean_xp": 1725.7
+        },
+        {
+          "bucket": "100%",
+          "n": 94,
+          "mean_xp": 1840.6
+        }
+      ]
+    },
+    {
+      "scenario": "PCVO004_OP_01_04_s02_Naval_Defense",
+      "label": "防守纽波特 6-8",
+      "n": 217,
+      "corr": 0.56,
+      "mean_xp": 964.3,
+      "binned": [
+        {
+          "bucket": "0-25%",
+          "n": 7,
+          "mean_xp": 280.4
+        },
+        {
+          "bucket": "25-50%",
+          "n": 18,
+          "mean_xp": 660.0
+        },
+        {
+          "bucket": "50-75%",
+          "n": 26,
+          "mean_xp": 747.0
+        },
+        {
+          "bucket": "75-99%",
+          "n": 46,
+          "mean_xp": 858.6
+        },
+        {
+          "bucket": "100%",
+          "n": 120,
+          "mean_xp": 1137.3
+        }
+      ]
+    },
+    {
+      "scenario": "PCVO003_OP_01_03_s03_Labyrinth",
+      "label": "营救猛禽 6-8",
+      "n": 196,
+      "corr": 0.197,
+      "mean_xp": 1061.6,
+      "binned": [
+        {
+          "bucket": "25-50%",
+          "n": 7,
+          "mean_xp": 858.4
+        },
+        {
+          "bucket": "50-75%",
+          "n": 14,
+          "mean_xp": 863.2
+        },
+        {
+          "bucket": "75-99%",
+          "n": 16,
+          "mean_xp": 972.5
+        },
+        {
+          "bucket": "100%",
+          "n": 159,
+          "mean_xp": 1097.0
+        }
+      ]
+    },
+    {
+      "scenario": "PCVO004_OP_01_04_s02_Naval_Defense_HIGH_LVL_Flagships_Random",
+      "label": "防守纽波特 9-10",
+      "n": 168,
+      "corr": 0.509,
+      "mean_xp": 1546.3,
+      "binned": [
+        {
+          "bucket": "0-25%",
+          "n": 7,
+          "mean_xp": 545.9
+        },
+        {
+          "bucket": "25-50%",
+          "n": 18,
+          "mean_xp": 1029.8
+        },
+        {
+          "bucket": "50-75%",
+          "n": 27,
+          "mean_xp": 1207.4
+        },
+        {
+          "bucket": "75-99%",
+          "n": 45,
+          "mean_xp": 1289.4
+        },
+        {
+          "bucket": "100%",
+          "n": 71,
+          "mean_xp": 2067.5
+        }
+      ]
+    },
+    {
+      "scenario": "PCVO010_OP_09_s09_LePVE",
+      "label": "赫尔墨斯 6-8",
+      "n": 147,
+      "corr": 0.433,
+      "mean_xp": 1025.9,
+      "binned": [
+        {
+          "bucket": "25-50%",
+          "n": 10,
+          "mean_xp": 559.3
+        },
+        {
+          "bucket": "50-75%",
+          "n": 5,
+          "mean_xp": 777.8
+        },
+        {
+          "bucket": "75-99%",
+          "n": 25,
+          "mean_xp": 1074.2
+        },
+        {
+          "bucket": "100%",
+          "n": 106,
+          "mean_xp": 1077.8
+        }
+      ]
+    },
+    {
+      "scenario": "PCVO009_OP_02_02_s06_Atoll_HIGH_LVL_Flagships_Random",
+      "label": "最终前线 9-10",
+      "n": 112,
+      "corr": 0.428,
+      "mean_xp": 1751.0,
+      "binned": [
+        {
+          "bucket": "0-25%",
+          "n": 4,
+          "mean_xp": 710.8
+        },
+        {
+          "bucket": "25-50%",
+          "n": 6,
+          "mean_xp": 1328.2
+        },
+        {
+          "bucket": "50-75%",
+          "n": 15,
+          "mean_xp": 1557.9
+        },
+        {
+          "bucket": "75-99%",
+          "n": 39,
+          "mean_xp": 1578.9
+        },
+        {
+          "bucket": "100%",
+          "n": 48,
+          "mean_xp": 2090.7
+        }
+      ]
+    },
+    {
+      "scenario": "PCVO011_OP_10_s10_USS_CL_HIGH_LVL_Flagships_Random",
+      "label": "樱花绽放 9-10",
+      "n": 105,
+      "corr": 0.387,
+      "mean_xp": 1819.6,
+      "binned": [
+        {
+          "bucket": "0-25%",
+          "n": 5,
+          "mean_xp": 843.2
+        },
+        {
+          "bucket": "25-50%",
+          "n": 15,
+          "mean_xp": 1377.1
+        },
+        {
+          "bucket": "50-75%",
+          "n": 4,
+          "mean_xp": 2282.5
+        },
+        {
+          "bucket": "75-99%",
+          "n": 15,
+          "mean_xp": 1735.4
+        },
+        {
+          "bucket": "100%",
+          "n": 66,
+          "mean_xp": 1985.2
+        }
+      ]
+    },
+    {
+      "scenario": "PCVO003_OP_01_03_s03_Labyrinth_HIGH_LVL_Flagships_Random",
+      "label": "营救猛禽 9-10",
+      "n": 84,
+      "corr": 0.474,
+      "mean_xp": 1841.4,
+      "binned": [
+        {
+          "bucket": "25-50%",
+          "n": 11,
+          "mean_xp": 1354.1
+        },
+        {
+          "bucket": "50-75%",
+          "n": 9,
+          "mean_xp": 1822.3
+        },
+        {
+          "bucket": "75-99%",
+          "n": 7,
+          "mean_xp": 1684.7
+        },
+        {
+          "bucket": "100%",
+          "n": 55,
+          "mean_xp": 2015.1
+        }
+      ]
+    },
+    {
+      "scenario": "WW2_OPERATION_1_67LVL",
+      "label": "北极护航 6-7",
+      "n": 70,
+      "corr": 0.28,
+      "mean_xp": 781.1,
+      "binned": [
+        {
+          "bucket": "25-50%",
+          "n": 9,
+          "mean_xp": 630.2
+        },
+        {
+          "bucket": "50-75%",
+          "n": 8,
+          "mean_xp": 647.4
+        },
+        {
+          "bucket": "75-99%",
+          "n": 16,
+          "mean_xp": 887.3
+        },
+        {
+          "bucket": "100%",
+          "n": 37,
+          "mean_xp": 800.7
+        }
+      ]
+    },
+    {
+      "scenario": "PCVO010_OP_09_s09_LePVE_HIGH_LVL_Flagships_Random",
+      "label": "赫尔墨斯 9-10",
+      "n": 70,
+      "corr": 0.303,
+      "mean_xp": 1553.9,
+      "binned": [
+        {
+          "bucket": "25-50%",
+          "n": 7,
+          "mean_xp": 1169.6
+        },
+        {
+          "bucket": "50-75%",
+          "n": 3,
+          "mean_xp": 1557.0
+        },
+        {
+          "bucket": "75-99%",
+          "n": 15,
+          "mean_xp": 1439.0
+        },
+        {
+          "bucket": "100%",
+          "n": 43,
+          "mean_xp": 1713.7
+        }
+      ]
+    },
+    {
+      "scenario": "WW2_OPERATION_3_67LVL",
+      "label": "太平洋攻势 6-7",
+      "n": 49,
+      "corr": 0.273,
+      "mean_xp": 862.3,
+      "binned": [
+        {
+          "bucket": "25-50%",
+          "n": 3,
+          "mean_xp": 530.3
+        },
+        {
+          "bucket": "50-75%",
+          "n": 5,
+          "mean_xp": 720.0
+        },
+        {
+          "bucket": "100%",
+          "n": 39,
+          "mean_xp": 908.0
+        }
+      ]
+    },
+    {
+      "scenario": "PCVO001_OP_01_01_37_Ridge_HIGH_LVL_Flagships_Fire",
+      "label": "神盾 9-10",
+      "n": 42,
+      "corr": 0.611,
+      "mean_xp": 1295.5,
+      "binned": [
+        {
+          "bucket": "0-25%",
+          "n": 7,
+          "mean_xp": 556.0
+        },
+        {
+          "bucket": "25-50%",
+          "n": 15,
+          "mean_xp": 1049.5
+        },
+        {
+          "bucket": "75-99%",
+          "n": 4,
+          "mean_xp": 1821.0
+        },
+        {
+          "bucket": "100%",
+          "n": 15,
+          "mean_xp": 1751.7
+        }
+      ]
+    }
+  ]
+}
