@@ -50,5 +50,17 @@ profile.json.gz
 cache/
 # raw replay files (large)
 replays/
+# per-build constant lookup tables (large; auto-fetched from wows-constants)
+constants_cache/
+# derived bulk extraction outputs (large; regenerate from replays/)
+ops_efficiency.jsonl
+ops_efficiency_full.jsonl
+ops_efficiency_pve.jsonl
+replays_parsed.jsonl
+# scratch sqlite/jsonl from one-off validation runs
+tmp_*.jsonl
+tmp_*.db
+# one-off probe scratch scripts
+scripts/_bili_probe.py
 # node deps for the wows-numbers scraper helper
 tools/wowsnumbers-scrape/node_modules/

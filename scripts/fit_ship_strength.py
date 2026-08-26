@@ -30,6 +30,7 @@ import urllib.request
 from dataclasses import dataclass
 
 APP_ID = "bc914eb0f45397d5855997f8819056aa"
+PREMIUM_XP_MULT = 1.65  # WG oper_solo.xp is premium-inclusive; divide to show base XP
 HOSTS = {
     "eu": "api.worldofwarships.eu",
     "na": "api.worldofwarships.com",
@@ -53,9 +54,10 @@ CLANS = [
 class Config:
     clans: list
     min_acct_battles: int = 20    # trust account baseline only above this
-    min_ship_battles: int = 5     # trust a player x ship above this
+    min_ship_battles: int = 1     # include a player x ship with at least this many battles
     min_ship_players: int = 3     # publish a ship above this many players
     model: str = "v1"
+    lang: str = "en"              # encyclopedia ship-name language, e.g. zh_cn
     delay: float = 0.12
     cache: str = "cache/ship_strength_cache.json"
     out_json: str = "output/ship_strength.json"
@@ -170,7 +172,8 @@ def fetch_ship_stats(cache, cfg):
 
 
 def fetch_ship_names(cache, cfg):
-    names = cache.setdefault("ship_names", {})
+    key = "ship_names" if cfg.lang == "en" else f"ship_names_{cfg.lang}"
+    names = cache.setdefault(key, {})
     ships = cache.setdefault("ships", {})
     all_ids = set()
     for v in ships.values():
@@ -182,7 +185,8 @@ def fetch_ship_names(cache, cfg):
     for i in range(0, len(missing), 100):
         batch = missing[i:i + 100]
         r = api_get(HOSTS["eu"], "/wows/encyclopedia/ships/",
-                    {"ship_id": ",".join(map(str, batch)), "fields": "name,tier,type,nation"})
+                    {"ship_id": ",".join(map(str, batch)), "fields": "name,tier,type,nation",
+                     "language": cfg.lang})
         for sid, info in (r.get("data") or {}).items():
             if not info:
                 continue
@@ -192,10 +196,43 @@ def fetch_ship_names(cache, cfg):
     save_cache(cfg.cache, cache)
 
 
+def names_for(cache, lang):
+    key = "ship_names" if lang == "en" else f"ship_names_{lang}"
+    return cache.get(key) or cache.get("ship_names") or {}
+
+
 def _aggr(vals):
     if not vals:
         return None
     return round(statistics.median(vals), 3)
+
+
+def _tier_weight(battles):
+    # Three confidence tiers for a player x ship sample, weighted 3:2:1.
+    if battles > 20:
+        return 3.0
+    if battles >= 5:
+        return 2.0
+    return 1.0
+
+
+def _wmean(vals, weights):
+    if not vals:
+        return None
+    total = sum(weights)
+    return sum(v * w for v, w in zip(vals, weights)) / total if total else None
+
+
+def _wmedian(vals, weights):
+    if not vals:
+        return None
+    half = sum(weights) / 2.0
+    cum = 0.0
+    for v, w in sorted(zip(vals, weights), key=lambda x: x[0]):
+        cum += w
+        if cum >= half:
+            return v
+    return vals[-1]
 
 
 def build_features(cache, cfg):
@@ -225,15 +262,18 @@ def build_features(cache, cfg):
                 "rel_xp": round(ship_avg / acct_avg, 4),
                 "ship_wr": round(so.get("wins", 0) / b, 4) if b else None,
                 "ship_5s": round((so.get("wins_by_tasks") or {}).get("5", 0) / b, 4) if b else None,
+                "weight": _tier_weight(b),
             })
     return features
 
 
-def _pct(x, vals):
+def _ratio(x, vals):
     if vals is None or not vals:
         return None
-    le = sum(1 for v in vals if v <= x)
-    return round(le / len(vals) * 100, 1)
+    mean = statistics.mean(vals)
+    if not mean:
+        return None
+    return round(x / mean * 100, 1)
 
 
 def fit_v1(features, cfg, cache=None):
@@ -246,14 +286,17 @@ def fit_v1(features, cfg, cache=None):
         if n_players < cfg.min_ship_players:
             continue
         battles = sum(f["ship_battles"] for f in fs)
-        # weight each player x ship equally (median), not by battle count
+        weights = [f["weight"] for f in fs]
+        rel_xp = [f["rel_xp"] for f in fs]
+        wr = [(f["ship_wr"], f["weight"]) for f in fs if f["ship_wr"] is not None]
+        fs5 = [(f["ship_5s"], f["weight"]) for f in fs if f["ship_5s"] is not None]
         rows.append({
             "ship_id": sid,
-            "rel_xp_median": _aggr([f["rel_xp"] for f in fs]),
-            "rel_xp_mean": round(statistics.mean([f["rel_xp"] for f in fs]), 3),
-            "abs_xp_avg": round(statistics.mean([f["ship_xp_avg"] for f in fs]), 1),
-            "win_rate": round(statistics.mean([f["ship_wr"] for f in fs if f["ship_wr"] is not None]), 3),
-            "five_star": round(statistics.mean([f["ship_5s"] for f in fs if f["ship_5s"] is not None]), 3),
+            "rel_xp_median": round(_wmedian(rel_xp, weights), 3),
+            "rel_xp_mean": round(_wmean(rel_xp, weights), 3),
+            "abs_xp_avg": round(_wmean([f["ship_xp_avg"] for f in fs], weights) / PREMIUM_XP_MULT, 1),
+            "win_rate": round(_wmean([v for v, _ in wr], [w for _, w in wr]), 3) if wr else None,
+            "five_star": round(_wmean([v for v, _ in fs5], [w for _, w in fs5]), 3) if fs5 else None,
             "n_players": n_players,
             "n_battles": battles,
         })
@@ -262,7 +305,7 @@ def fit_v1(features, cfg, cache=None):
 
 
 def fit_v2(features, cfg, cache=None):
-    names = (cache or {}).get("ship_names", {})
+    names = names_for(cache or {}, cfg.lang)
     by_ship = {}
     for f in features:
         by_ship.setdefault(f["ship_id"], []).append(f)
@@ -273,34 +316,45 @@ def fit_v2(features, cfg, cache=None):
             continue
         battles = sum(f["ship_battles"] for f in fs)
         nm = names.get(str(sid)) or {}
+        weights = [f["weight"] for f in fs]
+        rel_xp = [f["rel_xp"] for f in fs]
+        wr = [(f["ship_wr"], f["weight"]) for f in fs if f["ship_wr"] is not None]
+        fs5 = [(f["ship_5s"], f["weight"]) for f in fs if f["ship_5s"] is not None]
         rows.append({
             "ship_id": sid,
             "name": nm.get("name"),
             "tier": nm.get("tier"),
             "class": nm.get("type"),
             "nation": nm.get("nation"),
-            "rel_xp_median": _aggr([f["rel_xp"] for f in fs]),
-            "abs_xp_avg": round(statistics.mean([f["ship_xp_avg"] for f in fs]), 1),
-            "win_rate": round(statistics.mean([f["ship_wr"] for f in fs if f["ship_wr"] is not None]), 3),
-            "five_star": round(statistics.mean([f["ship_5s"] for f in fs if f["ship_5s"] is not None]), 3),
+            "rel_xp_median": round(_wmedian(rel_xp, weights), 3),
+            "abs_xp_avg": round(_wmean([f["ship_xp_avg"] for f in fs], weights) / PREMIUM_XP_MULT, 1),
+            "win_rate": round(_wmean([v for v, _ in wr], [w for _, w in wr]), 3) if wr else None,
+            "five_star": round(_wmean([v for v, _ in fs5], [w for _, w in fs5]), 3) if fs5 else None,
             "n_players": n_players,
             "n_battles": battles,
         })
+    # Drop residual ships: tier < 6 (no longer enter Operations) or unresolved name.
+    rows = [r for r in rows
+            if r.get("name") is not None and r.get("tier") is not None and r.get("tier") >= 6]
     valid = [r for r in rows if r["rel_xp_median"] is not None]
     all_vals = [r["rel_xp_median"] for r in valid]
-    by_tier, by_cls_tier = {}, {}
+    by_tier, by_cls_tier, by_class = {}, {}, {}
     for r in valid:
         if r["tier"] is not None:
             by_tier.setdefault(r["tier"], []).append(r["rel_xp_median"])
         if r["tier"] is not None and r["class"] is not None:
             by_cls_tier.setdefault((r["tier"], r["class"]), []).append(r["rel_xp_median"])
+        if r["class"] is not None:
+            by_class.setdefault(r["class"], []).append(r["rel_xp_median"])
     for r in rows:
         x = r["rel_xp_median"]
-        r["abs_pct"] = _pct(x, all_vals) if x is not None else None
+        r["abs_pct"] = _ratio(x, all_vals) if x is not None else None
         tv = by_tier.get(r["tier"])
-        r["tier_pct"] = _pct(x, tv) if x is not None and tv and len(tv) >= 3 else None
+        r["tier_pct"] = _ratio(x, tv) if x is not None and tv and len(tv) >= 3 else None
         cv = by_cls_tier.get((r["tier"], r["class"]))
-        r["cls_tier_pct"] = _pct(x, cv) if x is not None and cv and len(cv) >= 3 else None
+        r["cls_tier_pct"] = _ratio(x, cv) if x is not None and cv and len(cv) >= 3 else None
+        clv = by_class.get(r["class"])
+        r["class_pct"] = _ratio(x, clv) if x is not None and clv and len(clv) >= 3 else None
     rows.sort(key=lambda r: (r["rel_xp_median"] is not None,
                              r["rel_xp_median"] if r["rel_xp_median"] is not None else 0), reverse=True)
     return rows
@@ -310,23 +364,30 @@ MODELS = {"v1": fit_v1, "v2": fit_v2}
 
 
 def export(tbl, cache, cfg):
-    names = cache.get("ship_names", {})
+    names = names_for(cache, cfg.lang)
     for r in tbl:
         nm = names.get(str(r["ship_id"])) or {}
-        r.setdefault("name", nm.get("name"))
-        r.setdefault("tier", nm.get("tier"))
-        r.setdefault("class", nm.get("type"))
-        r.setdefault("nation", nm.get("nation"))
+        r["name"] = nm.get("name") or r.get("name") or r["ship_id"]
+        if nm.get("tier") is not None:
+            r["tier"] = nm["tier"]
+        if nm.get("type") is not None:
+            r["class"] = nm["type"]
+        if nm.get("nation") is not None:
+            r["nation"] = nm["nation"]
     os.makedirs(os.path.dirname(os.path.abspath(cfg.out_json)), exist_ok=True)
     with open(cfg.out_json, "w", encoding="utf-8") as fh:
         json.dump(tbl, fh, ensure_ascii=False, indent=2)
 
     import csv
-    header = ["#", "船", "等级", "舰种", "绝对强度%", "同级强度%", "同舰种同级强度%",
+    header = ["#", "船", "等级", "舰种", "绝对强度%", "同级强度%", "同舰种同级强度%", "同舰种强度%",
               "相对经验(中位)", "场均经验", "胜率", "五星率", "玩家数", "场次"]
     lines = ["# 剧情船强度表", "",
-             "口径：`rel_xp = 该船场均经验 / 该玩家账号场均经验`，跨玩家取中位数。",
-             "绝对强度=全船池百分位；同级强度=同等级百分位；同舰种同级强度=同级同舰种百分位。",
+             "口径：`rel_xp = 该船场均经验 / 该玩家账号场均经验`，跨玩家加权聚合。",
+             "权重：单船场次>20 记为 3、5-20 记为 2、<5 记为 1，均值/中位均按此加权。",
+             "场均经验已按高账倍率 1.65 折算为基础经验（面板口径）。",
+             "强度以平均值=100% 为基准：绝对=全船池均值，同级=同等级均值，同舰种同级=同级同舰种均值，同舰种=全等级同舰种均值。",
+             "低于均值 <100%，高于均值 >100%，上不封顶。",
+             "剔除：等级<6 或无法解析名称的残留船（旧潜艇/旧航母等）。",
              f"门槛：账号剧情场次>={cfg.min_acct_battles}、单船场次>={cfg.min_ship_battles}、单船玩家数>={cfg.min_ship_players}。", ""]
     lines.append("| " + " | ".join(header) + " |")
     lines.append("|" + "---|" * len(header))
@@ -335,7 +396,7 @@ def export(tbl, cache, cfg):
         vals = [str(i), str(r.get("name") or r["ship_id"]),
                 "" if r.get("tier") is None else str(r.get("tier")),
                 "" if r.get("class") is None else str(r.get("class"))]
-        for k in ("abs_pct", "tier_pct", "cls_tier_pct"):
+        for k in ("abs_pct", "tier_pct", "cls_tier_pct", "class_pct"):
             v = r.get(k); vals.append("" if v is None else str(v))
         for k in ("rel_xp_median", "abs_xp_avg", "win_rate", "five_star", "n_players", "n_battles"):
             v = r.get(k); vals.append("" if v is None else str(v))
@@ -354,6 +415,7 @@ def main(argv=None):
     ap = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     ap.add_argument("--clan", action="append", help="clan tag,id,region (repeatable; overrides defaults)")
     ap.add_argument("--model", default=cfg.model)
+    ap.add_argument("--lang", default=cfg.lang)
     ap.add_argument("--min-acct-battles", type=int, default=cfg.min_acct_battles)
     ap.add_argument("--min-ship-battles", type=int, default=cfg.min_ship_battles)
     ap.add_argument("--min-ship-players", type=int, default=cfg.min_ship_players)
@@ -365,6 +427,7 @@ def main(argv=None):
     args = ap.parse_args(argv)
 
     cfg.model = args.model
+    cfg.lang = args.lang
     cfg.min_acct_battles = args.min_acct_battles
     cfg.min_ship_battles = args.min_ship_battles
     cfg.min_ship_players = args.min_ship_players

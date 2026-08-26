@@ -1,0 +1,370 @@
+[
+  {
+    "scenario": "PCVO010_OP_09_s09_LePVE_HIGH_LVL_Flagships_Random",
+    "name": "杀人鲸",
+    "bracket": "9-10",
+    "variant": "旗舰",
+    "base_pool": 14006.0,
+    "n_full": 4
+  },
+  {
+    "scenario": "PCVO009_OP_02_02_s06_Atoll_HIGH_LVL_Flagships_Random",
+    "name": "纳莱",
+    "bracket": "9-10",
+    "variant": "旗舰",
+    "base_pool": 13596.0,
+    "n_full": 12
+  },
+  {
+    "scenario": "PCVO003_OP_01_03_s03_Labyrinth_HIGH_LVL_Flagships_Random",
+    "name": "猛禽救援",
+    "bracket": "9-10",
+    "variant": "旗舰",
+    "base_pool": 13543.0,
+    "n_full": 7
+  },
+  {
+    "scenario": "PCVO004_OP_01_04_s02_Naval_Defense_HIGH_LVL_Flagships_Random",
+    "name": "赫尔墨斯",
+    "bracket": "9-10",
+    "variant": "旗舰",
+    "base_pool": 13509.0,
+    "n_full": 12
+  },
+  {
+    "scenario": "PCVO011_OP_10_s10_USS_CL_HIGH_LVL_Flagships_Random",
+    "name": "樱花绽放",
+    "bracket": "9-10",
+    "variant": "旗舰",
+    "base_pool": 13500.0,
+    "n_full": 10
+  },
+  {
+    "scenario": "PCVO001_OP_01_01_37_Ridge_HIGH_LVL_Flagships_Random",
+    "name": "神盾",
+    "bracket": "9-10",
+    "variant": "旗舰",
+    "base_pool": 13049.0,
+    "n_full": 7
+  },
+  {
+    "scenario": "PCVO004_OP_01_04_s02_Naval_Defense_HIGH_LVL_Flagships_Fire",
+    "name": "赫尔墨斯",
+    "bracket": "9-10",
+    "variant": "旗舰",
+    "base_pool": 13031.0,
+    "n_full": 1
+  },
+  {
+    "scenario": "PCVO001_OP_01_01_37_Ridge_HIGH_LVL_Flagships_Drop",
+    "name": "神盾",
+    "bracket": "9-10",
+    "variant": "旗舰",
+    "base_pool": 12984.0,
+    "n_full": 2
+  },
+  {
+    "scenario": "PCVO009_OP_02_02_s06_Atoll_HIGH_LVL_Flagships_Drop",
+    "name": "纳莱",
+    "bracket": "9-10",
+    "variant": "旗舰",
+    "base_pool": 12919.0,
+    "n_full": 1
+  },
+  {
+    "scenario": "PCVO003_OP_01_03_s03_Labyrinth_HIGH_LVL_Flagships_Focus",
+    "name": "猛禽救援",
+    "bracket": "9-10",
+    "variant": "旗舰",
+    "base_pool": 12784.0,
+    "n_full": 1
+  },
+  {
+    "scenario": "PCVO009_OP_02_02_s06_Atoll_HIGH_LVL_Flagships_Fire",
+    "name": "纳莱",
+    "bracket": "9-10",
+    "variant": "旗舰",
+    "base_pool": 12700.0,
+    "n_full": 1
+  },
+  {
+    "scenario": "PCVO010_OP_09_s09_LePVE_HIGH_LVL_Flagships_Fire",
+    "name": "杀人鲸",
+    "bracket": "9-10",
+    "variant": "旗舰",
+    "base_pool": 12557.0,
+    "n_full": 1
+  },
+  {
+    "scenario": "PCVO003_OP_01_03_s03_Labyrinth_HIGH_LVL_Flagships_Fire",
+    "name": "猛禽救援",
+    "bracket": "9-10",
+    "variant": "旗舰",
+    "base_pool": 12549.0,
+    "n_full": 3
+  },
+  {
+    "scenario": "PCVO010_OP_09_s09_LePVE_HIGH_LVL_Flagships_Drop",
+    "name": "杀人鲸",
+    "bracket": "9-10",
+    "variant": "旗舰",
+    "base_pool": 12409.0,
+    "n_full": 1
+  },
+  {
+    "scenario": "PCVO004_OP_01_04_s02_Naval_Defense_HIGH_LVL_Flagships_Drop",
+    "name": "赫尔墨斯",
+    "bracket": "9-10",
+    "variant": "旗舰",
+    "base_pool": 12382.0,
+    "n_full": 2
+  },
+  {
+    "scenario": "PCVO009_OP_02_02_s06_Atoll_HIGH_LVL_Flagships_Focus",
+    "name": "纳莱",
+    "bracket": "9-10",
+    "variant": "旗舰",
+    "base_pool": 12232.0,
+    "n_full": 1
+  },
+  {
+    "scenario": "PCVO003_OP_01_03_s03_Labyrinth_HIGH_LVL_Flagships_Drop",
+    "name": "猛禽救援",
+    "bracket": "9-10",
+    "variant": "旗舰",
+    "base_pool": 12155.0,
+    "n_full": 2
+  },
+  {
+    "scenario": "PCVO011_OP_10_s10_USS_CL_HIGH_LVL_Flagships_Fire",
+    "name": "樱花绽放",
+    "bracket": "9-10",
+    "variant": "旗舰",
+    "base_pool": 12115.0,
+    "n_full": 1
+  },
+  {
+    "scenario": "PCVO004_OP_01_04_s02_Naval_Defense_HIGH_LVL_Flagships_Focus",
+    "name": "赫尔墨斯",
+    "bracket": "9-10",
+    "variant": "旗舰",
+    "base_pool": 12032.0,
+    "n_full": 1
+  },
+  {
+    "scenario": "PCVO001_OP_01_01_37_Ridge_HIGH_LVL_Flagships_Focus",
+    "name": "神盾",
+    "bracket": "9-10",
+    "variant": "旗舰",
+    "base_pool": 11774.0,
+    "n_full": 1
+  },
+  {
+    "scenario": "WW2_OPERATION_1_1011LVL",
+    "name": "北极护航",
+    "bracket": "9-11",
+    "variant": "1011LVL",
+    "base_pool": 10059.0,
+    "n_full": 12
+  },
+  {
+    "scenario": "WW2_OPERATION_2_1011LVL",
+    "name": "东京快车",
+    "bracket": "9-11",
+    "variant": "1011LVL",
+    "base_pool": 9981.0,
+    "n_full": 7
+  },
+  {
+    "scenario": "WW2_OPERATION_3_1011LVL",
+    "name": "太平洋攻势",
+    "bracket": "9-11",
+    "variant": "1011LVL",
+    "base_pool": 9970.0,
+    "n_full": 27
+  },
+  {
+    "scenario": "PCVO001_OP_01_01_37_Ridge_HIGH_LVL",
+    "name": "神盾",
+    "bracket": "8-11",
+    "variant": "高级",
+    "base_pool": 9884.0,
+    "n_full": 40
+  },
+  {
+    "scenario": "PCVO003_OP_01_03_s03_Labyrinth_HIGH_LVL",
+    "name": "猛禽救援",
+    "bracket": "8-11",
+    "variant": "高级",
+    "base_pool": 9834.0,
+    "n_full": 108
+  },
+  {
+    "scenario": "PCVO004_OP_01_04_s02_Naval_Defense_HIGH_LVL",
+    "name": "赫尔墨斯",
+    "bracket": "8-11",
+    "variant": "高级",
+    "base_pool": 9799.0,
+    "n_full": 98
+  },
+  {
+    "scenario": "PCVO010_OP_09_s09_LePVE_HIGH_LVL",
+    "name": "杀人鲸",
+    "bracket": "8-11",
+    "variant": "高级",
+    "base_pool": 9798.0,
+    "n_full": 33
+  },
+  {
+    "scenario": "PCVO009_OP_02_02_s06_Atoll_HIGH_LVL",
+    "name": "纳莱",
+    "bracket": "8-11",
+    "variant": "高级",
+    "base_pool": 9772.0,
+    "n_full": 117
+  },
+  {
+    "scenario": "PCVO011_OP_10_s10_USS_CL_HIGH_LVL",
+    "name": "樱花绽放",
+    "bracket": "8-11",
+    "variant": "高级",
+    "base_pool": 9762.0,
+    "n_full": 116
+  },
+  {
+    "scenario": "WW2_OPERATION_3_89LVL",
+    "name": "太平洋攻势",
+    "bracket": "7-9",
+    "variant": "89LVL",
+    "base_pool": 8867.0,
+    "n_full": 28
+  },
+  {
+    "scenario": "PCVO004_OP_01_04_s02_Naval_Defense_MEDIUM_LVL",
+    "name": "赫尔墨斯",
+    "bracket": "7-9",
+    "variant": "中级",
+    "base_pool": 8795.0,
+    "n_full": 35
+  },
+  {
+    "scenario": "PCVO010_OP_09_s09_LePVE_MEDIUM_LVL",
+    "name": "杀人鲸",
+    "bracket": "7-9",
+    "variant": "中级",
+    "base_pool": 8792.0,
+    "n_full": 13
+  },
+  {
+    "scenario": "WW2_OPERATION_2_89LVL",
+    "name": "东京快车",
+    "bracket": "7-9",
+    "variant": "89LVL",
+    "base_pool": 8761.0,
+    "n_full": 16
+  },
+  {
+    "scenario": "PCVO011_OP_10_s10_USS_CL_MEDIUM_LVL",
+    "name": "樱花绽放",
+    "bracket": "7-9",
+    "variant": "中级",
+    "base_pool": 8730.0,
+    "n_full": 31
+  },
+  {
+    "scenario": "PCVO003_OP_01_03_s03_Labyrinth_MEDIUM_LVL",
+    "name": "猛禽救援",
+    "bracket": "7-9",
+    "variant": "中级",
+    "base_pool": 8673.0,
+    "n_full": 21
+  },
+  {
+    "scenario": "PCVO001_OP_01_01_37_Ridge_MEDIUM_LVL",
+    "name": "神盾",
+    "bracket": "7-9",
+    "variant": "中级",
+    "base_pool": 8638.0,
+    "n_full": 15
+  },
+  {
+    "scenario": "WW2_OPERATION_1_89LVL",
+    "name": "北极护航",
+    "bracket": "7-9",
+    "variant": "89LVL",
+    "base_pool": 8613.0,
+    "n_full": 3
+  },
+  {
+    "scenario": "PCVO009_OP_02_02_s06_Atoll_MEDIUM_LVL",
+    "name": "纳莱",
+    "bracket": "7-9",
+    "variant": "中级",
+    "base_pool": 8552.0,
+    "n_full": 17
+  },
+  {
+    "scenario": "PCVO002_OP_01_02_s01_NavalBase",
+    "name": "防守纽波特",
+    "bracket": "6-8",
+    "variant": "普通",
+    "base_pool": 8352.0,
+    "n_full": 19
+  },
+  {
+    "scenario": "PCVO009_OP_02_02_s06_Atoll",
+    "name": "纳莱",
+    "bracket": "6-8",
+    "variant": "普通",
+    "base_pool": 8109.0,
+    "n_full": 29
+  },
+  {
+    "scenario": "PCVO008_OP_02_03_s07_Advance",
+    "name": "最终前线",
+    "bracket": "6-8",
+    "variant": "普通",
+    "base_pool": 8051.0,
+    "n_full": 14
+  },
+  {
+    "scenario": "PCVO004_OP_01_04_s02_Naval_Defense",
+    "name": "赫尔墨斯",
+    "bracket": "6-8",
+    "variant": "普通",
+    "base_pool": 8048.0,
+    "n_full": 16
+  },
+  {
+    "scenario": "PCVO010_OP_09_s09_LePVE",
+    "name": "杀人鲸",
+    "bracket": "6-8",
+    "variant": "普通",
+    "base_pool": 7937.0,
+    "n_full": 11
+  },
+  {
+    "scenario": "PCVO003_OP_01_03_s03_Labyrinth",
+    "name": "猛禽救援",
+    "bracket": "6-8",
+    "variant": "普通",
+    "base_pool": 7915.0,
+    "n_full": 19
+  },
+  {
+    "scenario": "PCVO011_OP_10_s10_USS_CL",
+    "name": "樱花绽放",
+    "bracket": "6-8",
+    "variant": "普通",
+    "base_pool": 7698.0,
+    "n_full": 33
+  },
+  {
+    "scenario": "PCVO001_OP_01_01_37_Ridge",
+    "name": "神盾",
+    "bracket": "6-8",
+    "variant": "普通",
+    "base_pool": 7477.0,
+    "n_full": 9
+  }
+]

@@ -476,3 +476,68 @@ are fitted from the collected samples.
 - Star metric: `five_star_rate` uses five-star wins over all battles. A
   weighted average of the full `wins_by_tasks` map (0..5 stars) carries more
   signal than the binary five-star cutoff and may be a better `rStars`.
+
+### 8.6 First-draft rating formula and derivation log (2026-08-25)
+
+Status: first draft. To be verified in a separate Codex session.
+
+#### Formula
+
+```text
+rXP    = 实际场均经验 / 期望场均经验
+rS     = 实际五星率 / 期望五星率
+rW     = 实际胜率 / 期望胜率
+Rating = 700 * rXP + 0 * rS + 0 * rW
+```
+
+`rS` / `rW` 两项保留在公式里，但权重已归零（见 Weight decision）。
+
+`实际` 为该玩家在这条船上的场均表现（船级，非账号级）。
+期望值来源：船强度表（`output/ship_strength_full.json`）的该船
+`abs_xp_avg` / `five_star` / `win_rate`（船级期望，按等级区分）。
+
+船强度表本身按单船场次三档加权拟合：>20 记 3、5-20 记 2、<5 记 1。
+
+经验统一为基础经验口径：WG API 的 `oper_solo.xp` 含高账 1.65 倍加成，
+除以 1.65；replay 的 `raw_exp` 本就是基础经验，两方对齐后再进入公式。
+
+#### Weight decision
+
+- XP 700：唯一个人输出指标，权重最高，不降。
+- 五星率 0：质量信号，但样本小且 7 人队共享、区分度低，从 200 降到 0，保留在公式里。
+- 胜率 0：7 人队稀释 + 85-90% 天花板，从 100 降到 0，保留在公式里。
+- 生存率：样本分析显示与 XP、五星率反向，继续排除。
+
+#### Derivation log
+
+1. 账号均分为分母的缺陷（讨论确认）：
+   - 跨级池偏差：主玩低级的玩家，其偏好高级船会被显著高估；反之亦然。
+   - 自包含偏差：账号场均包含该船自身的场次，船少的玩家比值被拉向 1。
+2. 分母方案对比：
+   - 同级池平均：消除跨级差，但引入玩家技能混杂（强玩家偏好的船整体虚高）。
+   - 同玩家同级归一化（leave-one-out）：同时消除跨级差与玩家技能差，
+     列为正式化首选。
+   - 期望值模型（log 线性：玩家效应 + 等级效应 + 船效应）：数据量足够后
+     的终极形态。
+3. 单场经验预测回归（回放库 1088 场剧情局，验证强度参数增量价值）：
+   - `raw_exp ≈ 1134.7 * ship_rel_xp + 0.505 * acct_xp - 884.1`，R2 = 0.238。
+   - 单用 ship_rel_xp R2 = 0.086；单用 acct_xp R2 = 0.146；合并 0.238。
+   - 结论：船强度对玩家水平有正交的增量价值，可进入评级公式。
+4. 权重从 PR 类比初定 700/300/150，随后按设计下调五星率与胜率，
+   定为 700/200/100（本稿）。
+
+#### Worked example (SKmon, 358 场剧情)
+
+- 实际（基础经验）：1218.6 XP / 0.595 五星 / 0.902 胜率
+- 期望（基础经验）：1077.6 / 0.4473 / 0.8156
+- rXP = 1.131, rS = 1.330, rW = 1.106 -> Rating = 1168.2
+
+#### Open items
+
+- 期望值含玩家自身场次（自包含），正式化需 leave-one-out。
+- 权重目前为设计值，待用回放数据回归标定，而不是手工拍定。
+- 强度表门槛：本稿用单船玩家数 >= 3，场次按 >20 / 5-20 / <5 三档加权
+  （3:2:1），经验按高账 1.65 折算为基础经验；入库版为 >= 20，正式化前统一。
+- 回放配对率：1088/3255（回放玩家大多不在公会样本内，账号覆盖受限）。
+- 中文船名来源：游戏客户端 `global.mo`（zh_sg），不在仓库内，需脚本化复现。
+- 8.3 的 floor 归一化参数（a/b）与 0-3000 映射是否引入：未定。
