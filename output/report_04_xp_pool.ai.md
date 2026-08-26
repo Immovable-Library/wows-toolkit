@@ -154,6 +154,7 @@ PCVO001_OP_01_01_37_Ridge: {level: "-", n: 9, base: 7477}
 5. team efficiency（可忽略）
 6. team damage（无）
 7. inactive players（每名 x0.972）
+8. battle duration（log elasticity -0.032, negligible; R2 0.9576 -> 0.9577）
 
 ## 挂机 vs 暴毙
 

@@ -84,6 +84,46 @@ noncombat_and_buildings:
   conclusion: >
     transports/torpedo boats count as ship-equivalent but at ~68% of a combat
     ship; building damage and building kills are near-zero contributors.
+duration_effect:
+  pool_level_n: 2058
+  pool_R2_objective: 0.9576
+  pool_R2_with_log_duration: 0.9577
+  pool_log_duration_elasticity: -0.032
+  player_level_n: 14406
+  player_R2_base: 0.5279
+  player_R2_with_log_duration: 0.5300
+  player_log_duration_coef: -0.133
+  per_map:
+    n_scenarios: 28
+    mean_coef: -0.080
+    median_coef: -0.025
+    weighted_mean_coef: 0.012
+    n_negative: 19
+    n_positive: 9
+    note: large per-map coefficients are collinearity artifacts with stars/win
+  conclusion: battle duration does not grow the XP pool; individual share is slightly diluted in longer matches
+cherry_blossom_spawn:
+  n_matches: 292
+  team_eff_corr_team_raw: 0.466
+  team_eff_corr_team_raw_full_star_win: 0.729
+  pool_regression:
+    r2_obj: 0.9631
+    r2_with_team_eff: 0.9742
+    team_eff_coef: 0.00595
+  full_star_team_eff_range: [13.7, 62.9]
+  duration_corr_team_eff: 0.06
+  conclusion: more spawns (more team ship-equivalents) enlarge the pool at ~x1.006 per ship-equivalent; dragging time does not add spawns
+killer_whale_waves:
+  n_matches: 49
+  team_eff_corr_team_raw: 0.527
+  team_eff_corr_team_raw_full_star_win: 0.503
+  pool_regression:
+    r2_obj: 0.9504
+    r2_with_team_eff: 0.9694
+    team_eff_coef: 0.00738
+  full_star_team_eff_range: [19.3, 35.5]
+  team_frags_coef: -0.002
+  conclusion: eating more of the five waves enlarges the pool via ship-equivalents, not raw frags
 ```
 
 ## 脚本 / 数据
@@ -95,3 +135,7 @@ noncombat_and_buildings:
 - frags analysis: `scripts/analyze_frags.py` -> `output/frags_analysis.json`
 - victim tier analysis: `scripts/analyze_victim_tier.py` -> `output/victim_tier_analysis.json`
 - noncombat/building analysis: `scripts/analyze_noncombat.py` -> `output/noncombat_analysis.json`
+- duration analysis: `scripts/analyze_duration.py` -> `output/duration_analysis.json`
+- per-map duration: `scripts/analyze_duration_per_map.py` -> `output/duration_per_map_analysis.json`
+- cherry blossom spawn: `scripts/analyze_cherry_spawn.py` -> `output/cherry_spawn_analysis.json`
+- killer whale waves: `scripts/analyze_cherry_spawn.py --tag NavalBase` -> `output/killerwhale_spawn_analysis.json`

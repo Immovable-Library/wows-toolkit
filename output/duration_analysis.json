@@ -1,0 +1,16 @@
+{
+  "pool": {
+    "n": 2058,
+    "r2_obj": 0.9576,
+    "r2_lin": 0.9577,
+    "r2_log": 0.9577,
+    "coef_per_min": -0.00256,
+    "coef_log_elasticity": -0.03196
+  },
+  "player": {
+    "n": 14406,
+    "r2_base": 0.5279,
+    "r2_dur": 0.53,
+    "coef_logdur": -0.13309
+  }
+}
