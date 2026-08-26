@@ -44,9 +44,40 @@ legacy_only:     {DD: 0.834, CL/CA: 1.000, BB: 0.951, CV: 0.444, SS: 1.415, a: 0
 new_plus_legacy: {DD: 0.830, CL/CA: 1.000, BB: 0.953, CV: 0.432, SS: 1.395, a: 0.50, lambda: 1.2, R2: 0.908}
 ```
 
+## 击杀数独立贡献（frags）
+
+```yaml
+frags_effect:
+  player_level_n: 14420
+  within_match_demean: true
+  class_dummies: true
+  frags_only: {coef: 0.077, R2: 0.379}
+  eff_scout_only: {R2: 0.618}
+  eff_scout_frags: {frags_coef: 0.012, R2: 0.622}
+  conclusion: kills carry no meaningful reward beyond ship_eff; last-hit bonus is negligible
+pool_level:
+  n: 2058
+  team_frags_coef: -0.0013
+  R2_with_team_dmg: 0.9687
+  R2_with_team_frags: 0.9688
+  conclusion: team frag count does not move the total XP pool
+victim_tier_effect:
+  player_level_n: 14420
+  within_match_demean: true
+  class_dummies: true
+  ship_equivalent_share_coef:
+    t4_5: 0.0100
+    t6_7: 0.0149
+    t8_9: 0.0124
+    t10_11: 0.0145
+  conclusion: no monotonic tier premium; reward is per ship-equivalent, independent of victim tier
+```
+
 ## 脚本 / 数据
 
 - fit: `scripts/fit_class_efficiency.py --scope all`
 - extract: `scripts/extract_ops_efficiency.py`
 - data: `ops_efficiency_full.jsonl`
 - result json: `output/class_efficiency_fit.json`
+- frags analysis: `scripts/analyze_frags.py` -> `output/frags_analysis.json`
+- victim tier analysis: `scripts/analyze_victim_tier.py` -> `output/victim_tier_analysis.json`

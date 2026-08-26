@@ -67,9 +67,9 @@
 <tr><td>输赢 is_win</td><td>输局</td><td>×0.442</td><td>[0.433, 0.452]</td><td>赢局为 1</td></tr>
 <tr><td>次要任务 secondary</td><td>与星级冗余（log 系数，弃用）</td><td>0.0226/个</td><td>[0.0185, 0.0264]</td><td>已被星级吸收</td></tr>
 <tr><td>队伍效率 team_eff</td><td>每船等效</td><td>×1.003</td><td>—</td><td>可忽略</td></tr>
-<tr><td>挂机/暴毙 n_inactive</td><td>每人</td><td>×0.972</td><td>—</td><td>未存活 + 0 击杀 + &lt;1 万伤</td></tr>
+<tr><td>挂机/暴毙（合并口径） n_inactive</td><td>每人</td><td>×0.972</td><td>—</td><td>未存活 + 0 击杀 + &lt;1 万伤</td></tr>
 </tbody></table>
-<blockquote>“挂机/暴毙”约让全队池子每人缩水 3%，不是传言的 -30%。</blockquote>
+<blockquote>拆开看：<strong>挂机/逃兵</strong>（伤害 0、击杀 0、点亮 0 且早死）约 ×0.927（-7.5%）；<strong>暴毙</strong>（有少量输出但早死）约 ×0.970（-3%）。replay 看不到队友的服务器 is_afk/is_ineffective 标志，以上为行为近似；“挂机扣 1/7（-14.3%）”在本样本未证实，样本里真正的零贡献局极少（仅 5/2060），需服务器判定样本进一步验证。</blockquote>
 <h2>2.2 舰种系数的实际使用：单人经验公式</h2>
 <pre><code>contrib_i = 吃船效率_i + 1.2 × (点亮伤害_i / 100000)
 

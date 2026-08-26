@@ -85,7 +85,9 @@ team_raw ~ base[scenario] * 1.09^stars * (win ? 1 : 0.44)
 | secondary_completed | 0.0226 | [0.0185, 0.0264] | 与星级冗余，弃用 |
 | is_win | 0.8178 | [0.7947, 0.8367] | 胜 vs 负 x2.263；负 vs 胜 x0.442 |
 | team_eff（每船等效） | 0.0031 | - | x1.003，可忽略 |
-| n_inactive（挂机/暴毙） | -0.0283 | - | 每人 x0.972 |
+| n_inactive（挂机/暴毙合并口径） | -0.0283 | - | 每人 x0.972 |
+
+挂机与暴毙应拆开：replay 看不到队友的服务器 `is_afk`/`is_ineffective` 标志，只能行为近似。零伤害+零击杀+零点亮且早死（挂机/逃兵）约让池子 ×0.927（-7.5%）；有少量输出但早死（暴毙）约 ×0.970（-3%）。样本里真正零贡献局仅 5/2060，故“挂机扣 1/7（-14.3%）”未证实。见 `scripts/analyze_afk_death.py`。
 
 ### 2.3 finish_type 无法再细分的说明
 
@@ -146,4 +148,3 @@ python scripts/fit_xp_pool.py      # 原池子描述基线
 - 经验池 CI 结果：`output/pool_fit.json`（生成 `scripts/ci_pool.py`）
 - 舰种系数基线：`output/class_efficiency_fit.json`（`scripts/fit_class_efficiency.py`）
 - 经验池/基础池子表：`output/ops_xp_pool.md`、`output/pool_table.json`
-

@@ -155,12 +155,26 @@ PCVO001_OP_01_01_37_Ridge: {level: "-", n: 9, base: 7477}
 6. team damage（无）
 7. inactive players（每名 x0.972）
 
+## 挂机 vs 暴毙
+
+```yaml
+server_flag_visibility: false   # teammate is_afk / is_ineffective not in replay public data
+proxy:
+  afk_like: {damage: 0, frags: 0, scouting: 0, early_dead: true}
+  died_early: {some_damage_or_frags: true, dead: true}
+pool_multiplier:
+  afk_like: 0.927    # -7.5% per player, n=5 matches
+  died_early: 0.970  # -3% per player
+one_seventh: 0.857   # player-reported -14.3%, not observed in this sample
+```
+
 ## 脚本 / 数据
 
 - fit: `scripts/fit_xp_pool.py`
 - table: `scripts/gen_pool_table.py` -> `output/pool_table.json`
 - name/bracket: `scripts/gen_ops_name_table.py` -> `output/ops_name_table.json`
 - data: `ops_efficiency_full.jsonl`
+- afk/death split: `scripts/analyze_afk_death.py` -> `output/afk_death_analysis.json`
 
 注：新剧情 6-7（67LVL）档无「打赢 + 5 星」样本，故池子缺失；7-9 / 9-11 档已给出。
 
