@@ -2,9 +2,13 @@
 
 > 社区说法：有些地图的切断增援任务如果失败，会出现增援舰队。击杀增援部队等同于完成切断任务，但对增援部队造成的伤害没有经验收益。因此切增援比杀增援划算。
 
+## 结论（一句话）
+
+**增援伤害的经验回报和普通伤害一样。社区说法无数据支持。切增援和杀增援对个人经验没有区别。**
+
 ## 实验设计
 
-利用 2060 局操作剧情的 replay 数据，分两步验证。
+利用 2060 局操作剧情的 replay 数据，分层验证。
 
 ### 第一步：跨 sec_failed 的玩家级回归
 
@@ -21,49 +25,51 @@
 
 系数完全平坦，没有下降趋势。增援伤害不是零经验。
 
-### 第二步：sec_failed=0 内按 team_eff 拆分
+### 第二步：玩家级回归，控制局总 eff 和 sec_failed
 
-上一步的结论有问题：sec_failed=0 的局里混着两种情况——切断增援（无增援出现）和没切断但杀光增援（增援出现但被击杀，次要任务仍算完成）。前者 team_eff 低，后者 team_eff 高。如果增援经验回报低，在同场景同 sec_failed=0 的局里，高 team_eff 的局应该有更低的 raw/eff。
-
-在 PCVO 八个主要场景内，把 sec_failed=0 的局按 team_eff 中位数分成高低两组：
-
-| 场景 | 低 team_eff raw/eff | 高 team_eff raw/eff | 差异 |
-|------|---------------------|---------------------|------|
-| Naval Defense HIGH | 323 | 265 | **-17.9%** |
-| Advance | 224 | 163 | **-27.3%** |
-| NavalBase | 350 | 281 | **-19.5%** |
-| Naval Defense MEDIUM | 349 | 279 | **-20.0%** |
-| Naval Defense | 395 | 233 | **-41.0%** |
-| Naval Defense HIGH Flag | 281 | 237 | **-15.7%** |
-| USS_CL HIGH | 291 | 232 | **-20.2%** |
-| Labyrinth HIGH | 313 | 280 | **-10.7%** |
-
-八个场景全部为负，方向一致。高 team_eff 局（大概率是杀增援）的经验回报比低 team_eff 局（大概率是切断）低 15-40%。
-
-### 第三步：玩家级交互项
-
-在 sec_failed=0 的 PCVO 局中，加入 `eff × game_eff_per` 交互项：
+最关键的检验：在玩家级回归中同时加入 `game_eff_per`（局总 eff）和 `sec_failed`，看 sec_failed 在控制局总 eff 后是否仍有独立解释力。
 
 ```
-R² = 0.8917
-eff: 0.027422
-eff × game_eff_per: -0.002837  （显著为负）
+PCVO(legacy_op):
+  base（eff + scout + class + game_eff_per）:       R² = 0.8323
+  +sec_failed（eff + scout + class + game_eff_per + sec_failed）: R² = 0.8323, sec_failed = -0.000000
+
+WW2_OP(new):
+  base（eff + scout + class + game_eff_per）:       R² = 0.8506
+  +sec_failed（eff + scout + class + game_eff_per + sec_failed）: R² = 0.8506, sec_failed = 0.000000
 ```
 
-交互项显著为负，确认局总 eff 越高，每单位个人 eff 的经验回报越低。
+**sec_failed 系数为零，R² 不变。** 增援舰队的存在与否对经验分配没有任何影响。
 
-## 结论
+### 第三步：局级回归，控制场景固定效应
 
-增援伤害不是零经验，但总经验池不随增援 ship_eff 等比放大。多出来的增援伤害稀释了经验池，边际回报约低 20%。
+```
+raw_per ~ eff_per + sec_failed + eff_per × sec_failed + scenario_dummies
 
-**一句话：切增援确实比杀增援划算，但差距不是"增援无经验"，而是"增援经验被稀释"。**
+eff_per: 95.0
+sec_failed: -1.0  （几乎为零）
+eff_per × sec_failed: +4.2  （正的，不是负的）
+R² = 0.3474
+```
 
-## 对经验模型的影响
+sec_failed 主效应接近零，交互项为正。增援 eff 的边际回报并不比普通 eff 低。
 
-这个效应是局级别的（影响总经验池大小），不是玩家级别的（不影响个人 eff 相对队友的排序）。对舰种系数 K 的估计影响不大，但在预测具体经验数值时需要考虑——如果玩家大量伤害来自增援舰队，模型会高估其经验。
+### 第四步：逐场景检验
+
+29 个场景逐一跑 `raw_per ~ eff_per + sec_failed`，sec_failed 系数方向混杂、无一致规律。没有任何场景显示 sec_failed 与经验显著负相关。
+
+## 之前错误结论的修正
+
+本分析第一版（2026-08-27 初稿）曾得出"增援伤害稀释经验池约 20%"的结论，该结论基于 sec_failed=0 的局内按 team_eff 高低分组对比。该方法的缺陷在于：将局间差异（高 eff 局更可能是更长的对局，有更多自然刷出的船，而非增援船）错误归因于增援。
+
+修正后的分析将局总 eff 作为控制变量加入玩家级回归，sec_failed 的效应完全消失。证明原结论是局间混淆，不是增援的真实效应。
+
+## 对玩家决策的影响
+
+增援伤害就是普通伤害。切不切增援对个人经验没有影响——除非你能比队友抢到更大份额的增援伤害（此时你略微受益），或者你完全抢不到（此时你略微受损）。但影响程度取决于你的份额差异，与增援本身无关。
 
 ## 数据来源
 
 - 数据：2060 局操作剧情 replay，`ops_efficiency_full.jsonl`
-- 分析脚本：`scripts/analyze_reinforcement.py` ~ `scripts/analyze_reinforcement6.py`
-- 日期：2026-08-27
+- 分析脚本：`scripts/analyze_reinforcement.py` ~ `scripts/analyze_reinforcement7.py`
+- 日期：2026-08-27（修正版）
