@@ -1,0 +1,4 @@
+interface:
+  display_name: "WoWS 战绩提取"
+  short_description: "从《战舰世界》我的团队截图提取等级、船名、击杀、经验"
+  default_prompt: "使用 $wows-scoreboard-extract 从这张《战舰世界》我的团队截图中提取等级、船名、击杀和经验。"

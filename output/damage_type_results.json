@@ -1,0 +1,200 @@
+{
+  "n_replays": 465,
+  "n_rows": 3255,
+  "baseline": {
+    "coef": [
+      0.012513492565108569,
+      1.7340118809091453e-07,
+      -0.008864513310035174,
+      0.0034296141044230775,
+      -0.0015072869822179993,
+      -0.03494731145512163,
+      0.014309470006197257
+    ],
+    "r2": 0.8206,
+    "fields": [
+      "eff_total",
+      "scouting_damage"
+    ],
+    "n": 3255
+  },
+  "item5_damage_split": {
+    "coef": [
+      0.012351653075041992,
+      0.016461819584261374,
+      0.015562862324381045,
+      0.007985040201207926,
+      0.0030360310208016536,
+      1.709610901734493e-07,
+      -0.012801919118506202,
+      0.0034829894761786305,
+      -0.0003924730208133228,
+      -0.018298339585118735,
+      0.007969121780638638
+    ],
+    "r2": 0.8339,
+    "fields": [
+      "eff_direct",
+      "eff_torpedo",
+      "eff_dot",
+      "eff_bomb",
+      "eff_other",
+      "scouting_damage"
+    ],
+    "n": 3255
+  },
+  "item5_no_class": {
+    "coef": [
+      0.01251396956265697,
+      0.015607581163752828,
+      0.016715169994196803,
+      0.006185915236530366,
+      0.0017378199265410531,
+      1.6356573881090575e-07
+    ],
+    "r2": 0.8117,
+    "fields": [
+      "eff_direct",
+      "eff_torpedo",
+      "eff_dot",
+      "eff_bomb",
+      "eff_other",
+      "scouting_damage"
+    ],
+    "n": 3255
+  },
+  "item7_achievements": {
+    "coef": [
+      0.011691727095458623,
+      1.6893805640817127e-07,
+      0.004499896705944962,
+      -0.009382046477766654,
+      0.003336651424589864,
+      -0.0011178196977779766,
+      -0.0341612952063519,
+      0.01269218241718524
+    ],
+    "r2": 0.8247,
+    "fields": [
+      "eff_total",
+      "scouting_damage",
+      "n_achievements"
+    ],
+    "n": 3255
+  },
+  "item8_planes": {
+    "coef": [
+      0.012574056003875518,
+      1.7415704621705007e-07,
+      -5.2553799460550545e-05,
+      -5.2553799460553046e-05,
+      -0.008988965769124082,
+      0.0034617957477737094,
+      -0.0014806414934954192,
+      -0.03497605778878912,
+      0.014051645559842268
+    ],
+    "r2": 0.8209,
+    "fields": [
+      "eff_total",
+      "scouting_damage",
+      "planes_killed_by_ship",
+      "ribbon_plane"
+    ],
+    "n": 3255
+  },
+  "item9_building": {
+    "coef": [
+      0.012481594679974116,
+      1.731589942131792e-07,
+      0.001956296441386038,
+      -0.008608345755085489,
+      0.0033263058962214416,
+      -0.001509049060805094,
+      -0.034774161402366055,
+      0.014688749111847074
+    ],
+    "r2": 0.8214,
+    "fields": [
+      "eff_total",
+      "scouting_damage",
+      "ribbon_building_kill"
+    ],
+    "n": 3255
+  },
+  "item10_objective_ribbons": {
+    "coef": [
+      0.01247245363838866,
+      1.7208081167952775e-07,
+      0.0006708240843888132,
+      -2.1096902057903802e-05,
+      -0.000607952417807829,
+      0.004116856309252587,
+      -0.0093412984406102,
+      0.003422882803849017,
+      -0.0013020718024666991,
+      -0.034704015598683496,
+      0.013627537727497818
+    ],
+    "r2": 0.8228,
+    "fields": [
+      "eff_total",
+      "scouting_damage",
+      "ribbon_base_capture",
+      "ribbon_demining_mine",
+      "ribbon_demining_minefield",
+      "ribbon_drop"
+    ],
+    "n": 3255
+  },
+  "class_damage_composition": {
+    "DD": {
+      "eff_direct": 2.541,
+      "eff_torpedo": 1.243,
+      "eff_dot": 0.179,
+      "eff_bomb": 0.04,
+      "eff_other": 0.044,
+      "eff_total": 4.047
+    },
+    "CL/CA": {
+      "eff_direct": 4.245,
+      "eff_torpedo": 0.197,
+      "eff_dot": 0.222,
+      "eff_bomb": 0.081,
+      "eff_other": 0.078,
+      "eff_total": 4.824
+    },
+    "BB": {
+      "eff_direct": 4.473,
+      "eff_torpedo": 0.081,
+      "eff_dot": 0.154,
+      "eff_bomb": 0.073,
+      "eff_other": 0.108,
+      "eff_total": 4.889
+    },
+    "CV": {
+      "eff_direct": 0.332,
+      "eff_torpedo": 0.0,
+      "eff_dot": 0.109,
+      "eff_bomb": 2.524,
+      "eff_other": 0.821,
+      "eff_total": 3.786
+    },
+    "SS": {
+      "eff_direct": 0.07,
+      "eff_torpedo": 2.149,
+      "eff_dot": 0.138,
+      "eff_bomb": 0.418,
+      "eff_other": 0.0,
+      "eff_total": 2.776
+    }
+  },
+  "interpretation": {
+    "item5": "Splitting by damage type improves R2 from 0.8206 to 0.8339. Torpedo/dot have HIGHER coefficient than direct, contradicting the DOT-overvaluation hypothesis. Class dummies still matter (R2 drops to 0.8117 without them), but CV/SS class penalties shrink. DD penalty actually increases slightly.",
+    "item6": "SS has highest torpedo proportion (77%) and torpedo has highest coefficient. This partially explains SS's high K, but class dummy still matters for SS.",
+    "item7": "Achievements add almost nothing (R2 delta 0.0041). Highly collinear with efficiency.",
+    "item8": "Planes killed have zero independent effect (R2 delta 0.0003).",
+    "item9": "Building kills have negligible effect (R2 delta 0.0008, coef 0.00196).",
+    "item10": "Objective ribbons combined barely matter (R2 delta 0.0022). ribbon_drop has largest coef (-0.00061) but still tiny."
+  }
+}

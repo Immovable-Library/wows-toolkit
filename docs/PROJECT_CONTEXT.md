@@ -47,6 +47,44 @@ Two commits on top of upstream:
    - docs/WOWS_OPERATIONS_ANALYSIS.md initial findings
    - WG API statistics-scope reference and Vortex API Postman reference
 
+## Operations XP model analysis (2026-08-27)
+
+The XP allocation model is a within-game share regression:
+`share(exp) ~ eff_total + scouting_damage + ship_class_dummies`.
+
+Key findings across 2060 replay games:
+
+- **Ship class K values (multiplicative model, vs CA=1.00):**
+  DD=0.83, SS=1.395, CV=0.75, BB≈1.00.
+- **Damage type (Q6-A):** DOT and torpedo damage have HIGHER XP coefficients
+  than direct damage. The "DOT is overvalued" hypothesis is wrong.
+- **Damage concentration / HHI (Q6-B):** DD's damage is MORE concentrated
+  (HHI 0.180 vs CA 0.125), and concentrated damage is penalized (-0.092
+  coefficient). This explains ~27% of DD's K penalty. SS's HHI is highest
+  (0.338), masking its true WG bonus.
+- **Reinforcement damage (Q6-C):** Community claim "reinforcement damage
+  gives no XP" is false. sec_failed has zero effect on XP allocation after
+  controlling for game-level eff. See `docs/reinforcement-damage-analysis.md`.
+- **Other factors (Items 7-10):** Achievements, plane kills, building damage,
+  and objective ribbons have negligible explanatory power (R² gain < 0.5%).
+- **Remaining unknowns:** ~73% of DD's K penalty and ~50% of CV's K penalty
+  remain unexplained by damage type, concentration, or other tested factors.
+
+See `docs/Q6_CLASS_K_ANALYSIS.md` for full analysis.
+
+## Community-sourced battle results (new data source)
+
+`wows-scoreboard-extract/battle_results/` stores end-of-battle screenshots
+and descriptions from community contributors. Each entry has:
+- `screenshots/` - raw scoreboard images
+- `descriptions/` - Markdown files with context (scenario, stars, AFK status)
+  and extracted player tables (name, tier, ship, kills, XP)
+
+This data source complements replay analysis by providing actual post-bonus
+XP values, AFK flags, and tier/class distributions not available in replays.
+Too few samples to use yet (3 as of 2026-08-27); integration planned when
+sample count reaches 20+.
+
 ## Routine development flow
 
 ```
@@ -76,4 +114,6 @@ rebase or force-push once it contains merges.
 - docs/WOWS_OPERATIONS_ANALYSIS.md - sample analysis findings
 - docs/WOWS_WG_API_REFERENCE.md - Wargaming public API reference
 - docs/vortex_api_postman_reference.md - Vortex client API reference
+- docs/Q6_CLASS_K_ANALYSIS.md - Q6: ship class K decomposition (2026-08-27)
+- docs/reinforcement-damage-analysis.md - reinforcement damage analysis
 - AGENTS.md - repository instructions read by Codex
