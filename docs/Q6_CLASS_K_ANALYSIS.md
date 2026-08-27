@@ -1,5 +1,8 @@
 # Q6：舰种系数 K 的分解——伤害类型、集中度与增援
 
+> **2026-08-27 审计修正：** 本分析中的"WG 真实乘数"应理解为"残余 class-specific multiplier（含未建模成分）"，不是已证明的 WG 内部固定变量。HHI 解释 DD K 的 27% 应表述为"DD class-specific residual coefficient 下降约 27%"，是统计模型中的 residual reduction，不是严格的因果分解。
+> **证据层级：** 伤害类型分析（二级结论）、HHI 分析（三级探索性结论）、增援分析（二级结论）。
+
 > 更新日期：2026-08-27
 > 数据：2060 局 replay（ops_efficiency_full.jsonl） + 468 局子集（HHI 分析）
 > 分析脚本：`scripts/analyze_damage_types.py`、`scripts/concentration_run.py`、`scripts/analyze_reinforcement*.py`
@@ -48,11 +51,11 @@ Q6 试图回答：经验公式中的舰种系数 K（DD=0.83, SS=1.395, CV=0.75,
 | baseline | 0.8254 | -0.00901 | +0.01481 | — |
 | +HHI | **0.8702** | **-0.00656** | **+0.02854** | **-0.09231** |
 
-HHI 有强烈的负效应（R² 增幅最大，+4.5%）。DD 的 K 惩罚被 HHI 解释了约 27%（-0.00901 → -0.00656）。SS 的真实加成被 HHI 掩盖（集中度惩罚拖累了 SS，控制后 K_SS 翻倍）。
+HHI 有强烈的负效应（R² 增幅最大，+4.5%）。在当前模型中加入 HHI 后，DD 的 class-specific residual coefficient 下降约 27%（-0.00901 → -0.00656）。SS 的 residual coefficient 被 HHI 掩盖（集中度惩罚拖累了 SS，控制后 K_SS 翻倍）。
 
 ## 实验 C：增援伤害
 
-四步检验，结论一致：**增援伤害的经验回报和普通伤害一样。**
+四步检验，结论一致：**当前数据未发现增援伤害存在特殊的 0-XP 或显著折扣。**
 
 - 跨 sec_failed 分组的玩家级回归：eff 系数平坦（0.0134→0.0134→0.0127→0.0128）
 - 控制 game_eff_per 后，sec_failed 系数为零，R² 不变
@@ -69,7 +72,8 @@ HHI 有强烈的负效应（R² 增幅最大，+4.5%）。DD 的 K 惩罚被 HHI
 | SS   | 1.395 | 解释约一半（鱼雷系数高） | 掩盖（集中度惩罚拖累） | 控制后可能 ≥1.75（vs DD） |
 | CV   | 0.75 | 解释约一半（航弹系数低） | 几乎不解释 | 约一半是 WG 真实惩罚 |
 
-**舰种系数 K = 伤害类型差异 + 伤害集中度惩罚 + WG 真实乘数，三重叠加。**
+**舰种系数 K = 伤害类型差异 + 伤害集中度惩罚 + 残余 class-specific multiplier，三重叠加。**
+其中"残余 class-specific multiplier"包含未建模的舰种特征和可能的 WG 内部乘数，不应等同于已证明的 WG 固定变量。
 
 ## 对历史结论的修正
 

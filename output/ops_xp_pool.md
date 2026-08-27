@@ -1,4 +1,6 @@
-> **注意：** 败局倍数已由 x0.5 修正为 x0.44（95%CI x0.433-0.452）并补齐置信区间，见 `WOWS_OPERATIONS_INTERIM.md`。finish_type 在现有样本中与胜负完全共线，无法拆「超时 vs 被团灭」，详见中期报告 2.3。
+> **注意：** 败局倍数已由 x0.5 修正为 x0.44（95%CI x0.433-0.452）并补齐置信区间，见 `WOWS_OPERATIONS_INTERIM.md`。finish_type 在现有样本中与胜负完全共线，无法拆「超时 vs 被团灭」，详见中期报告 2.3。2026-08-27 审计后措辞修正：败局倍数应表述为"当前样本支持败局 XP pool 约为胜局的 44%"，而非固定常数。
+>
+> **证据层级：** 一级结论（高可信）——总池 = 场景 + 星级 + 胜负。二级结论（较高可信）——败局 ×0.44、每星 +9%。受限于 151 败局样本，败局倍数不宜外推至所有失败类型。
 
 # Operations Total XP Pool: Fitted Model
 
@@ -37,7 +39,10 @@ objectives, not by how much the team kills.
 | 4 | 8782 | 526 |
 | 5 | 9577 | 958 |
 
-Each star adds roughly +9% to the pool. A loss gives about half the base pool
+Each star adds roughly +9% to the pool.
+
+In the current sample, a loss yields approximately 44% of the win pool
+(95% CI 0.433-0.452), not the previously reported 50%.
 of a win at the same completion level.
 
 ## Fitted coefficients (log scale)
@@ -54,7 +59,7 @@ of a win at the same completion level.
 ## Approximate pool formula
 
 ```
-team_raw ~ base[scenario] * (1.09 ^ stars) * (win ? 1 : 0.5)
+team_raw ~ base[scenario] * (1.09 ^ stars) * (win ? 1 : 0.44)
 ```
 
 `base[scenario]` is map-specific, roughly 7000 to 13000 depending on the

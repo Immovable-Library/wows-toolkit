@@ -1,6 +1,8 @@
+> **注意：** 本文件结论已按 2026-08-27 审计修正措辞。舰种系数 K 应从"经验性舰种相对贡献权重"理解，不应等同于 WG 内部固定变量。败局倍数已从 x0.5 修正为 x0.44；SS/DD 从"confirmed 1.75"修正为"约 1.68-1.73，与社区 1.75× 高度相容"。
+
 > **更新：** 舰种系数已补齐 95% 置信区间，见 `WOWS_OPERATIONS_INTERIM.md`。
 
-# Operations XP Allocation: Fitted Formula
+# Operations XP Allocation: Empirical Model
 
 ## Data
 

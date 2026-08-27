@@ -98,6 +98,70 @@ def estimate_K(matches, a, lam):
     return K
 
 
+
+
+def estimate_K_sensitivity(matches, a, lam, thresholds=None):
+    """Estimate K at multiple truncation thresholds to assess sensitivity.
+
+    The log-ratio regression requires XP_share > a/n, which introduces
+    outcome-dependent selection. This function varies the threshold to
+    measure how much K estimates drift.
+    """
+    if thresholds is None:
+        thresholds = [1e-9, 1e-6, 1e-4, 0.001, 0.005, 0.01]
+    results = {}
+    for eps in thresholds:
+        X, Y = [], []
+        for md in matches:
+            n = md["n"]
+            valid = [p for p in md["players"] if contrib(p, lam) > 1e-9 and (p["x"] - a / n) > eps]
+            if len(valid) < 2 or len({p["class"] for p in valid}) < 2:
+                continue
+            ys = [math.log(p["x"] - a / n) - math.log(contrib(p, lam)) for p in valid]
+            xs = [[1.0 if p["class"] == d else 0.0 for d in DUMMIES] for p in valid]
+            ym = np.mean(ys)
+            xm = np.mean(xs, axis=0)
+            Y.extend(ys - ym)
+            X.extend([np.array(x) - xm for x in xs])
+        if len(Y) < 30:
+            results[eps] = None
+            continue
+        X_arr = np.array(X)
+        Y_arr = np.array(Y)
+        coef, *_ = np.linalg.lstsq(X_arr, Y_arr, rcond=None)
+        K = {"DD": 1.0}
+        for d, co in zip(DUMMIES, coef):
+            K[d] = math.exp(float(co))
+        results[eps] = K
+    return results
+
+
+def fit_nls_diagnostic(matches, a, lam, K_init):
+    """Non-linear least squares diagnostic: fit K directly via SSE minimization.
+
+    Unlike estimate_K() which uses log-ratio regression (requiring truncation),
+    this fits K by minimizing the same SSE as the grid search, including all
+    players regardless of XP level. Used as a robustness check.
+    """
+    from scipy.optimize import minimize as scipy_minimize
+
+    def objective(log_K_vals):
+        K = {"DD": 1.0}
+        for d, lk in zip(DUMMIES, log_K_vals):
+            K[d] = math.exp(float(lk))
+        return sse_of(matches, a, lam, K)
+
+    init = [math.log(K_init.get(d, 1.0)) for d in DUMMIES]
+    try:
+        result = scipy_minimize(objective, init, method='Nelder-Mead',
+                                options={'maxiter': 2000, 'xatol': 1e-6})
+        K_opt = {"DD": 1.0}
+        for d, lk in zip(DUMMIES, result.x):
+            K_opt[d] = math.exp(float(lk))
+        return K_opt, result.fun
+    except Exception:
+        return None, None
+
 def sse_of(matches, a, lam, K):
     sse = 0.0
     for md in matches:
@@ -142,6 +206,21 @@ def fit(rows, label):
         print("      %-6s x%.3f" % (c, K_rebased[c]))
     print("    SS vs CL/CA: x%.3f" % (K_rebased["SS"] / K_rebased["CL/CA"]))
     print("    CV vs CL/CA: x%.3f" % (K_rebased["CV"] / K_rebased["CL/CA"]))
+
+    # Truncation sensitivity check
+    print("\n    [truncation sensitivity] K estimates at varying thresholds:")
+    sens = estimate_K_sensitivity(matches, best["a"], best["lam"])
+    for eps in sorted(sens.keys()):
+        if sens[eps] is None:
+            continue
+        Ks = sens[eps]
+        base_s = Ks["CL/CA"]
+        Ks_r = {c: Ks[c] / base_s for c in CLASSES}
+        print("      eps=%.0e  DD=%.3f  BB=%.3f  CV=%.3f  SS=%.3f" % (
+            eps, Ks_r["DD"], Ks_r["BB"], Ks_r["CV"], Ks_r["SS"]))
+    best["K_sensitivity"] = {str(eps): {c: round(Ks[c] / Ks["CL/CA"], 3) for c in CLASSES}
+                             for eps, Ks in sens.items() if Ks is not None}
+
     best["K_rebased"] = K_rebased
     return best
 
