@@ -1,7 +1,7 @@
 # 剧情（Operations）数据分析 · 中期结果（可发布版）
 
 > **2026-08-27 审计措辞修正：** 舰种系数 K 应理解为"经验性舰种相对贡献权重"，不应称为 WG 内部固定变量。
-> **证据层级：** 一级（高可信）——XP pool 二层结构、target-HP normalization、舰种 multiplier 存在性、约 50% 均分属性。二级（较高可信）——SS 相对 DD 约 1.68、CV 约 0.43、败局约 x0.44、每星约 +9%。三级（探索性）——HHI 解释 DD K 的 27%、damage type 效率差异。
+> **证据层级：** 一级（高可信）——XP pool 二层结构、target-HP normalization、舰种 multiplier 存在性、约 50% 均分属性。二级（较高可信）——SS 相对 DD 约 1.68、CV 约 0.43、败局约 x0.44、每星约 +9%。三级（探索性）——HHI 解释 DD 残余系数的约 47%、damage type 效率差异（DOT 方向分数据源）。
 
 > 更新 2026-08-26。主线「剧情 PR 公式」已暂停；本报告冻结并发布其余四点结论。
 > 口径约定：经验一律用基础经验（`raw_exp`，不含高账 1.65 倍与首胜加成）。
@@ -121,8 +121,9 @@ team_raw ~ base[scenario] * 1.09^stars * (win ? 1 : 0.44)
 
 ## 4. 数据与口径
 
-- 来源A（本地）：465 局，用于最初的效率描述与随机性检查。
+- 来源A（本地个人）：458 局（`D:\World_of_Warships\replays`），用于最初的效率描述与随机性检查。
 - 来源B（抓取）：replayswows.com 分享站 PVE 回放，与本地合并去重后 2060 局。
+- Q6 伤害类型/HHI 复核：直接合并个人 448 局 + 抓取 1620 局，去重后 2068 局 / 14476 行，见 `docs/Q6_CLASS_K_ANALYSIS.md`。
 - 经验口径：`raw_exp`（回放 `init_economics.exp`），不含高账 1.65x 与首胜；WG API `oper_solo.xp` 含高账，需 /1.65 对齐。
 - 舰种数（合成）：BB 6217、CL/CA 5726、DD 1845、CV 260、SS 372。
 

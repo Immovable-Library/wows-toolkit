@@ -52,22 +52,26 @@ Two commits on top of upstream:
 The XP allocation model is a within-game share regression:
 `share(exp) ~ eff_total + scouting_damage + ship_class_dummies`.
 
-Key findings across 2060 replay games:
+Key findings across 2060 replay games (Q6 damage-type/HHI rechecked on a
+merged 2068-game / 14476-row set: 448 personal + 1620 scraped replays):
 
 - **Ship class K values (multiplicative model, vs CA=1.00):**
   DD=0.83, SS=1.395, CV=0.75, BB≈1.00.
-- **Damage type (Q6-A):** DOT and torpedo damage have HIGHER XP coefficients
-  than direct damage. The "DOT is overvalued" hypothesis is wrong.
+- **Damage type (Q6-A):** Torpedo has the highest XP coefficient (~0.0161).
+  DOT's coefficient is source-dependent: personal replays show DOT > direct,
+  scraped public replays show DOT < direct, and the merged set has DOT
+  slightly below direct. The "DOT is overvalued" hypothesis is therefore not
+  uniformly refuted.
 - **Damage concentration / HHI (Q6-B):** DD's damage is MORE concentrated
-  (HHI 0.180 vs CA 0.125), and concentrated damage is penalized (-0.092
-  coefficient). This explains ~27% of DD's K penalty. SS's HHI is highest
-  (0.338), masking its true WG bonus.
+  (HHI 0.206 vs CA 0.141), and concentrated damage is penalized (-0.089
+  coefficient). This explains ~47% of DD's K penalty. SS's HHI is highest
+  (0.286), masking its true WG bonus.
 - **Reinforcement damage (Q6-C):** Community claim "reinforcement damage
   gives no XP" is false. sec_failed has zero effect on XP allocation after
   controlling for game-level eff. See `docs/reinforcement-damage-analysis.md`.
 - **Other factors (Items 7-10):** Achievements, plane kills, building damage,
   and objective ribbons have negligible explanatory power (R² gain < 0.5%).
-- **Remaining unknowns:** ~73% of DD's K penalty and ~50% of CV's K penalty
+- **Remaining unknowns:** ~53% of DD's K penalty and ~50% of CV's K penalty
   remain unexplained by damage type, concentration, or other tested factors.
 
 See `docs/Q6_CLASS_K_ANALYSIS.md` for full analysis.
