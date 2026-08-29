@@ -1,197 +1,433 @@
 {
-  "n_replays": 2068,
-  "n_rows": 14476,
+  "n_replays": 1943,
+  "n_rows": 13600,
+  "total_eff": 61122.805,
+  "damage_types": [
+    "eff_air",
+    "eff_bomb",
+    "eff_fire",
+    "eff_flood",
+    "eff_main",
+    "eff_ram",
+    "eff_rocket",
+    "eff_secondary",
+    "eff_skip",
+    "eff_tbomb",
+    "eff_torpedo"
+  ],
+  "presence": {
+    "eff_air": {
+      "total_eff": 1296.222,
+      "share_of_eff": 0.02121,
+      "n_rows_nonzero": 4961,
+      "n_games_nonzero": 1265
+    },
+    "eff_bomb": {
+      "total_eff": 396.566,
+      "share_of_eff": 0.00649,
+      "n_rows_nonzero": 658,
+      "n_games_nonzero": 580
+    },
+    "eff_fire": {
+      "total_eff": 3107.761,
+      "share_of_eff": 0.05084,
+      "n_rows_nonzero": 10407,
+      "n_games_nonzero": 1943
+    },
+    "eff_flood": {
+      "total_eff": 567.999,
+      "share_of_eff": 0.00929,
+      "n_rows_nonzero": 3514,
+      "n_games_nonzero": 1721
+    },
+    "eff_main": {
+      "total_eff": 36727.208,
+      "share_of_eff": 0.60088,
+      "n_rows_nonzero": 12919,
+      "n_games_nonzero": 1943
+    },
+    "eff_ram": {
+      "total_eff": 63.359,
+      "share_of_eff": 0.00104,
+      "n_rows_nonzero": 121,
+      "n_games_nonzero": 112
+    },
+    "eff_rocket": {
+      "total_eff": 117.815,
+      "share_of_eff": 0.00193,
+      "n_rows_nonzero": 249,
+      "n_games_nonzero": 243
+    },
+    "eff_secondary": {
+      "total_eff": 11898.535,
+      "share_of_eff": 0.19467,
+      "n_rows_nonzero": 9737,
+      "n_games_nonzero": 1940
+    },
+    "eff_skip": {
+      "total_eff": 87.601,
+      "share_of_eff": 0.00143,
+      "n_rows_nonzero": 496,
+      "n_games_nonzero": 177
+    },
+    "eff_tbomb": {
+      "total_eff": 467.133,
+      "share_of_eff": 0.00764,
+      "n_rows_nonzero": 1616,
+      "n_games_nonzero": 582
+    },
+    "eff_torpedo": {
+      "total_eff": 6392.607,
+      "share_of_eff": 0.10459,
+      "n_rows_nonzero": 4801,
+      "n_games_nonzero": 1861
+    }
+  },
   "baseline": {
     "coef": [
-      0.013112232777353775,
-      1.5372220431745858e-07,
-      -0.00763124013138898,
-      0.002897833216604965,
-      -0.00012530768937129492,
-      -0.03815357055991712,
-      0.021628522881302892
+      0.012913119380606538,
+      0.01519620747825838,
+      -0.009360378610499952,
+      0.0031027350349538702,
+      -0.0004904217335491767,
+      -0.021474273238739076,
+      0.028222338547833813
     ],
-    "r2": 0.8270108093701152,
+    "se": [
+      9.288013826636325e-05,
+      0.0004382230999783034,
+      0.0004985720334230596,
+      0.0004331710337934329,
+      0.00042063773084563414,
+      0.0009075882155892945,
+      0.001233069426469201
+    ],
+    "n": 13565,
+    "r2": 0.83767144228537,
+    "sse": 3.1194397586324145,
     "fields": [
       "eff_total",
-      "scouting_damage"
-    ],
-    "n": 14476
+      "scouting_damage",
+      "DD",
+      "CL/CA",
+      "BB",
+      "CV",
+      "SS"
+    ]
   },
-  "item5_damage_split": {
+  "damage_split": {
     "coef": [
-      0.013136706038453272,
-      0.01608404030130232,
-      0.011969365284183107,
-      0.007127065912619212,
-      0.0036802944473201702,
-      1.498062679079759e-07,
-      -0.011568936037693378,
-      0.002981476195408361,
-      0.00037949251989359653,
-      -0.016177691612493324,
-      0.016167075729685315
+      0.0001978324190433917,
+      0.009055607249020053,
+      0.013350014099852307,
+      0.004053155169838937,
+      0.013718503280145641,
+      0.01439317548241333,
+      0.010942605309552326,
+      0.011005667664711406,
+      0.010753937294721431,
+      0.013806103662852282,
+      0.0169048599583061,
+      0.015129595559444042,
+      -0.01316990009827497,
+      0.003742294100112508,
+      0.0033463034104098542,
+      -0.015068918736448614,
+      0.02115022132420123
     ],
-    "r2": 0.840888793959373,
+    "se": [
+      0.0004882857423635066,
+      0.0006764583630839969,
+      0.0005359723486564324,
+      0.0014162553400848797,
+      0.00011791672676350577,
+      0.0026930214832602624,
+      0.001417376415975811,
+      0.00014532463951631326,
+      0.002074905256906556,
+      0.0007483540899384873,
+      0.0003215192861214065,
+      0.00043131559582710634,
+      0.0005791040163544588,
+      0.0005119551359017278,
+      0.0005354424745380907,
+      0.0014087895454964075,
+      0.0011260491245488264
+    ],
+    "n": 13565,
+    "r2": 0.85529715550227,
+    "sse": 2.780729482651841,
     "fields": [
-      "eff_direct",
-      "eff_torpedo",
-      "eff_dot",
+      "eff_air",
       "eff_bomb",
-      "eff_other",
-      "scouting_damage"
-    ],
-    "n": 14476
-  },
-  "item5_no_class": {
-    "coef": [
-      0.013421400600012106,
-      0.015549806460388746,
-      0.01238273896909378,
-      0.005993636085362336,
-      0.0015331228197695721,
-      1.3205061817796182e-07
-    ],
-    "r2": 0.8205258596209615,
-    "fields": [
-      "eff_direct",
+      "eff_fire",
+      "eff_flood",
+      "eff_main",
+      "eff_ram",
+      "eff_rocket",
+      "eff_secondary",
+      "eff_skip",
+      "eff_tbomb",
       "eff_torpedo",
-      "eff_dot",
+      "scouting_damage",
+      "DD",
+      "CL/CA",
+      "BB",
+      "CV",
+      "SS"
+    ]
+  },
+  "no_class": {
+    "coef": [
+      0.0009404135043049957,
+      0.011439227774911456,
+      0.013708783970145329,
+      0.0009606642175037215,
+      0.013917968074298081,
+      0.015136306156670703,
+      0.004333540681801002,
+      0.011452440163216098,
+      0.004002167313799007,
+      0.009032058566397588,
+      0.016393798736946165,
+      0.013692326630694264
+    ],
+    "se": [
+      0.000511155975191878,
+      0.0008808305932378671,
+      0.0005374891291933476,
+      0.001602100365508167,
+      0.00011975961398536486,
+      0.0028632681778118685,
+      0.0013136543406089703,
+      0.0001401165511555975,
+      0.0020176107873651427,
+      0.0006420827029507743,
+      0.0003415419966604373,
+      0.0004705687808871569
+    ],
+    "n": 13565,
+    "r2": 0.8306269442613878,
+    "sse": 3.254812656198897,
+    "fields": [
+      "eff_air",
       "eff_bomb",
-      "eff_other",
+      "eff_fire",
+      "eff_flood",
+      "eff_main",
+      "eff_ram",
+      "eff_rocket",
+      "eff_secondary",
+      "eff_skip",
+      "eff_tbomb",
+      "eff_torpedo",
       "scouting_damage"
-    ],
-    "n": 14476
+    ]
   },
-  "item7_achievements": {
-    "coef": [
-      0.012279673249461503,
-      1.4759287476035835e-07,
-      0.004297181453190957,
-      -0.008197623729239881,
-      0.0028347867166904467,
-      0.00015993850611452538,
-      -0.03675067116268025,
-      0.019682290696449965
-    ],
-    "r2": 0.8306645621074216,
-    "fields": [
-      "eff_total",
-      "scouting_damage",
-      "n_achievements"
-    ],
-    "n": 14476
+  "contrasts": {
+    "eff_secondary_vs_eff_main": {
+      "a": "eff_secondary",
+      "b": "eff_main",
+      "diff": -0.002712835615434235,
+      "se": 0.00016918687102783402,
+      "t": -16.034551611205867,
+      "p": 0.0
+    },
+    "eff_tbomb_vs_eff_torpedo": {
+      "a": "eff_tbomb",
+      "b": "eff_torpedo",
+      "diff": -0.003098756295453817,
+      "se": 0.0008150631551552374,
+      "t": -3.801860353831877,
+      "p": 0.0001436136698123036
+    },
+    "eff_tbomb_vs_eff_bomb": {
+      "a": "eff_tbomb",
+      "b": "eff_bomb",
+      "diff": 0.004750496413832229,
+      "se": 0.0010383357785284544,
+      "t": 4.575106157436572,
+      "p": 4.759785752872503e-06
+    },
+    "eff_bomb_vs_eff_main": {
+      "a": "eff_bomb",
+      "b": "eff_main",
+      "diff": -0.004662896031125588,
+      "se": 0.0006808776169879818,
+      "t": -6.848361459953665,
+      "p": 7.470024598887903e-12
+    },
+    "eff_torpedo_vs_eff_main": {
+      "a": "eff_torpedo",
+      "b": "eff_main",
+      "diff": 0.003186356678160458,
+      "se": 0.00032330216713926947,
+      "t": 9.855661365820247,
+      "p": 0.0
+    },
+    "eff_fire_vs_eff_main": {
+      "a": "eff_fire",
+      "b": "eff_main",
+      "diff": -0.0003684891802933337,
+      "se": 0.0005715454220761196,
+      "t": -0.6447242267374115,
+      "p": 0.5191059135293175
+    },
+    "eff_flood_vs_eff_main": {
+      "a": "eff_flood",
+      "b": "eff_main",
+      "diff": -0.009665348110306704,
+      "se": 0.0014275959296614507,
+      "t": -6.770366817029807,
+      "p": 1.2845724484122911e-11
+    },
+    "eff_rocket_vs_eff_bomb": {
+      "a": "eff_rocket",
+      "b": "eff_bomb",
+      "diff": 0.0018869980605322727,
+      "se": 0.0015233924524704935,
+      "t": 1.2386815081511782,
+      "p": 0.21546346947855954
+    },
+    "eff_skip_vs_eff_bomb": {
+      "a": "eff_skip",
+      "b": "eff_bomb",
+      "diff": 0.001698330045701378,
+      "se": 0.002132696822803039,
+      "t": 0.796329805316273,
+      "p": 0.4258403660260388
+    }
   },
-  "item8_planes": {
-    "coef": [
-      0.013160627293603787,
-      1.54162910615594e-07,
-      -4.587575015405744e-05,
-      -4.587575015405047e-05,
-      -0.007753783209187722,
-      0.00294292443310792,
-      -0.00010961724103716239,
-      -0.03824784592525306,
-      0.021347407990316626
-    ],
-    "r2": 0.8272314229174522,
-    "fields": [
-      "eff_total",
-      "scouting_damage",
-      "planes_killed_by_ship",
-      "ribbon_plane"
-    ],
-    "n": 14476
-  },
-  "item9_building": {
-    "coef": [
-      0.013078411819779886,
-      1.5317408035712957e-07,
-      0.002383677082397486,
-      -0.007448978638570106,
-      0.0028195394638004445,
-      -0.00015108903147977853,
-      -0.03775764472853532,
-      0.022082016002197495
-    ],
-    "r2": 0.8279732425165356,
-    "fields": [
-      "eff_total",
-      "scouting_damage",
-      "ribbon_building_kill"
-    ],
-    "n": 14476
-  },
-  "item10_objective_ribbons": {
-    "coef": [
-      0.013103286138988689,
-      1.5322806475257696e-07,
-      -0.00011605156537476739,
-      -6.000011687402189e-05,
-      -0.0002897656834264988,
-      0.0030299669977080965,
-      -0.00778431533789721,
-      0.0028826990784387263,
-      -4.039274539600777e-05,
-      -0.03811664931856159,
-      0.021180052370332013
-    ],
-    "r2": 0.8278134254842103,
-    "fields": [
-      "eff_total",
-      "scouting_damage",
-      "ribbon_base_capture",
-      "ribbon_demining_mine",
-      "ribbon_demining_minefield",
-      "ribbon_drop"
-    ],
-    "n": 14476
-  },
-  "class_damage_composition": {
+  "class_composition": {
     "DD": {
-      "n": 1850,
-      "eff_direct": 1.533,
-      "eff_torpedo": 1.695,
-      "eff_dot": 0.258,
-      "eff_bomb": 0.031,
-      "eff_other": 0.049,
-      "eff_total": 3.567
+      "n": 1685,
+      "eff_air": 0.063,
+      "eff_bomb": 0.01,
+      "eff_fire": 0.116,
+      "eff_flood": 0.151,
+      "eff_main": 1.615,
+      "eff_ram": 0.002,
+      "eff_rocket": 0.0,
+      "eff_secondary": 0.0,
+      "eff_skip": 0.003,
+      "eff_tbomb": 0.005,
+      "eff_torpedo": 1.709,
+      "eff_total": 3.676,
+      "share_eff_air": 0.0171,
+      "share_eff_bomb": 0.0027,
+      "share_eff_fire": 0.0316,
+      "share_eff_flood": 0.0412,
+      "share_eff_main": 0.4394,
+      "share_eff_ram": 0.0005,
+      "share_eff_rocket": 0.0001,
+      "share_eff_secondary": 0.0001,
+      "share_eff_skip": 0.0009,
+      "share_eff_tbomb": 0.0013,
+      "share_eff_torpedo": 0.465
     },
     "CL/CA": {
-      "n": 5751,
-      "eff_direct": 3.717,
-      "eff_torpedo": 0.314,
-      "eff_dot": 0.322,
-      "eff_bomb": 0.098,
-      "eff_other": 0.073,
-      "eff_total": 4.525
+      "n": 5529,
+      "eff_air": 0.104,
+      "eff_bomb": 0.031,
+      "eff_fire": 0.303,
+      "eff_flood": 0.032,
+      "eff_main": 3.309,
+      "eff_ram": 0.002,
+      "eff_rocket": 0.0,
+      "eff_secondary": 0.481,
+      "eff_skip": 0.006,
+      "eff_tbomb": 0.023,
+      "eff_torpedo": 0.327,
+      "eff_total": 4.619,
+      "share_eff_air": 0.0226,
+      "share_eff_bomb": 0.0067,
+      "share_eff_fire": 0.0656,
+      "share_eff_flood": 0.0069,
+      "share_eff_main": 0.7165,
+      "share_eff_ram": 0.0005,
+      "share_eff_rocket": 0.0,
+      "share_eff_secondary": 0.1042,
+      "share_eff_skip": 0.0012,
+      "share_eff_tbomb": 0.005,
+      "share_eff_torpedo": 0.0707
     },
     "BB": {
-      "n": 6238,
-      "eff_direct": 4.225,
-      "eff_torpedo": 0.109,
-      "eff_dot": 0.207,
-      "eff_bomb": 0.061,
-      "eff_other": 0.086,
-      "eff_total": 4.688
+      "n": 5778,
+      "eff_air": 0.103,
+      "eff_bomb": 0.005,
+      "eff_fire": 0.207,
+      "eff_flood": 0.011,
+      "eff_main": 2.715,
+      "eff_ram": 0.008,
+      "eff_rocket": 0.006,
+      "eff_secondary": 1.586,
+      "eff_skip": 0.004,
+      "eff_tbomb": 0.015,
+      "eff_torpedo": 0.111,
+      "eff_total": 4.772,
+      "share_eff_air": 0.0217,
+      "share_eff_bomb": 0.0011,
+      "share_eff_fire": 0.0434,
+      "share_eff_flood": 0.0022,
+      "share_eff_main": 0.569,
+      "share_eff_ram": 0.0016,
+      "share_eff_rocket": 0.0012,
+      "share_eff_secondary": 0.3324,
+      "share_eff_skip": 0.0009,
+      "share_eff_tbomb": 0.0032,
+      "share_eff_torpedo": 0.0233
     },
     "CV": {
-      "n": 260,
-      "eff_direct": 0.273,
+      "n": 228,
+      "eff_air": 0.072,
+      "eff_bomb": 0.453,
+      "eff_fire": 0.125,
+      "eff_flood": 0.061,
+      "eff_main": 0.0,
+      "eff_ram": 0.002,
+      "eff_rocket": 0.368,
+      "eff_secondary": 0.292,
+      "eff_skip": 0.116,
+      "eff_tbomb": 1.067,
       "eff_torpedo": 0.0,
-      "eff_dot": 0.177,
-      "eff_bomb": 2.805,
-      "eff_other": 0.877,
-      "eff_total": 4.132
+      "eff_total": 2.555,
+      "share_eff_air": 0.0281,
+      "share_eff_bomb": 0.1771,
+      "share_eff_fire": 0.0488,
+      "share_eff_flood": 0.0238,
+      "share_eff_main": 0.0,
+      "share_eff_ram": 0.0007,
+      "share_eff_rocket": 0.144,
+      "share_eff_secondary": 0.1144,
+      "share_eff_skip": 0.0453,
+      "share_eff_tbomb": 0.4176,
+      "share_eff_torpedo": 0.0
     },
     "SS": {
-      "n": 377,
-      "eff_direct": 0.06,
-      "eff_torpedo": 2.8,
-      "eff_dot": 0.192,
-      "eff_bomb": 0.387,
-      "eff_other": 0.002,
-      "eff_total": 3.441
+      "n": 380,
+      "eff_air": 0.0,
+      "eff_bomb": 0.196,
+      "eff_fire": 0.03,
+      "eff_flood": 0.163,
+      "eff_main": 0.049,
+      "eff_ram": 0.002,
+      "eff_rocket": 0.0,
+      "eff_secondary": 0.011,
+      "eff_skip": 0.0,
+      "eff_tbomb": 0.0,
+      "eff_torpedo": 2.804,
+      "eff_total": 3.255,
+      "share_eff_air": 0.0,
+      "share_eff_bomb": 0.0603,
+      "share_eff_fire": 0.0092,
+      "share_eff_flood": 0.0502,
+      "share_eff_main": 0.0149,
+      "share_eff_ram": 0.0007,
+      "share_eff_rocket": 0.0,
+      "share_eff_secondary": 0.0033,
+      "share_eff_skip": 0.0,
+      "share_eff_tbomb": 0.0,
+      "share_eff_torpedo": 0.8613
     }
   }
 }

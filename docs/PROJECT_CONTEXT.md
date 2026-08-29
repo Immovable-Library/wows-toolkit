@@ -52,16 +52,33 @@ Two commits on top of upstream:
 The XP allocation model is a within-game share regression:
 `share(exp) ~ eff_total + scouting_damage + ship_class_dummies`.
 
-Key findings across 2060 replay games (Q6 damage-type/HHI rechecked on a
-merged 2068-game / 14476-row set: 448 personal + 1620 scraped replays):
+Key findings across 2060 replay games (Q6 damage-type rechecked 2026-08-30
+on the 2025+ merged 1943-game / 13600-row set: 455 personal + 1488 scraped
+replays, with the `_avia` duplicate-damage bug fixed; HHI rechecked on the
+earlier 2068-game / 14476-row set):
 
-- **Ship class K values (multiplicative model, vs CA=1.00):**
-  DD=0.83, SS=1.395, CV=0.75, BB≈1.00.
-- **Damage type (Q6-A):** Torpedo has the highest XP coefficient (~0.0161).
-  DOT's coefficient is source-dependent: personal replays show DOT > direct,
-  scraped public replays show DOT < direct, and the merged set has DOT
-  slightly below direct. The "DOT is overvalued" hypothesis is therefore not
-  uniformly refuted.
+- **Ship class K values (multiplicative model, vs CA=1.00, 2025+ corpus):**
+  raw-eff: DD=0.83, BB=0.96, CV=0.64, SS=1.45. Re-priced by damage-type
+  coefficients (see `output/k_recompute_damage_types.json`): DD=0.77,
+  BB=0.99, CV=0.70, SS=1.27. Damage-type composition explains ~41% of SS's
+  premium, ~19% of CV's penalty, and nearly all of BB's small penalty; DD's
+  penalty is a genuine residual, not composition.
+- **Damage type (Q6-A):** Ship torpedoes have the highest XP coefficient
+  (~0.0169), then ram (~0.0144), aerial torpedoes (~0.0138), main battery
+  (~0.0137), fire (~0.0134), secondary (~0.0110), rockets (~0.0109), skip
+  bombs (~0.0108), dive bombs (~0.0091), flood (~0.0041), plane/AA damage
+  (~0.0002). Fire is not discounted vs main battery; flood is. Aerial
+  torpedoes earn ~18% less than ship torpedoes but ~52% more than dive
+  bombs. Rockets and skip bombs are not significantly different from dive
+  bombs.
+- **Secondary battery (Q6-A2):** Secondary damage earns ~0.0110 XP-share per
+  ship-equivalent vs 0.0137 for main battery (~20% lower, HC0 t=-16.0).
+  Secondary is 33% of BB ship-eff, so the discount mainly affects BB; the
+  split improves the damage-type model R2 by +0.018. The community rumor is
+  directionally supported, but the discount is mild.
+- **Plane/AA damage:** ~2.1% of raw ship-eff earns essentially no XP
+  (~0.0002, not significant); it should be excluded from the efficiency
+  metric going forward.
 - **Damage concentration / HHI (Q6-B):** DD's damage is MORE concentrated
   (HHI 0.206 vs CA 0.141), and concentrated damage is penalized (-0.089
   coefficient). This explains ~47% of DD's K penalty. SS's HHI is highest

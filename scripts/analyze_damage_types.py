@@ -26,6 +26,15 @@ SHIFTING = ["raw_exp", "exp", "scouting_damage", "damage", "resources", "interac
             "achievements", "planes_killed_by_ship", "planes_killed_by_plane",
             "planes_killed_fighters", "planes_killed_bombers"]
 
+# Only count battles that started on or after 2025-01-01T00:00:00Z. Event-mode
+# damage types (lasers, missiles) live in earlier special modes; the 2025+
+# corpus is regular operations.
+MIN_START_DT = 1735689600
+
+CATEGORIES = ["main", "secondary", "torpedo", "tbomb", "bomb", "depth_charge",
+              "rocket", "skip", "fire", "flood", "ram", "mine", "wave",
+              "laser", "missile", "event", "air", "other"]
+
 
 def is_operation(sc):
     return (
@@ -65,18 +74,44 @@ def build_damage_category_map(build, cache_dir):
     for i, name in enumerate(veh):
         if not name.startswith("damage_"):
             continue
-        if name in ("damage_fire", "damage_flood"):
-            mapping[i] = "dot"
-        elif "_tpd_" in name or name.startswith("damage_tpd"):
+        if name.endswith("_avia"):
+            # The _avia field reports the same damage as its base field (the
+            # aviation-source breakdown). The battle results total counts it
+            # once; adding both double-counts aviation damage.
+            continue
+        if "_fighters" in name or "_bombers" in name or "_abilityplanes" in name \
+                or name in ("damage_planes_by_plane", "damage_airdefense"):
+            mapping[i] = "air"
+        elif name in ("damage_fire", "damage_flood"):
+            mapping[i] = "fire" if name == "damage_fire" else "flood"
+        elif name.startswith("damage_tpd"):
             mapping[i] = "torpedo"
-        elif "_bomb" in name or name.startswith("damage_bomb") or name.startswith("damage_dbomb") or name.startswith("damage_tbomb"):
+        elif name.startswith("damage_tbomb"):
+            mapping[i] = "tbomb"
+        elif name.startswith("damage_dbomb") or name == "damage_adbomb":
+            mapping[i] = "depth_charge"
+        elif name.startswith("damage_bomb"):
             mapping[i] = "bomb"
-        elif "_rocket" in name or "_skip" in name or "_wave" in name or "_laser" in name or "_mine" in name or "_ram" in name:
-            mapping[i] = "other"
-        elif "_planes" in name or "_airdefense" in name:
-            mapping[i] = "other"
-        elif "_main_" in name or "_atba_" in name:
-            mapping[i] = "direct"
+        elif name.startswith("damage_rocket"):
+            mapping[i] = "rocket"
+        elif name.startswith("damage_skip"):
+            mapping[i] = "skip"
+        elif name.startswith("damage_main_"):
+            mapping[i] = "main"
+        elif name.startswith("damage_atba_"):
+            mapping[i] = "secondary"
+        elif name == "damage_ram":
+            mapping[i] = "ram"
+        elif name == "damage_sea_mine":
+            mapping[i] = "mine"
+        elif name == "damage_wave":
+            mapping[i] = "wave"
+        elif name.endswith("_laser"):
+            mapping[i] = "laser"
+        elif name == "damage_missile":
+            mapping[i] = "missile"
+        elif name.startswith("damage_event_"):
+            mapping[i] = "event"
         else:
             mapping[i] = "other"
     return mapping
@@ -103,6 +138,9 @@ def parse_game(path, build, ver, table, dmg_cat_map, ribbon_map):
         return None
 
     common = ex.resolve_common(results.get("commonList") or [])
+    start_dt = common.get("start_dt")
+    if start_dt is not None and int(start_dt) < MIN_START_DT:
+        return None
     ppi = results.get("playersPublicInfo") or {}
 
     entities = {}
@@ -152,11 +190,12 @@ def parse_game(path, build, ver, table, dmg_cat_map, ribbon_map):
     # compute damage type efficiency
     for p in entities.values():
         inter = p.get("interactions") or {}
-        eff = {"direct": 0.0, "torpedo": 0.0, "dot": 0.0, "bomb": 0.0, "other": 0.0, "total": 0.0}
+        eff = {c: 0.0 for c in CATEGORIES}
+        eff["total"] = 0.0
         for victim_id, ival in inter.items():
             if not isinstance(ival, list):
                 continue
-            dmg_by_cat = {"direct": 0.0, "torpedo": 0.0, "dot": 0.0, "bomb": 0.0, "other": 0.0}
+            dmg_by_cat = {c: 0.0 for c in CATEGORIES}
             for i, cat in dmg_cat_map.items():
                 if i < len(ival) and isinstance(ival[i], (int, float)):
                     dmg_by_cat[cat] += ival[i]
@@ -185,7 +224,9 @@ def parse_game(path, build, ver, table, dmg_cat_map, ribbon_map):
 
     return {
         "source": os.path.basename(path),
+        "source_kind": "personal" if "personal" in Path(path).parts else "scraped",
         "build": build,
+        "start_dt": common.get("start_dt"),
         "arena_id": common.get("arena_id") or results.get("arenaUniqueID"),
         "scenario": common.get("scenario_name") or meta.get("scenario") or "",
         "duration_sec": common.get("duration_sec"),
@@ -206,6 +247,9 @@ def main():
     targets = []
     metas = {}
     for p in paths:
+        fname = p.name if isinstance(p, Path) else os.path.basename(p)
+        if fname[:8].isdigit() and int(fname[:8]) < 20250101:
+            continue  # personal replays carry the local battle date in the name
         try:
             m = ex.read_meta_only(str(p))
             sc = str(m.get("scenario") or "")
@@ -257,6 +301,9 @@ def main():
             ribbons = h.get("ribbons", {})
             rows.append({
                 "arena_id": g["arena_id"],
+                "source": g["source"],
+                "source_kind": g["source_kind"],
+                "start_dt": g["start_dt"],
                 "scenario": g["scenario"],
                 "is_win": g["is_win"],
                 "account_id": h["account_id"],
@@ -266,11 +313,7 @@ def main():
                 "scouting_damage": h.get("scouting_damage") or 0,
                 "team_raw": team_raw,
                 "eff_total": eff.get("total", 0),
-                "eff_direct": eff.get("direct", 0),
-                "eff_torpedo": eff.get("torpedo", 0),
-                "eff_dot": eff.get("dot", 0),
-                "eff_bomb": eff.get("bomb", 0),
-                "eff_other": eff.get("other", 0),
+                **{"eff_%s" % c: eff.get(c, 0) for c in CATEGORIES},
                 "achievements": h.get("achievements", []),
                 "n_achievements": len(h.get("achievements", [])),
                 "ribbon_base_capture": ribbons.get("RIBBON_BASE_CAPTURE", 0),

@@ -15,7 +15,7 @@ A monorepo of tools for interacting with World of Warships game data, replays, a
 ### 核心文档
 
 **[docs/Q6_CLASS_K_ANALYSIS.md](docs/Q6_CLASS_K_ANALYSIS.md)** — 舰种系数 K 的分解：伤害类型、集中度、增援
-> `scripts/analyze_damage_types.py` · `scripts/concentration_run.py` · `scripts/analyze_reinforcement7.py` · `scripts/fit_class_efficiency.py` · `scripts/analyze_ops_efficiency.py`
+> `scripts/analyze_damage_types.py` · `scripts/fit_damage_types.py` · `scripts/recompute_k_damage_types.py` · `scripts/concentration_run.py` · `scripts/analyze_reinforcement7.py` · `scripts/fit_class_efficiency.py` · `scripts/analyze_ops_efficiency.py`
 
 **[docs/reinforcement-damage-analysis.md](docs/reinforcement-damage-analysis.md)** — 增援伤害与经验回报验证（修正版）
 > `scripts/analyze_reinforcement.py` ~ `scripts/analyze_reinforcement7.py`
@@ -74,8 +74,9 @@ A monorepo of tools for interacting with World of Warships game data, replays, a
 | `ops_efficiency_full.jsonl` | 2060 局完整数据集（主数据源） |
 | `ships_cache.json` | 舰船信息缓存 |
 | `constants_cache/` | replay 常量定义 |
-| [output/damage_type_analysis.jsonl](output/damage_type_analysis.jsonl) | 伤害类型拆分中间数据 |
-| [output/damage_type_results.json](output/damage_type_results.json) | 伤害类型回归结果 |
+| [output/damage_type_analysis.jsonl](output/damage_type_analysis.jsonl) | 伤害类型拆分中间数据（2025+ 回放，11 类实际出现，已修 _avia 重复） |
+| [output/damage_type_results.json](output/damage_type_results.json) | 伤害类型回归结果（11 类系数 + 两两对比检验） |
+| [output/k_recompute_damage_types.json](output/k_recompute_damage_types.json) | 伤害类型加权后的舰种 K 重估 |
 
 ### 技能
 
