@@ -1,0 +1,9322 @@
+[
+ {
+  "arena": "fb8f5b237094388fe",
+  "ship": "4",
+  "spawn_clock": 59.571,
+  "first_seen": 379.431640625,
+  "onset": 379.431640625,
+  "n_pos": 1269
+ },
+ {
+  "arena": "fb8f5b237094388fe",
+  "ship": "3",
+  "spawn_clock": 59.571,
+  "first_seen": 385.73394775390625,
+  "onset": 385.73394775390625,
+  "n_pos": 68
+ },
+ {
+  "arena": "fb8f5b237094388fe",
+  "ship": "2",
+  "spawn_clock": 59.571,
+  "first_seen": 385.8517150878906,
+  "onset": 385.8517150878906,
+  "n_pos": 67
+ },
+ {
+  "arena": "fb8f5b237094388fe",
+  "ship": "1",
+  "spawn_clock": 59.571,
+  "first_seen": 385.8517150878906,
+  "onset": 385.8517150878906,
+  "n_pos": 67
+ },
+ {
+  "arena": "fb8f5b237094388fe",
+  "ship": "COMMUNICATION",
+  "spawn_clock": 59.571,
+  "first_seen": 386.0124206542969,
+  "onset": 386.0124206542969,
+  "n_pos": 66
+ },
+ {
+  "arena": "fd261874630946105",
+  "ship": "COMMUNICATION",
+  "spawn_clock": 61.275,
+  "first_seen": 305.16058349609375,
+  "onset": 305.16058349609375,
+  "n_pos": 176
+ },
+ {
+  "arena": "fd261874630946105",
+  "ship": "1",
+  "spawn_clock": 61.275,
+  "first_seen": 306.28564453125,
+  "onset": 306.28564453125,
+  "n_pos": 403
+ },
+ {
+  "arena": "fd261874630946105",
+  "ship": "2",
+  "spawn_clock": 61.275,
+  "first_seen": 309.1503601074219,
+  "onset": 309.1503601074219,
+  "n_pos": 374
+ },
+ {
+  "arena": "fd261874630946105",
+  "ship": "4",
+  "spawn_clock": 61.275,
+  "first_seen": 316.5803527832031,
+  "onset": 316.5803527832031,
+  "n_pos": 343
+ },
+ {
+  "arena": "fd261874630946105",
+  "ship": "3",
+  "spawn_clock": 61.275,
+  "first_seen": 329.17333984375,
+  "onset": 329.17333984375,
+  "n_pos": 134
+ },
+ {
+  "arena": "f9d56a69dfa825eef",
+  "ship": "4",
+  "spawn_clock": 61.933,
+  "first_seen": 446.349853515625,
+  "onset": 446.349853515625,
+  "n_pos": 1006
+ },
+ {
+  "arena": "f9d56a69dfa825eef",
+  "ship": "3",
+  "spawn_clock": 61.933,
+  "first_seen": 462.7891845703125,
+  "onset": 462.7891845703125,
+  "n_pos": 891
+ },
+ {
+  "arena": "f9d56a69dfa825eef",
+  "ship": "1",
+  "spawn_clock": 61.933,
+  "first_seen": 490.77825927734375,
+  "onset": 490.77825927734375,
+  "n_pos": 895
+ },
+ {
+  "arena": "f9d56a69dfa825eef",
+  "ship": "2",
+  "spawn_clock": 61.933,
+  "first_seen": 491.79736328125,
+  "onset": 491.79736328125,
+  "n_pos": 1181
+ },
+ {
+  "arena": "a3113255979094769",
+  "ship": "4",
+  "spawn_clock": 61.163,
+  "first_seen": 342.1682434082031,
+  "onset": 342.1682434082031,
+  "n_pos": 1552
+ },
+ {
+  "arena": "a3113255979094769",
+  "ship": "COMMUNICATION",
+  "spawn_clock": 61.163,
+  "first_seen": 409.0312805175781,
+  "onset": 409.0312805175781,
+  "n_pos": 1048
+ },
+ {
+  "arena": "a3113255979094769",
+  "ship": "3",
+  "spawn_clock": 61.163,
+  "first_seen": 418.17218017578125,
+  "onset": 418.17218017578125,
+  "n_pos": 736
+ },
+ {
+  "arena": "a3113255979094769",
+  "ship": "1",
+  "spawn_clock": 61.163,
+  "first_seen": 421.01568603515625,
+  "onset": 421.01568603515625,
+  "n_pos": 676
+ },
+ {
+  "arena": "a3113255979094769",
+  "ship": "2",
+  "spawn_clock": 61.163,
+  "first_seen": 425.0105895996094,
+  "onset": 425.0105895996094,
+  "n_pos": 1168
+ },
+ {
+  "arena": "a3140052280139295",
+  "ship": "4",
+  "spawn_clock": 61.197,
+  "first_seen": 287.9923095703125,
+  "onset": 363.3613586425781,
+  "n_pos": 1776
+ },
+ {
+  "arena": "a3140052280139295",
+  "ship": "2",
+  "spawn_clock": 61.197,
+  "first_seen": 304.9505310058594,
+  "onset": 315.7914123535156,
+  "n_pos": 1089
+ },
+ {
+  "arena": "a3140052280139295",
+  "ship": "COMMUNICATION",
+  "spawn_clock": 61.197,
+  "first_seen": 324.9455261230469,
+  "onset": 324.9455261230469,
+  "n_pos": 1239
+ },
+ {
+  "arena": "a3140052280139295",
+  "ship": "1",
+  "spawn_clock": 61.197,
+  "first_seen": 340.9668273925781,
+  "onset": 340.9668273925781,
+  "n_pos": 1107
+ },
+ {
+  "arena": "a3140052280139295",
+  "ship": "3",
+  "spawn_clock": 61.197,
+  "first_seen": 415.5038757324219,
+  "onset": 415.5038757324219,
+  "n_pos": 1185
+ },
+ {
+  "arena": "a3025037351093606",
+  "ship": "4",
+  "spawn_clock": 62.307,
+  "first_seen": 326.1744689941406,
+  "onset": 326.1744689941406,
+  "n_pos": 166
+ },
+ {
+  "arena": "a3025037351093606",
+  "ship": "COMMUNICATION",
+  "spawn_clock": 62.307,
+  "first_seen": 371.3433837890625,
+  "onset": 371.3433837890625,
+  "n_pos": 65
+ },
+ {
+  "arena": "a3716389647228880",
+  "ship": "4",
+  "spawn_clock": 62.269,
+  "first_seen": 362.1599426269531,
+  "onset": 362.1599426269531,
+  "n_pos": 1500
+ },
+ {
+  "arena": "a3716389647228880",
+  "ship": "COMMUNICATION",
+  "spawn_clock": 62.269,
+  "first_seen": 404.42840576171875,
+  "onset": 404.42840576171875,
+  "n_pos": 728
+ },
+ {
+  "arena": "a3716389647228880",
+  "ship": "1",
+  "spawn_clock": 62.269,
+  "first_seen": 430.154296875,
+  "onset": 430.154296875,
+  "n_pos": 1340
+ },
+ {
+  "arena": "a3716389647228880",
+  "ship": "2",
+  "spawn_clock": 62.269,
+  "first_seen": 431.28472900390625,
+  "onset": 431.28472900390625,
+  "n_pos": 764
+ },
+ {
+  "arena": "a3716389647228880",
+  "ship": "3",
+  "spawn_clock": 62.269,
+  "first_seen": 468.4209899902344,
+  "onset": 468.4209899902344,
+  "n_pos": 1044
+ },
+ {
+  "arena": "a2931604633035639",
+  "ship": "4",
+  "spawn_clock": 62.864,
+  "first_seen": 393.02093505859375,
+  "onset": 393.02093505859375,
+  "n_pos": 2484
+ },
+ {
+  "arena": "a2931604633035639",
+  "ship": "1",
+  "spawn_clock": 62.864,
+  "first_seen": 445.00201416015625,
+  "onset": 445.00201416015625,
+  "n_pos": 1224
+ },
+ {
+  "arena": "a2931604633035639",
+  "ship": "2",
+  "spawn_clock": 62.864,
+  "first_seen": 446.13995361328125,
+  "onset": 446.13995361328125,
+  "n_pos": 1064
+ },
+ {
+  "arena": "a2931604633035639",
+  "ship": "COMMUNICATION",
+  "spawn_clock": 62.864,
+  "first_seen": 514.1676025390625,
+  "onset": 514.1676025390625,
+  "n_pos": 116
+ },
+ {
+  "arena": "a2931604633035639",
+  "ship": "3",
+  "spawn_clock": 62.864,
+  "first_seen": 591.8732299804688,
+  "onset": 591.8732299804688,
+  "n_pos": 868
+ },
+ {
+  "arena": "a3666310329240282",
+  "ship": "COMMUNICATION",
+  "spawn_clock": 61.798,
+  "first_seen": 366.8268737792969,
+  "onset": 366.8268737792969,
+  "n_pos": 304
+ },
+ {
+  "arena": "a3666310329240282",
+  "ship": "2",
+  "spawn_clock": 61.798,
+  "first_seen": 459.9677734375,
+  "onset": 459.9677734375,
+  "n_pos": 490
+ },
+ {
+  "arena": "a3666310329240282",
+  "ship": "1",
+  "spawn_clock": 61.798,
+  "first_seen": 461.6844177246094,
+  "onset": 461.6844177246094,
+  "n_pos": 479
+ },
+ {
+  "arena": "a3666310329240282",
+  "ship": "4",
+  "spawn_clock": 61.798,
+  "first_seen": 463.9576721191406,
+  "onset": 463.9576721191406,
+  "n_pos": 450
+ },
+ {
+  "arena": "a3666310329240282",
+  "ship": "3",
+  "spawn_clock": 61.798,
+  "first_seen": 481.09326171875,
+  "onset": 481.09326171875,
+  "n_pos": 342
+ },
+ {
+  "arena": "a3846351064451322",
+  "ship": "2",
+  "spawn_clock": 61.88,
+  "first_seen": 366.6322937011719,
+  "onset": 366.6322937011719,
+  "n_pos": 754
+ },
+ {
+  "arena": "a3846351064451322",
+  "ship": "4",
+  "spawn_clock": 61.88,
+  "first_seen": 376.6284484863281,
+  "onset": 376.6284484863281,
+  "n_pos": 1176
+ },
+ {
+  "arena": "a3846351064451322",
+  "ship": "1",
+  "spawn_clock": 61.88,
+  "first_seen": 378.66119384765625,
+  "onset": 378.66119384765625,
+  "n_pos": 686
+ },
+ {
+  "arena": "a3846351064451322",
+  "ship": "COMMUNICATION",
+  "spawn_clock": 61.88,
+  "first_seen": 383.66485595703125,
+  "onset": 383.66485595703125,
+  "n_pos": 1183
+ },
+ {
+  "arena": "a3846351064451322",
+  "ship": "3",
+  "spawn_clock": 61.88,
+  "first_seen": 442.9061584472656,
+  "onset": 442.9061584472656,
+  "n_pos": 888
+ },
+ {
+  "arena": "a3575415938263382",
+  "ship": "2",
+  "spawn_clock": 61.383,
+  "first_seen": 308.66668701171875,
+  "onset": 308.66668701171875,
+  "n_pos": 515
+ },
+ {
+  "arena": "a3575415938263382",
+  "ship": "1",
+  "spawn_clock": 61.383,
+  "first_seen": 317.2384033203125,
+  "onset": 317.2384033203125,
+  "n_pos": 488
+ },
+ {
+  "arena": "a3575415938263382",
+  "ship": "COMMUNICATION",
+  "spawn_clock": 61.383,
+  "first_seen": 329.2527770996094,
+  "onset": 329.2527770996094,
+  "n_pos": 156
+ },
+ {
+  "arena": "a3575415938263382",
+  "ship": "4",
+  "spawn_clock": 61.383,
+  "first_seen": 401.2521057128906,
+  "onset": 401.2521057128906,
+  "n_pos": 1416
+ },
+ {
+  "arena": "a3575415938263382",
+  "ship": "3",
+  "spawn_clock": 61.383,
+  "first_seen": 412.6553955078125,
+  "onset": 412.6553955078125,
+  "n_pos": 260
+ },
+ {
+  "arena": "a3375296232415436",
+  "ship": "4",
+  "spawn_clock": 61.824,
+  "first_seen": 397.6875305175781,
+  "onset": 397.6875305175781,
+  "n_pos": 1420
+ },
+ {
+  "arena": "a3375296232415436",
+  "ship": "COMMUNICATION",
+  "spawn_clock": 61.824,
+  "first_seen": 413.1136169433594,
+  "onset": 413.1136169433594,
+  "n_pos": 1044
+ },
+ {
+  "arena": "a3375296232415436",
+  "ship": "1",
+  "spawn_clock": 61.824,
+  "first_seen": 459.9478454589844,
+  "onset": 459.9478454589844,
+  "n_pos": 1068
+ },
+ {
+  "arena": "a3375296232415436",
+  "ship": "2",
+  "spawn_clock": 61.824,
+  "first_seen": 462.823486328125,
+  "onset": 462.823486328125,
+  "n_pos": 1108
+ },
+ {
+  "arena": "a3375296232415436",
+  "ship": "3",
+  "spawn_clock": 61.824,
+  "first_seen": 505.1023254394531,
+  "onset": 505.1023254394531,
+  "n_pos": 996
+ },
+ {
+  "arena": "a3423477175977245",
+  "ship": "COMMUNICATION",
+  "spawn_clock": 61.332,
+  "first_seen": 305.0738220214844,
+  "onset": 305.0738220214844,
+  "n_pos": 1221
+ },
+ {
+  "arena": "a3423477175977245",
+  "ship": "2",
+  "spawn_clock": 61.332,
+  "first_seen": 357.20611572265625,
+  "onset": 357.20611572265625,
+  "n_pos": 1116
+ },
+ {
+  "arena": "a3423477175977245",
+  "ship": "1",
+  "spawn_clock": 61.332,
+  "first_seen": 363.4841003417969,
+  "onset": 363.4841003417969,
+  "n_pos": 1092
+ },
+ {
+  "arena": "a3423477175977245",
+  "ship": "4",
+  "spawn_clock": 61.332,
+  "first_seen": 369.22076416015625,
+  "onset": 369.22076416015625,
+  "n_pos": 1288
+ },
+ {
+  "arena": "a3423477175977245",
+  "ship": "3",
+  "spawn_clock": 61.332,
+  "first_seen": 389.1000061035156,
+  "onset": 389.1000061035156,
+  "n_pos": 953
+ },
+ {
+  "arena": "a3656161325241176",
+  "ship": "4",
+  "spawn_clock": 61.431,
+  "first_seen": 332.7376708984375,
+  "onset": 332.7376708984375,
+  "n_pos": 1351
+ },
+ {
+  "arena": "a3656161325241176",
+  "ship": "1",
+  "spawn_clock": 61.431,
+  "first_seen": 339.61224365234375,
+  "onset": 339.61224365234375,
+  "n_pos": 978
+ },
+ {
+  "arena": "a3656161325241176",
+  "ship": "COMMUNICATION",
+  "spawn_clock": 61.431,
+  "first_seen": 347.5994567871094,
+  "onset": 347.5994567871094,
+  "n_pos": 1120
+ },
+ {
+  "arena": "a3656161325241176",
+  "ship": "3",
+  "spawn_clock": 61.431,
+  "first_seen": 376.74359130859375,
+  "onset": 376.74359130859375,
+  "n_pos": 584
+ },
+ {
+  "arena": "a3656161325241176",
+  "ship": "2",
+  "spawn_clock": 61.431,
+  "first_seen": 401.318359375,
+  "onset": 401.318359375,
+  "n_pos": 584
+ },
+ {
+  "arena": "a3612777860844461",
+  "ship": "1",
+  "spawn_clock": 62.001,
+  "first_seen": 307.0079040527344,
+  "onset": 310.572021484375,
+  "n_pos": 364
+ },
+ {
+  "arena": "a3612777860844461",
+  "ship": "COMMUNICATION",
+  "spawn_clock": 62.001,
+  "first_seen": 309.3030090332031,
+  "onset": 309.3030090332031,
+  "n_pos": 211
+ },
+ {
+  "arena": "a3612777860844461",
+  "ship": "2",
+  "spawn_clock": 62.001,
+  "first_seen": 329.8570556640625,
+  "onset": 329.8570556640625,
+  "n_pos": 115
+ },
+ {
+  "arena": "a3612777860844461",
+  "ship": "4",
+  "spawn_clock": 62.001,
+  "first_seen": 341.87103271484375,
+  "onset": 341.87103271484375,
+  "n_pos": 1406
+ },
+ {
+  "arena": "a277125871421871",
+  "ship": "COMMUNICATION",
+  "spawn_clock": 61.819,
+  "first_seen": 387.96575927734375,
+  "onset": 387.96575927734375,
+  "n_pos": 1116
+ },
+ {
+  "arena": "a277125871421871",
+  "ship": "4",
+  "spawn_clock": 61.819,
+  "first_seen": 405.6872253417969,
+  "onset": 405.6872253417969,
+  "n_pos": 1244
+ },
+ {
+  "arena": "a277125871421871",
+  "ship": "1",
+  "spawn_clock": 61.819,
+  "first_seen": 425.12664794921875,
+  "onset": 425.12664794921875,
+  "n_pos": 868
+ },
+ {
+  "arena": "a277125871421871",
+  "ship": "2",
+  "spawn_clock": 61.819,
+  "first_seen": 425.6944885253906,
+  "onset": 425.6944885253906,
+  "n_pos": 844
+ },
+ {
+  "arena": "a277125871421871",
+  "ship": "3",
+  "spawn_clock": 61.819,
+  "first_seen": 501.1183166503906,
+  "onset": 501.1183166503906,
+  "n_pos": 896
+ },
+ {
+  "arena": "a3692784521479778",
+  "ship": "4",
+  "spawn_clock": 61.134,
+  "first_seen": 377.13385009765625,
+  "onset": 377.13385009765625,
+  "n_pos": 1251
+ },
+ {
+  "arena": "a3692784521479778",
+  "ship": "COMMUNICATION",
+  "spawn_clock": 61.134,
+  "first_seen": 385.1421203613281,
+  "onset": 385.1421203613281,
+  "n_pos": 913
+ },
+ {
+  "arena": "a3692784521479778",
+  "ship": "3",
+  "spawn_clock": 61.134,
+  "first_seen": 437.12689208984375,
+  "onset": 437.12689208984375,
+  "n_pos": 1082
+ },
+ {
+  "arena": "a3692784521479778",
+  "ship": "1",
+  "spawn_clock": 61.134,
+  "first_seen": 446.28204345703125,
+  "onset": 446.28204345703125,
+  "n_pos": 974
+ },
+ {
+  "arena": "a3692784521479778",
+  "ship": "2",
+  "spawn_clock": 61.134,
+  "first_seen": 449.13848876953125,
+  "onset": 449.13848876953125,
+  "n_pos": 882
+ },
+ {
+  "arena": "a3702598521837362",
+  "ship": "COMMUNICATION",
+  "spawn_clock": 58.339,
+  "first_seen": 307.4737854003906,
+  "onset": 307.4737854003906,
+  "n_pos": 170
+ },
+ {
+  "arena": "a3702598521837362",
+  "ship": "1",
+  "spawn_clock": 58.339,
+  "first_seen": 309.0230407714844,
+  "onset": 309.0230407714844,
+  "n_pos": 15
+ },
+ {
+  "arena": "a3702598521837362",
+  "ship": "2",
+  "spawn_clock": 58.339,
+  "first_seen": 336.626708984375,
+  "onset": 336.626708984375,
+  "n_pos": 15
+ },
+ {
+  "arena": "a4221628139694999",
+  "ship": "COMMUNICATION",
+  "spawn_clock": 62.504,
+  "first_seen": 362.19842529296875,
+  "onset": 362.19842529296875,
+  "n_pos": 391
+ },
+ {
+  "arena": "a4221628139694999",
+  "ship": "4",
+  "spawn_clock": 62.504,
+  "first_seen": 362.5054931640625,
+  "onset": 362.5054931640625,
+  "n_pos": 2409
+ },
+ {
+  "arena": "a4221628139694999",
+  "ship": "3",
+  "spawn_clock": 62.504,
+  "first_seen": 424.7756652832031,
+  "onset": 424.7756652832031,
+  "n_pos": 2133
+ },
+ {
+  "arena": "a4221628139694999",
+  "ship": "1",
+  "spawn_clock": 62.504,
+  "first_seen": 444.7872619628906,
+  "onset": 444.7872619628906,
+  "n_pos": 1488
+ },
+ {
+  "arena": "a4221628139694999",
+  "ship": "2",
+  "spawn_clock": 62.504,
+  "first_seen": 447.63134765625,
+  "onset": 447.63134765625,
+  "n_pos": 1726
+ },
+ {
+  "arena": "a3654731111498033",
+  "ship": "1",
+  "spawn_clock": 60.306,
+  "first_seen": 243.74066162109375,
+  "onset": 478.591552734375,
+  "n_pos": 1043
+ },
+ {
+  "arena": "a3654731111498033",
+  "ship": "2",
+  "spawn_clock": 60.306,
+  "first_seen": 244.31036376953125,
+  "onset": 483.7410888671875,
+  "n_pos": 1749
+ },
+ {
+  "arena": "a3654731111498033",
+  "ship": "COMMUNICATION",
+  "spawn_clock": 60.306,
+  "first_seen": 256.3141174316406,
+  "onset": 471.73797607421875,
+  "n_pos": 503
+ },
+ {
+  "arena": "a3654731111498033",
+  "ship": "4",
+  "spawn_clock": 60.306,
+  "first_seen": 260.30999755859375,
+  "onset": 477.4461364746094,
+  "n_pos": 1646
+ },
+ {
+  "arena": "a3654731111498033",
+  "ship": "3",
+  "spawn_clock": 60.306,
+  "first_seen": 298.6017761230469,
+  "onset": 475.7328186035156,
+  "n_pos": 1603
+ },
+ {
+  "arena": "a5156870174637131",
+  "ship": "4",
+  "spawn_clock": 62.061,
+  "first_seen": 434.057861328125,
+  "onset": 434.057861328125,
+  "n_pos": 1048
+ },
+ {
+  "arena": "a5156870174637131",
+  "ship": "3",
+  "spawn_clock": 62.061,
+  "first_seen": 473.501220703125,
+  "onset": 473.501220703125,
+  "n_pos": 996
+ },
+ {
+  "arena": "a5156870174637131",
+  "ship": "2",
+  "spawn_clock": 62.061,
+  "first_seen": 485.4936218261719,
+  "onset": 485.4936218261719,
+  "n_pos": 1452
+ },
+ {
+  "arena": "a5156870174637131",
+  "ship": "1",
+  "spawn_clock": 62.061,
+  "first_seen": 510.0721740722656,
+  "onset": 510.0721740722656,
+  "n_pos": 1108
+ },
+ {
+  "arena": "a5118430217511943",
+  "ship": "4",
+  "spawn_clock": 62.325,
+  "first_seen": 318.1995544433594,
+  "onset": 318.1995544433594,
+  "n_pos": 1372
+ },
+ {
+  "arena": "a5118430217511943",
+  "ship": "2",
+  "spawn_clock": 62.325,
+  "first_seen": 349.2382507324219,
+  "onset": 349.2382507324219,
+  "n_pos": 1004
+ },
+ {
+  "arena": "a5118430217511943",
+  "ship": "COMMUNICATION",
+  "spawn_clock": 62.325,
+  "first_seen": 355.2268981933594,
+  "onset": 355.2268981933594,
+  "n_pos": 989
+ },
+ {
+  "arena": "a5118430217511943",
+  "ship": "1",
+  "spawn_clock": 62.325,
+  "first_seen": 356.2273864746094,
+  "onset": 356.2273864746094,
+  "n_pos": 705
+ },
+ {
+  "arena": "a5118430217511943",
+  "ship": "3",
+  "spawn_clock": 62.325,
+  "first_seen": 438.22845458984375,
+  "onset": 438.22845458984375,
+  "n_pos": 589
+ },
+ {
+  "arena": "a4295488769788617",
+  "ship": "2",
+  "spawn_clock": 59.707,
+  "first_seen": 345.5911865234375,
+  "onset": 345.5911865234375,
+  "n_pos": 892
+ },
+ {
+  "arena": "a4295488769788617",
+  "ship": "4",
+  "spawn_clock": 59.707,
+  "first_seen": 347.1466979980469,
+  "onset": 347.1466979980469,
+  "n_pos": 1020
+ },
+ {
+  "arena": "a4295488769788617",
+  "ship": "COMMUNICATION",
+  "spawn_clock": 59.707,
+  "first_seen": 375.1628723144531,
+  "onset": 375.1628723144531,
+  "n_pos": 912
+ },
+ {
+  "arena": "a4295488769788617",
+  "ship": "1",
+  "spawn_clock": 59.707,
+  "first_seen": 431.14666748046875,
+  "onset": 431.14666748046875,
+  "n_pos": 854
+ },
+ {
+  "arena": "a4295488769788617",
+  "ship": "3",
+  "spawn_clock": 59.707,
+  "first_seen": 447.7335510253906,
+  "onset": 447.7335510253906,
+  "n_pos": 273
+ },
+ {
+  "arena": "a4071334427465993",
+  "ship": "COMMUNICATION",
+  "spawn_clock": 61.152,
+  "first_seen": 311.0386657714844,
+  "onset": 311.0386657714844,
+  "n_pos": 741
+ },
+ {
+  "arena": "a4071334427465993",
+  "ship": "2",
+  "spawn_clock": 61.152,
+  "first_seen": 323.0627136230469,
+  "onset": 323.0627136230469,
+  "n_pos": 1150
+ },
+ {
+  "arena": "a4071334427465993",
+  "ship": "1",
+  "spawn_clock": 61.152,
+  "first_seen": 338.02850341796875,
+  "onset": 338.02850341796875,
+  "n_pos": 1096
+ },
+ {
+  "arena": "a4071334427465993",
+  "ship": "4",
+  "spawn_clock": 61.152,
+  "first_seen": 364.0347900390625,
+  "onset": 364.0347900390625,
+  "n_pos": 840
+ },
+ {
+  "arena": "a4071334427465993",
+  "ship": "3",
+  "spawn_clock": 61.152,
+  "first_seen": 367.0459899902344,
+  "onset": 367.0459899902344,
+  "n_pos": 847
+ },
+ {
+  "arena": "a3853536636408028",
+  "ship": "COMMUNICATION",
+  "spawn_clock": 60.789,
+  "first_seen": 350.7350158691406,
+  "onset": 350.7350158691406,
+  "n_pos": 1283
+ },
+ {
+  "arena": "a3853536636408028",
+  "ship": "1",
+  "spawn_clock": 60.789,
+  "first_seen": 352.7278137207031,
+  "onset": 352.7278137207031,
+  "n_pos": 1025
+ },
+ {
+  "arena": "a3853536636408028",
+  "ship": "2",
+  "spawn_clock": 60.789,
+  "first_seen": 383.69989013671875,
+  "onset": 383.69989013671875,
+  "n_pos": 1395
+ },
+ {
+  "arena": "a3853536636408028",
+  "ship": "4",
+  "spawn_clock": 60.789,
+  "first_seen": 460.23687744140625,
+  "onset": 460.23687744140625,
+  "n_pos": 1158
+ },
+ {
+  "arena": "a3853536636408028",
+  "ship": "3",
+  "spawn_clock": 60.789,
+  "first_seen": 472.6847229003906,
+  "onset": 472.6847229003906,
+  "n_pos": 932
+ },
+ {
+  "arena": "a4365050062439356",
+  "ship": "2",
+  "spawn_clock": 61.335,
+  "first_seen": 271.607421875,
+  "onset": 286.0409240722656,
+  "n_pos": 1444
+ },
+ {
+  "arena": "a4365050062439356",
+  "ship": "1",
+  "spawn_clock": 61.335,
+  "first_seen": 271.607421875,
+  "onset": 286.0409240722656,
+  "n_pos": 1320
+ },
+ {
+  "arena": "a4365050062439356",
+  "ship": "COMMUNICATION",
+  "spawn_clock": 61.335,
+  "first_seen": 277.3300476074219,
+  "onset": 277.3300476074219,
+  "n_pos": 768
+ },
+ {
+  "arena": "a4365050062439356",
+  "ship": "4",
+  "spawn_clock": 61.335,
+  "first_seen": 278.4754333496094,
+  "onset": 285.0406799316406,
+  "n_pos": 1412
+ },
+ {
+  "arena": "a4365050062439356",
+  "ship": "3",
+  "spawn_clock": 61.335,
+  "first_seen": 323.608154296875,
+  "onset": 323.608154296875,
+  "n_pos": 72
+ },
+ {
+  "arena": "a4523946672524347",
+  "ship": "COMMUNICATION",
+  "spawn_clock": 62.068,
+  "first_seen": 295.2115783691406,
+  "onset": 295.2115783691406,
+  "n_pos": 568
+ },
+ {
+  "arena": "a4523946672524347",
+  "ship": "4",
+  "spawn_clock": 62.068,
+  "first_seen": 300.3509826660156,
+  "onset": 300.3509826660156,
+  "n_pos": 691
+ },
+ {
+  "arena": "a4494577686245263",
+  "ship": "4",
+  "spawn_clock": 61.797,
+  "first_seen": 306.938720703125,
+  "onset": 306.938720703125,
+  "n_pos": 1195
+ },
+ {
+  "arena": "a4494577686245263",
+  "ship": "COMMUNICATION",
+  "spawn_clock": 61.797,
+  "first_seen": 328.0899353027344,
+  "onset": 328.0899353027344,
+  "n_pos": 990
+ },
+ {
+  "arena": "a4494577686245263",
+  "ship": "3",
+  "spawn_clock": 61.797,
+  "first_seen": 378.91864013671875,
+  "onset": 378.91864013671875,
+  "n_pos": 1055
+ },
+ {
+  "arena": "a4494577686245263",
+  "ship": "2",
+  "spawn_clock": 61.797,
+  "first_seen": 392.0810546875,
+  "onset": 392.0810546875,
+  "n_pos": 1023
+ },
+ {
+  "arena": "a4494577686245263",
+  "ship": "1",
+  "spawn_clock": 61.797,
+  "first_seen": 392.0810546875,
+  "onset": 392.0810546875,
+  "n_pos": 507
+ },
+ {
+  "arena": "a4528207280173772",
+  "ship": "COMMUNICATION",
+  "spawn_clock": 61.152,
+  "first_seen": 310.3106384277344,
+  "onset": 310.3106384277344,
+  "n_pos": 1103
+ },
+ {
+  "arena": "a4528207280173772",
+  "ship": "1",
+  "spawn_clock": 61.152,
+  "first_seen": 326.0707702636719,
+  "onset": 326.0707702636719,
+  "n_pos": 1262
+ },
+ {
+  "arena": "a4528207280173772",
+  "ship": "2",
+  "spawn_clock": 61.152,
+  "first_seen": 354.0348205566406,
+  "onset": 354.0348205566406,
+  "n_pos": 1125
+ },
+ {
+  "arena": "a4528207280173772",
+  "ship": "4",
+  "spawn_clock": 61.152,
+  "first_seen": 387.0376281738281,
+  "onset": 387.0376281738281,
+  "n_pos": 1393
+ },
+ {
+  "arena": "a4528207280173772",
+  "ship": "3",
+  "spawn_clock": 61.152,
+  "first_seen": 394.043701171875,
+  "onset": 394.043701171875,
+  "n_pos": 1180
+ },
+ {
+  "arena": "a4922326364674803",
+  "ship": "COMMUNICATION",
+  "spawn_clock": 60.869,
+  "first_seen": 315.1732482910156,
+  "onset": 315.1732482910156,
+  "n_pos": 988
+ },
+ {
+  "arena": "a4922326364674803",
+  "ship": "1",
+  "spawn_clock": 60.869,
+  "first_seen": 316.31561279296875,
+  "onset": 316.31561279296875,
+  "n_pos": 1024
+ },
+ {
+  "arena": "a4922326364674803",
+  "ship": "4",
+  "spawn_clock": 60.869,
+  "first_seen": 407.16510009765625,
+  "onset": 407.16510009765625,
+  "n_pos": 1076
+ },
+ {
+  "arena": "a4922326364674803",
+  "ship": "3",
+  "spawn_clock": 60.869,
+  "first_seen": 422.01165771484375,
+  "onset": 422.01165771484375,
+  "n_pos": 1040
+ },
+ {
+  "arena": "a4922326364674803",
+  "ship": "2",
+  "spawn_clock": 60.869,
+  "first_seen": 423.1617126464844,
+  "onset": 423.1617126464844,
+  "n_pos": 904
+ },
+ {
+  "arena": "a3819529083625818",
+  "ship": "COMMUNICATION",
+  "spawn_clock": 60.78,
+  "first_seen": 264.6623840332031,
+  "onset": 264.6623840332031,
+  "n_pos": 1101
+ },
+ {
+  "arena": "a3819529083625818",
+  "ship": "1",
+  "spawn_clock": 60.78,
+  "first_seen": 267.6637878417969,
+  "onset": 267.6637878417969,
+  "n_pos": 656
+ },
+ {
+  "arena": "a3819529083625818",
+  "ship": "2",
+  "spawn_clock": 60.78,
+  "first_seen": 304.2046813964844,
+  "onset": 304.2046813964844,
+  "n_pos": 619
+ },
+ {
+  "arena": "a3819529083625818",
+  "ship": "3",
+  "spawn_clock": 60.78,
+  "first_seen": 304.3551330566406,
+  "onset": 304.3551330566406,
+  "n_pos": 1058
+ },
+ {
+  "arena": "a3819529083625818",
+  "ship": "4",
+  "spawn_clock": 60.78,
+  "first_seen": 304.3551330566406,
+  "onset": 304.3551330566406,
+  "n_pos": 887
+ },
+ {
+  "arena": "f3fb417e3c5fc49b6",
+  "ship": "COMMUNICATION",
+  "spawn_clock": 43.931,
+  "first_seen": 331.23388671875,
+  "onset": 331.23388671875,
+  "n_pos": 1096
+ },
+ {
+  "arena": "f3fb417e3c5fc49b6",
+  "ship": "2",
+  "spawn_clock": 43.931,
+  "first_seen": 335.213623046875,
+  "onset": 335.213623046875,
+  "n_pos": 986
+ },
+ {
+  "arena": "f3fb417e3c5fc49b6",
+  "ship": "4",
+  "spawn_clock": 43.931,
+  "first_seen": 400.94024658203125,
+  "onset": 400.94024658203125,
+  "n_pos": 1016
+ },
+ {
+  "arena": "f3fb417e3c5fc49b6",
+  "ship": "3",
+  "spawn_clock": 43.931,
+  "first_seen": 406.0664367675781,
+  "onset": 406.0664367675781,
+  "n_pos": 684
+ },
+ {
+  "arena": "f3fb417e3c5fc49b6",
+  "ship": "1",
+  "spawn_clock": 43.931,
+  "first_seen": 426.6730651855469,
+  "onset": 426.6730651855469,
+  "n_pos": 524
+ },
+ {
+  "arena": "f1355577ef1f5ce7c",
+  "ship": "COMMUNICATION",
+  "spawn_clock": 58.285,
+  "first_seen": 394.1390075683594,
+  "onset": 394.1390075683594,
+  "n_pos": 1240
+ },
+ {
+  "arena": "f1355577ef1f5ce7c",
+  "ship": "4",
+  "spawn_clock": 58.285,
+  "first_seen": 406.143310546875,
+  "onset": 406.143310546875,
+  "n_pos": 1484
+ },
+ {
+  "arena": "f1355577ef1f5ce7c",
+  "ship": "1",
+  "spawn_clock": 58.285,
+  "first_seen": 412.4217224121094,
+  "onset": 412.4217224121094,
+  "n_pos": 1196
+ },
+ {
+  "arena": "f1355577ef1f5ce7c",
+  "ship": "2",
+  "spawn_clock": 58.285,
+  "first_seen": 434.148193359375,
+  "onset": 434.148193359375,
+  "n_pos": 1184
+ },
+ {
+  "arena": "f1355577ef1f5ce7c",
+  "ship": "3",
+  "spawn_clock": 58.285,
+  "first_seen": 514.129150390625,
+  "onset": 514.129150390625,
+  "n_pos": 904
+ },
+ {
+  "arena": "fdd5f690ae9a97f23",
+  "ship": "COMMUNICATION",
+  "spawn_clock": 62.299,
+  "first_seen": 346.1895751953125,
+  "onset": 346.1895751953125,
+  "n_pos": 1100
+ },
+ {
+  "arena": "fdd5f690ae9a97f23",
+  "ship": "4",
+  "spawn_clock": 62.299,
+  "first_seen": 418.1604919433594,
+  "onset": 418.1604919433594,
+  "n_pos": 836
+ },
+ {
+  "arena": "fdd5f690ae9a97f23",
+  "ship": "1",
+  "spawn_clock": 62.299,
+  "first_seen": 425.5958251953125,
+  "onset": 425.5958251953125,
+  "n_pos": 1112
+ },
+ {
+  "arena": "fdd5f690ae9a97f23",
+  "ship": "2",
+  "spawn_clock": 62.299,
+  "first_seen": 432.4519958496094,
+  "onset": 432.4519958496094,
+  "n_pos": 884
+ },
+ {
+  "arena": "fdd5f690ae9a97f23",
+  "ship": "3",
+  "spawn_clock": 62.299,
+  "first_seen": 437.5970153808594,
+  "onset": 437.5970153808594,
+  "n_pos": 920
+ },
+ {
+  "arena": "fb3721761784565e9",
+  "ship": "1",
+  "spawn_clock": 60.766,
+  "first_seen": 356.6204833984375,
+  "onset": 356.6204833984375,
+  "n_pos": 948
+ },
+ {
+  "arena": "fb3721761784565e9",
+  "ship": "COMMUNICATION",
+  "spawn_clock": 60.766,
+  "first_seen": 362.9202880859375,
+  "onset": 362.9202880859375,
+  "n_pos": 776
+ },
+ {
+  "arena": "fb3721761784565e9",
+  "ship": "2",
+  "spawn_clock": 60.766,
+  "first_seen": 404.07080078125,
+  "onset": 404.07080078125,
+  "n_pos": 684
+ },
+ {
+  "arena": "fb3721761784565e9",
+  "ship": "4",
+  "spawn_clock": 60.766,
+  "first_seen": 430.9205627441406,
+  "onset": 430.9205627441406,
+  "n_pos": 1068
+ },
+ {
+  "arena": "fb3721761784565e9",
+  "ship": "3",
+  "spawn_clock": 60.766,
+  "first_seen": 432.6213684082031,
+  "onset": 432.6213684082031,
+  "n_pos": 1172
+ },
+ {
+  "arena": "f2fa8ae76d28752e7",
+  "ship": "2",
+  "spawn_clock": 63.709,
+  "first_seen": 123.56036376953125,
+  "onset": 305.2825012207031,
+  "n_pos": 2059
+ },
+ {
+  "arena": "f2fa8ae76d28752e7",
+  "ship": "1",
+  "spawn_clock": 63.709,
+  "first_seen": 128.72718811035156,
+  "onset": 311.015380859375,
+  "n_pos": 2353
+ },
+ {
+  "arena": "f2fa8ae76d28752e7",
+  "ship": "COMMUNICATION",
+  "spawn_clock": 63.709,
+  "first_seen": 132.72735595703125,
+  "onset": 307.5818176269531,
+  "n_pos": 1972
+ },
+ {
+  "arena": "f2fa8ae76d28752e7",
+  "ship": "4",
+  "spawn_clock": 63.709,
+  "first_seen": 135.5773468017578,
+  "onset": 389.8505554199219,
+  "n_pos": 1835
+ },
+ {
+  "arena": "f2fa8ae76d28752e7",
+  "ship": "3",
+  "spawn_clock": 63.709,
+  "first_seen": 189.8621063232422,
+  "onset": 428.7182312011719,
+  "n_pos": 528
+ },
+ {
+  "arena": "f2918ccd84d9b8a7b",
+  "ship": "4",
+  "spawn_clock": 44.978,
+  "first_seen": 391.1281433105469,
+  "onset": 391.1281433105469,
+  "n_pos": 1280
+ },
+ {
+  "arena": "f2918ccd84d9b8a7b",
+  "ship": "3",
+  "spawn_clock": 44.978,
+  "first_seen": 462.7278137207031,
+  "onset": 462.7278137207031,
+  "n_pos": 955
+ },
+ {
+  "arena": "f2918ccd84d9b8a7b",
+  "ship": "2",
+  "spawn_clock": 44.978,
+  "first_seen": 466.01824951171875,
+  "onset": 466.01824951171875,
+  "n_pos": 1172
+ },
+ {
+  "arena": "f2918ccd84d9b8a7b",
+  "ship": "1",
+  "spawn_clock": 44.978,
+  "first_seen": 484.26727294921875,
+  "onset": 484.26727294921875,
+  "n_pos": 972
+ },
+ {
+  "arena": "fd552023516063c4f",
+  "ship": "COMMUNICATION",
+  "spawn_clock": 60.866,
+  "first_seen": 315.6376037597656,
+  "onset": 315.6376037597656,
+  "n_pos": 734
+ },
+ {
+  "arena": "fd552023516063c4f",
+  "ship": "1",
+  "spawn_clock": 60.866,
+  "first_seen": 317.63763427734375,
+  "onset": 317.63763427734375,
+  "n_pos": 532
+ },
+ {
+  "arena": "fd552023516063c4f",
+  "ship": "2",
+  "spawn_clock": 60.866,
+  "first_seen": 340.62139892578125,
+  "onset": 340.62139892578125,
+  "n_pos": 676
+ },
+ {
+  "arena": "fd552023516063c4f",
+  "ship": "4",
+  "spawn_clock": 60.866,
+  "first_seen": 419.6059875488281,
+  "onset": 419.6059875488281,
+  "n_pos": 1176
+ },
+ {
+  "arena": "fd552023516063c4f",
+  "ship": "3",
+  "spawn_clock": 60.866,
+  "first_seen": 428.6226806640625,
+  "onset": 428.6226806640625,
+  "n_pos": 1011
+ },
+ {
+  "arena": "fa59a268b9c303e3d",
+  "ship": "1",
+  "spawn_clock": 60.711,
+  "first_seen": 231.98263549804688,
+  "onset": 335.9960632324219,
+  "n_pos": 1040
+ },
+ {
+  "arena": "fa59a268b9c303e3d",
+  "ship": "COMMUNICATION",
+  "spawn_clock": 60.711,
+  "first_seen": 237.72052001953125,
+  "onset": 329.7042236328125,
+  "n_pos": 1133
+ },
+ {
+  "arena": "fa59a268b9c303e3d",
+  "ship": "2",
+  "spawn_clock": 60.711,
+  "first_seen": 237.72052001953125,
+  "onset": 328.5814514160156,
+  "n_pos": 1588
+ },
+ {
+  "arena": "fa59a268b9c303e3d",
+  "ship": "4",
+  "spawn_clock": 60.711,
+  "first_seen": 239.9951934814453,
+  "onset": 337.71405029296875,
+  "n_pos": 1653
+ },
+ {
+  "arena": "fa59a268b9c303e3d",
+  "ship": "3",
+  "spawn_clock": 60.711,
+  "first_seen": 252.5645751953125,
+  "onset": 376.55401611328125,
+  "n_pos": 1077
+ },
+ {
+  "arena": "fbfc97918c47efcfe",
+  "ship": "COMMUNICATION",
+  "spawn_clock": 50.789,
+  "first_seen": 386.5777587890625,
+  "onset": 386.5777587890625,
+  "n_pos": 869
+ },
+ {
+  "arena": "fbfc97918c47efcfe",
+  "ship": "4",
+  "spawn_clock": 50.789,
+  "first_seen": 423.6785583496094,
+  "onset": 423.6785583496094,
+  "n_pos": 1661
+ },
+ {
+  "arena": "fbfc97918c47efcfe",
+  "ship": "2",
+  "spawn_clock": 50.789,
+  "first_seen": 455.6635437011719,
+  "onset": 455.6635437011719,
+  "n_pos": 1021
+ },
+ {
+  "arena": "fbfc97918c47efcfe",
+  "ship": "1",
+  "spawn_clock": 50.789,
+  "first_seen": 458.66387939453125,
+  "onset": 458.66387939453125,
+  "n_pos": 1076
+ },
+ {
+  "arena": "fbfc97918c47efcfe",
+  "ship": "3",
+  "spawn_clock": 50.789,
+  "first_seen": 474.6595458984375,
+  "onset": 474.6595458984375,
+  "n_pos": 1136
+ },
+ {
+  "arena": "f6a20d4ecb2320e43",
+  "ship": "2",
+  "spawn_clock": 46.742,
+  "first_seen": 290.7648620605469,
+  "onset": 290.7648620605469,
+  "n_pos": 899
+ },
+ {
+  "arena": "f6a20d4ecb2320e43",
+  "ship": "1",
+  "spawn_clock": 46.742,
+  "first_seen": 300.7716064453125,
+  "onset": 300.7716064453125,
+  "n_pos": 874
+ },
+ {
+  "arena": "f6a20d4ecb2320e43",
+  "ship": "4",
+  "spawn_clock": 46.742,
+  "first_seen": 302.4866027832031,
+  "onset": 302.4866027832031,
+  "n_pos": 1074
+ },
+ {
+  "arena": "f6a20d4ecb2320e43",
+  "ship": "COMMUNICATION",
+  "spawn_clock": 46.742,
+  "first_seen": 318.19586181640625,
+  "onset": 318.19586181640625,
+  "n_pos": 931
+ },
+ {
+  "arena": "f6a20d4ecb2320e43",
+  "ship": "3",
+  "spawn_clock": 46.742,
+  "first_seen": 354.165771484375,
+  "onset": 354.165771484375,
+  "n_pos": 787
+ },
+ {
+  "arena": "f59fe1a7f3125d8f2",
+  "ship": "4",
+  "spawn_clock": 62.162,
+  "first_seen": 377.470703125,
+  "onset": 377.470703125,
+  "n_pos": 1124
+ },
+ {
+  "arena": "f59fe1a7f3125d8f2",
+  "ship": "COMMUNICATION",
+  "spawn_clock": 62.162,
+  "first_seen": 399.1886291503906,
+  "onset": 399.1886291503906,
+  "n_pos": 264
+ },
+ {
+  "arena": "f59fe1a7f3125d8f2",
+  "ship": "1",
+  "spawn_clock": 62.162,
+  "first_seen": 433.4521789550781,
+  "onset": 433.4521789550781,
+  "n_pos": 968
+ },
+ {
+  "arena": "f59fe1a7f3125d8f2",
+  "ship": "2",
+  "spawn_clock": 62.162,
+  "first_seen": 477.43603515625,
+  "onset": 477.43603515625,
+  "n_pos": 1016
+ },
+ {
+  "arena": "f59fe1a7f3125d8f2",
+  "ship": "3",
+  "spawn_clock": 62.162,
+  "first_seen": 529.4560546875,
+  "onset": 529.4560546875,
+  "n_pos": 964
+ },
+ {
+  "arena": "fae27d86a7b03ff35",
+  "ship": "4",
+  "spawn_clock": 54.54,
+  "first_seen": 414.2789001464844,
+  "onset": 414.2789001464844,
+  "n_pos": 1377
+ },
+ {
+  "arena": "fae27d86a7b03ff35",
+  "ship": "1",
+  "spawn_clock": 54.54,
+  "first_seen": 444.5827941894531,
+  "onset": 444.5827941894531,
+  "n_pos": 1327
+ },
+ {
+  "arena": "fae27d86a7b03ff35",
+  "ship": "3",
+  "spawn_clock": 54.54,
+  "first_seen": 455.3902282714844,
+  "onset": 455.3902282714844,
+  "n_pos": 1187
+ },
+ {
+  "arena": "fae27d86a7b03ff35",
+  "ship": "2",
+  "spawn_clock": 54.54,
+  "first_seen": 457.6849365234375,
+  "onset": 457.6849365234375,
+  "n_pos": 1647
+ },
+ {
+  "arena": "fa828942f0063c07e",
+  "ship": "1",
+  "spawn_clock": 61.878,
+  "first_seen": 218.8851318359375,
+  "onset": 344.630615234375,
+  "n_pos": 1064
+ },
+ {
+  "arena": "fa828942f0063c07e",
+  "ship": "2",
+  "spawn_clock": 61.878,
+  "first_seen": 224.36717224121094,
+  "onset": 302.9157409667969,
+  "n_pos": 1266
+ },
+ {
+  "arena": "fa828942f0063c07e",
+  "ship": "COMMUNICATION",
+  "spawn_clock": 61.878,
+  "first_seen": 225.7396697998047,
+  "onset": 312.62841796875,
+  "n_pos": 1160
+ },
+ {
+  "arena": "fa828942f0063c07e",
+  "ship": "4",
+  "spawn_clock": 61.878,
+  "first_seen": 226.89234924316406,
+  "onset": 361.6282653808594,
+  "n_pos": 1513
+ },
+ {
+  "arena": "fa828942f0063c07e",
+  "ship": "3",
+  "spawn_clock": 61.878,
+  "first_seen": 240.02313232421875,
+  "onset": 365.6174621582031,
+  "n_pos": 1209
+ },
+ {
+  "arena": "fd89e9679a4ecc236",
+  "ship": "2",
+  "spawn_clock": 61.63,
+  "first_seen": 333.5306091308594,
+  "onset": 333.5306091308594,
+  "n_pos": 1376
+ },
+ {
+  "arena": "fd89e9679a4ecc236",
+  "ship": "1",
+  "spawn_clock": 61.63,
+  "first_seen": 334.67919921875,
+  "onset": 334.67919921875,
+  "n_pos": 1728
+ },
+ {
+  "arena": "fd89e9679a4ecc236",
+  "ship": "COMMUNICATION",
+  "spawn_clock": 61.63,
+  "first_seen": 339.809326171875,
+  "onset": 339.809326171875,
+  "n_pos": 1596
+ },
+ {
+  "arena": "fd89e9679a4ecc236",
+  "ship": "4",
+  "spawn_clock": 61.63,
+  "first_seen": 339.809326171875,
+  "onset": 339.809326171875,
+  "n_pos": 1416
+ },
+ {
+  "arena": "fd89e9679a4ecc236",
+  "ship": "3",
+  "spawn_clock": 61.63,
+  "first_seen": 347.7906188964844,
+  "onset": 347.7906188964844,
+  "n_pos": 949
+ },
+ {
+  "arena": "f3d1bc19de4a7c062",
+  "ship": "1",
+  "spawn_clock": 62.213,
+  "first_seen": 384.8269348144531,
+  "onset": 384.8269348144531,
+  "n_pos": 726
+ },
+ {
+  "arena": "f3d1bc19de4a7c062",
+  "ship": "COMMUNICATION",
+  "spawn_clock": 62.213,
+  "first_seen": 394.177978515625,
+  "onset": 394.177978515625,
+  "n_pos": 1098
+ },
+ {
+  "arena": "f3d1bc19de4a7c062",
+  "ship": "4",
+  "spawn_clock": 62.213,
+  "first_seen": 421.9288635253906,
+  "onset": 421.9288635253906,
+  "n_pos": 1234
+ },
+ {
+  "arena": "f3d1bc19de4a7c062",
+  "ship": "2",
+  "spawn_clock": 62.213,
+  "first_seen": 469.3309020996094,
+  "onset": 469.3309020996094,
+  "n_pos": 793
+ },
+ {
+  "arena": "f3d1bc19de4a7c062",
+  "ship": "3",
+  "spawn_clock": 62.213,
+  "first_seen": 479.16473388671875,
+  "onset": 479.16473388671875,
+  "n_pos": 844
+ },
+ {
+  "arena": "f5650378d13a192b0",
+  "ship": "COMMUNICATION",
+  "spawn_clock": 57.676,
+  "first_seen": 367.8566589355469,
+  "onset": 367.8566589355469,
+  "n_pos": 1356
+ },
+ {
+  "arena": "f5650378d13a192b0",
+  "ship": "4",
+  "spawn_clock": 57.676,
+  "first_seen": 413.5497741699219,
+  "onset": 413.5497741699219,
+  "n_pos": 1028
+ },
+ {
+  "arena": "f5650378d13a192b0",
+  "ship": "1",
+  "spawn_clock": 57.676,
+  "first_seen": 435.8359375,
+  "onset": 435.8359375,
+  "n_pos": 1080
+ },
+ {
+  "arena": "f5650378d13a192b0",
+  "ship": "2",
+  "spawn_clock": 57.676,
+  "first_seen": 460.9961242675781,
+  "onset": 460.9961242675781,
+  "n_pos": 1512
+ },
+ {
+  "arena": "f5650378d13a192b0",
+  "ship": "3",
+  "spawn_clock": 57.676,
+  "first_seen": 545.001953125,
+  "onset": 545.001953125,
+  "n_pos": 704
+ },
+ {
+  "arena": "fca87ff63cc97f16f",
+  "ship": "2",
+  "spawn_clock": 46.683,
+  "first_seen": 362.00897216796875,
+  "onset": 362.00897216796875,
+  "n_pos": 1255
+ },
+ {
+  "arena": "fca87ff63cc97f16f",
+  "ship": "4",
+  "spawn_clock": 46.683,
+  "first_seen": 363.6893005371094,
+  "onset": 363.6893005371094,
+  "n_pos": 1251
+ },
+ {
+  "arena": "fca87ff63cc97f16f",
+  "ship": "COMMUNICATION",
+  "spawn_clock": 46.683,
+  "first_seen": 371.6777648925781,
+  "onset": 371.6777648925781,
+  "n_pos": 1154
+ },
+ {
+  "arena": "fca87ff63cc97f16f",
+  "ship": "3",
+  "spawn_clock": 46.683,
+  "first_seen": 425.9774169921875,
+  "onset": 425.9774169921875,
+  "n_pos": 1351
+ },
+ {
+  "arena": "fca87ff63cc97f16f",
+  "ship": "1",
+  "spawn_clock": 46.683,
+  "first_seen": 435.70111083984375,
+  "onset": 435.70111083984375,
+  "n_pos": 675
+ },
+ {
+  "arena": "f657842f08609a171",
+  "ship": "1",
+  "spawn_clock": 58.601,
+  "first_seen": 351.662353515625,
+  "onset": 351.662353515625,
+  "n_pos": 588
+ },
+ {
+  "arena": "f657842f08609a171",
+  "ship": "COMMUNICATION",
+  "spawn_clock": 58.601,
+  "first_seen": 365.93072509765625,
+  "onset": 365.93072509765625,
+  "n_pos": 836
+ },
+ {
+  "arena": "f657842f08609a171",
+  "ship": "4",
+  "spawn_clock": 58.601,
+  "first_seen": 394.520751953125,
+  "onset": 394.520751953125,
+  "n_pos": 1160
+ },
+ {
+  "arena": "f657842f08609a171",
+  "ship": "2",
+  "spawn_clock": 58.601,
+  "first_seen": 417.9346923828125,
+  "onset": 417.9346923828125,
+  "n_pos": 776
+ },
+ {
+  "arena": "f657842f08609a171",
+  "ship": "3",
+  "spawn_clock": 58.601,
+  "first_seen": 452.789794921875,
+  "onset": 452.789794921875,
+  "n_pos": 904
+ },
+ {
+  "arena": "f7dd3984b1dd10a36",
+  "ship": "4",
+  "spawn_clock": 61.968,
+  "first_seen": 401.83013916015625,
+  "onset": 401.83013916015625,
+  "n_pos": 1596
+ },
+ {
+  "arena": "f7dd3984b1dd10a36",
+  "ship": "COMMUNICATION",
+  "spawn_clock": 61.968,
+  "first_seen": 414.9912414550781,
+  "onset": 414.9912414550781,
+  "n_pos": 1412
+ },
+ {
+  "arena": "f7dd3984b1dd10a36",
+  "ship": "1",
+  "spawn_clock": 61.968,
+  "first_seen": 417.2579345703125,
+  "onset": 417.2579345703125,
+  "n_pos": 1292
+ },
+ {
+  "arena": "f7dd3984b1dd10a36",
+  "ship": "2",
+  "spawn_clock": 61.968,
+  "first_seen": 421.28533935546875,
+  "onset": 421.28533935546875,
+  "n_pos": 1184
+ },
+ {
+  "arena": "f7dd3984b1dd10a36",
+  "ship": "3",
+  "spawn_clock": 61.968,
+  "first_seen": 481.8511657714844,
+  "onset": 481.8511657714844,
+  "n_pos": 940
+ },
+ {
+  "arena": "ff51b372239d7a08e",
+  "ship": "2",
+  "spawn_clock": 61.908,
+  "first_seen": 229.80844116210938,
+  "onset": 292.684326171875,
+  "n_pos": 1596
+ },
+ {
+  "arena": "ff51b372239d7a08e",
+  "ship": "1",
+  "spawn_clock": 61.908,
+  "first_seen": 236.0985107421875,
+  "onset": 293.6648864746094,
+  "n_pos": 1320
+ },
+ {
+  "arena": "ff51b372239d7a08e",
+  "ship": "COMMUNICATION",
+  "spawn_clock": 61.908,
+  "first_seen": 237.7930908203125,
+  "onset": 284.3723449707031,
+  "n_pos": 1480
+ },
+ {
+  "arena": "ff51b372239d7a08e",
+  "ship": "4",
+  "spawn_clock": 61.908,
+  "first_seen": 238.94126892089844,
+  "onset": 292.684326171875,
+  "n_pos": 1648
+ },
+ {
+  "arena": "ff51b372239d7a08e",
+  "ship": "3",
+  "spawn_clock": 61.908,
+  "first_seen": 249.81715393066406,
+  "onset": 285.945068359375,
+  "n_pos": 888
+ },
+ {
+  "arena": "fac6d7f916934f7f8",
+  "ship": "2",
+  "spawn_clock": 57.368,
+  "first_seen": 339.53448486328125,
+  "onset": 339.53448486328125,
+  "n_pos": 600
+ },
+ {
+  "arena": "fac6d7f916934f7f8",
+  "ship": "COMMUNICATION",
+  "spawn_clock": 57.368,
+  "first_seen": 346.4100341796875,
+  "onset": 346.4100341796875,
+  "n_pos": 1016
+ },
+ {
+  "arena": "fac6d7f916934f7f8",
+  "ship": "4",
+  "spawn_clock": 57.368,
+  "first_seen": 361.2323303222656,
+  "onset": 361.2323303222656,
+  "n_pos": 1116
+ },
+ {
+  "arena": "fac6d7f916934f7f8",
+  "ship": "1",
+  "spawn_clock": 57.368,
+  "first_seen": 422.39398193359375,
+  "onset": 422.39398193359375,
+  "n_pos": 896
+ },
+ {
+  "arena": "fac6d7f916934f7f8",
+  "ship": "3",
+  "spawn_clock": 57.368,
+  "first_seen": 437.23016357421875,
+  "onset": 437.23016357421875,
+  "n_pos": 844
+ },
+ {
+  "arena": "f0899a843d020c656",
+  "ship": "2",
+  "spawn_clock": 62.518,
+  "first_seen": 328.9612121582031,
+  "onset": 328.9612121582031,
+  "n_pos": 804
+ },
+ {
+  "arena": "f0899a843d020c656",
+  "ship": "1",
+  "spawn_clock": 62.518,
+  "first_seen": 328.9612121582031,
+  "onset": 328.9612121582031,
+  "n_pos": 736
+ },
+ {
+  "arena": "f0899a843d020c656",
+  "ship": "COMMUNICATION",
+  "spawn_clock": 62.518,
+  "first_seen": 364.97412109375,
+  "onset": 364.97412109375,
+  "n_pos": 1084
+ },
+ {
+  "arena": "f0899a843d020c656",
+  "ship": "4",
+  "spawn_clock": 62.518,
+  "first_seen": 413.5648193359375,
+  "onset": 413.5648193359375,
+  "n_pos": 1352
+ },
+ {
+  "arena": "f0899a843d020c656",
+  "ship": "3",
+  "spawn_clock": 62.518,
+  "first_seen": 463.79644775390625,
+  "onset": 463.79644775390625,
+  "n_pos": 1052
+ },
+ {
+  "arena": "f680a3adb4a0061ec",
+  "ship": "1",
+  "spawn_clock": 61.947,
+  "first_seen": 388.0922546386719,
+  "onset": 388.0922546386719,
+  "n_pos": 1556
+ },
+ {
+  "arena": "f680a3adb4a0061ec",
+  "ship": "COMMUNICATION",
+  "spawn_clock": 61.947,
+  "first_seen": 394.69793701171875,
+  "onset": 394.69793701171875,
+  "n_pos": 1194
+ },
+ {
+  "arena": "f680a3adb4a0061ec",
+  "ship": "4",
+  "spawn_clock": 61.947,
+  "first_seen": 396.0968017578125,
+  "onset": 396.0968017578125,
+  "n_pos": 611
+ },
+ {
+  "arena": "f680a3adb4a0061ec",
+  "ship": "2",
+  "spawn_clock": 61.947,
+  "first_seen": 396.0968017578125,
+  "onset": 396.0968017578125,
+  "n_pos": 1928
+ },
+ {
+  "arena": "f680a3adb4a0061ec",
+  "ship": "3",
+  "spawn_clock": 61.947,
+  "first_seen": 584.0906982421875,
+  "onset": 584.0906982421875,
+  "n_pos": 608
+ },
+ {
+  "arena": "f8d9ede3494f15a06",
+  "ship": "1",
+  "spawn_clock": 55.994,
+  "first_seen": 215.8510284423828,
+  "onset": 293.00372314453125,
+  "n_pos": 1568
+ },
+ {
+  "arena": "f8d9ede3494f15a06",
+  "ship": "2",
+  "spawn_clock": 55.994,
+  "first_seen": 219.8540802001953,
+  "onset": 326.7351379394531,
+  "n_pos": 1559
+ },
+ {
+  "arena": "f8d9ede3494f15a06",
+  "ship": "COMMUNICATION",
+  "spawn_clock": 55.994,
+  "first_seen": 220.99447631835938,
+  "onset": 290.7557373046875,
+  "n_pos": 1504
+ },
+ {
+  "arena": "f8d9ede3494f15a06",
+  "ship": "4",
+  "spawn_clock": 55.994,
+  "first_seen": 221.75123596191406,
+  "onset": 336.9976806640625,
+  "n_pos": 1050
+ },
+ {
+  "arena": "f8d9ede3494f15a06",
+  "ship": "3",
+  "spawn_clock": 55.994,
+  "first_seen": 250.16036987304688,
+  "onset": 403.8773193359375,
+  "n_pos": 675
+ },
+ {
+  "arena": "fb58d43ec86009ef7",
+  "ship": "2",
+  "spawn_clock": 61.722,
+  "first_seen": 341.5977478027344,
+  "onset": 341.5977478027344,
+  "n_pos": 1418
+ },
+ {
+  "arena": "fb58d43ec86009ef7",
+  "ship": "COMMUNICATION",
+  "spawn_clock": 61.722,
+  "first_seen": 343.906005859375,
+  "onset": 343.906005859375,
+  "n_pos": 1172
+ },
+ {
+  "arena": "fb58d43ec86009ef7",
+  "ship": "4",
+  "spawn_clock": 61.722,
+  "first_seen": 354.4696044921875,
+  "onset": 354.4696044921875,
+  "n_pos": 1418
+ },
+ {
+  "arena": "fb58d43ec86009ef7",
+  "ship": "3",
+  "spawn_clock": 61.722,
+  "first_seen": 391.473876953125,
+  "onset": 391.473876953125,
+  "n_pos": 807
+ },
+ {
+  "arena": "fb58d43ec86009ef7",
+  "ship": "1",
+  "spawn_clock": 61.722,
+  "first_seen": 401.47900390625,
+  "onset": 401.47900390625,
+  "n_pos": 1221
+ },
+ {
+  "arena": "f2255c6bca78855ed",
+  "ship": "COMMUNICATION",
+  "spawn_clock": 52.174,
+  "first_seen": 336.0531311035156,
+  "onset": 336.0531311035156,
+  "n_pos": 192
+ },
+ {
+  "arena": "f2255c6bca78855ed",
+  "ship": "1",
+  "spawn_clock": 52.174,
+  "first_seen": 337.2088928222656,
+  "onset": 337.2088928222656,
+  "n_pos": 80
+ },
+ {
+  "arena": "f2255c6bca78855ed",
+  "ship": "4",
+  "spawn_clock": 52.174,
+  "first_seen": 373.18890380859375,
+  "onset": 373.18890380859375,
+  "n_pos": 844
+ },
+ {
+  "arena": "fb34ad7a5a092969b",
+  "ship": "COMMUNICATION",
+  "spawn_clock": 61.907,
+  "first_seen": 252.06289672851562,
+  "onset": 291.1992492675781,
+  "n_pos": 1419
+ },
+ {
+  "arena": "fb34ad7a5a092969b",
+  "ship": "1",
+  "spawn_clock": 61.907,
+  "first_seen": 253.79605102539062,
+  "onset": 299.495361328125,
+  "n_pos": 1088
+ },
+ {
+  "arena": "fb34ad7a5a092969b",
+  "ship": "2",
+  "spawn_clock": 61.907,
+  "first_seen": 265.1922912597656,
+  "onset": 298.4741516113281,
+  "n_pos": 1240
+ },
+ {
+  "arena": "fb34ad7a5a092969b",
+  "ship": "4",
+  "spawn_clock": 61.907,
+  "first_seen": 277.7876892089844,
+  "onset": 298.4741516113281,
+  "n_pos": 1624
+ },
+ {
+  "arena": "fb34ad7a5a092969b",
+  "ship": "3",
+  "spawn_clock": 61.907,
+  "first_seen": 352.050048828125,
+  "onset": 352.050048828125,
+  "n_pos": 1036
+ },
+ {
+  "arena": "f1ea2fc316992755a",
+  "ship": "2",
+  "spawn_clock": 63.357,
+  "first_seen": 235.19610595703125,
+  "onset": 352.374755859375,
+  "n_pos": 1156
+ },
+ {
+  "arena": "f1ea2fc316992755a",
+  "ship": "1",
+  "spawn_clock": 63.357,
+  "first_seen": 346.1145935058594,
+  "onset": 346.1145935058594,
+  "n_pos": 1166
+ },
+ {
+  "arena": "f1ea2fc316992755a",
+  "ship": "COMMUNICATION",
+  "spawn_clock": 63.357,
+  "first_seen": 352.374755859375,
+  "onset": 352.374755859375,
+  "n_pos": 1157
+ },
+ {
+  "arena": "f1ea2fc316992755a",
+  "ship": "4",
+  "spawn_clock": 63.357,
+  "first_seen": 361.5113220214844,
+  "onset": 361.5113220214844,
+  "n_pos": 1150
+ },
+ {
+  "arena": "f1ea2fc316992755a",
+  "ship": "3",
+  "spawn_clock": 63.357,
+  "first_seen": 470.6244812011719,
+  "onset": 470.6244812011719,
+  "n_pos": 747
+ },
+ {
+  "arena": "f37ebd807c06310aa",
+  "ship": "1",
+  "spawn_clock": 61.518,
+  "first_seen": 393.41888427734375,
+  "onset": 393.41888427734375,
+  "n_pos": 1136
+ },
+ {
+  "arena": "f37ebd807c06310aa",
+  "ship": "COMMUNICATION",
+  "spawn_clock": 61.518,
+  "first_seen": 396.3345642089844,
+  "onset": 396.3345642089844,
+  "n_pos": 1178
+ },
+ {
+  "arena": "f37ebd807c06310aa",
+  "ship": "4",
+  "spawn_clock": 61.518,
+  "first_seen": 459.28887939453125,
+  "onset": 459.28887939453125,
+  "n_pos": 1331
+ },
+ {
+  "arena": "f37ebd807c06310aa",
+  "ship": "2",
+  "spawn_clock": 61.518,
+  "first_seen": 485.3000793457031,
+  "onset": 485.3000793457031,
+  "n_pos": 1005
+ },
+ {
+  "arena": "f37ebd807c06310aa",
+  "ship": "3",
+  "spawn_clock": 61.518,
+  "first_seen": 501.2789001464844,
+  "onset": 501.2789001464844,
+  "n_pos": 540
+ },
+ {
+  "arena": "f0aac9f8626b00ae7",
+  "ship": "4",
+  "spawn_clock": 61.907,
+  "first_seen": 331.6177673339844,
+  "onset": 331.6177673339844,
+  "n_pos": 895
+ },
+ {
+  "arena": "f0aac9f8626b00ae7",
+  "ship": "1",
+  "spawn_clock": 61.907,
+  "first_seen": 416.6217041015625,
+  "onset": 416.6217041015625,
+  "n_pos": 1156
+ },
+ {
+  "arena": "f0aac9f8626b00ae7",
+  "ship": "2",
+  "spawn_clock": 61.907,
+  "first_seen": 425.7582702636719,
+  "onset": 425.7582702636719,
+  "n_pos": 904
+ },
+ {
+  "arena": "f0aac9f8626b00ae7",
+  "ship": "COMMUNICATION",
+  "spawn_clock": 61.907,
+  "first_seen": 437.7626953125,
+  "onset": 437.7626953125,
+  "n_pos": 1175
+ },
+ {
+  "arena": "f0aac9f8626b00ae7",
+  "ship": "3",
+  "spawn_clock": 61.907,
+  "first_seen": 572.051025390625,
+  "onset": 572.051025390625,
+  "n_pos": 947
+ },
+ {
+  "arena": "fb1284698a17370b7",
+  "ship": "4",
+  "spawn_clock": 60.718,
+  "first_seen": 410.8774719238281,
+  "onset": 410.8774719238281,
+  "n_pos": 612
+ },
+ {
+  "arena": "fb1284698a17370b7",
+  "ship": "COMMUNICATION",
+  "spawn_clock": 60.718,
+  "first_seen": 450.9033508300781,
+  "onset": 450.9033508300781,
+  "n_pos": 976
+ },
+ {
+  "arena": "fb1284698a17370b7",
+  "ship": "1",
+  "spawn_clock": 60.718,
+  "first_seen": 500.01806640625,
+  "onset": 500.01806640625,
+  "n_pos": 1088
+ },
+ {
+  "arena": "fb1284698a17370b7",
+  "ship": "2",
+  "spawn_clock": 60.718,
+  "first_seen": 517.7549438476562,
+  "onset": 517.7549438476562,
+  "n_pos": 580
+ },
+ {
+  "arena": "fb1284698a17370b7",
+  "ship": "3",
+  "spawn_clock": 60.718,
+  "first_seen": 532.618408203125,
+  "onset": 532.618408203125,
+  "n_pos": 940
+ },
+ {
+  "arena": "fd3be6c19898e5312",
+  "ship": "2",
+  "spawn_clock": 61.79,
+  "first_seen": 317.6514892578125,
+  "onset": 322.3648376464844,
+  "n_pos": 1376
+ },
+ {
+  "arena": "fd3be6c19898e5312",
+  "ship": "COMMUNICATION",
+  "spawn_clock": 61.79,
+  "first_seen": 333.676513671875,
+  "onset": 333.676513671875,
+  "n_pos": 1240
+ },
+ {
+  "arena": "fd3be6c19898e5312",
+  "ship": "1",
+  "spawn_clock": 61.79,
+  "first_seen": 357.6715087890625,
+  "onset": 357.6715087890625,
+  "n_pos": 820
+ },
+ {
+  "arena": "fd3be6c19898e5312",
+  "ship": "4",
+  "spawn_clock": 61.79,
+  "first_seen": 447.9571533203125,
+  "onset": 447.9571533203125,
+  "n_pos": 1440
+ },
+ {
+  "arena": "fd3be6c19898e5312",
+  "ship": "3",
+  "spawn_clock": 61.79,
+  "first_seen": 448.07965087890625,
+  "onset": 448.07965087890625,
+  "n_pos": 1275
+ },
+ {
+  "arena": "f66efa73180f7021f",
+  "ship": "1",
+  "spawn_clock": 56.019,
+  "first_seen": 383.7467041015625,
+  "onset": 383.7467041015625,
+  "n_pos": 810
+ },
+ {
+  "arena": "f66efa73180f7021f",
+  "ship": "COMMUNICATION",
+  "spawn_clock": 56.019,
+  "first_seen": 387.7456359863281,
+  "onset": 387.7456359863281,
+  "n_pos": 961
+ },
+ {
+  "arena": "f66efa73180f7021f",
+  "ship": "2",
+  "spawn_clock": 56.019,
+  "first_seen": 409.7525329589844,
+  "onset": 409.7525329589844,
+  "n_pos": 795
+ },
+ {
+  "arena": "f66efa73180f7021f",
+  "ship": "4",
+  "spawn_clock": 56.019,
+  "first_seen": 416.7543029785156,
+  "onset": 416.7543029785156,
+  "n_pos": 1548
+ },
+ {
+  "arena": "f66efa73180f7021f",
+  "ship": "3",
+  "spawn_clock": 56.019,
+  "first_seen": 424.7644348144531,
+  "onset": 424.7644348144531,
+  "n_pos": 1414
+ },
+ {
+  "arena": "fc6adee38394716de",
+  "ship": "4",
+  "spawn_clock": 61.61,
+  "first_seen": 436.9005432128906,
+  "onset": 436.9005432128906,
+  "n_pos": 371
+ },
+ {
+  "arena": "fd856c5c562a7a4ff",
+  "ship": "COMMUNICATION",
+  "spawn_clock": 62.366,
+  "first_seen": 384.5220642089844,
+  "onset": 384.5220642089844,
+  "n_pos": 940
+ },
+ {
+  "arena": "fd856c5c562a7a4ff",
+  "ship": "4",
+  "spawn_clock": 62.366,
+  "first_seen": 459.3819274902344,
+  "onset": 459.3819274902344,
+  "n_pos": 1060
+ },
+ {
+  "arena": "fd856c5c562a7a4ff",
+  "ship": "1",
+  "spawn_clock": 62.366,
+  "first_seen": 460.5213623046875,
+  "onset": 460.5213623046875,
+  "n_pos": 768
+ },
+ {
+  "arena": "fd856c5c562a7a4ff",
+  "ship": "2",
+  "spawn_clock": 62.366,
+  "first_seen": 463.36212158203125,
+  "onset": 463.36212158203125,
+  "n_pos": 584
+ },
+ {
+  "arena": "fd856c5c562a7a4ff",
+  "ship": "3",
+  "spawn_clock": 62.366,
+  "first_seen": 502.25189208984375,
+  "onset": 502.25189208984375,
+  "n_pos": 912
+ },
+ {
+  "arena": "fc150af6d461bb4d1",
+  "ship": "1",
+  "spawn_clock": 62.045,
+  "first_seen": 213.8987579345703,
+  "onset": 321.63165283203125,
+  "n_pos": 1564
+ },
+ {
+  "arena": "fc150af6d461bb4d1",
+  "ship": "2",
+  "spawn_clock": 62.045,
+  "first_seen": 216.18606567382812,
+  "onset": 332.76385498046875,
+  "n_pos": 1388
+ },
+ {
+  "arena": "fc150af6d461bb4d1",
+  "ship": "COMMUNICATION",
+  "spawn_clock": 62.045,
+  "first_seen": 221.32791137695312,
+  "onset": 313.90618896484375,
+  "n_pos": 1488
+ },
+ {
+  "arena": "fc150af6d461bb4d1",
+  "ship": "4",
+  "spawn_clock": 62.045,
+  "first_seen": 223.03208923339844,
+  "onset": 335.0686950683594,
+  "n_pos": 1304
+ },
+ {
+  "arena": "fc150af6d461bb4d1",
+  "ship": "3",
+  "spawn_clock": 62.045,
+  "first_seen": 235.0428924560547,
+  "onset": 389.3268127441406,
+  "n_pos": 1464
+ },
+ {
+  "arena": "f19f97cc99984eb0c",
+  "ship": "1",
+  "spawn_clock": 58.977,
+  "first_seen": 375.9930419921875,
+  "onset": 375.9930419921875,
+  "n_pos": 844
+ },
+ {
+  "arena": "f19f97cc99984eb0c",
+  "ship": "COMMUNICATION",
+  "spawn_clock": 58.977,
+  "first_seen": 382.2774963378906,
+  "onset": 382.2774963378906,
+  "n_pos": 1364
+ },
+ {
+  "arena": "f19f97cc99984eb0c",
+  "ship": "2",
+  "spawn_clock": 58.977,
+  "first_seen": 389.1322326660156,
+  "onset": 389.1322326660156,
+  "n_pos": 1104
+ },
+ {
+  "arena": "f19f97cc99984eb0c",
+  "ship": "4",
+  "spawn_clock": 58.977,
+  "first_seen": 398.8541564941406,
+  "onset": 398.8541564941406,
+  "n_pos": 1448
+ },
+ {
+  "arena": "f19f97cc99984eb0c",
+  "ship": "3",
+  "spawn_clock": 58.977,
+  "first_seen": 452.7341613769531,
+  "onset": 452.7341613769531,
+  "n_pos": 955
+ },
+ {
+  "arena": "f4f5b09f0ec31e8d3",
+  "ship": "4",
+  "spawn_clock": 60.746,
+  "first_seen": 323.5099182128906,
+  "onset": 323.5099182128906,
+  "n_pos": 1340
+ },
+ {
+  "arena": "f4f5b09f0ec31e8d3",
+  "ship": "COMMUNICATION",
+  "spawn_clock": 60.746,
+  "first_seen": 365.7643127441406,
+  "onset": 365.7643127441406,
+  "n_pos": 1136
+ },
+ {
+  "arena": "f4f5b09f0ec31e8d3",
+  "ship": "1",
+  "spawn_clock": 60.746,
+  "first_seen": 366.9245300292969,
+  "onset": 366.9245300292969,
+  "n_pos": 560
+ },
+ {
+  "arena": "f4f5b09f0ec31e8d3",
+  "ship": "3",
+  "spawn_clock": 60.746,
+  "first_seen": 383.53271484375,
+  "onset": 383.53271484375,
+  "n_pos": 1240
+ },
+ {
+  "arena": "f4f5b09f0ec31e8d3",
+  "ship": "2",
+  "spawn_clock": 60.746,
+  "first_seen": 420.0563659667969,
+  "onset": 420.0563659667969,
+  "n_pos": 848
+ },
+ {
+  "arena": "f609e4cda7927d581",
+  "ship": "1",
+  "spawn_clock": 60.999,
+  "first_seen": 256.7761535644531,
+  "onset": 319.5944519042969,
+  "n_pos": 1293
+ },
+ {
+  "arena": "f609e4cda7927d581",
+  "ship": "2",
+  "spawn_clock": 60.999,
+  "first_seen": 259.7575378417969,
+  "onset": 320.5982666015625,
+  "n_pos": 1155
+ },
+ {
+  "arena": "f609e4cda7927d581",
+  "ship": "COMMUNICATION",
+  "spawn_clock": 60.999,
+  "first_seen": 261.7684631347656,
+  "onset": 313.31292724609375,
+  "n_pos": 1058
+ },
+ {
+  "arena": "f609e4cda7927d581",
+  "ship": "4",
+  "spawn_clock": 60.999,
+  "first_seen": 266.7788391113281,
+  "onset": 319.5944519042969,
+  "n_pos": 1383
+ },
+ {
+  "arena": "f609e4cda7927d581",
+  "ship": "3",
+  "spawn_clock": 60.999,
+  "first_seen": 393.9176025390625,
+  "onset": 393.9176025390625,
+  "n_pos": 1241
+ },
+ {
+  "arena": "fe713fc6f59b6d511",
+  "ship": "1",
+  "spawn_clock": 57.439,
+  "first_seen": 259.6102294921875,
+  "onset": 287.02740478515625,
+  "n_pos": 1112
+ },
+ {
+  "arena": "fe713fc6f59b6d511",
+  "ship": "2",
+  "spawn_clock": 57.439,
+  "first_seen": 260.75970458984375,
+  "onset": 287.02740478515625,
+  "n_pos": 1012
+ },
+ {
+  "arena": "fe713fc6f59b6d511",
+  "ship": "COMMUNICATION",
+  "spawn_clock": 57.439,
+  "first_seen": 265.33172607421875,
+  "onset": 277.74371337890625,
+  "n_pos": 1252
+ },
+ {
+  "arena": "fe713fc6f59b6d511",
+  "ship": "4",
+  "spawn_clock": 57.439,
+  "first_seen": 272.7623596191406,
+  "onset": 307.6064147949219,
+  "n_pos": 732
+ },
+ {
+  "arena": "fe713fc6f59b6d511",
+  "ship": "3",
+  "spawn_clock": 57.439,
+  "first_seen": 399.58221435546875,
+  "onset": 399.58221435546875,
+  "n_pos": 860
+ },
+ {
+  "arena": "f3baa5c0b250052f3",
+  "ship": "1",
+  "spawn_clock": 60.493,
+  "first_seen": 259.2628479003906,
+  "onset": 324.0800476074219,
+  "n_pos": 2014
+ },
+ {
+  "arena": "f3baa5c0b250052f3",
+  "ship": "2",
+  "spawn_clock": 60.493,
+  "first_seen": 262.2457580566406,
+  "onset": 324.0800476074219,
+  "n_pos": 1894
+ },
+ {
+  "arena": "f3baa5c0b250052f3",
+  "ship": "COMMUNICATION",
+  "spawn_clock": 60.493,
+  "first_seen": 264.25933837890625,
+  "onset": 317.8097839355469,
+  "n_pos": 1661
+ },
+ {
+  "arena": "f3baa5c0b250052f3",
+  "ship": "4",
+  "spawn_clock": 60.493,
+  "first_seen": 272.2413024902344,
+  "onset": 326.1061096191406,
+  "n_pos": 2078
+ },
+ {
+  "arena": "f3baa5c0b250052f3",
+  "ship": "3",
+  "spawn_clock": 60.493,
+  "first_seen": 285.24359130859375,
+  "onset": 387.2732238769531,
+  "n_pos": 1032
+ },
+ {
+  "arena": "fcc476e571a8f1e1b",
+  "ship": "2",
+  "spawn_clock": 60.823,
+  "first_seen": 353.85284423828125,
+  "onset": 353.85284423828125,
+  "n_pos": 1320
+ },
+ {
+  "arena": "fcc476e571a8f1e1b",
+  "ship": "1",
+  "spawn_clock": 60.823,
+  "first_seen": 353.85284423828125,
+  "onset": 353.85284423828125,
+  "n_pos": 751
+ },
+ {
+  "arena": "fcc476e571a8f1e1b",
+  "ship": "COMMUNICATION",
+  "spawn_clock": 60.823,
+  "first_seen": 353.9768371582031,
+  "onset": 353.9768371582031,
+  "n_pos": 1352
+ },
+ {
+  "arena": "fcc476e571a8f1e1b",
+  "ship": "3",
+  "spawn_clock": 60.823,
+  "first_seen": 357.84527587890625,
+  "onset": 357.84527587890625,
+  "n_pos": 1226
+ },
+ {
+  "arena": "fcc476e571a8f1e1b",
+  "ship": "4",
+  "spawn_clock": 60.823,
+  "first_seen": 357.84527587890625,
+  "onset": 357.84527587890625,
+  "n_pos": 1185
+ },
+ {
+  "arena": "f84cb609afb2b729a",
+  "ship": "4",
+  "spawn_clock": 58.91,
+  "first_seen": 385.2025451660156,
+  "onset": 385.2025451660156,
+  "n_pos": 1668
+ },
+ {
+  "arena": "f84cb609afb2b729a",
+  "ship": "COMMUNICATION",
+  "spawn_clock": 58.91,
+  "first_seen": 417.8086853027344,
+  "onset": 417.8086853027344,
+  "n_pos": 184
+ },
+ {
+  "arena": "f84cb609afb2b729a",
+  "ship": "2",
+  "spawn_clock": 58.91,
+  "first_seen": 417.8086853027344,
+  "onset": 417.8086853027344,
+  "n_pos": 182
+ },
+ {
+  "arena": "f84cb609afb2b729a",
+  "ship": "1",
+  "spawn_clock": 58.91,
+  "first_seen": 420.0802917480469,
+  "onset": 420.0802917480469,
+  "n_pos": 96
+ },
+ {
+  "arena": "f84cb609afb2b729a",
+  "ship": "3",
+  "spawn_clock": 58.91,
+  "first_seen": 470.6466369628906,
+  "onset": 470.6466369628906,
+  "n_pos": 1002
+ },
+ {
+  "arena": "a1732952275117821",
+  "ship": "1",
+  "spawn_clock": 61.976,
+  "first_seen": 252.75128173828125,
+  "onset": 504.66009521484375,
+  "n_pos": 1432
+ },
+ {
+  "arena": "a1732952275117821",
+  "ship": "2",
+  "spawn_clock": 61.976,
+  "first_seen": 252.75128173828125,
+  "onset": 503.6537780761719,
+  "n_pos": 1240
+ },
+ {
+  "arena": "a1732952275117821",
+  "ship": "COMMUNICATION",
+  "spawn_clock": 61.976,
+  "first_seen": 252.9032440185547,
+  "onset": 421.6865539550781,
+  "n_pos": 1597
+ },
+ {
+  "arena": "a1732952275117821",
+  "ship": "4",
+  "spawn_clock": 61.976,
+  "first_seen": 279.0496826171875,
+  "onset": 440.6777038574219,
+  "n_pos": 1340
+ },
+ {
+  "arena": "a1732952275117821",
+  "ship": "3",
+  "spawn_clock": 61.976,
+  "first_seen": 474.6502685546875,
+  "onset": 474.6502685546875,
+  "n_pos": 1122
+ },
+ {
+  "arena": "a268450031510666",
+  "ship": "COMMUNICATION",
+  "spawn_clock": 50.868,
+  "first_seen": 305.6259765625,
+  "onset": 305.6259765625,
+  "n_pos": 1037
+ },
+ {
+  "arena": "a268450031510666",
+  "ship": "1",
+  "spawn_clock": 50.868,
+  "first_seen": 306.62542724609375,
+  "onset": 306.62542724609375,
+  "n_pos": 554
+ },
+ {
+  "arena": "a268450031510666",
+  "ship": "2",
+  "spawn_clock": 50.868,
+  "first_seen": 336.62371826171875,
+  "onset": 336.62371826171875,
+  "n_pos": 915
+ },
+ {
+  "arena": "a268450031510666",
+  "ship": "4",
+  "spawn_clock": 50.868,
+  "first_seen": 413.66094970703125,
+  "onset": 413.66094970703125,
+  "n_pos": 1196
+ },
+ {
+  "arena": "a268450031510666",
+  "ship": "3",
+  "spawn_clock": 50.868,
+  "first_seen": 462.61761474609375,
+  "onset": 462.61761474609375,
+  "n_pos": 961
+ },
+ {
+  "arena": "a4962711847907737",
+  "ship": "2",
+  "spawn_clock": 60.437,
+  "first_seen": 358.4466247558594,
+  "onset": 358.4466247558594,
+  "n_pos": 892
+ },
+ {
+  "arena": "a4962711847907737",
+  "ship": "COMMUNICATION",
+  "spawn_clock": 60.437,
+  "first_seen": 359.5984802246094,
+  "onset": 359.5984802246094,
+  "n_pos": 244
+ },
+ {
+  "arena": "a4962711847907737",
+  "ship": "4",
+  "spawn_clock": 60.437,
+  "first_seen": 374.0745544433594,
+  "onset": 374.0745544433594,
+  "n_pos": 1507
+ },
+ {
+  "arena": "a4962711847907737",
+  "ship": "3",
+  "spawn_clock": 60.437,
+  "first_seen": 422.0484619140625,
+  "onset": 422.0484619140625,
+  "n_pos": 983
+ },
+ {
+  "arena": "a4962711847907737",
+  "ship": "1",
+  "spawn_clock": 60.437,
+  "first_seen": 474.45703125,
+  "onset": 474.45703125,
+  "n_pos": 1557
+ },
+ {
+  "arena": "a2486710446856863",
+  "ship": "1",
+  "spawn_clock": 61.88,
+  "first_seen": 294.64453125,
+  "onset": 342.6482238769531,
+  "n_pos": 1208
+ },
+ {
+  "arena": "a2486710446856863",
+  "ship": "COMMUNICATION",
+  "spawn_clock": 61.88,
+  "first_seen": 298.61859130859375,
+  "onset": 304.304931640625,
+  "n_pos": 1206
+ },
+ {
+  "arena": "a2486710446856863",
+  "ship": "4",
+  "spawn_clock": 61.88,
+  "first_seen": 302.62896728515625,
+  "onset": 312.6467590332031,
+  "n_pos": 1089
+ },
+ {
+  "arena": "a2486710446856863",
+  "ship": "2",
+  "spawn_clock": 61.88,
+  "first_seen": 320.6283874511719,
+  "onset": 320.6283874511719,
+  "n_pos": 892
+ },
+ {
+  "arena": "a2486710446856863",
+  "ship": "3",
+  "spawn_clock": 61.88,
+  "first_seen": 424.6637878417969,
+  "onset": 424.6637878417969,
+  "n_pos": 996
+ },
+ {
+  "arena": "a2267271978201000",
+  "ship": "COMMUNICATION",
+  "spawn_clock": 60.905,
+  "first_seen": 354.70477294921875,
+  "onset": 354.70477294921875,
+  "n_pos": 1087
+ },
+ {
+  "arena": "a2267271978201000",
+  "ship": "1",
+  "spawn_clock": 60.905,
+  "first_seen": 354.70477294921875,
+  "onset": 354.70477294921875,
+  "n_pos": 1071
+ },
+ {
+  "arena": "a2267271978201000",
+  "ship": "2",
+  "spawn_clock": 60.905,
+  "first_seen": 377.82562255859375,
+  "onset": 377.82562255859375,
+  "n_pos": 944
+ },
+ {
+  "arena": "a2267271978201000",
+  "ship": "4",
+  "spawn_clock": 60.905,
+  "first_seen": 495.10736083984375,
+  "onset": 495.10736083984375,
+  "n_pos": 1244
+ },
+ {
+  "arena": "a2267271978201000",
+  "ship": "3",
+  "spawn_clock": 60.905,
+  "first_seen": 511.87567138671875,
+  "onset": 511.87567138671875,
+  "n_pos": 575
+ },
+ {
+  "arena": "a4059390032357055",
+  "ship": "COMMUNICATION",
+  "spawn_clock": 37.967,
+  "first_seen": 282.958251953125,
+  "onset": 282.958251953125,
+  "n_pos": 752
+ },
+ {
+  "arena": "a4059390032357055",
+  "ship": "1",
+  "spawn_clock": 37.967,
+  "first_seen": 284.1083984375,
+  "onset": 284.1083984375,
+  "n_pos": 620
+ },
+ {
+  "arena": "a4059390032357055",
+  "ship": "4",
+  "spawn_clock": 37.967,
+  "first_seen": 332.1100769042969,
+  "onset": 332.1100769042969,
+  "n_pos": 804
+ },
+ {
+  "arena": "a4059390032357055",
+  "ship": "2",
+  "spawn_clock": 37.967,
+  "first_seen": 346.9511413574219,
+  "onset": 346.9511413574219,
+  "n_pos": 496
+ },
+ {
+  "arena": "a4059390032357055",
+  "ship": "3",
+  "spawn_clock": 37.967,
+  "first_seen": 355.1198425292969,
+  "onset": 355.1198425292969,
+  "n_pos": 572
+ },
+ {
+  "arena": "a1573664825202859",
+  "ship": "4",
+  "spawn_clock": 57.746,
+  "first_seen": 337.4820861816406,
+  "onset": 337.4820861816406,
+  "n_pos": 1617
+ },
+ {
+  "arena": "a1573664825202859",
+  "ship": "3",
+  "spawn_clock": 57.746,
+  "first_seen": 388.4854431152344,
+  "onset": 388.4854431152344,
+  "n_pos": 1310
+ },
+ {
+  "arena": "a1573664825202859",
+  "ship": "COMMUNICATION",
+  "spawn_clock": 57.746,
+  "first_seen": 392.4853515625,
+  "onset": 392.4853515625,
+  "n_pos": 1084
+ },
+ {
+  "arena": "a1573664825202859",
+  "ship": "2",
+  "spawn_clock": 57.746,
+  "first_seen": 435.4787902832031,
+  "onset": 435.4787902832031,
+  "n_pos": 739
+ },
+ {
+  "arena": "a1573664825202859",
+  "ship": "1",
+  "spawn_clock": 57.746,
+  "first_seen": 435.4787902832031,
+  "onset": 435.4787902832031,
+  "n_pos": 643
+ },
+ {
+  "arena": "a3629274829109279",
+  "ship": "2",
+  "spawn_clock": 60.067,
+  "first_seen": 303.3641052246094,
+  "onset": 303.3641052246094,
+  "n_pos": 1568
+ },
+ {
+  "arena": "a3629274829109279",
+  "ship": "COMMUNICATION",
+  "spawn_clock": 60.067,
+  "first_seen": 309.09710693359375,
+  "onset": 309.09710693359375,
+  "n_pos": 1484
+ },
+ {
+  "arena": "a3629274829109279",
+  "ship": "1",
+  "spawn_clock": 60.067,
+  "first_seen": 330.25054931640625,
+  "onset": 330.25054931640625,
+  "n_pos": 1460
+ },
+ {
+  "arena": "a3629274829109279",
+  "ship": "4",
+  "spawn_clock": 60.067,
+  "first_seen": 435.8197937011719,
+  "onset": 435.8197937011719,
+  "n_pos": 1997
+ },
+ {
+  "arena": "a3629274829109279",
+  "ship": "3",
+  "spawn_clock": 60.067,
+  "first_seen": 515.3795776367188,
+  "onset": 515.3795776367188,
+  "n_pos": 1076
+ },
+ {
+  "arena": "a3246219580955065",
+  "ship": "COMMUNICATION",
+  "spawn_clock": 61.147,
+  "first_seen": 298.1749572753906,
+  "onset": 298.1749572753906,
+  "n_pos": 56
+ },
+ {
+  "arena": "a3246219580955065",
+  "ship": "1",
+  "spawn_clock": 61.147,
+  "first_seen": 299.29547119140625,
+  "onset": 299.29547119140625,
+  "n_pos": 248
+ },
+ {
+  "arena": "a3246219580955065",
+  "ship": "4",
+  "spawn_clock": 61.147,
+  "first_seen": 415.3121643066406,
+  "onset": 415.3121643066406,
+  "n_pos": 824
+ },
+ {
+  "arena": "a1514806596630150",
+  "ship": "2",
+  "spawn_clock": 62.599,
+  "first_seen": 375.6326904296875,
+  "onset": 375.6326904296875,
+  "n_pos": 211
+ },
+ {
+  "arena": "a1514806596630150",
+  "ship": "COMMUNICATION",
+  "spawn_clock": 62.599,
+  "first_seen": 378.3263854980469,
+  "onset": 378.3263854980469,
+  "n_pos": 676
+ },
+ {
+  "arena": "a1514806596630150",
+  "ship": "1",
+  "spawn_clock": 62.599,
+  "first_seen": 457.7304382324219,
+  "onset": 457.7304382324219,
+  "n_pos": 334
+ },
+ {
+  "arena": "a1514806596630150",
+  "ship": "3",
+  "spawn_clock": 62.599,
+  "first_seen": 470.013671875,
+  "onset": 470.013671875,
+  "n_pos": 281
+ },
+ {
+  "arena": "a1514806596630150",
+  "ship": "4",
+  "spawn_clock": 62.599,
+  "first_seen": 470.013671875,
+  "onset": 470.013671875,
+  "n_pos": 296
+ },
+ {
+  "arena": "a2044010992458555",
+  "ship": "1",
+  "spawn_clock": 61.729,
+  "first_seen": 409.0115661621094,
+  "onset": 409.0115661621094,
+  "n_pos": 976
+ },
+ {
+  "arena": "a2044010992458555",
+  "ship": "COMMUNICATION",
+  "spawn_clock": 61.729,
+  "first_seen": 414.7355041503906,
+  "onset": 414.7355041503906,
+  "n_pos": 1127
+ },
+ {
+  "arena": "a2044010992458555",
+  "ship": "4",
+  "spawn_clock": 61.729,
+  "first_seen": 425.4973449707031,
+  "onset": 425.4973449707031,
+  "n_pos": 1357
+ },
+ {
+  "arena": "a2044010992458555",
+  "ship": "2",
+  "spawn_clock": 61.729,
+  "first_seen": 482.75518798828125,
+  "onset": 482.75518798828125,
+  "n_pos": 584
+ },
+ {
+  "arena": "a2044010992458555",
+  "ship": "3",
+  "spawn_clock": 61.729,
+  "first_seen": 537.033447265625,
+  "onset": 537.033447265625,
+  "n_pos": 736
+ },
+ {
+  "arena": "a26359911652244",
+  "ship": "COMMUNICATION",
+  "spawn_clock": 61.367,
+  "first_seen": 245.03492736816406,
+  "onset": 318.7944030761719,
+  "n_pos": 1711
+ },
+ {
+  "arena": "a26359911652244",
+  "ship": "1",
+  "spawn_clock": 61.367,
+  "first_seen": 245.36766052246094,
+  "onset": 326.0860900878906,
+  "n_pos": 1636
+ },
+ {
+  "arena": "a26359911652244",
+  "ship": "2",
+  "spawn_clock": 61.367,
+  "first_seen": 253.37977600097656,
+  "onset": 326.0860900878906,
+  "n_pos": 1480
+ },
+ {
+  "arena": "a26359911652244",
+  "ship": "4",
+  "spawn_clock": 61.367,
+  "first_seen": 309.3795471191406,
+  "onset": 326.0860900878906,
+  "n_pos": 1696
+ },
+ {
+  "arena": "a26359911652244",
+  "ship": "3",
+  "spawn_clock": 61.367,
+  "first_seen": 315.6525573730469,
+  "onset": 320.3685302734375,
+  "n_pos": 1256
+ },
+ {
+  "arena": "a2397323592951212",
+  "ship": "1",
+  "spawn_clock": 50.789,
+  "first_seen": 229.05311584472656,
+  "onset": 306.51141357421875,
+  "n_pos": 1420
+ },
+ {
+  "arena": "a2397323592951212",
+  "ship": "2",
+  "spawn_clock": 50.789,
+  "first_seen": 234.22103881835938,
+  "onset": 306.51141357421875,
+  "n_pos": 1480
+ },
+ {
+  "arena": "a2397323592951212",
+  "ship": "COMMUNICATION",
+  "spawn_clock": 50.789,
+  "first_seen": 234.22103881835938,
+  "onset": 299.2176208496094,
+  "n_pos": 1740
+ },
+ {
+  "arena": "a2397323592951212",
+  "ship": "4",
+  "spawn_clock": 50.789,
+  "first_seen": 234.67332458496094,
+  "onset": 313.0826110839844,
+  "n_pos": 1949
+ },
+ {
+  "arena": "a2397323592951212",
+  "ship": "3",
+  "spawn_clock": 50.789,
+  "first_seen": 243.93228149414062,
+  "onset": 305.0891418457031,
+  "n_pos": 1296
+ },
+ {
+  "arena": "f32788acf80cd8646",
+  "ship": "1",
+  "spawn_clock": 52.981,
+  "first_seen": 388.2761535644531,
+  "onset": 388.2761535644531,
+  "n_pos": 936
+ },
+ {
+  "arena": "f32788acf80cd8646",
+  "ship": "4",
+  "spawn_clock": 52.981,
+  "first_seen": 396.8630065917969,
+  "onset": 396.8630065917969,
+  "n_pos": 816
+ },
+ {
+  "arena": "f32788acf80cd8646",
+  "ship": "3",
+  "spawn_clock": 52.981,
+  "first_seen": 443.11688232421875,
+  "onset": 443.11688232421875,
+  "n_pos": 1160
+ },
+ {
+  "arena": "f32788acf80cd8646",
+  "ship": "COMMUNICATION",
+  "spawn_clock": 52.981,
+  "first_seen": 444.2611999511719,
+  "onset": 444.2611999511719,
+  "n_pos": 996
+ },
+ {
+  "arena": "f32788acf80cd8646",
+  "ship": "2",
+  "spawn_clock": 52.981,
+  "first_seen": 468.2632751464844,
+  "onset": 468.2632751464844,
+  "n_pos": 1116
+ },
+ {
+  "arena": "a793226322672951",
+  "ship": "2",
+  "spawn_clock": 56.089,
+  "first_seen": 226.3828887939453,
+  "onset": 272.8053894042969,
+  "n_pos": 1244
+ },
+ {
+  "arena": "a793226322672951",
+  "ship": "1",
+  "spawn_clock": 56.089,
+  "first_seen": 235.53030395507812,
+  "onset": 271.81195068359375,
+  "n_pos": 1476
+ },
+ {
+  "arena": "a793226322672951",
+  "ship": "COMMUNICATION",
+  "spawn_clock": 56.089,
+  "first_seen": 237.2392578125,
+  "onset": 264.5322265625,
+  "n_pos": 1500
+ },
+ {
+  "arena": "a793226322672951",
+  "ship": "4",
+  "spawn_clock": 56.089,
+  "first_seen": 238.37890625,
+  "onset": 273.64593505859375,
+  "n_pos": 1420
+ },
+ {
+  "arena": "a793226322672951",
+  "ship": "3",
+  "spawn_clock": 56.089,
+  "first_seen": 381.25335693359375,
+  "onset": 381.25335693359375,
+  "n_pos": 936
+ },
+ {
+  "arena": "a778627729402888",
+  "ship": "COMMUNICATION",
+  "spawn_clock": 62.397,
+  "first_seen": 307.5609130859375,
+  "onset": 307.5609130859375,
+  "n_pos": 660
+ },
+ {
+  "arena": "a778627729402888",
+  "ship": "1",
+  "spawn_clock": 62.397,
+  "first_seen": 308.2935485839844,
+  "onset": 308.2935485839844,
+  "n_pos": 762
+ },
+ {
+  "arena": "a778627729402888",
+  "ship": "4",
+  "spawn_clock": 62.397,
+  "first_seen": 315.56854248046875,
+  "onset": 315.56854248046875,
+  "n_pos": 1196
+ },
+ {
+  "arena": "a778627729402888",
+  "ship": "2",
+  "spawn_clock": 62.397,
+  "first_seen": 350.4138488769531,
+  "onset": 350.4138488769531,
+  "n_pos": 552
+ },
+ {
+  "arena": "a778627729402888",
+  "ship": "3",
+  "spawn_clock": 62.397,
+  "first_seen": 408.2832946777344,
+  "onset": 408.2832946777344,
+  "n_pos": 951
+ },
+ {
+  "arena": "a940221579225057",
+  "ship": "COMMUNICATION",
+  "spawn_clock": 61.946,
+  "first_seen": 408.2381286621094,
+  "onset": 408.2381286621094,
+  "n_pos": 644
+ },
+ {
+  "arena": "a940221579225057",
+  "ship": "4",
+  "spawn_clock": 61.946,
+  "first_seen": 429.3643798828125,
+  "onset": 429.3643798828125,
+  "n_pos": 1052
+ },
+ {
+  "arena": "a940221579225057",
+  "ship": "1",
+  "spawn_clock": 61.946,
+  "first_seen": 444.2458190917969,
+  "onset": 444.2458190917969,
+  "n_pos": 1056
+ },
+ {
+  "arena": "a940221579225057",
+  "ship": "2",
+  "spawn_clock": 61.946,
+  "first_seen": 445.3752746582031,
+  "onset": 445.3752746582031,
+  "n_pos": 1076
+ },
+ {
+  "arena": "a940221579225057",
+  "ship": "3",
+  "spawn_clock": 61.946,
+  "first_seen": 613.3731689453125,
+  "onset": 613.3731689453125,
+  "n_pos": 79
+ },
+ {
+  "arena": "a2079560439193563",
+  "ship": "COMMUNICATION",
+  "spawn_clock": 62.312,
+  "first_seen": 327.4547424316406,
+  "onset": 327.4547424316406,
+  "n_pos": 632
+ },
+ {
+  "arena": "a2079560439193563",
+  "ship": "4",
+  "spawn_clock": 62.312,
+  "first_seen": 334.3086853027344,
+  "onset": 334.3086853027344,
+  "n_pos": 974
+ },
+ {
+  "arena": "a2079560439193563",
+  "ship": "2",
+  "spawn_clock": 62.312,
+  "first_seen": 393.73919677734375,
+  "onset": 393.73919677734375,
+  "n_pos": 440
+ },
+ {
+  "arena": "a2079560439193563",
+  "ship": "3",
+  "spawn_clock": 62.312,
+  "first_seen": 428.5940246582031,
+  "onset": 428.5940246582031,
+  "n_pos": 1136
+ },
+ {
+  "arena": "a2079560439193563",
+  "ship": "1",
+  "spawn_clock": 62.312,
+  "first_seen": 453.7261962890625,
+  "onset": 453.7261962890625,
+  "n_pos": 1044
+ },
+ {
+  "arena": "a3156892857282623",
+  "ship": "1",
+  "spawn_clock": 4.698,
+  "first_seen": 262.063232421875,
+  "onset": 262.063232421875,
+  "n_pos": 159
+ },
+ {
+  "arena": "a3156892857282623",
+  "ship": "COMMUNICATION",
+  "spawn_clock": 4.698,
+  "first_seen": 306.06201171875,
+  "onset": 306.06201171875,
+  "n_pos": 239
+ },
+ {
+  "arena": "a3156892857282623",
+  "ship": "4",
+  "spawn_clock": 4.698,
+  "first_seen": 366.04937744140625,
+  "onset": 366.04937744140625,
+  "n_pos": 527
+ },
+ {
+  "arena": "a3156892857282623",
+  "ship": "2",
+  "spawn_clock": 4.698,
+  "first_seen": 376.915771484375,
+  "onset": 376.915771484375,
+  "n_pos": 204
+ },
+ {
+  "arena": "a3156892857282623",
+  "ship": "3",
+  "spawn_clock": 4.698,
+  "first_seen": 376.915771484375,
+  "onset": 376.915771484375,
+  "n_pos": 254
+ },
+ {
+  "arena": "a4970137857345104",
+  "ship": "2",
+  "spawn_clock": 62.5,
+  "first_seen": 358.5123596191406,
+  "onset": 358.5123596191406,
+  "n_pos": 1589
+ },
+ {
+  "arena": "a4970137857345104",
+  "ship": "1",
+  "spawn_clock": 62.5,
+  "first_seen": 368.7874755859375,
+  "onset": 368.7874755859375,
+  "n_pos": 1408
+ },
+ {
+  "arena": "a4970137857345104",
+  "ship": "COMMUNICATION",
+  "spawn_clock": 62.5,
+  "first_seen": 385.9482421875,
+  "onset": 385.9482421875,
+  "n_pos": 728
+ },
+ {
+  "arena": "a4970137857345104",
+  "ship": "4",
+  "spawn_clock": 62.5,
+  "first_seen": 398.40020751953125,
+  "onset": 398.40020751953125,
+  "n_pos": 1325
+ },
+ {
+  "arena": "a4970137857345104",
+  "ship": "3",
+  "spawn_clock": 62.5,
+  "first_seen": 465.93377685546875,
+  "onset": 465.93377685546875,
+  "n_pos": 888
+ },
+ {
+  "arena": "a1963149650339128",
+  "ship": "1",
+  "spawn_clock": 59.762,
+  "first_seen": 276.8957824707031,
+  "onset": 424.8975524902344,
+  "n_pos": 572
+ },
+ {
+  "arena": "a1963149650339128",
+  "ship": "2",
+  "spawn_clock": 59.762,
+  "first_seen": 319.1885070800781,
+  "onset": 321.48944091796875,
+  "n_pos": 648
+ },
+ {
+  "arena": "a1963149650339128",
+  "ship": "COMMUNICATION",
+  "spawn_clock": 59.762,
+  "first_seen": 347.8054504394531,
+  "onset": 347.8054504394531,
+  "n_pos": 576
+ },
+ {
+  "arena": "a1963149650339128",
+  "ship": "4",
+  "spawn_clock": 59.762,
+  "first_seen": 427.2037048339844,
+  "onset": 427.2037048339844,
+  "n_pos": 832
+ },
+ {
+  "arena": "a1963149650339128",
+  "ship": "3",
+  "spawn_clock": 59.762,
+  "first_seen": 445.6519470214844,
+  "onset": 445.6519470214844,
+  "n_pos": 595
+ },
+ {
+  "arena": "a2367993269163151",
+  "ship": "1",
+  "spawn_clock": 62.164,
+  "first_seen": 250.21226501464844,
+  "onset": 296.45361328125,
+  "n_pos": 1064
+ },
+ {
+  "arena": "a2367993269163151",
+  "ship": "2",
+  "spawn_clock": 62.164,
+  "first_seen": 253.62237548828125,
+  "onset": 290.18377685546875,
+  "n_pos": 1336
+ },
+ {
+  "arena": "a2367993269163151",
+  "ship": "COMMUNICATION",
+  "spawn_clock": 62.164,
+  "first_seen": 257.61865234375,
+  "onset": 290.18377685546875,
+  "n_pos": 1304
+ },
+ {
+  "arena": "a2367993269163151",
+  "ship": "4",
+  "spawn_clock": 62.164,
+  "first_seen": 260.46478271484375,
+  "onset": 353.5946044921875,
+  "n_pos": 1996
+ },
+ {
+  "arena": "a2367993269163151",
+  "ship": "3",
+  "spawn_clock": 62.164,
+  "first_seen": 450.17437744140625,
+  "onset": 450.17437744140625,
+  "n_pos": 1024
+ },
+ {
+  "arena": "a5175527491846126",
+  "ship": "1",
+  "spawn_clock": 60.525,
+  "first_seen": 181.68447875976562,
+  "onset": 316.5438232421875,
+  "n_pos": 1116
+ },
+ {
+  "arena": "a5175527491846126",
+  "ship": "2",
+  "spawn_clock": 60.525,
+  "first_seen": 184.5176544189453,
+  "onset": 408.5431823730469,
+  "n_pos": 712
+ },
+ {
+  "arena": "a5175527491846126",
+  "ship": "COMMUNICATION",
+  "spawn_clock": 60.525,
+  "first_seen": 189.66268920898438,
+  "onset": 315.9692077636719,
+  "n_pos": 832
+ },
+ {
+  "arena": "a5175527491846126",
+  "ship": "4",
+  "spawn_clock": 60.525,
+  "first_seen": 370.81646728515625,
+  "onset": 370.81646728515625,
+  "n_pos": 1296
+ },
+ {
+  "arena": "a5175527491846126",
+  "ship": "3",
+  "spawn_clock": 60.525,
+  "first_seen": 377.664794921875,
+  "onset": 377.664794921875,
+  "n_pos": 1300
+ },
+ {
+  "arena": "a3068180313287033",
+  "ship": "COMMUNICATION",
+  "spawn_clock": 61.613,
+  "first_seen": 333.6115417480469,
+  "onset": 333.6115417480469,
+  "n_pos": 1132
+ },
+ {
+  "arena": "a3068180313287033",
+  "ship": "4",
+  "spawn_clock": 61.613,
+  "first_seen": 357.0707092285156,
+  "onset": 357.0707092285156,
+  "n_pos": 912
+ },
+ {
+  "arena": "a3068180313287033",
+  "ship": "1",
+  "spawn_clock": 61.613,
+  "first_seen": 377.0388488769531,
+  "onset": 377.0388488769531,
+  "n_pos": 472
+ },
+ {
+  "arena": "a3068180313287033",
+  "ship": "2",
+  "spawn_clock": 61.613,
+  "first_seen": 447.89990234375,
+  "onset": 447.89990234375,
+  "n_pos": 924
+ },
+ {
+  "arena": "a3068180313287033",
+  "ship": "3",
+  "spawn_clock": 61.613,
+  "first_seen": 447.89990234375,
+  "onset": 447.89990234375,
+  "n_pos": 888
+ },
+ {
+  "arena": "a1504863758917835",
+  "ship": "COMMUNICATION",
+  "spawn_clock": 62.386,
+  "first_seen": 331.5295715332031,
+  "onset": 331.5295715332031,
+  "n_pos": 1424
+ },
+ {
+  "arena": "a1504863758917835",
+  "ship": "1",
+  "spawn_clock": 62.386,
+  "first_seen": 333.80712890625,
+  "onset": 333.80712890625,
+  "n_pos": 1552
+ },
+ {
+  "arena": "a1504863758917835",
+  "ship": "2",
+  "spawn_clock": 62.386,
+  "first_seen": 334.4112548828125,
+  "onset": 334.4112548828125,
+  "n_pos": 1288
+ },
+ {
+  "arena": "a1504863758917835",
+  "ship": "4",
+  "spawn_clock": 62.386,
+  "first_seen": 341.8334655761719,
+  "onset": 341.8334655761719,
+  "n_pos": 2100
+ },
+ {
+  "arena": "a1504863758917835",
+  "ship": "3",
+  "spawn_clock": 62.386,
+  "first_seen": 352.6763916015625,
+  "onset": 352.6763916015625,
+  "n_pos": 1244
+ },
+ {
+  "arena": "a3149265002689081",
+  "ship": "1",
+  "spawn_clock": 59.911,
+  "first_seen": 179.82546997070312,
+  "onset": 327.630859375,
+  "n_pos": 1402
+ },
+ {
+  "arena": "a3149265002689081",
+  "ship": "2",
+  "spawn_clock": 59.911,
+  "first_seen": 183.34707641601562,
+  "onset": 326.6336364746094,
+  "n_pos": 1829
+ },
+ {
+  "arena": "a3149265002689081",
+  "ship": "COMMUNICATION",
+  "spawn_clock": 59.911,
+  "first_seen": 185.0532684326172,
+  "onset": 317.34661865234375,
+  "n_pos": 1835
+ },
+ {
+  "arena": "a3149265002689081",
+  "ship": "4",
+  "spawn_clock": 59.911,
+  "first_seen": 186.19741821289062,
+  "onset": 385.0627746582031,
+  "n_pos": 1788
+ },
+ {
+  "arena": "a3149265002689081",
+  "ship": "3",
+  "spawn_clock": 59.911,
+  "first_seen": 206.20950317382812,
+  "onset": 433.78948974609375,
+  "n_pos": 1075
+ },
+ {
+  "arena": "a893913243489531",
+  "ship": "COMMUNICATION",
+  "spawn_clock": 63.088,
+  "first_seen": 366.5176086425781,
+  "onset": 366.5176086425781,
+  "n_pos": 872
+ },
+ {
+  "arena": "a893913243489531",
+  "ship": "1",
+  "spawn_clock": 63.088,
+  "first_seen": 452.24188232421875,
+  "onset": 452.24188232421875,
+  "n_pos": 612
+ },
+ {
+  "arena": "a893913243489531",
+  "ship": "2",
+  "spawn_clock": 63.088,
+  "first_seen": 453.3826599121094,
+  "onset": 453.3826599121094,
+  "n_pos": 1172
+ },
+ {
+  "arena": "a893913243489531",
+  "ship": "4",
+  "spawn_clock": 63.088,
+  "first_seen": 467.0906982421875,
+  "onset": 467.0906982421875,
+  "n_pos": 1320
+ },
+ {
+  "arena": "a893913243489531",
+  "ship": "3",
+  "spawn_clock": 63.088,
+  "first_seen": 491.10137939453125,
+  "onset": 491.10137939453125,
+  "n_pos": 1152
+ },
+ {
+  "arena": "a1281478214784069",
+  "ship": "1",
+  "spawn_clock": 60.874,
+  "first_seen": 243.1719512939453,
+  "onset": 309.57476806640625,
+  "n_pos": 1730
+ },
+ {
+  "arena": "a1281478214784069",
+  "ship": "2",
+  "spawn_clock": 60.874,
+  "first_seen": 247.15086364746094,
+  "onset": 309.57476806640625,
+  "n_pos": 2014
+ },
+ {
+  "arena": "a1281478214784069",
+  "ship": "COMMUNICATION",
+  "spawn_clock": 60.874,
+  "first_seen": 248.2828369140625,
+  "onset": 302.4281311035156,
+  "n_pos": 1492
+ },
+ {
+  "arena": "a1281478214784069",
+  "ship": "4",
+  "spawn_clock": 60.874,
+  "first_seen": 248.8626251220703,
+  "onset": 309.441650390625,
+  "n_pos": 1794
+ },
+ {
+  "arena": "a1281478214784069",
+  "ship": "3",
+  "spawn_clock": 60.874,
+  "first_seen": 303.1517639160156,
+  "onset": 303.8783874511719,
+  "n_pos": 1202
+ },
+ {
+  "arena": "a5276502174295701",
+  "ship": "4",
+  "spawn_clock": 61.891,
+  "first_seen": 396.1881408691406,
+  "onset": 396.1881408691406,
+  "n_pos": 1373
+ },
+ {
+  "arena": "a5276502174295701",
+  "ship": "COMMUNICATION",
+  "spawn_clock": 61.891,
+  "first_seen": 441.3271179199219,
+  "onset": 441.3271179199219,
+  "n_pos": 1100
+ },
+ {
+  "arena": "a5276502174295701",
+  "ship": "1",
+  "spawn_clock": 61.891,
+  "first_seen": 445.31707763671875,
+  "onset": 445.31707763671875,
+  "n_pos": 1288
+ },
+ {
+  "arena": "a5276502174295701",
+  "ship": "2",
+  "spawn_clock": 61.891,
+  "first_seen": 453.33184814453125,
+  "onset": 453.33184814453125,
+  "n_pos": 1340
+ },
+ {
+  "arena": "a5276502174295701",
+  "ship": "3",
+  "spawn_clock": 61.891,
+  "first_seen": 533.3152465820312,
+  "onset": 533.3152465820312,
+  "n_pos": 848
+ },
+ {
+  "arena": "a2600063239920907",
+  "ship": "COMMUNICATION",
+  "spawn_clock": 53.514,
+  "first_seen": 356.8715515136719,
+  "onset": 356.8715515136719,
+  "n_pos": 1308
+ },
+ {
+  "arena": "a2600063239920907",
+  "ship": "1",
+  "spawn_clock": 53.514,
+  "first_seen": 357.30682373046875,
+  "onset": 357.30682373046875,
+  "n_pos": 985
+ },
+ {
+  "arena": "a2600063239920907",
+  "ship": "2",
+  "spawn_clock": 53.514,
+  "first_seen": 376.85321044921875,
+  "onset": 376.85321044921875,
+  "n_pos": 1368
+ },
+ {
+  "arena": "a2600063239920907",
+  "ship": "4",
+  "spawn_clock": 53.514,
+  "first_seen": 427.70599365234375,
+  "onset": 427.70599365234375,
+  "n_pos": 2004
+ },
+ {
+  "arena": "a2600063239920907",
+  "ship": "3",
+  "spawn_clock": 53.514,
+  "first_seen": 437.4402160644531,
+  "onset": 437.4402160644531,
+  "n_pos": 1412
+ },
+ {
+  "arena": "a222489603694707",
+  "ship": "2",
+  "spawn_clock": 61.774,
+  "first_seen": 360.0532531738281,
+  "onset": 360.0532531738281,
+  "n_pos": 879
+ },
+ {
+  "arena": "a222489603694707",
+  "ship": "COMMUNICATION",
+  "spawn_clock": 61.774,
+  "first_seen": 364.0664978027344,
+  "onset": 364.0664978027344,
+  "n_pos": 960
+ },
+ {
+  "arena": "a222489603694707",
+  "ship": "4",
+  "spawn_clock": 61.774,
+  "first_seen": 397.2171325683594,
+  "onset": 397.2171325683594,
+  "n_pos": 1636
+ },
+ {
+  "arena": "a222489603694707",
+  "ship": "3",
+  "spawn_clock": 61.774,
+  "first_seen": 418.9129333496094,
+  "onset": 418.9129333496094,
+  "n_pos": 1280
+ },
+ {
+  "arena": "a222489603694707",
+  "ship": "1",
+  "spawn_clock": 61.774,
+  "first_seen": 442.9167785644531,
+  "onset": 442.9167785644531,
+  "n_pos": 980
+ },
+ {
+  "arena": "a5159601755450909",
+  "ship": "2",
+  "spawn_clock": 51.322,
+  "first_seen": 279.32147216796875,
+  "onset": 344.4111022949219,
+  "n_pos": 1069
+ },
+ {
+  "arena": "a5159601755450909",
+  "ship": "COMMUNICATION",
+  "spawn_clock": 51.322,
+  "first_seen": 301.21209716796875,
+  "onset": 301.21209716796875,
+  "n_pos": 633
+ },
+ {
+  "arena": "a5159601755450909",
+  "ship": "1",
+  "spawn_clock": 51.322,
+  "first_seen": 323.1282653808594,
+  "onset": 323.1282653808594,
+  "n_pos": 662
+ },
+ {
+  "arena": "a5159601755450909",
+  "ship": "4",
+  "spawn_clock": 51.322,
+  "first_seen": 349.5766296386719,
+  "onset": 349.5766296386719,
+  "n_pos": 1085
+ },
+ {
+  "arena": "a5159601755450909",
+  "ship": "3",
+  "spawn_clock": 51.322,
+  "first_seen": 428.1285705566406,
+  "onset": 428.1285705566406,
+  "n_pos": 911
+ },
+ {
+  "arena": "a3411352497828746",
+  "ship": "COMMUNICATION",
+  "spawn_clock": 60.706,
+  "first_seen": 321.84796142578125,
+  "onset": 321.84796142578125,
+  "n_pos": 989
+ },
+ {
+  "arena": "a3411352497828746",
+  "ship": "4",
+  "spawn_clock": 60.706,
+  "first_seen": 362.5810546875,
+  "onset": 362.5810546875,
+  "n_pos": 1113
+ },
+ {
+  "arena": "a3411352497828746",
+  "ship": "2",
+  "spawn_clock": 60.706,
+  "first_seen": 400.7304992675781,
+  "onset": 400.7304992675781,
+  "n_pos": 1088
+ },
+ {
+  "arena": "a3411352497828746",
+  "ship": "1",
+  "spawn_clock": 60.706,
+  "first_seen": 401.8580322265625,
+  "onset": 401.8580322265625,
+  "n_pos": 1149
+ },
+ {
+  "arena": "a3411352497828746",
+  "ship": "3",
+  "spawn_clock": 60.706,
+  "first_seen": 409.5940246582031,
+  "onset": 409.5940246582031,
+  "n_pos": 923
+ },
+ {
+  "arena": "a4370809536875650",
+  "ship": "2",
+  "spawn_clock": 60.175,
+  "first_seen": 274.4707946777344,
+  "onset": 307.86651611328125,
+  "n_pos": 1164
+ },
+ {
+  "arena": "a4370809536875650",
+  "ship": "1",
+  "spawn_clock": 60.175,
+  "first_seen": 278.4626770019531,
+  "onset": 307.86651611328125,
+  "n_pos": 896
+ },
+ {
+  "arena": "a4370809536875650",
+  "ship": "COMMUNICATION",
+  "spawn_clock": 60.175,
+  "first_seen": 285.3290100097656,
+  "onset": 300.5944519042969,
+  "n_pos": 1343
+ },
+ {
+  "arena": "a4370809536875650",
+  "ship": "4",
+  "spawn_clock": 60.175,
+  "first_seen": 286.5001525878906,
+  "onset": 309.7250061035156,
+  "n_pos": 1484
+ },
+ {
+  "arena": "a4370809536875650",
+  "ship": "3",
+  "spawn_clock": 60.175,
+  "first_seen": 301.3381042480469,
+  "onset": 302.1849365234375,
+  "n_pos": 865
+ },
+ {
+  "arena": "a1519616973719449",
+  "ship": "4",
+  "spawn_clock": 42.454,
+  "first_seen": 442.47027587890625,
+  "onset": 442.47027587890625,
+  "n_pos": 1063
+ },
+ {
+  "arena": "a1519616973719449",
+  "ship": "3",
+  "spawn_clock": 42.454,
+  "first_seen": 469.9032287597656,
+  "onset": 469.9032287597656,
+  "n_pos": 1032
+ },
+ {
+  "arena": "a1519616973719449",
+  "ship": "1",
+  "spawn_clock": 42.454,
+  "first_seen": 471.6319885253906,
+  "onset": 471.6319885253906,
+  "n_pos": 1696
+ },
+ {
+  "arena": "a1519616973719449",
+  "ship": "2",
+  "spawn_clock": 42.454,
+  "first_seen": 476.7494201660156,
+  "onset": 476.7494201660156,
+  "n_pos": 2008
+ },
+ {
+  "arena": "a2198303410920215",
+  "ship": "COMMUNICATION",
+  "spawn_clock": 62.208,
+  "first_seen": 389.6609191894531,
+  "onset": 389.6609191894531,
+  "n_pos": 897
+ },
+ {
+  "arena": "a2198303410920215",
+  "ship": "4",
+  "spawn_clock": 62.208,
+  "first_seen": 397.6436462402344,
+  "onset": 397.6436462402344,
+  "n_pos": 1365
+ },
+ {
+  "arena": "a2198303410920215",
+  "ship": "1",
+  "spawn_clock": 62.208,
+  "first_seen": 450.2202453613281,
+  "onset": 450.2202453613281,
+  "n_pos": 1136
+ },
+ {
+  "arena": "a2198303410920215",
+  "ship": "3",
+  "spawn_clock": 62.208,
+  "first_seen": 451.3473205566406,
+  "onset": 451.3473205566406,
+  "n_pos": 719
+ },
+ {
+  "arena": "a2198303410920215",
+  "ship": "2",
+  "spawn_clock": 62.208,
+  "first_seen": 453.642333984375,
+  "onset": 453.642333984375,
+  "n_pos": 1418
+ },
+ {
+  "arena": "a1705945540390746",
+  "ship": "2",
+  "spawn_clock": 53.561,
+  "first_seen": 195.40914916992188,
+  "onset": 288.9653625488281,
+  "n_pos": 1603
+ },
+ {
+  "arena": "a1705945540390746",
+  "ship": "1",
+  "spawn_clock": 53.561,
+  "first_seen": 197.5435333251953,
+  "onset": 285.54632568359375,
+  "n_pos": 1548
+ },
+ {
+  "arena": "a1705945540390746",
+  "ship": "COMMUNICATION",
+  "spawn_clock": 53.561,
+  "first_seen": 201.5518798828125,
+  "onset": 289.0928649902344,
+  "n_pos": 1679
+ },
+ {
+  "arena": "a1705945540390746",
+  "ship": "4",
+  "spawn_clock": 53.561,
+  "first_seen": 202.7023162841797,
+  "onset": 288.9653625488281,
+  "n_pos": 1280
+ },
+ {
+  "arena": "a1705945540390746",
+  "ship": "3",
+  "spawn_clock": 53.561,
+  "first_seen": 210.66688537597656,
+  "onset": 317.5580749511719,
+  "n_pos": 1208
+ },
+ {
+  "arena": "f87ec09a2a6393e8e",
+  "ship": "1",
+  "spawn_clock": 31.299,
+  "first_seen": 233.62838745117188,
+  "onset": 274.343994140625,
+  "n_pos": 1180
+ },
+ {
+  "arena": "f87ec09a2a6393e8e",
+  "ship": "2",
+  "spawn_clock": 31.299,
+  "first_seen": 238.7674560546875,
+  "onset": 274.0445861816406,
+  "n_pos": 1460
+ },
+ {
+  "arena": "f87ec09a2a6393e8e",
+  "ship": "COMMUNICATION",
+  "spawn_clock": 31.299,
+  "first_seen": 241.60411071777344,
+  "onset": 265.7320251464844,
+  "n_pos": 1408
+ },
+ {
+  "arena": "f87ec09a2a6393e8e",
+  "ship": "4",
+  "spawn_clock": 31.299,
+  "first_seen": 241.60411071777344,
+  "onset": 274.0445861816406,
+  "n_pos": 1900
+ },
+ {
+  "arena": "f87ec09a2a6393e8e",
+  "ship": "3",
+  "spawn_clock": 31.299,
+  "first_seen": 257.61895751953125,
+  "onset": 307.3357238769531,
+  "n_pos": 1180
+ },
+ {
+  "arena": "a3960988055048162",
+  "ship": "COMMUNICATION",
+  "spawn_clock": 58.041,
+  "first_seen": 368.93817138671875,
+  "onset": 368.93817138671875,
+  "n_pos": 1140
+ },
+ {
+  "arena": "a3960988055048162",
+  "ship": "4",
+  "spawn_clock": 58.041,
+  "first_seen": 379.198486328125,
+  "onset": 379.198486328125,
+  "n_pos": 1252
+ },
+ {
+  "arena": "a3960988055048162",
+  "ship": "2",
+  "spawn_clock": 58.041,
+  "first_seen": 412.9442138671875,
+  "onset": 412.9442138671875,
+  "n_pos": 1224
+ },
+ {
+  "arena": "a3960988055048162",
+  "ship": "1",
+  "spawn_clock": 58.041,
+  "first_seen": 412.9442138671875,
+  "onset": 412.9442138671875,
+  "n_pos": 1188
+ },
+ {
+  "arena": "a3960988055048162",
+  "ship": "3",
+  "spawn_clock": 58.041,
+  "first_seen": 413.9497375488281,
+  "onset": 413.9497375488281,
+  "n_pos": 1065
+ },
+ {
+  "arena": "a2476612997024019",
+  "ship": "2",
+  "spawn_clock": 61.418,
+  "first_seen": 316.30133056640625,
+  "onset": 316.30133056640625,
+  "n_pos": 651
+ },
+ {
+  "arena": "a2476612997024019",
+  "ship": "1",
+  "spawn_clock": 61.418,
+  "first_seen": 381.2770690917969,
+  "onset": 381.2770690917969,
+  "n_pos": 967
+ },
+ {
+  "arena": "a2476612997024019",
+  "ship": "COMMUNICATION",
+  "spawn_clock": 61.418,
+  "first_seen": 384.2976989746094,
+  "onset": 384.2976989746094,
+  "n_pos": 1192
+ },
+ {
+  "arena": "a2476612997024019",
+  "ship": "4",
+  "spawn_clock": 61.418,
+  "first_seen": 385.3004455566406,
+  "onset": 385.3004455566406,
+  "n_pos": 1259
+ },
+ {
+  "arena": "a2476612997024019",
+  "ship": "3",
+  "spawn_clock": 61.418,
+  "first_seen": 474.2710266113281,
+  "onset": 474.2710266113281,
+  "n_pos": 746
+ },
+ {
+  "arena": "a2397168988121099",
+  "ship": "2",
+  "spawn_clock": 62.256,
+  "first_seen": 257.6651611328125,
+  "onset": 352.540283203125,
+  "n_pos": 2151
+ },
+ {
+  "arena": "a2397168988121099",
+  "ship": "1",
+  "spawn_clock": 62.256,
+  "first_seen": 259.39642333984375,
+  "onset": 354.2668151855469,
+  "n_pos": 1777
+ },
+ {
+  "arena": "a2397168988121099",
+  "ship": "COMMUNICATION",
+  "spawn_clock": 62.256,
+  "first_seen": 266.23541259765625,
+  "onset": 319.6634216308594,
+  "n_pos": 1567
+ },
+ {
+  "arena": "a2397168988121099",
+  "ship": "4",
+  "spawn_clock": 62.256,
+  "first_seen": 266.23541259765625,
+  "onset": 386.23114013671875,
+  "n_pos": 1977
+ },
+ {
+  "arena": "a2397168988121099",
+  "ship": "3",
+  "spawn_clock": 62.256,
+  "first_seen": 304.5348815917969,
+  "onset": 529.6555786132812,
+  "n_pos": 992
+ },
+ {
+  "arena": "a2372116444627874",
+  "ship": "COMMUNICATION",
+  "spawn_clock": 62.408,
+  "first_seen": 336.30987548828125,
+  "onset": 336.30987548828125,
+  "n_pos": 978
+ },
+ {
+  "arena": "a2372116444627874",
+  "ship": "1",
+  "spawn_clock": 62.408,
+  "first_seen": 366.30853271484375,
+  "onset": 366.30853271484375,
+  "n_pos": 597
+ },
+ {
+  "arena": "a2372116444627874",
+  "ship": "2",
+  "spawn_clock": 62.408,
+  "first_seen": 417.8643798828125,
+  "onset": 417.8643798828125,
+  "n_pos": 896
+ },
+ {
+  "arena": "a2372116444627874",
+  "ship": "4",
+  "spawn_clock": 62.408,
+  "first_seen": 417.9783020019531,
+  "onset": 417.9783020019531,
+  "n_pos": 1091
+ },
+ {
+  "arena": "a2372116444627874",
+  "ship": "3",
+  "spawn_clock": 62.408,
+  "first_seen": 417.9783020019531,
+  "onset": 417.9783020019531,
+  "n_pos": 929
+ },
+ {
+  "arena": "a5360065064730826",
+  "ship": "4",
+  "spawn_clock": 60.346,
+  "first_seen": 412.335693359375,
+  "onset": 412.335693359375,
+  "n_pos": 1270
+ },
+ {
+  "arena": "a5360065064730826",
+  "ship": "3",
+  "spawn_clock": 60.346,
+  "first_seen": 472.32696533203125,
+  "onset": 472.32696533203125,
+  "n_pos": 801
+ },
+ {
+  "arena": "a5360065064730826",
+  "ship": "1",
+  "spawn_clock": 60.346,
+  "first_seen": 517.4546508789062,
+  "onset": 517.4546508789062,
+  "n_pos": 1652
+ },
+ {
+  "arena": "a5360065064730826",
+  "ship": "2",
+  "spawn_clock": 60.346,
+  "first_seen": 555.7445678710938,
+  "onset": 555.7445678710938,
+  "n_pos": 1610
+ },
+ {
+  "arena": "a4223938842734840",
+  "ship": "4",
+  "spawn_clock": 58.051,
+  "first_seen": 391.203369140625,
+  "onset": 391.203369140625,
+  "n_pos": 992
+ },
+ {
+  "arena": "a4223938842734840",
+  "ship": "3",
+  "spawn_clock": 58.051,
+  "first_seen": 404.35052490234375,
+  "onset": 404.35052490234375,
+  "n_pos": 1107
+ },
+ {
+  "arena": "a4223938842734840",
+  "ship": "1",
+  "spawn_clock": 58.051,
+  "first_seen": 426.0561828613281,
+  "onset": 426.0561828613281,
+  "n_pos": 948
+ },
+ {
+  "arena": "a4223938842734840",
+  "ship": "2",
+  "spawn_clock": 58.051,
+  "first_seen": 428.35186767578125,
+  "onset": 428.35186767578125,
+  "n_pos": 1168
+ },
+ {
+  "arena": "a4223938842734840",
+  "ship": "COMMUNICATION",
+  "spawn_clock": 58.051,
+  "first_seen": 487.2005920410156,
+  "onset": 487.2005920410156,
+  "n_pos": 220
+ },
+ {
+  "arena": "a3458094634378006",
+  "ship": "COMMUNICATION",
+  "spawn_clock": 56.228,
+  "first_seen": 345.377197265625,
+  "onset": 345.377197265625,
+  "n_pos": 1248
+ },
+ {
+  "arena": "a3458094634378006",
+  "ship": "2",
+  "spawn_clock": 56.228,
+  "first_seen": 346.5484313964844,
+  "onset": 346.5484313964844,
+  "n_pos": 1244
+ },
+ {
+  "arena": "a3458094634378006",
+  "ship": "4",
+  "spawn_clock": 56.228,
+  "first_seen": 369.3819274902344,
+  "onset": 369.3819274902344,
+  "n_pos": 1724
+ },
+ {
+  "arena": "a3458094634378006",
+  "ship": "1",
+  "spawn_clock": 56.228,
+  "first_seen": 424.2369689941406,
+  "onset": 424.2369689941406,
+  "n_pos": 608
+ },
+ {
+  "arena": "a3458094634378006",
+  "ship": "3",
+  "spawn_clock": 56.228,
+  "first_seen": 490.5350646972656,
+  "onset": 490.5350646972656,
+  "n_pos": 916
+ },
+ {
+  "arena": "a3763419564876887",
+  "ship": "COMMUNICATION",
+  "spawn_clock": 48.588,
+  "first_seen": 324.51922607421875,
+  "onset": 324.51922607421875,
+  "n_pos": 552
+ },
+ {
+  "arena": "a3763419564876887",
+  "ship": "4",
+  "spawn_clock": 48.588,
+  "first_seen": 372.5543212890625,
+  "onset": 372.5543212890625,
+  "n_pos": 1360
+ },
+ {
+  "arena": "a3763419564876887",
+  "ship": "1",
+  "spawn_clock": 48.588,
+  "first_seen": 430.8211364746094,
+  "onset": 430.8211364746094,
+  "n_pos": 1440
+ },
+ {
+  "arena": "a3763419564876887",
+  "ship": "2",
+  "spawn_clock": 48.588,
+  "first_seen": 432.537353515625,
+  "onset": 432.537353515625,
+  "n_pos": 1584
+ },
+ {
+  "arena": "a3763419564876887",
+  "ship": "3",
+  "spawn_clock": 48.588,
+  "first_seen": 460.5625915527344,
+  "onset": 460.5625915527344,
+  "n_pos": 940
+ },
+ {
+  "arena": "a3517695895943536",
+  "ship": "4",
+  "spawn_clock": 49.443,
+  "first_seen": 365.4739990234375,
+  "onset": 365.4739990234375,
+  "n_pos": 1112
+ },
+ {
+  "arena": "a3517695895943536",
+  "ship": "3",
+  "spawn_clock": 49.443,
+  "first_seen": 405.4461975097656,
+  "onset": 405.4461975097656,
+  "n_pos": 920
+ },
+ {
+  "arena": "a3517695895943536",
+  "ship": "2",
+  "spawn_clock": 49.443,
+  "first_seen": 459.6968688964844,
+  "onset": 459.6968688964844,
+  "n_pos": 1320
+ },
+ {
+  "arena": "a3517695895943536",
+  "ship": "1",
+  "spawn_clock": 49.443,
+  "first_seen": 462.5596008300781,
+  "onset": 462.5596008300781,
+  "n_pos": 900
+ },
+ {
+  "arena": "a4337347454972563",
+  "ship": "1",
+  "spawn_clock": 50.772,
+  "first_seen": 329.0260925292969,
+  "onset": 329.0260925292969,
+  "n_pos": 800
+ },
+ {
+  "arena": "a4337347454972563",
+  "ship": "COMMUNICATION",
+  "spawn_clock": 50.772,
+  "first_seen": 341.0392761230469,
+  "onset": 341.0392761230469,
+  "n_pos": 1152
+ },
+ {
+  "arena": "a4337347454972563",
+  "ship": "2",
+  "spawn_clock": 50.772,
+  "first_seen": 406.2431335449219,
+  "onset": 406.2431335449219,
+  "n_pos": 820
+ },
+ {
+  "arena": "a4337347454972563",
+  "ship": "4",
+  "spawn_clock": 50.772,
+  "first_seen": 406.2431335449219,
+  "onset": 406.2431335449219,
+  "n_pos": 1044
+ },
+ {
+  "arena": "a4337347454972563",
+  "ship": "3",
+  "spawn_clock": 50.772,
+  "first_seen": 433.0718078613281,
+  "onset": 433.0718078613281,
+  "n_pos": 916
+ },
+ {
+  "arena": "a3305683426463851",
+  "ship": "COMMUNICATION",
+  "spawn_clock": 61.432,
+  "first_seen": 299.7434997558594,
+  "onset": 299.7434997558594,
+  "n_pos": 1089
+ },
+ {
+  "arena": "a3305683426463851",
+  "ship": "1",
+  "spawn_clock": 61.432,
+  "first_seen": 299.7434997558594,
+  "onset": 299.7434997558594,
+  "n_pos": 717
+ },
+ {
+  "arena": "a3305683426463851",
+  "ship": "4",
+  "spawn_clock": 61.432,
+  "first_seen": 355.7415771484375,
+  "onset": 355.7415771484375,
+  "n_pos": 1313
+ },
+ {
+  "arena": "a3305683426463851",
+  "ship": "2",
+  "spawn_clock": 61.432,
+  "first_seen": 400.8824462890625,
+  "onset": 400.8824462890625,
+  "n_pos": 641
+ },
+ {
+  "arena": "a3305683426463851",
+  "ship": "3",
+  "spawn_clock": 61.432,
+  "first_seen": 428.8597717285156,
+  "onset": 428.8597717285156,
+  "n_pos": 1025
+ },
+ {
+  "arena": "a2684356277626718",
+  "ship": "1",
+  "spawn_clock": 43.667,
+  "first_seen": 77.92243957519531,
+  "onset": 369.9141845703125,
+  "n_pos": 1675
+ },
+ {
+  "arena": "a2684356277626718",
+  "ship": "2",
+  "spawn_clock": 43.667,
+  "first_seen": 81.88468170166016,
+  "onset": 347.5991516113281,
+  "n_pos": 1763
+ },
+ {
+  "arena": "a2684356277626718",
+  "ship": "COMMUNICATION",
+  "spawn_clock": 43.667,
+  "first_seen": 84.5514907836914,
+  "onset": 356.8038024902344,
+  "n_pos": 2000
+ },
+ {
+  "arena": "a2684356277626718",
+  "ship": "4",
+  "spawn_clock": 43.667,
+  "first_seen": 84.5514907836914,
+  "onset": 407.4730529785156,
+  "n_pos": 1461
+ },
+ {
+  "arena": "a2684356277626718",
+  "ship": "3",
+  "spawn_clock": 43.667,
+  "first_seen": 447.50006103515625,
+  "onset": 447.50006103515625,
+  "n_pos": 1029
+ },
+ {
+  "arena": "a4733661267841725",
+  "ship": "COMMUNICATION",
+  "spawn_clock": 58.319,
+  "first_seen": 333.7450256347656,
+  "onset": 333.7450256347656,
+  "n_pos": 1112
+ },
+ {
+  "arena": "a4733661267841725",
+  "ship": "4",
+  "spawn_clock": 58.319,
+  "first_seen": 392.6036376953125,
+  "onset": 392.6036376953125,
+  "n_pos": 1120
+ },
+ {
+  "arena": "a4733661267841725",
+  "ship": "3",
+  "spawn_clock": 58.319,
+  "first_seen": 406.3347473144531,
+  "onset": 406.3347473144531,
+  "n_pos": 604
+ },
+ {
+  "arena": "a4733661267841725",
+  "ship": "2",
+  "spawn_clock": 58.319,
+  "first_seen": 406.899658203125,
+  "onset": 406.899658203125,
+  "n_pos": 428
+ },
+ {
+  "arena": "a4733661267841725",
+  "ship": "1",
+  "spawn_clock": 58.319,
+  "first_seen": 407.44659423828125,
+  "onset": 407.44659423828125,
+  "n_pos": 304
+ },
+ {
+  "arena": "a3143295008230506",
+  "ship": "4",
+  "spawn_clock": 61.873,
+  "first_seen": 375.02655029296875,
+  "onset": 375.02655029296875,
+  "n_pos": 1640
+ },
+ {
+  "arena": "a3143295008230506",
+  "ship": "COMMUNICATION",
+  "spawn_clock": 61.873,
+  "first_seen": 401.30572509765625,
+  "onset": 401.30572509765625,
+  "n_pos": 1060
+ },
+ {
+  "arena": "a3143295008230506",
+  "ship": "1",
+  "spawn_clock": 61.873,
+  "first_seen": 424.1683654785156,
+  "onset": 424.1683654785156,
+  "n_pos": 972
+ },
+ {
+  "arena": "a3143295008230506",
+  "ship": "2",
+  "spawn_clock": 61.873,
+  "first_seen": 429.87506103515625,
+  "onset": 429.87506103515625,
+  "n_pos": 1148
+ },
+ {
+  "arena": "a3143295008230506",
+  "ship": "3",
+  "spawn_clock": 61.873,
+  "first_seen": 524.1603393554688,
+  "onset": 524.1603393554688,
+  "n_pos": 944
+ },
+ {
+  "arena": "a2894706595960058",
+  "ship": "COMMUNICATION",
+  "spawn_clock": 61.457,
+  "first_seen": 392.342041015625,
+  "onset": 392.342041015625,
+  "n_pos": 972
+ },
+ {
+  "arena": "a2894706595960058",
+  "ship": "4",
+  "spawn_clock": 61.457,
+  "first_seen": 393.3423767089844,
+  "onset": 393.3423767089844,
+  "n_pos": 1453
+ },
+ {
+  "arena": "a2894706595960058",
+  "ship": "1",
+  "spawn_clock": 61.457,
+  "first_seen": 428.3300476074219,
+  "onset": 428.3300476074219,
+  "n_pos": 796
+ },
+ {
+  "arena": "a2894706595960058",
+  "ship": "2",
+  "spawn_clock": 61.457,
+  "first_seen": 431.3335266113281,
+  "onset": 431.3335266113281,
+  "n_pos": 1079
+ },
+ {
+  "arena": "a2894706595960058",
+  "ship": "3",
+  "spawn_clock": 61.457,
+  "first_seen": 478.3222351074219,
+  "onset": 478.3222351074219,
+  "n_pos": 690
+ },
+ {
+  "arena": "a3173806456365724",
+  "ship": "1",
+  "spawn_clock": 36.084,
+  "first_seen": 309.9559326171875,
+  "onset": 309.9559326171875,
+  "n_pos": 686
+ },
+ {
+  "arena": "a3173806456365724",
+  "ship": "COMMUNICATION",
+  "spawn_clock": 36.084,
+  "first_seen": 329.94732666015625,
+  "onset": 329.94732666015625,
+  "n_pos": 1087
+ },
+ {
+  "arena": "a3173806456365724",
+  "ship": "4",
+  "spawn_clock": 36.084,
+  "first_seen": 409.9266052246094,
+  "onset": 409.9266052246094,
+  "n_pos": 1151
+ },
+ {
+  "arena": "a3173806456365724",
+  "ship": "2",
+  "spawn_clock": 36.084,
+  "first_seen": 411.9383544921875,
+  "onset": 411.9383544921875,
+  "n_pos": 1077
+ },
+ {
+  "arena": "a3173806456365724",
+  "ship": "3",
+  "spawn_clock": 36.084,
+  "first_seen": 441.20477294921875,
+  "onset": 441.20477294921875,
+  "n_pos": 924
+ },
+ {
+  "arena": "a2717238548665513",
+  "ship": "2",
+  "spawn_clock": 53.533,
+  "first_seen": 200.4094696044922,
+  "onset": 415.8146667480469,
+  "n_pos": 779
+ },
+ {
+  "arena": "a2717238548665513",
+  "ship": "1",
+  "spawn_clock": 53.533,
+  "first_seen": 206.3744354248047,
+  "onset": 314.6767578125,
+  "n_pos": 698
+ },
+ {
+  "arena": "a2717238548665513",
+  "ship": "COMMUNICATION",
+  "spawn_clock": 53.533,
+  "first_seen": 209.43130493164062,
+  "onset": 313.3951416015625,
+  "n_pos": 1115
+ },
+ {
+  "arena": "a2717238548665513",
+  "ship": "4",
+  "spawn_clock": 53.533,
+  "first_seen": 231.38087463378906,
+  "onset": 366.67376708984375,
+  "n_pos": 1347
+ },
+ {
+  "arena": "a2717238548665513",
+  "ship": "3",
+  "spawn_clock": 53.533,
+  "first_seen": 383.4033508300781,
+  "onset": 383.4033508300781,
+  "n_pos": 627
+ },
+ {
+  "arena": "a2724389668835639",
+  "ship": "COMMUNICATION",
+  "spawn_clock": 61.109,
+  "first_seen": 206.13836669921875,
+  "onset": 324.4259948730469,
+  "n_pos": 1172
+ },
+ {
+  "arena": "a2724389668835639",
+  "ship": "2",
+  "spawn_clock": 61.109,
+  "first_seen": 210.1204833984375,
+  "onset": 327.28094482421875,
+  "n_pos": 1100
+ },
+ {
+  "arena": "a2724389668835639",
+  "ship": "1",
+  "spawn_clock": 61.109,
+  "first_seen": 210.1204833984375,
+  "onset": 326.15142822265625,
+  "n_pos": 1124
+ },
+ {
+  "arena": "a2724389668835639",
+  "ship": "4",
+  "spawn_clock": 61.109,
+  "first_seen": 335.2890319824219,
+  "onset": 335.2890319824219,
+  "n_pos": 1396
+ },
+ {
+  "arena": "a2724389668835639",
+  "ship": "3",
+  "spawn_clock": 61.109,
+  "first_seen": 408.4354553222656,
+  "onset": 408.4354553222656,
+  "n_pos": 1188
+ },
+ {
+  "arena": "a5024112728406167",
+  "ship": "COMMUNICATION",
+  "spawn_clock": 60.435,
+  "first_seen": 328.59521484375,
+  "onset": 328.59521484375,
+  "n_pos": 327
+ },
+ {
+  "arena": "a5024112728406167",
+  "ship": "2",
+  "spawn_clock": 60.435,
+  "first_seen": 335.91046142578125,
+  "onset": 335.91046142578125,
+  "n_pos": 1276
+ },
+ {
+  "arena": "a5024112728406167",
+  "ship": "4",
+  "spawn_clock": 60.435,
+  "first_seen": 339.8804016113281,
+  "onset": 339.8804016113281,
+  "n_pos": 1428
+ },
+ {
+  "arena": "a5024112728406167",
+  "ship": "1",
+  "spawn_clock": 60.435,
+  "first_seen": 343.3606872558594,
+  "onset": 343.3606872558594,
+  "n_pos": 1604
+ },
+ {
+  "arena": "a5024112728406167",
+  "ship": "3",
+  "spawn_clock": 60.435,
+  "first_seen": 346.7225646972656,
+  "onset": 346.7225646972656,
+  "n_pos": 1144
+ },
+ {
+  "arena": "a3877682878056264",
+  "ship": "4",
+  "spawn_clock": 61.33,
+  "first_seen": 451.4926452636719,
+  "onset": 451.4926452636719,
+  "n_pos": 1100
+ },
+ {
+  "arena": "a3877682878056264",
+  "ship": "3",
+  "spawn_clock": 61.33,
+  "first_seen": 474.3370361328125,
+  "onset": 474.3370361328125,
+  "n_pos": 1008
+ },
+ {
+  "arena": "a3877682878056264",
+  "ship": "1",
+  "spawn_clock": 61.33,
+  "first_seen": 490.359375,
+  "onset": 490.359375,
+  "n_pos": 1248
+ },
+ {
+  "arena": "a3877682878056264",
+  "ship": "2",
+  "spawn_clock": 61.33,
+  "first_seen": 491.5069885253906,
+  "onset": 491.5069885253906,
+  "n_pos": 1108
+ },
+ {
+  "arena": "a3514504738422202",
+  "ship": "COMMUNICATION",
+  "spawn_clock": 62.359,
+  "first_seen": 302.3714904785156,
+  "onset": 302.3714904785156,
+  "n_pos": 1160
+ },
+ {
+  "arena": "a3514504738422202",
+  "ship": "1",
+  "spawn_clock": 62.359,
+  "first_seen": 304.6498718261719,
+  "onset": 304.6498718261719,
+  "n_pos": 1127
+ },
+ {
+  "arena": "a3514504738422202",
+  "ship": "4",
+  "spawn_clock": 62.359,
+  "first_seen": 358.2281799316406,
+  "onset": 358.2281799316406,
+  "n_pos": 1242
+ },
+ {
+  "arena": "a3514504738422202",
+  "ship": "2",
+  "spawn_clock": 62.359,
+  "first_seen": 420.7724304199219,
+  "onset": 420.7724304199219,
+  "n_pos": 967
+ },
+ {
+  "arena": "a3514504738422202",
+  "ship": "3",
+  "spawn_clock": 62.359,
+  "first_seen": 420.9190673828125,
+  "onset": 420.9190673828125,
+  "n_pos": 1099
+ },
+ {
+  "arena": "a5011640143609213",
+  "ship": "COMMUNICATION",
+  "spawn_clock": 56.056,
+  "first_seen": 363.4686279296875,
+  "onset": 363.4686279296875,
+  "n_pos": 827
+ },
+ {
+  "arena": "a5011640143609213",
+  "ship": "4",
+  "spawn_clock": 56.056,
+  "first_seen": 380.93756103515625,
+  "onset": 380.93756103515625,
+  "n_pos": 1209
+ },
+ {
+  "arena": "a5011640143609213",
+  "ship": "3",
+  "spawn_clock": 56.056,
+  "first_seen": 422.9411926269531,
+  "onset": 422.9411926269531,
+  "n_pos": 1015
+ },
+ {
+  "arena": "a5011640143609213",
+  "ship": "1",
+  "spawn_clock": 56.056,
+  "first_seen": 424.0546569824219,
+  "onset": 424.0546569824219,
+  "n_pos": 691
+ },
+ {
+  "arena": "a5011640143609213",
+  "ship": "2",
+  "spawn_clock": 56.056,
+  "first_seen": 431.4453125,
+  "onset": 431.4453125,
+  "n_pos": 647
+ },
+ {
+  "arena": "a3444479591757390",
+  "ship": "COMMUNICATION",
+  "spawn_clock": 61.71,
+  "first_seen": 376.02508544921875,
+  "onset": 376.02508544921875,
+  "n_pos": 1364
+ },
+ {
+  "arena": "a3444479591757390",
+  "ship": "1",
+  "spawn_clock": 61.71,
+  "first_seen": 456.0072021484375,
+  "onset": 456.0072021484375,
+  "n_pos": 788
+ },
+ {
+  "arena": "a3444479591757390",
+  "ship": "2",
+  "spawn_clock": 61.71,
+  "first_seen": 458.8721618652344,
+  "onset": 458.8721618652344,
+  "n_pos": 632
+ },
+ {
+  "arena": "a3444479591757390",
+  "ship": "4",
+  "spawn_clock": 61.71,
+  "first_seen": 485.1651306152344,
+  "onset": 485.1651306152344,
+  "n_pos": 1012
+ },
+ {
+  "arena": "a3444479591757390",
+  "ship": "3",
+  "spawn_clock": 61.71,
+  "first_seen": 501.1375427246094,
+  "onset": 501.1375427246094,
+  "n_pos": 992
+ },
+ {
+  "arena": "a3325826825413590",
+  "ship": "COMMUNICATION",
+  "spawn_clock": 61.035,
+  "first_seen": 307.32086181640625,
+  "onset": 307.32086181640625,
+  "n_pos": 444
+ },
+ {
+  "arena": "a3325826825413590",
+  "ship": "1",
+  "spawn_clock": 61.035,
+  "first_seen": 347.3355712890625,
+  "onset": 347.3355712890625,
+  "n_pos": 740
+ },
+ {
+  "arena": "a3325826825413590",
+  "ship": "4",
+  "spawn_clock": 61.035,
+  "first_seen": 371.3159484863281,
+  "onset": 371.3159484863281,
+  "n_pos": 1160
+ },
+ {
+  "arena": "a3325826825413590",
+  "ship": "3",
+  "spawn_clock": 61.035,
+  "first_seen": 416.4614562988281,
+  "onset": 416.4614562988281,
+  "n_pos": 808
+ },
+ {
+  "arena": "a3325826825413590",
+  "ship": "2",
+  "spawn_clock": 61.035,
+  "first_seen": 428.46478271484375,
+  "onset": 428.46478271484375,
+  "n_pos": 600
+ },
+ {
+  "arena": "a2957297156658701",
+  "ship": "4",
+  "spawn_clock": 61.546,
+  "first_seen": 364.85943603515625,
+  "onset": 364.85943603515625,
+  "n_pos": 964
+ },
+ {
+  "arena": "a2957297156658701",
+  "ship": "1",
+  "spawn_clock": 61.546,
+  "first_seen": 439.7298583984375,
+  "onset": 439.7298583984375,
+  "n_pos": 952
+ },
+ {
+  "arena": "a2957297156658701",
+  "ship": "2",
+  "spawn_clock": 61.546,
+  "first_seen": 442.58367919921875,
+  "onset": 442.58367919921875,
+  "n_pos": 1248
+ },
+ {
+  "arena": "a2957297156658701",
+  "ship": "3",
+  "spawn_clock": 61.546,
+  "first_seen": 474.5871276855469,
+  "onset": 474.5871276855469,
+  "n_pos": 980
+ },
+ {
+  "arena": "a2652186973971586",
+  "ship": "COMMUNICATION",
+  "spawn_clock": 58.368,
+  "first_seen": 280.2182312011719,
+  "onset": 283.760498046875,
+  "n_pos": 1107
+ },
+ {
+  "arena": "a2652186973971586",
+  "ship": "4",
+  "spawn_clock": 58.368,
+  "first_seen": 284.2659912109375,
+  "onset": 292.0716247558594,
+  "n_pos": 1277
+ },
+ {
+  "arena": "a2652186973971586",
+  "ship": "2",
+  "spawn_clock": 58.368,
+  "first_seen": 295.2431945800781,
+  "onset": 295.2431945800781,
+  "n_pos": 830
+ },
+ {
+  "arena": "a2652186973971586",
+  "ship": "1",
+  "spawn_clock": 58.368,
+  "first_seen": 313.2623291015625,
+  "onset": 313.2623291015625,
+  "n_pos": 1016
+ },
+ {
+  "arena": "a2652186973971586",
+  "ship": "3",
+  "spawn_clock": 58.368,
+  "first_seen": 331.23614501953125,
+  "onset": 331.23614501953125,
+  "n_pos": 1202
+ },
+ {
+  "arena": "a3986216702207438",
+  "ship": "2",
+  "spawn_clock": 52.253,
+  "first_seen": 247.13307189941406,
+  "onset": 310.9648132324219,
+  "n_pos": 815
+ },
+ {
+  "arena": "a3986216702207438",
+  "ship": "1",
+  "spawn_clock": 52.253,
+  "first_seen": 253.13169860839844,
+  "onset": 310.9648132324219,
+  "n_pos": 857
+ },
+ {
+  "arena": "a3986216702207438",
+  "ship": "COMMUNICATION",
+  "spawn_clock": 52.253,
+  "first_seen": 254.13101196289062,
+  "onset": 304.66680908203125,
+  "n_pos": 764
+ },
+ {
+  "arena": "a3986216702207438",
+  "ship": "4",
+  "spawn_clock": 52.253,
+  "first_seen": 275.142822265625,
+  "onset": 310.9648132324219,
+  "n_pos": 1793
+ },
+ {
+  "arena": "a3986216702207438",
+  "ship": "3",
+  "spawn_clock": 52.253,
+  "first_seen": 280.1408996582031,
+  "onset": 438.5287170410156,
+  "n_pos": 905
+ },
+ {
+  "arena": "a2313103602786726",
+  "ship": "1",
+  "spawn_clock": 60.939,
+  "first_seen": 240.93968200683594,
+  "onset": 360.374267578125,
+  "n_pos": 1356
+ },
+ {
+  "arena": "a2313103602786726",
+  "ship": "2",
+  "spawn_clock": 60.939,
+  "first_seen": 244.37106323242188,
+  "onset": 372.95513916015625,
+  "n_pos": 1096
+ },
+ {
+  "arena": "a2313103602786726",
+  "ship": "COMMUNICATION",
+  "spawn_clock": 60.939,
+  "first_seen": 246.089599609375,
+  "onset": 355.2227478027344,
+  "n_pos": 1356
+ },
+ {
+  "arena": "a2313103602786726",
+  "ship": "4",
+  "spawn_clock": 60.939,
+  "first_seen": 247.22616577148438,
+  "onset": 364.9445495605469,
+  "n_pos": 1688
+ },
+ {
+  "arena": "a2313103602786726",
+  "ship": "3",
+  "spawn_clock": 60.939,
+  "first_seen": 380.9369812011719,
+  "onset": 380.9369812011719,
+  "n_pos": 1026
+ },
+ {
+  "arena": "a2585473248904695",
+  "ship": "COMMUNICATION",
+  "spawn_clock": 40.11,
+  "first_seen": 295.5591125488281,
+  "onset": 295.5591125488281,
+  "n_pos": 692
+ },
+ {
+  "arena": "a2585473248904695",
+  "ship": "2",
+  "spawn_clock": 40.11,
+  "first_seen": 351.5553283691406,
+  "onset": 351.5553283691406,
+  "n_pos": 1080
+ },
+ {
+  "arena": "a2585473248904695",
+  "ship": "1",
+  "spawn_clock": 40.11,
+  "first_seen": 353.2829895019531,
+  "onset": 353.2829895019531,
+  "n_pos": 1016
+ },
+ {
+  "arena": "a2585473248904695",
+  "ship": "4",
+  "spawn_clock": 40.11,
+  "first_seen": 359.5585021972656,
+  "onset": 359.5585021972656,
+  "n_pos": 1004
+ },
+ {
+  "arena": "a2585473248904695",
+  "ship": "3",
+  "spawn_clock": 40.11,
+  "first_seen": 386.39947509765625,
+  "onset": 386.39947509765625,
+  "n_pos": 1016
+ },
+ {
+  "arena": "a2797348280831832",
+  "ship": "COMMUNICATION",
+  "spawn_clock": 45.698,
+  "first_seen": 314.8545837402344,
+  "onset": 314.8545837402344,
+  "n_pos": 740
+ },
+ {
+  "arena": "a2797348280831832",
+  "ship": "1",
+  "spawn_clock": 45.698,
+  "first_seen": 367.578857421875,
+  "onset": 367.578857421875,
+  "n_pos": 547
+ },
+ {
+  "arena": "a2797348280831832",
+  "ship": "2",
+  "spawn_clock": 45.698,
+  "first_seen": 367.578857421875,
+  "onset": 367.578857421875,
+  "n_pos": 571
+ },
+ {
+  "arena": "a2797348280831832",
+  "ship": "4",
+  "spawn_clock": 45.698,
+  "first_seen": 377.1378173828125,
+  "onset": 377.1378173828125,
+  "n_pos": 1220
+ },
+ {
+  "arena": "a2797348280831832",
+  "ship": "3",
+  "spawn_clock": 45.698,
+  "first_seen": 377.6999206542969,
+  "onset": 377.6999206542969,
+  "n_pos": 1188
+ },
+ {
+  "arena": "a2574637047017371",
+  "ship": "4",
+  "spawn_clock": 58.451,
+  "first_seen": 309.87896728515625,
+  "onset": 309.87896728515625,
+  "n_pos": 1480
+ },
+ {
+  "arena": "a2574637047017371",
+  "ship": "1",
+  "spawn_clock": 58.451,
+  "first_seen": 312.7352600097656,
+  "onset": 312.7352600097656,
+  "n_pos": 960
+ },
+ {
+  "arena": "a2574637047017371",
+  "ship": "2",
+  "spawn_clock": 58.451,
+  "first_seen": 319.6318359375,
+  "onset": 319.6318359375,
+  "n_pos": 512
+ },
+ {
+  "arena": "a2574637047017371",
+  "ship": "COMMUNICATION",
+  "spawn_clock": 58.451,
+  "first_seen": 333.9129333496094,
+  "onset": 333.9129333496094,
+  "n_pos": 784
+ },
+ {
+  "arena": "a2574637047017371",
+  "ship": "3",
+  "spawn_clock": 58.451,
+  "first_seen": 360.73797607421875,
+  "onset": 360.73797607421875,
+  "n_pos": 612
+ },
+ {
+  "arena": "a2717573559063225",
+  "ship": "2",
+  "spawn_clock": 51.878,
+  "first_seen": 343.9020690917969,
+  "onset": 343.9020690917969,
+  "n_pos": 1216
+ },
+ {
+  "arena": "a2717573559063225",
+  "ship": "4",
+  "spawn_clock": 51.878,
+  "first_seen": 377.01934814453125,
+  "onset": 377.01934814453125,
+  "n_pos": 1576
+ },
+ {
+  "arena": "a2717573559063225",
+  "ship": "COMMUNICATION",
+  "spawn_clock": 51.878,
+  "first_seen": 411.3153991699219,
+  "onset": 411.3153991699219,
+  "n_pos": 1024
+ },
+ {
+  "arena": "a2717573559063225",
+  "ship": "1",
+  "spawn_clock": 51.878,
+  "first_seen": 463.31781005859375,
+  "onset": 463.31781005859375,
+  "n_pos": 596
+ },
+ {
+  "arena": "a2717573559063225",
+  "ship": "3",
+  "spawn_clock": 51.878,
+  "first_seen": 495.878662109375,
+  "onset": 495.878662109375,
+  "n_pos": 1056
+ },
+ {
+  "arena": "a2790794161355098",
+  "ship": "1",
+  "spawn_clock": 53.704,
+  "first_seen": 337.1377258300781,
+  "onset": 337.1377258300781,
+  "n_pos": 1152
+ },
+ {
+  "arena": "a2790794161355098",
+  "ship": "2",
+  "spawn_clock": 53.704,
+  "first_seen": 337.70330810546875,
+  "onset": 337.70330810546875,
+  "n_pos": 1108
+ },
+ {
+  "arena": "a2790794161355098",
+  "ship": "4",
+  "spawn_clock": 53.704,
+  "first_seen": 339.9792785644531,
+  "onset": 339.9792785644531,
+  "n_pos": 1199
+ },
+ {
+  "arena": "a2790794161355098",
+  "ship": "3",
+  "spawn_clock": 53.704,
+  "first_seen": 491.9954528808594,
+  "onset": 491.9954528808594,
+  "n_pos": 1036
+ },
+ {
+  "arena": "a2790794161355098",
+  "ship": "COMMUNICATION",
+  "spawn_clock": 53.704,
+  "first_seen": 493.6957702636719,
+  "onset": 493.6957702636719,
+  "n_pos": 164
+ },
+ {
+  "arena": "a3037273745159660",
+  "ship": "1",
+  "spawn_clock": 49.234,
+  "first_seen": 144.656494140625,
+  "onset": 398.39166259765625,
+  "n_pos": 2272
+ },
+ {
+  "arena": "a3037273745159660",
+  "ship": "COMMUNICATION",
+  "spawn_clock": 49.234,
+  "first_seen": 145.2530975341797,
+  "onset": 387.51715087890625,
+  "n_pos": 2020
+ },
+ {
+  "arena": "a3037273745159660",
+  "ship": "4",
+  "spawn_clock": 49.234,
+  "first_seen": 148.115478515625,
+  "onset": 409.22216796875,
+  "n_pos": 2337
+ },
+ {
+  "arena": "a3037273745159660",
+  "ship": "2",
+  "spawn_clock": 49.234,
+  "first_seen": 148.115478515625,
+  "onset": 398.39166259765625,
+  "n_pos": 1496
+ },
+ {
+  "arena": "a3037273745159660",
+  "ship": "3",
+  "spawn_clock": 49.234,
+  "first_seen": 157.22821044921875,
+  "onset": 554.3594360351562,
+  "n_pos": 806
+ },
+ {
+  "arena": "a2939717854755369",
+  "ship": "COMMUNICATION",
+  "spawn_clock": 61.932,
+  "first_seen": 357.36846923828125,
+  "onset": 357.36846923828125,
+  "n_pos": 1280
+ },
+ {
+  "arena": "a2939717854755369",
+  "ship": "1",
+  "spawn_clock": 61.932,
+  "first_seen": 357.9213562011719,
+  "onset": 357.9213562011719,
+  "n_pos": 1324
+ },
+ {
+  "arena": "a2939717854755369",
+  "ship": "4",
+  "spawn_clock": 61.932,
+  "first_seen": 373.8128356933594,
+  "onset": 373.8128356933594,
+  "n_pos": 1561
+ },
+ {
+  "arena": "a2939717854755369",
+  "ship": "2",
+  "spawn_clock": 61.932,
+  "first_seen": 389.36907958984375,
+  "onset": 389.36907958984375,
+  "n_pos": 1244
+ },
+ {
+  "arena": "a2939717854755369",
+  "ship": "3",
+  "spawn_clock": 61.932,
+  "first_seen": 443.0657653808594,
+  "onset": 443.0657653808594,
+  "n_pos": 1287
+ },
+ {
+  "arena": "a2349284409386605",
+  "ship": "4",
+  "spawn_clock": 61.57,
+  "first_seen": 341.0089111328125,
+  "onset": 341.0089111328125,
+  "n_pos": 1799
+ },
+ {
+  "arena": "a2349284409386605",
+  "ship": "COMMUNICATION",
+  "spawn_clock": 61.57,
+  "first_seen": 390.44384765625,
+  "onset": 390.44384765625,
+  "n_pos": 930
+ },
+ {
+  "arena": "a2349284409386605",
+  "ship": "1",
+  "spawn_clock": 61.57,
+  "first_seen": 430.4607849121094,
+  "onset": 430.4607849121094,
+  "n_pos": 842
+ },
+ {
+  "arena": "a2349284409386605",
+  "ship": "2",
+  "spawn_clock": 61.57,
+  "first_seen": 430.4607849121094,
+  "onset": 430.4607849121094,
+  "n_pos": 986
+ },
+ {
+  "arena": "a2349284409386605",
+  "ship": "3",
+  "spawn_clock": 61.57,
+  "first_seen": 492.4552917480469,
+  "onset": 492.4552917480469,
+  "n_pos": 892
+ },
+ {
+  "arena": "a2311067790698653",
+  "ship": "COMMUNICATION",
+  "spawn_clock": 62.749,
+  "first_seen": 347.6438293457031,
+  "onset": 347.6438293457031,
+  "n_pos": 1040
+ },
+ {
+  "arena": "a2311067790698653",
+  "ship": "1",
+  "spawn_clock": 62.749,
+  "first_seen": 349.6349182128906,
+  "onset": 349.6349182128906,
+  "n_pos": 600
+ },
+ {
+  "arena": "a2311067790698653",
+  "ship": "2",
+  "spawn_clock": 62.749,
+  "first_seen": 382.62896728515625,
+  "onset": 382.62896728515625,
+  "n_pos": 809
+ },
+ {
+  "arena": "a2311067790698653",
+  "ship": "3",
+  "spawn_clock": 62.749,
+  "first_seen": 420.0328369140625,
+  "onset": 420.0328369140625,
+  "n_pos": 1225
+ },
+ {
+  "arena": "a2311067790698653",
+  "ship": "4",
+  "spawn_clock": 62.749,
+  "first_seen": 420.0328369140625,
+  "onset": 420.0328369140625,
+  "n_pos": 1150
+ },
+ {
+  "arena": "a3183581806629632",
+  "ship": "COMMUNICATION",
+  "spawn_clock": 46.803,
+  "first_seen": 342.2335205078125,
+  "onset": 342.2335205078125,
+  "n_pos": 1048
+ },
+ {
+  "arena": "a3183581806629632",
+  "ship": "4",
+  "spawn_clock": 46.803,
+  "first_seen": 374.7987060546875,
+  "onset": 374.7987060546875,
+  "n_pos": 1224
+ },
+ {
+  "arena": "a3183581806629632",
+  "ship": "3",
+  "spawn_clock": 46.803,
+  "first_seen": 409.0764465332031,
+  "onset": 409.0764465332031,
+  "n_pos": 964
+ },
+ {
+  "arena": "a3183581806629632",
+  "ship": "1",
+  "spawn_clock": 46.803,
+  "first_seen": 434.22637939453125,
+  "onset": 434.22637939453125,
+  "n_pos": 844
+ },
+ {
+  "arena": "a3183581806629632",
+  "ship": "2",
+  "spawn_clock": 46.803,
+  "first_seen": 437.075439453125,
+  "onset": 437.075439453125,
+  "n_pos": 1072
+ },
+ {
+  "arena": "a3159177802538887",
+  "ship": "4",
+  "spawn_clock": 55.183,
+  "first_seen": 366.6305236816406,
+  "onset": 366.6305236816406,
+  "n_pos": 1488
+ },
+ {
+  "arena": "a3159177802538887",
+  "ship": "3",
+  "spawn_clock": 55.183,
+  "first_seen": 456.3150939941406,
+  "onset": 456.3150939941406,
+  "n_pos": 692
+ },
+ {
+  "arena": "a3159177802538887",
+  "ship": "1",
+  "spawn_clock": 55.183,
+  "first_seen": 480.30584716796875,
+  "onset": 480.30584716796875,
+  "n_pos": 1080
+ },
+ {
+  "arena": "a3159177802538887",
+  "ship": "2",
+  "spawn_clock": 55.183,
+  "first_seen": 484.3268127441406,
+  "onset": 484.3268127441406,
+  "n_pos": 1316
+ },
+ {
+  "arena": "a2531910714307423",
+  "ship": "1",
+  "spawn_clock": 58.164,
+  "first_seen": 352.4527282714844,
+  "onset": 352.4527282714844,
+  "n_pos": 724
+ },
+ {
+  "arena": "a2531910714307423",
+  "ship": "COMMUNICATION",
+  "spawn_clock": 58.164,
+  "first_seen": 353.5929870605469,
+  "onset": 353.5929870605469,
+  "n_pos": 528
+ },
+ {
+  "arena": "a2531910714307423",
+  "ship": "2",
+  "spawn_clock": 58.164,
+  "first_seen": 362.1556396484375,
+  "onset": 362.1556396484375,
+  "n_pos": 1564
+ },
+ {
+  "arena": "a2531910714307423",
+  "ship": "4",
+  "spawn_clock": 58.164,
+  "first_seen": 368.4417419433594,
+  "onset": 368.4417419433594,
+  "n_pos": 932
+ },
+ {
+  "arena": "a2531910714307423",
+  "ship": "3",
+  "spawn_clock": 58.164,
+  "first_seen": 406.1460266113281,
+  "onset": 406.1460266113281,
+  "n_pos": 652
+ },
+ {
+  "arena": "a2594239279796140",
+  "ship": "1",
+  "spawn_clock": 62.63,
+  "first_seen": 259.78204345703125,
+  "onset": 415.7800598144531,
+  "n_pos": 1643
+ },
+ {
+  "arena": "a2594239279796140",
+  "ship": "COMMUNICATION",
+  "spawn_clock": 62.63,
+  "first_seen": 266.6424255371094,
+  "onset": 398.0693359375,
+  "n_pos": 1244
+ },
+ {
+  "arena": "a2594239279796140",
+  "ship": "2",
+  "spawn_clock": 62.63,
+  "first_seen": 270.06207275390625,
+  "onset": 411.7723388671875,
+  "n_pos": 1351
+ },
+ {
+  "arena": "a2594239279796140",
+  "ship": "4",
+  "spawn_clock": 62.63,
+  "first_seen": 270.6313781738281,
+  "onset": 411.7723388671875,
+  "n_pos": 1899
+ },
+ {
+  "arena": "a2594239279796140",
+  "ship": "3",
+  "spawn_clock": 62.63,
+  "first_seen": 498.0638122558594,
+  "onset": 498.0638122558594,
+  "n_pos": 651
+ },
+ {
+  "arena": "a2290984524147473",
+  "ship": "1",
+  "spawn_clock": 61.25,
+  "first_seen": 211.550537109375,
+  "onset": 338.3974609375,
+  "n_pos": 1184
+ },
+ {
+  "arena": "a2290984524147473",
+  "ship": "2",
+  "spawn_clock": 61.25,
+  "first_seen": 215.5377960205078,
+  "onset": 355.5404052734375,
+  "n_pos": 868
+ },
+ {
+  "arena": "a2290984524147473",
+  "ship": "COMMUNICATION",
+  "spawn_clock": 61.25,
+  "first_seen": 216.13572692871094,
+  "onset": 299.5491943359375,
+  "n_pos": 984
+ },
+ {
+  "arena": "a2290984524147473",
+  "ship": "4",
+  "spawn_clock": 61.25,
+  "first_seen": 217.26145935058594,
+  "onset": 312.1487731933594,
+  "n_pos": 1308
+ },
+ {
+  "arena": "a2290984524147473",
+  "ship": "3",
+  "spawn_clock": 61.25,
+  "first_seen": 343.5364074707031,
+  "onset": 343.5364074707031,
+  "n_pos": 908
+ },
+ {
+  "arena": "a2564307653053066",
+  "ship": "2",
+  "spawn_clock": 62.242,
+  "first_seen": 320.52459716796875,
+  "onset": 320.52459716796875,
+  "n_pos": 1136
+ },
+ {
+  "arena": "a2564307653053066",
+  "ship": "4",
+  "spawn_clock": 62.242,
+  "first_seen": 331.40582275390625,
+  "onset": 331.40582275390625,
+  "n_pos": 1664
+ },
+ {
+  "arena": "a2564307653053066",
+  "ship": "COMMUNICATION",
+  "spawn_clock": 62.242,
+  "first_seen": 331.40582275390625,
+  "onset": 331.40582275390625,
+  "n_pos": 1104
+ },
+ {
+  "arena": "a2564307653053066",
+  "ship": "1",
+  "spawn_clock": 62.242,
+  "first_seen": 407.4093933105469,
+  "onset": 407.4093933105469,
+  "n_pos": 992
+ },
+ {
+  "arena": "a2564307653053066",
+  "ship": "3",
+  "spawn_clock": 62.242,
+  "first_seen": 407.5314636230469,
+  "onset": 407.5314636230469,
+  "n_pos": 1047
+ },
+ {
+  "arena": "a2298019681544746",
+  "ship": "1",
+  "spawn_clock": 62.522,
+  "first_seen": 333.4118957519531,
+  "onset": 346.2247619628906,
+  "n_pos": 1656
+ },
+ {
+  "arena": "a2298019681544746",
+  "ship": "2",
+  "spawn_clock": 62.522,
+  "first_seen": 334.5462646484375,
+  "onset": 348.2330322265625,
+  "n_pos": 1347
+ },
+ {
+  "arena": "a2298019681544746",
+  "ship": "COMMUNICATION",
+  "spawn_clock": 62.522,
+  "first_seen": 334.6670227050781,
+  "onset": 338.9458312988281,
+  "n_pos": 1383
+ },
+ {
+  "arena": "a2298019681544746",
+  "ship": "4",
+  "spawn_clock": 62.522,
+  "first_seen": 334.6670227050781,
+  "onset": 347.22247314453125,
+  "n_pos": 1352
+ },
+ {
+  "arena": "a2298019681544746",
+  "ship": "3",
+  "spawn_clock": 62.522,
+  "first_seen": 334.8104248046875,
+  "onset": 339.509521484375,
+  "n_pos": 995
+ },
+ {
+  "arena": "a5499965045427366",
+  "ship": "4",
+  "spawn_clock": 38.643,
+  "first_seen": 350.63525390625,
+  "onset": 350.63525390625,
+  "n_pos": 1336
+ },
+ {
+  "arena": "a5499965045427366",
+  "ship": "COMMUNICATION",
+  "spawn_clock": 38.643,
+  "first_seen": 362.0517578125,
+  "onset": 362.0517578125,
+  "n_pos": 1584
+ },
+ {
+  "arena": "a5499965045427366",
+  "ship": "1",
+  "spawn_clock": 38.643,
+  "first_seen": 414.6512451171875,
+  "onset": 414.6512451171875,
+  "n_pos": 1160
+ },
+ {
+  "arena": "a5499965045427366",
+  "ship": "2",
+  "spawn_clock": 38.643,
+  "first_seen": 416.9156799316406,
+  "onset": 416.9156799316406,
+  "n_pos": 1128
+ },
+ {
+  "arena": "a5499965045427366",
+  "ship": "3",
+  "spawn_clock": 38.643,
+  "first_seen": 457.57061767578125,
+  "onset": 457.57061767578125,
+  "n_pos": 400
+ },
+ {
+  "arena": "a6100757956041114",
+  "ship": "2",
+  "spawn_clock": 61.992,
+  "first_seen": 263.1428527832031,
+  "onset": 347.1582336425781,
+  "n_pos": 2484
+ },
+ {
+  "arena": "a6100757956041114",
+  "ship": "1",
+  "spawn_clock": 61.992,
+  "first_seen": 267.1438903808594,
+  "onset": 373.4233093261719,
+  "n_pos": 2272
+ },
+ {
+  "arena": "a6100757956041114",
+  "ship": "COMMUNICATION",
+  "spawn_clock": 61.992,
+  "first_seen": 272.286865234375,
+  "onset": 324.296875,
+  "n_pos": 1796
+ },
+ {
+  "arena": "a6100757956041114",
+  "ship": "4",
+  "spawn_clock": 61.992,
+  "first_seen": 273.9977722167969,
+  "onset": 347.1582336425781,
+  "n_pos": 2448
+ },
+ {
+  "arena": "a6100757956041114",
+  "ship": "3",
+  "spawn_clock": 61.992,
+  "first_seen": 669.9984741210938,
+  "onset": 669.9984741210938,
+  "n_pos": 768
+ },
+ {
+  "arena": "a5867485397289464",
+  "ship": "COMMUNICATION",
+  "spawn_clock": 40.324,
+  "first_seen": 358.1978759765625,
+  "onset": 358.1978759765625,
+  "n_pos": 1087
+ },
+ {
+  "arena": "a5867485397289464",
+  "ship": "4",
+  "spawn_clock": 40.324,
+  "first_seen": 376.32574462890625,
+  "onset": 376.32574462890625,
+  "n_pos": 1376
+ },
+ {
+  "arena": "a5867485397289464",
+  "ship": "2",
+  "spawn_clock": 40.324,
+  "first_seen": 433.4543762207031,
+  "onset": 433.4543762207031,
+  "n_pos": 804
+ },
+ {
+  "arena": "a5867485397289464",
+  "ship": "1",
+  "spawn_clock": 40.324,
+  "first_seen": 434.6122741699219,
+  "onset": 434.6122741699219,
+  "n_pos": 1148
+ },
+ {
+  "arena": "a5867485397289464",
+  "ship": "3",
+  "spawn_clock": 40.324,
+  "first_seen": 441.45159912109375,
+  "onset": 441.45159912109375,
+  "n_pos": 996
+ },
+ {
+  "arena": "a4896427651564136",
+  "ship": "1",
+  "spawn_clock": 46.107,
+  "first_seen": 400.4161682128906,
+  "onset": 400.4161682128906,
+  "n_pos": 1320
+ },
+ {
+  "arena": "a4896427651564136",
+  "ship": "2",
+  "spawn_clock": 46.107,
+  "first_seen": 407.2519836425781,
+  "onset": 407.2519836425781,
+  "n_pos": 1756
+ },
+ {
+  "arena": "a4896427651564136",
+  "ship": "4",
+  "spawn_clock": 46.107,
+  "first_seen": 410.9694519042969,
+  "onset": 410.9694519042969,
+  "n_pos": 1230
+ },
+ {
+  "arena": "a4896427651564136",
+  "ship": "3",
+  "spawn_clock": 46.107,
+  "first_seen": 615.2368774414062,
+  "onset": 615.2368774414062,
+  "n_pos": 1152
+ },
+ {
+  "arena": "a4668918939009274",
+  "ship": "COMMUNICATION",
+  "spawn_clock": 48.245,
+  "first_seen": 339.6867980957031,
+  "onset": 339.6867980957031,
+  "n_pos": 1144
+ },
+ {
+  "arena": "a4668918939009274",
+  "ship": "4",
+  "spawn_clock": 48.245,
+  "first_seen": 382.5141296386719,
+  "onset": 382.5141296386719,
+  "n_pos": 1216
+ },
+ {
+  "arena": "a4668918939009274",
+  "ship": "1",
+  "spawn_clock": 48.245,
+  "first_seen": 415.6971435546875,
+  "onset": 415.6971435546875,
+  "n_pos": 744
+ },
+ {
+  "arena": "a4668918939009274",
+  "ship": "2",
+  "spawn_clock": 48.245,
+  "first_seen": 415.6971435546875,
+  "onset": 415.6971435546875,
+  "n_pos": 576
+ },
+ {
+  "arena": "a4668918939009274",
+  "ship": "3",
+  "spawn_clock": 48.245,
+  "first_seen": 427.6792907714844,
+  "onset": 427.6792907714844,
+  "n_pos": 940
+ },
+ {
+  "arena": "a7316164981691393",
+  "ship": "4",
+  "spawn_clock": 41.613,
+  "first_seen": 379.912353515625,
+  "onset": 379.912353515625,
+  "n_pos": 1552
+ },
+ {
+  "arena": "a7316164981691393",
+  "ship": "2",
+  "spawn_clock": 41.613,
+  "first_seen": 441.11370849609375,
+  "onset": 441.11370849609375,
+  "n_pos": 1008
+ },
+ {
+  "arena": "a7316164981691393",
+  "ship": "1",
+  "spawn_clock": 41.613,
+  "first_seen": 441.713623046875,
+  "onset": 441.713623046875,
+  "n_pos": 1304
+ },
+ {
+  "arena": "a7316164981691393",
+  "ship": "3",
+  "spawn_clock": 41.613,
+  "first_seen": 505.0334777832031,
+  "onset": 505.0334777832031,
+  "n_pos": 600
+ },
+ {
+  "arena": "a5031311099917329",
+  "ship": "COMMUNICATION",
+  "spawn_clock": 47.058,
+  "first_seen": 394.48187255859375,
+  "onset": 394.48187255859375,
+  "n_pos": 1156
+ },
+ {
+  "arena": "a5031311099917329",
+  "ship": "4",
+  "spawn_clock": 47.058,
+  "first_seen": 437.36846923828125,
+  "onset": 437.36846923828125,
+  "n_pos": 1216
+ },
+ {
+  "arena": "a5031311099917329",
+  "ship": "2",
+  "spawn_clock": 47.058,
+  "first_seen": 455.0928039550781,
+  "onset": 455.0928039550781,
+  "n_pos": 520
+ },
+ {
+  "arena": "a5031311099917329",
+  "ship": "1",
+  "spawn_clock": 47.058,
+  "first_seen": 456.177001953125,
+  "onset": 456.177001953125,
+  "n_pos": 1100
+ },
+ {
+  "arena": "a5031311099917329",
+  "ship": "3",
+  "spawn_clock": 47.058,
+  "first_seen": 516.2075805664062,
+  "onset": 516.2075805664062,
+  "n_pos": 892
+ },
+ {
+  "arena": "a2651040225298515",
+  "ship": "1",
+  "spawn_clock": 59.071,
+  "first_seen": 336.6294250488281,
+  "onset": 353.45428466796875,
+  "n_pos": 1631
+ },
+ {
+  "arena": "a2651040225298515",
+  "ship": "COMMUNICATION",
+  "spawn_clock": 59.071,
+  "first_seen": 344.62628173828125,
+  "onset": 346.1721496582031,
+  "n_pos": 791
+ },
+ {
+  "arena": "a2651040225298515",
+  "ship": "4",
+  "spawn_clock": 59.071,
+  "first_seen": 354.6212158203125,
+  "onset": 354.6212158203125,
+  "n_pos": 1523
+ },
+ {
+  "arena": "a2651040225298515",
+  "ship": "2",
+  "spawn_clock": 59.071,
+  "first_seen": 394.6214294433594,
+  "onset": 394.6214294433594,
+  "n_pos": 509
+ },
+ {
+  "arena": "a2651040225298515",
+  "ship": "3",
+  "spawn_clock": 59.071,
+  "first_seen": 479.6156921386719,
+  "onset": 479.6156921386719,
+  "n_pos": 866
+ },
+ {
+  "arena": "a4642311617821301",
+  "ship": "COMMUNICATION",
+  "spawn_clock": 43.499,
+  "first_seen": 320.67156982421875,
+  "onset": 320.67156982421875,
+  "n_pos": 772
+ },
+ {
+  "arena": "a4642311617821301",
+  "ship": "1",
+  "spawn_clock": 43.499,
+  "first_seen": 322.9537353515625,
+  "onset": 322.9537353515625,
+  "n_pos": 412
+ },
+ {
+  "arena": "a4642311617821301",
+  "ship": "2",
+  "spawn_clock": 43.499,
+  "first_seen": 354.9433898925781,
+  "onset": 354.9433898925781,
+  "n_pos": 772
+ },
+ {
+  "arena": "a4642311617821301",
+  "ship": "4",
+  "spawn_clock": 43.499,
+  "first_seen": 362.9244384765625,
+  "onset": 362.9244384765625,
+  "n_pos": 1695
+ },
+ {
+  "arena": "a4642311617821301",
+  "ship": "3",
+  "spawn_clock": 43.499,
+  "first_seen": 427.5520935058594,
+  "onset": 427.5520935058594,
+  "n_pos": 976
+ },
+ {
+  "arena": "a5358183881998856",
+  "ship": "COMMUNICATION",
+  "spawn_clock": 53.052,
+  "first_seen": 341.0970153808594,
+  "onset": 341.0970153808594,
+  "n_pos": 1152
+ },
+ {
+  "arena": "a5358183881998856",
+  "ship": "4",
+  "spawn_clock": 53.052,
+  "first_seen": 377.9502258300781,
+  "onset": 377.9502258300781,
+  "n_pos": 1274
+ },
+ {
+  "arena": "a5358183881998856",
+  "ship": "2",
+  "spawn_clock": 53.052,
+  "first_seen": 415.3653259277344,
+  "onset": 415.3653259277344,
+  "n_pos": 900
+ },
+ {
+  "arena": "a5358183881998856",
+  "ship": "1",
+  "spawn_clock": 53.052,
+  "first_seen": 415.3653259277344,
+  "onset": 415.3653259277344,
+  "n_pos": 828
+ },
+ {
+  "arena": "a5358183881998856",
+  "ship": "3",
+  "spawn_clock": 53.052,
+  "first_seen": 415.4819641113281,
+  "onset": 415.4819641113281,
+  "n_pos": 1027
+ },
+ {
+  "arena": "a5104308365210967",
+  "ship": "4",
+  "spawn_clock": 51.495,
+  "first_seen": 397.7845458984375,
+  "onset": 397.7845458984375,
+  "n_pos": 996
+ },
+ {
+  "arena": "a5104308365210967",
+  "ship": "3",
+  "spawn_clock": 51.495,
+  "first_seen": 452.6303405761719,
+  "onset": 452.6303405761719,
+  "n_pos": 964
+ },
+ {
+  "arena": "a5104308365210967",
+  "ship": "2",
+  "spawn_clock": 51.495,
+  "first_seen": 456.6620788574219,
+  "onset": 456.6620788574219,
+  "n_pos": 1344
+ },
+ {
+  "arena": "a5104308365210967",
+  "ship": "1",
+  "spawn_clock": 51.495,
+  "first_seen": 458.9123229980469,
+  "onset": 458.9123229980469,
+  "n_pos": 1228
+ },
+ {
+  "arena": "a5933829759885681",
+  "ship": "4",
+  "spawn_clock": 52.026,
+  "first_seen": 439.4656066894531,
+  "onset": 439.4656066894531,
+  "n_pos": 2129
+ },
+ {
+  "arena": "a5933829759885681",
+  "ship": "2",
+  "spawn_clock": 52.026,
+  "first_seen": 441.1793518066406,
+  "onset": 441.1793518066406,
+  "n_pos": 1633
+ },
+ {
+  "arena": "a5933829759885681",
+  "ship": "1",
+  "spawn_clock": 52.026,
+  "first_seen": 441.1793518066406,
+  "onset": 441.1793518066406,
+  "n_pos": 1582
+ },
+ {
+  "arena": "a5933829759885681",
+  "ship": "COMMUNICATION",
+  "spawn_clock": 52.026,
+  "first_seen": 446.2612609863281,
+  "onset": 446.2612609863281,
+  "n_pos": 908
+ },
+ {
+  "arena": "a5933829759885681",
+  "ship": "3",
+  "spawn_clock": 52.026,
+  "first_seen": 554.3512573242188,
+  "onset": 554.3512573242188,
+  "n_pos": 80
+ },
+ {
+  "arena": "a4370758016941642",
+  "ship": "COMMUNICATION",
+  "spawn_clock": 62.019,
+  "first_seen": 368.8738708496094,
+  "onset": 368.8738708496094,
+  "n_pos": 1459
+ },
+ {
+  "arena": "a4370758016941642",
+  "ship": "4",
+  "spawn_clock": 62.019,
+  "first_seen": 376.8628845214844,
+  "onset": 376.8628845214844,
+  "n_pos": 1248
+ },
+ {
+  "arena": "a4370758016941642",
+  "ship": "2",
+  "spawn_clock": 62.019,
+  "first_seen": 405.89276123046875,
+  "onset": 405.89276123046875,
+  "n_pos": 805
+ },
+ {
+  "arena": "a4370758016941642",
+  "ship": "3",
+  "spawn_clock": 62.019,
+  "first_seen": 484.2720642089844,
+  "onset": 484.2720642089844,
+  "n_pos": 956
+ },
+ {
+  "arena": "a4370758016941642",
+  "ship": "1",
+  "spawn_clock": 62.019,
+  "first_seen": 484.86932373046875,
+  "onset": 484.86932373046875,
+  "n_pos": 1200
+ },
+ {
+  "arena": "a4778487852379251",
+  "ship": "2",
+  "spawn_clock": 46.281,
+  "first_seen": 340.5643310546875,
+  "onset": 340.5643310546875,
+  "n_pos": 1092
+ },
+ {
+  "arena": "a4778487852379251",
+  "ship": "COMMUNICATION",
+  "spawn_clock": 46.281,
+  "first_seen": 347.4310607910156,
+  "onset": 347.4310607910156,
+  "n_pos": 444
+ },
+ {
+  "arena": "a4778487852379251",
+  "ship": "4",
+  "spawn_clock": 46.281,
+  "first_seen": 379.4514465332031,
+  "onset": 379.4514465332031,
+  "n_pos": 1236
+ },
+ {
+  "arena": "a4778487852379251",
+  "ship": "3",
+  "spawn_clock": 46.281,
+  "first_seen": 439.4283447265625,
+  "onset": 439.4283447265625,
+  "n_pos": 860
+ },
+ {
+  "arena": "a4778487852379251",
+  "ship": "1",
+  "spawn_clock": 46.281,
+  "first_seen": 459.41650390625,
+  "onset": 459.41650390625,
+  "n_pos": 1148
+ },
+ {
+  "arena": "a2485662511116420",
+  "ship": "COMMUNICATION",
+  "spawn_clock": 62.529,
+  "first_seen": 327.4090576171875,
+  "onset": 327.4090576171875,
+  "n_pos": 873
+ },
+ {
+  "arena": "a2485662511116420",
+  "ship": "4",
+  "spawn_clock": 62.529,
+  "first_seen": 365.96087646484375,
+  "onset": 365.96087646484375,
+  "n_pos": 1272
+ },
+ {
+  "arena": "a2485662511116420",
+  "ship": "1",
+  "spawn_clock": 62.529,
+  "first_seen": 402.4037170410156,
+  "onset": 402.4037170410156,
+  "n_pos": 689
+ },
+ {
+  "arena": "a2485662511116420",
+  "ship": "2",
+  "spawn_clock": 62.529,
+  "first_seen": 402.4037170410156,
+  "onset": 402.4037170410156,
+  "n_pos": 693
+ },
+ {
+  "arena": "a2485662511116420",
+  "ship": "3",
+  "spawn_clock": 62.529,
+  "first_seen": 419.6627197265625,
+  "onset": 419.6627197265625,
+  "n_pos": 1064
+ },
+ {
+  "arena": "a5898628205424007",
+  "ship": "2",
+  "spawn_clock": 62.902,
+  "first_seen": 353.1860046386719,
+  "onset": 353.1860046386719,
+  "n_pos": 1140
+ },
+ {
+  "arena": "a5898628205424007",
+  "ship": "COMMUNICATION",
+  "spawn_clock": 62.902,
+  "first_seen": 372.0588684082031,
+  "onset": 372.0588684082031,
+  "n_pos": 1288
+ },
+ {
+  "arena": "a5898628205424007",
+  "ship": "4",
+  "spawn_clock": 62.902,
+  "first_seen": 398.90667724609375,
+  "onset": 398.90667724609375,
+  "n_pos": 1408
+ },
+ {
+  "arena": "a5898628205424007",
+  "ship": "1",
+  "spawn_clock": 62.902,
+  "first_seen": 434.9027099609375,
+  "onset": 434.9027099609375,
+  "n_pos": 996
+ },
+ {
+  "arena": "a5898628205424007",
+  "ship": "3",
+  "spawn_clock": 62.902,
+  "first_seen": 498.3480224609375,
+  "onset": 498.3480224609375,
+  "n_pos": 920
+ },
+ {
+  "arena": "a7280903303385112",
+  "ship": "COMMUNICATION",
+  "spawn_clock": 50.018,
+  "first_seen": 375.8866882324219,
+  "onset": 375.8866882324219,
+  "n_pos": 931
+ },
+ {
+  "arena": "a7280903303385112",
+  "ship": "3",
+  "spawn_clock": 50.018,
+  "first_seen": 393.45159912109375,
+  "onset": 393.45159912109375,
+  "n_pos": 672
+ },
+ {
+  "arena": "a7280903303385112",
+  "ship": "4",
+  "spawn_clock": 50.018,
+  "first_seen": 394.0345458984375,
+  "onset": 394.0345458984375,
+  "n_pos": 1140
+ },
+ {
+  "arena": "a7280903303385112",
+  "ship": "1",
+  "spawn_clock": 50.018,
+  "first_seen": 430.9319152832031,
+  "onset": 430.9319152832031,
+  "n_pos": 814
+ },
+ {
+  "arena": "a7280903303385112",
+  "ship": "2",
+  "spawn_clock": 50.018,
+  "first_seen": 436.93182373046875,
+  "onset": 436.93182373046875,
+  "n_pos": 988
+ },
+ {
+  "arena": "a2572433736196278",
+  "ship": "COMMUNICATION",
+  "spawn_clock": 59.962,
+  "first_seen": 339.9654541015625,
+  "onset": 339.9654541015625,
+  "n_pos": 904
+ },
+ {
+  "arena": "a2572433736196278",
+  "ship": "2",
+  "spawn_clock": 59.962,
+  "first_seen": 343.9675598144531,
+  "onset": 343.9675598144531,
+  "n_pos": 640
+ },
+ {
+  "arena": "a2572433736196278",
+  "ship": "4",
+  "spawn_clock": 59.962,
+  "first_seen": 391.39739990234375,
+  "onset": 391.39739990234375,
+  "n_pos": 1616
+ },
+ {
+  "arena": "a2572433736196278",
+  "ship": "1",
+  "spawn_clock": 59.962,
+  "first_seen": 419.9532470703125,
+  "onset": 419.9532470703125,
+  "n_pos": 568
+ },
+ {
+  "arena": "a2572433736196278",
+  "ship": "3",
+  "spawn_clock": 59.962,
+  "first_seen": 465.1111145019531,
+  "onset": 465.1111145019531,
+  "n_pos": 1064
+ },
+ {
+  "arena": "a5132487647897469",
+  "ship": "2",
+  "spawn_clock": 61.752,
+  "first_seen": 354.9102783203125,
+  "onset": 354.9102783203125,
+  "n_pos": 751
+ },
+ {
+  "arena": "a5132487647897469",
+  "ship": "COMMUNICATION",
+  "spawn_clock": 61.752,
+  "first_seen": 364.0069274902344,
+  "onset": 364.0069274902344,
+  "n_pos": 1015
+ },
+ {
+  "arena": "a5132487647897469",
+  "ship": "4",
+  "spawn_clock": 61.752,
+  "first_seen": 397.7555847167969,
+  "onset": 397.7555847167969,
+  "n_pos": 1043
+ },
+ {
+  "arena": "a5132487647897469",
+  "ship": "3",
+  "spawn_clock": 61.752,
+  "first_seen": 432.0283203125,
+  "onset": 432.0283203125,
+  "n_pos": 1130
+ },
+ {
+  "arena": "a5132487647897469",
+  "ship": "1",
+  "spawn_clock": 61.752,
+  "first_seen": 442.9129638671875,
+  "onset": 442.9129638671875,
+  "n_pos": 1022
+ },
+ {
+  "arena": "a5222334070092130",
+  "ship": "COMMUNICATION",
+  "spawn_clock": 61.342,
+  "first_seen": 314.2569274902344,
+  "onset": 314.2569274902344,
+  "n_pos": 439
+ },
+ {
+  "arena": "a5222334070092130",
+  "ship": "1",
+  "spawn_clock": 61.342,
+  "first_seen": 316.40087890625,
+  "onset": 316.40087890625,
+  "n_pos": 828
+ },
+ {
+  "arena": "a5222334070092130",
+  "ship": "2",
+  "spawn_clock": 61.342,
+  "first_seen": 321.5374755859375,
+  "onset": 321.5374755859375,
+  "n_pos": 692
+ },
+ {
+  "arena": "a5222334070092130",
+  "ship": "4",
+  "spawn_clock": 61.342,
+  "first_seen": 326.2402648925781,
+  "onset": 326.2402648925781,
+  "n_pos": 1475
+ },
+ {
+  "arena": "a5222334070092130",
+  "ship": "3",
+  "spawn_clock": 61.342,
+  "first_seen": 392.36981201171875,
+  "onset": 392.36981201171875,
+  "n_pos": 800
+ },
+ {
+  "arena": "a4524955936086941",
+  "ship": "4",
+  "spawn_clock": 45.907,
+  "first_seen": 312.1814880371094,
+  "onset": 312.1814880371094,
+  "n_pos": 1332
+ },
+ {
+  "arena": "a4524955936086941",
+  "ship": "COMMUNICATION",
+  "spawn_clock": 45.907,
+  "first_seen": 337.3605651855469,
+  "onset": 337.3605651855469,
+  "n_pos": 932
+ },
+ {
+  "arena": "a4524955936086941",
+  "ship": "1",
+  "spawn_clock": 45.907,
+  "first_seen": 401.3186950683594,
+  "onset": 401.3186950683594,
+  "n_pos": 660
+ },
+ {
+  "arena": "a4524955936086941",
+  "ship": "2",
+  "spawn_clock": 45.907,
+  "first_seen": 404.17529296875,
+  "onset": 404.17529296875,
+  "n_pos": 656
+ },
+ {
+  "arena": "a4524955936086941",
+  "ship": "3",
+  "spawn_clock": 45.907,
+  "first_seen": 449.875732421875,
+  "onset": 449.875732421875,
+  "n_pos": 932
+ },
+ {
+  "arena": "a8870754170574288",
+  "ship": "COMMUNICATION",
+  "spawn_clock": 43.13,
+  "first_seen": 365.37884521484375,
+  "onset": 365.37884521484375,
+  "n_pos": 1144
+ },
+ {
+  "arena": "a8870754170574288",
+  "ship": "1",
+  "spawn_clock": 43.13,
+  "first_seen": 366.5716857910156,
+  "onset": 366.5716857910156,
+  "n_pos": 2107
+ },
+ {
+  "arena": "a8870754170574288",
+  "ship": "4",
+  "spawn_clock": 43.13,
+  "first_seen": 376.240966796875,
+  "onset": 376.240966796875,
+  "n_pos": 1760
+ },
+ {
+  "arena": "a8870754170574288",
+  "ship": "2",
+  "spawn_clock": 43.13,
+  "first_seen": 381.40081787109375,
+  "onset": 381.40081787109375,
+  "n_pos": 1417
+ },
+ {
+  "arena": "a8870754170574288",
+  "ship": "3",
+  "spawn_clock": 43.13,
+  "first_seen": 442.7008972167969,
+  "onset": 442.7008972167969,
+  "n_pos": 1271
+ },
+ {
+  "arena": "a1418479105769836",
+  "ship": "4",
+  "spawn_clock": 60.965,
+  "first_seen": 315.26910400390625,
+  "onset": 315.26910400390625,
+  "n_pos": 1008
+ },
+ {
+  "arena": "a1418479105769836",
+  "ship": "COMMUNICATION",
+  "spawn_clock": 60.965,
+  "first_seen": 318.1199035644531,
+  "onset": 318.1199035644531,
+  "n_pos": 1204
+ },
+ {
+  "arena": "a1418479105769836",
+  "ship": "2",
+  "spawn_clock": 60.965,
+  "first_seen": 331.2530822753906,
+  "onset": 331.2530822753906,
+  "n_pos": 1160
+ },
+ {
+  "arena": "a1418479105769836",
+  "ship": "1",
+  "spawn_clock": 60.965,
+  "first_seen": 346.1168212890625,
+  "onset": 346.1168212890625,
+  "n_pos": 1364
+ },
+ {
+  "arena": "a1418479105769836",
+  "ship": "3",
+  "spawn_clock": 60.965,
+  "first_seen": 410.13958740234375,
+  "onset": 410.13958740234375,
+  "n_pos": 892
+ },
+ {
+  "arena": "a5338345433150461",
+  "ship": "4",
+  "spawn_clock": 49.292,
+  "first_seen": 380.7301330566406,
+  "onset": 380.7301330566406,
+  "n_pos": 1929
+ },
+ {
+  "arena": "a5338345433150461",
+  "ship": "1",
+  "spawn_clock": 49.292,
+  "first_seen": 470.1546630859375,
+  "onset": 470.1546630859375,
+  "n_pos": 1270
+ },
+ {
+  "arena": "a5338345433150461",
+  "ship": "2",
+  "spawn_clock": 49.292,
+  "first_seen": 473.1539306640625,
+  "onset": 473.1539306640625,
+  "n_pos": 895
+ },
+ {
+  "arena": "a5338345433150461",
+  "ship": "3",
+  "spawn_clock": 49.292,
+  "first_seen": 481.15350341796875,
+  "onset": 481.15350341796875,
+  "n_pos": 933
+ },
+ {
+  "arena": "a8274621300267072",
+  "ship": "COMMUNICATION",
+  "spawn_clock": 41.505,
+  "first_seen": 340.920654296875,
+  "onset": 340.920654296875,
+  "n_pos": 1148
+ },
+ {
+  "arena": "a8274621300267072",
+  "ship": "1",
+  "spawn_clock": 41.505,
+  "first_seen": 402.6292419433594,
+  "onset": 402.6292419433594,
+  "n_pos": 1136
+ },
+ {
+  "arena": "a8274621300267072",
+  "ship": "2",
+  "spawn_clock": 41.505,
+  "first_seen": 405.5118103027344,
+  "onset": 405.5118103027344,
+  "n_pos": 840
+ },
+ {
+  "arena": "a8274621300267072",
+  "ship": "4",
+  "spawn_clock": 41.505,
+  "first_seen": 416.9085693359375,
+  "onset": 416.9085693359375,
+  "n_pos": 1120
+ },
+ {
+  "arena": "a8274621300267072",
+  "ship": "3",
+  "spawn_clock": 41.505,
+  "first_seen": 473.3606262207031,
+  "onset": 473.3606262207031,
+  "n_pos": 925
+ },
+ {
+  "arena": "a8434982494363497",
+  "ship": "COMMUNICATION",
+  "spawn_clock": 58.049,
+  "first_seen": 274.06195068359375,
+  "onset": 312.4820861816406,
+  "n_pos": 844
+ },
+ {
+  "arena": "a8434982494363497",
+  "ship": "1",
+  "spawn_clock": 58.049,
+  "first_seen": 275.2251892089844,
+  "onset": 320.7593994140625,
+  "n_pos": 1616
+ },
+ {
+  "arena": "a8434982494363497",
+  "ship": "2",
+  "spawn_clock": 58.049,
+  "first_seen": 278.0483093261719,
+  "onset": 319.80303955078125,
+  "n_pos": 1336
+ },
+ {
+  "arena": "a8434982494363497",
+  "ship": "4",
+  "spawn_clock": 58.049,
+  "first_seen": 304.3559265136719,
+  "onset": 395.9604797363281,
+  "n_pos": 1273
+ },
+ {
+  "arena": "a8434982494363497",
+  "ship": "3",
+  "spawn_clock": 58.049,
+  "first_seen": 422.92333984375,
+  "onset": 422.92333984375,
+  "n_pos": 1002
+ },
+ {
+  "arena": "a6110176826661266",
+  "ship": "COMMUNICATION",
+  "spawn_clock": 57.539,
+  "first_seen": 303.84075927734375,
+  "onset": 303.9585876464844,
+  "n_pos": 1348
+ },
+ {
+  "arena": "a6110176826661266",
+  "ship": "1",
+  "spawn_clock": 57.539,
+  "first_seen": 305.56640625,
+  "onset": 311.3089904785156,
+  "n_pos": 1280
+ },
+ {
+  "arena": "a6110176826661266",
+  "ship": "2",
+  "spawn_clock": 57.539,
+  "first_seen": 315.8584899902344,
+  "onset": 315.8584899902344,
+  "n_pos": 1352
+ },
+ {
+  "arena": "a6110176826661266",
+  "ship": "4",
+  "spawn_clock": 57.539,
+  "first_seen": 319.8538818359375,
+  "onset": 319.8538818359375,
+  "n_pos": 1316
+ },
+ {
+  "arena": "a6110176826661266",
+  "ship": "3",
+  "spawn_clock": 57.539,
+  "first_seen": 432.9651794433594,
+  "onset": 432.9651794433594,
+  "n_pos": 864
+ },
+ {
+  "arena": "a7574644710992227",
+  "ship": "COMMUNICATION",
+  "spawn_clock": 53.056,
+  "first_seen": 318.3675537109375,
+  "onset": 318.3675537109375,
+  "n_pos": 672
+ },
+ {
+  "arena": "a7574644710992227",
+  "ship": "1",
+  "spawn_clock": 53.056,
+  "first_seen": 319.51409912109375,
+  "onset": 319.51409912109375,
+  "n_pos": 1960
+ },
+ {
+  "arena": "a7574644710992227",
+  "ship": "2",
+  "spawn_clock": 53.056,
+  "first_seen": 366.3779602050781,
+  "onset": 366.3779602050781,
+  "n_pos": 1792
+ },
+ {
+  "arena": "a7574644710992227",
+  "ship": "4",
+  "spawn_clock": 53.056,
+  "first_seen": 376.08160400390625,
+  "onset": 376.08160400390625,
+  "n_pos": 2780
+ },
+ {
+  "arena": "a7574644710992227",
+  "ship": "3",
+  "spawn_clock": 53.056,
+  "first_seen": 416.0929260253906,
+  "onset": 416.0929260253906,
+  "n_pos": 1868
+ },
+ {
+  "arena": "a5716461470287492",
+  "ship": "4",
+  "spawn_clock": 0.0,
+  "first_seen": 296.0374450683594,
+  "onset": 296.0374450683594,
+  "n_pos": 928
+ },
+ {
+  "arena": "a5716461470287492",
+  "ship": "3",
+  "spawn_clock": 0.0,
+  "first_seen": 356.77783203125,
+  "onset": 356.77783203125,
+  "n_pos": 863
+ },
+ {
+  "arena": "a5716461470287492",
+  "ship": "2",
+  "spawn_clock": 0.0,
+  "first_seen": 369.183349609375,
+  "onset": 369.183349609375,
+  "n_pos": 1080
+ },
+ {
+  "arena": "a5716461470287492",
+  "ship": "1",
+  "spawn_clock": 0.0,
+  "first_seen": 370.927490234375,
+  "onset": 370.927490234375,
+  "n_pos": 1148
+ },
+ {
+  "arena": "a5716461470287492",
+  "ship": "COMMUNICATION",
+  "spawn_clock": 0.0,
+  "first_seen": 426.3337707519531,
+  "onset": 426.3337707519531,
+  "n_pos": 224
+ },
+ {
+  "arena": "a3541129256629069",
+  "ship": "4",
+  "spawn_clock": 61.568,
+  "first_seen": 463.85784912109375,
+  "onset": 463.85784912109375,
+  "n_pos": 1572
+ },
+ {
+  "arena": "a3541129256629069",
+  "ship": "1",
+  "spawn_clock": 61.568,
+  "first_seen": 470.7076416015625,
+  "onset": 470.7076416015625,
+  "n_pos": 744
+ },
+ {
+  "arena": "a3541129256629069",
+  "ship": "2",
+  "spawn_clock": 61.568,
+  "first_seen": 474.7207336425781,
+  "onset": 474.7207336425781,
+  "n_pos": 888
+ },
+ {
+  "arena": "a3541129256629069",
+  "ship": "3",
+  "spawn_clock": 61.568,
+  "first_seen": 481.5698547363281,
+  "onset": 481.5698547363281,
+  "n_pos": 736
+ },
+ {
+  "arena": "a8356333057486714",
+  "ship": "2",
+  "spawn_clock": 57.28,
+  "first_seen": 308.74249267578125,
+  "onset": 308.74249267578125,
+  "n_pos": 1032
+ },
+ {
+  "arena": "a8356333057486714",
+  "ship": "COMMUNICATION",
+  "spawn_clock": 57.28,
+  "first_seen": 315.5965881347656,
+  "onset": 315.5965881347656,
+  "n_pos": 1216
+ },
+ {
+  "arena": "a8356333057486714",
+  "ship": "4",
+  "spawn_clock": 57.28,
+  "first_seen": 367.6067199707031,
+  "onset": 367.6067199707031,
+  "n_pos": 1140
+ },
+ {
+  "arena": "a8356333057486714",
+  "ship": "1",
+  "spawn_clock": 57.28,
+  "first_seen": 394.44757080078125,
+  "onset": 394.44757080078125,
+  "n_pos": 880
+ },
+ {
+  "arena": "a8356333057486714",
+  "ship": "3",
+  "spawn_clock": 57.28,
+  "first_seen": 441.2889404296875,
+  "onset": 441.2889404296875,
+  "n_pos": 880
+ },
+ {
+  "arena": "a1978517076656141",
+  "ship": "COMMUNICATION",
+  "spawn_clock": 62.833,
+  "first_seen": 388.7286071777344,
+  "onset": 388.7286071777344,
+  "n_pos": 1055
+ },
+ {
+  "arena": "a1978517076656141",
+  "ship": "2",
+  "spawn_clock": 62.833,
+  "first_seen": 438.8608093261719,
+  "onset": 438.8608093261719,
+  "n_pos": 592
+ },
+ {
+  "arena": "a1978517076656141",
+  "ship": "1",
+  "spawn_clock": 62.833,
+  "first_seen": 438.8608093261719,
+  "onset": 438.8608093261719,
+  "n_pos": 540
+ },
+ {
+  "arena": "a1978517076656141",
+  "ship": "3",
+  "spawn_clock": 62.833,
+  "first_seen": 439.0012512207031,
+  "onset": 439.0012512207031,
+  "n_pos": 1115
+ },
+ {
+  "arena": "a1978517076656141",
+  "ship": "4",
+  "spawn_clock": 62.833,
+  "first_seen": 439.0012512207031,
+  "onset": 439.0012512207031,
+  "n_pos": 848
+ },
+ {
+  "arena": "a4530397661962051",
+  "ship": "2",
+  "spawn_clock": 48.721,
+  "first_seen": 377.5849304199219,
+  "onset": 377.5849304199219,
+  "n_pos": 1069
+ },
+ {
+  "arena": "a4530397661962051",
+  "ship": "4",
+  "spawn_clock": 48.721,
+  "first_seen": 390.6076965332031,
+  "onset": 390.6076965332031,
+  "n_pos": 783
+ },
+ {
+  "arena": "a4530397661962051",
+  "ship": "COMMUNICATION",
+  "spawn_clock": 48.721,
+  "first_seen": 407.0071105957031,
+  "onset": 407.0071105957031,
+  "n_pos": 1395
+ },
+ {
+  "arena": "a4530397661962051",
+  "ship": "3",
+  "spawn_clock": 48.721,
+  "first_seen": 409.6022033691406,
+  "onset": 409.6022033691406,
+  "n_pos": 1601
+ },
+ {
+  "arena": "a4530397661962051",
+  "ship": "1",
+  "spawn_clock": 48.721,
+  "first_seen": 450.97247314453125,
+  "onset": 450.97247314453125,
+  "n_pos": 1127
+ },
+ {
+  "arena": "a6285458742169038",
+  "ship": "4",
+  "spawn_clock": 61.279,
+  "first_seen": 357.3013000488281,
+  "onset": 357.3013000488281,
+  "n_pos": 1632
+ },
+ {
+  "arena": "a6285458742169038",
+  "ship": "COMMUNICATION",
+  "spawn_clock": 61.279,
+  "first_seen": 367.5847473144531,
+  "onset": 367.5847473144531,
+  "n_pos": 948
+ },
+ {
+  "arena": "a6285458742169038",
+  "ship": "1",
+  "spawn_clock": 61.279,
+  "first_seen": 420.71978759765625,
+  "onset": 420.71978759765625,
+  "n_pos": 644
+ },
+ {
+  "arena": "a6285458742169038",
+  "ship": "2",
+  "spawn_clock": 61.279,
+  "first_seen": 421.30279541015625,
+  "onset": 421.30279541015625,
+  "n_pos": 924
+ },
+ {
+  "arena": "a6285458742169038",
+  "ship": "3",
+  "spawn_clock": 61.279,
+  "first_seen": 446.16937255859375,
+  "onset": 446.16937255859375,
+  "n_pos": 1002
+ },
+ {
+  "arena": "a2394085228282937",
+  "ship": "2",
+  "spawn_clock": 59.908,
+  "first_seen": 94.21089935302734,
+  "onset": 312.7874450683594,
+  "n_pos": 1728
+ },
+ {
+  "arena": "a2394085228282937",
+  "ship": "1",
+  "spawn_clock": 59.908,
+  "first_seen": 98.20941925048828,
+  "onset": 312.7874450683594,
+  "n_pos": 1484
+ },
+ {
+  "arena": "a2394085228282937",
+  "ship": "COMMUNICATION",
+  "spawn_clock": 59.908,
+  "first_seen": 100.31465911865234,
+  "onset": null,
+  "n_pos": 1352
+ },
+ {
+  "arena": "a2394085228282937",
+  "ship": "4",
+  "spawn_clock": 59.908,
+  "first_seen": 102.22257232666016,
+  "onset": 312.7874450683594,
+  "n_pos": 2828
+ },
+ {
+  "arena": "a2394085228282937",
+  "ship": "3",
+  "spawn_clock": 59.908,
+  "first_seen": 115.32705688476562,
+  "onset": 306.20477294921875,
+  "n_pos": 1260
+ },
+ {
+  "arena": "a2314997702219418",
+  "ship": "COMMUNICATION",
+  "spawn_clock": 63.229,
+  "first_seen": 410.1996765136719,
+  "onset": 410.1996765136719,
+  "n_pos": 1000
+ },
+ {
+  "arena": "a2314997702219418",
+  "ship": "4",
+  "spawn_clock": 63.229,
+  "first_seen": 470.11737060546875,
+  "onset": 470.11737060546875,
+  "n_pos": 843
+ },
+ {
+  "arena": "a2314997702219418",
+  "ship": "1",
+  "spawn_clock": 63.229,
+  "first_seen": 489.5143127441406,
+  "onset": 489.5143127441406,
+  "n_pos": 644
+ },
+ {
+  "arena": "a2314997702219418",
+  "ship": "2",
+  "spawn_clock": 63.229,
+  "first_seen": 489.5143127441406,
+  "onset": 489.5143127441406,
+  "n_pos": 584
+ },
+ {
+  "arena": "a2314997702219418",
+  "ship": "3",
+  "spawn_clock": 63.229,
+  "first_seen": 492.0932312011719,
+  "onset": 492.0932312011719,
+  "n_pos": 598
+ },
+ {
+  "arena": "a6698153561705901",
+  "ship": "COMMUNICATION",
+  "spawn_clock": 47.275,
+  "first_seen": 335.2638244628906,
+  "onset": 335.2638244628906,
+  "n_pos": 1088
+ },
+ {
+  "arena": "a6698153561705901",
+  "ship": "2",
+  "spawn_clock": 47.275,
+  "first_seen": 337.5431823730469,
+  "onset": 337.5431823730469,
+  "n_pos": 476
+ },
+ {
+  "arena": "a6698153561705901",
+  "ship": "4",
+  "spawn_clock": 47.275,
+  "first_seen": 356.4056701660156,
+  "onset": 356.4056701660156,
+  "n_pos": 1068
+ },
+ {
+  "arena": "a6698153561705901",
+  "ship": "3",
+  "spawn_clock": 47.275,
+  "first_seen": 434.68994140625,
+  "onset": 434.68994140625,
+  "n_pos": 944
+ },
+ {
+  "arena": "a6698153561705901",
+  "ship": "1",
+  "spawn_clock": 47.275,
+  "first_seen": 451.26373291015625,
+  "onset": 451.26373291015625,
+  "n_pos": 700
+ },
+ {
+  "arena": "a5808536986197630",
+  "ship": "2",
+  "spawn_clock": 45.627,
+  "first_seen": 318.7810363769531,
+  "onset": 318.7810363769531,
+  "n_pos": 740
+ },
+ {
+  "arena": "a5808536986197630",
+  "ship": "1",
+  "spawn_clock": 45.627,
+  "first_seen": 325.6304016113281,
+  "onset": 325.6304016113281,
+  "n_pos": 564
+ },
+ {
+  "arena": "a5808536986197630",
+  "ship": "COMMUNICATION",
+  "spawn_clock": 45.627,
+  "first_seen": 325.78863525390625,
+  "onset": 325.78863525390625,
+  "n_pos": 991
+ },
+ {
+  "arena": "a5808536986197630",
+  "ship": "4",
+  "spawn_clock": 45.627,
+  "first_seen": 325.78863525390625,
+  "onset": 325.78863525390625,
+  "n_pos": 671
+ },
+ {
+  "arena": "a5808536986197630",
+  "ship": "3",
+  "spawn_clock": 45.627,
+  "first_seen": 325.9241943359375,
+  "onset": 325.9241943359375,
+  "n_pos": 1146
+ },
+ {
+  "arena": "a2791648878478034",
+  "ship": "COMMUNICATION",
+  "spawn_clock": 61.47,
+  "first_seen": 318.6153259277344,
+  "onset": 318.6153259277344,
+  "n_pos": 1091
+ },
+ {
+  "arena": "a2791648878478034",
+  "ship": "4",
+  "spawn_clock": 61.47,
+  "first_seen": 371.7491149902344,
+  "onset": 371.7491149902344,
+  "n_pos": 1231
+ },
+ {
+  "arena": "a2791648878478034",
+  "ship": "1",
+  "spawn_clock": 61.47,
+  "first_seen": 424.8963623046875,
+  "onset": 424.8963623046875,
+  "n_pos": 1126
+ },
+ {
+  "arena": "a2791648878478034",
+  "ship": "2",
+  "spawn_clock": 61.47,
+  "first_seen": 426.6192321777344,
+  "onset": 426.6192321777344,
+  "n_pos": 1705
+ },
+ {
+  "arena": "a2791648878478034",
+  "ship": "3",
+  "spawn_clock": 61.47,
+  "first_seen": 433.4901123046875,
+  "onset": 433.4901123046875,
+  "n_pos": 1337
+ },
+ {
+  "arena": "a6014111301125274",
+  "ship": "COMMUNICATION",
+  "spawn_clock": 49.563,
+  "first_seen": 357.5750732421875,
+  "onset": 357.5750732421875,
+  "n_pos": 952
+ },
+ {
+  "arena": "a6014111301125274",
+  "ship": "2",
+  "spawn_clock": 49.563,
+  "first_seen": 365.008056640625,
+  "onset": 365.008056640625,
+  "n_pos": 508
+ },
+ {
+  "arena": "a6014111301125274",
+  "ship": "1",
+  "spawn_clock": 49.563,
+  "first_seen": 430.7037658691406,
+  "onset": 430.7037658691406,
+  "n_pos": 716
+ },
+ {
+  "arena": "a6014111301125274",
+  "ship": "4",
+  "spawn_clock": 49.563,
+  "first_seen": 448.9986267089844,
+  "onset": 448.9986267089844,
+  "n_pos": 788
+ },
+ {
+  "arena": "a6014111301125274",
+  "ship": "3",
+  "spawn_clock": 49.563,
+  "first_seen": 455.84661865234375,
+  "onset": 455.84661865234375,
+  "n_pos": 1092
+ },
+ {
+  "arena": "a3243449374549118",
+  "ship": "2",
+  "spawn_clock": 61.953,
+  "first_seen": 301.96893310546875,
+  "onset": 301.96893310546875,
+  "n_pos": 508
+ },
+ {
+  "arena": "a3243449374549118",
+  "ship": "COMMUNICATION",
+  "spawn_clock": 61.953,
+  "first_seen": 324.2515869140625,
+  "onset": 324.2515869140625,
+  "n_pos": 408
+ },
+ {
+  "arena": "a3243449374549118",
+  "ship": "4",
+  "spawn_clock": 61.953,
+  "first_seen": 372.2423400878906,
+  "onset": 372.2423400878906,
+  "n_pos": 1136
+ },
+ {
+  "arena": "a3243449374549118",
+  "ship": "3",
+  "spawn_clock": 61.953,
+  "first_seen": 377.95684814453125,
+  "onset": 377.95684814453125,
+  "n_pos": 1028
+ },
+ {
+  "arena": "a3243449374549118",
+  "ship": "1",
+  "spawn_clock": 61.953,
+  "first_seen": 419.09930419921875,
+  "onset": 419.09930419921875,
+  "n_pos": 744
+ },
+ {
+  "arena": "a5044861738691156",
+  "ship": "COMMUNICATION",
+  "spawn_clock": 57.306,
+  "first_seen": 355.6042785644531,
+  "onset": 355.6042785644531,
+  "n_pos": 1240
+ },
+ {
+  "arena": "a5044861738691156",
+  "ship": "4",
+  "spawn_clock": 57.306,
+  "first_seen": 362.4538269042969,
+  "onset": 362.4538269042969,
+  "n_pos": 1368
+ },
+ {
+  "arena": "a5044861738691156",
+  "ship": "1",
+  "spawn_clock": 57.306,
+  "first_seen": 468.7766418457031,
+  "onset": 468.7766418457031,
+  "n_pos": 976
+ },
+ {
+  "arena": "a5044861738691156",
+  "ship": "2",
+  "spawn_clock": 57.306,
+  "first_seen": 476.2193298339844,
+  "onset": 476.2193298339844,
+  "n_pos": 996
+ },
+ {
+  "arena": "a5044861738691156",
+  "ship": "3",
+  "spawn_clock": 57.306,
+  "first_seen": 519.60693359375,
+  "onset": 519.60693359375,
+  "n_pos": 988
+ },
+ {
+  "arena": "a4095897304739941",
+  "ship": "COMMUNICATION",
+  "spawn_clock": 52.271,
+  "first_seen": 347.7035827636719,
+  "onset": 347.7035827636719,
+  "n_pos": 1496
+ },
+ {
+  "arena": "a4095897304739941",
+  "ship": "4",
+  "spawn_clock": 52.271,
+  "first_seen": 366.5809631347656,
+  "onset": 366.5809631347656,
+  "n_pos": 936
+ },
+ {
+  "arena": "a4095897304739941",
+  "ship": "3",
+  "spawn_clock": 52.271,
+  "first_seen": 414.551513671875,
+  "onset": 414.551513671875,
+  "n_pos": 896
+ },
+ {
+  "arena": "a4095897304739941",
+  "ship": "1",
+  "spawn_clock": 52.271,
+  "first_seen": 425.40704345703125,
+  "onset": 425.40704345703125,
+  "n_pos": 616
+ },
+ {
+  "arena": "a4095897304739941",
+  "ship": "2",
+  "spawn_clock": 52.271,
+  "first_seen": 431.6956787109375,
+  "onset": 431.6956787109375,
+  "n_pos": 1216
+ },
+ {
+  "arena": "a2419992476203630",
+  "ship": "1",
+  "spawn_clock": 60.322,
+  "first_seen": 298.6294860839844,
+  "onset": 308.0185852050781,
+  "n_pos": 1340
+ },
+ {
+  "arena": "a2419992476203630",
+  "ship": "COMMUNICATION",
+  "spawn_clock": 60.322,
+  "first_seen": 306.61639404296875,
+  "onset": 306.61639404296875,
+  "n_pos": 1260
+ },
+ {
+  "arena": "a2419992476203630",
+  "ship": "4",
+  "spawn_clock": 60.322,
+  "first_seen": 332.3515625,
+  "onset": 332.3515625,
+  "n_pos": 1016
+ },
+ {
+  "arena": "a2419992476203630",
+  "ship": "2",
+  "spawn_clock": 60.322,
+  "first_seen": 429.48675537109375,
+  "onset": 429.48675537109375,
+  "n_pos": 984
+ },
+ {
+  "arena": "a2419992476203630",
+  "ship": "3",
+  "spawn_clock": 60.322,
+  "first_seen": 474.6279296875,
+  "onset": 474.6279296875,
+  "n_pos": 992
+ },
+ {
+  "arena": "a2900818360233097",
+  "ship": "4",
+  "spawn_clock": 61.536,
+  "first_seen": 358.6617736816406,
+  "onset": 358.6617736816406,
+  "n_pos": 1588
+ },
+ {
+  "arena": "a2900818360233097",
+  "ship": "COMMUNICATION",
+  "spawn_clock": 61.536,
+  "first_seen": 372.4190368652344,
+  "onset": 372.4190368652344,
+  "n_pos": 1148
+ },
+ {
+  "arena": "a2900818360233097",
+  "ship": "1",
+  "spawn_clock": 61.536,
+  "first_seen": 428.945556640625,
+  "onset": 428.945556640625,
+  "n_pos": 660
+ },
+ {
+  "arena": "a2900818360233097",
+  "ship": "2",
+  "spawn_clock": 61.536,
+  "first_seen": 429.51727294921875,
+  "onset": 429.51727294921875,
+  "n_pos": 1444
+ },
+ {
+  "arena": "a2900818360233097",
+  "ship": "3",
+  "spawn_clock": 61.536,
+  "first_seen": 562.3917236328125,
+  "onset": 562.3917236328125,
+  "n_pos": 866
+ },
+ {
+  "arena": "a4514690976455305",
+  "ship": "4",
+  "spawn_clock": 55.395,
+  "first_seen": 398.8271179199219,
+  "onset": 398.8271179199219,
+  "n_pos": 1188
+ },
+ {
+  "arena": "a4514690976455305",
+  "ship": "1",
+  "spawn_clock": 55.395,
+  "first_seen": 459.37896728515625,
+  "onset": 459.37896728515625,
+  "n_pos": 648
+ },
+ {
+  "arena": "a4514690976455305",
+  "ship": "2",
+  "spawn_clock": 55.395,
+  "first_seen": 463.3788757324219,
+  "onset": 463.3788757324219,
+  "n_pos": 1200
+ },
+ {
+  "arena": "a4514690976455305",
+  "ship": "3",
+  "spawn_clock": 55.395,
+  "first_seen": 481.30133056640625,
+  "onset": 481.30133056640625,
+  "n_pos": 715
+ },
+ {
+  "arena": "a4514690976455305",
+  "ship": "COMMUNICATION",
+  "spawn_clock": 55.395,
+  "first_seen": 524.5343627929688,
+  "onset": 524.5343627929688,
+  "n_pos": 1020
+ },
+ {
+  "arena": "a4796878918074673",
+  "ship": "2",
+  "spawn_clock": 50.706,
+  "first_seen": 335.8694152832031,
+  "onset": 335.8694152832031,
+  "n_pos": 640
+ },
+ {
+  "arena": "a4796878918074673",
+  "ship": "COMMUNICATION",
+  "spawn_clock": 50.706,
+  "first_seen": 342.1454162597656,
+  "onset": 342.1454162597656,
+  "n_pos": 1126
+ },
+ {
+  "arena": "a4796878918074673",
+  "ship": "4",
+  "spawn_clock": 50.706,
+  "first_seen": 342.1454162597656,
+  "onset": 342.1454162597656,
+  "n_pos": 1426
+ },
+ {
+  "arena": "a4796878918074673",
+  "ship": "3",
+  "spawn_clock": 50.706,
+  "first_seen": 394.1280517578125,
+  "onset": 394.1280517578125,
+  "n_pos": 1106
+ },
+ {
+  "arena": "a4796878918074673",
+  "ship": "1",
+  "spawn_clock": 50.706,
+  "first_seen": 419.85577392578125,
+  "onset": 419.85577392578125,
+  "n_pos": 990
+ },
+ {
+  "arena": "a2610448506932361",
+  "ship": "1",
+  "spawn_clock": 61.944,
+  "first_seen": 235.081787109375,
+  "onset": 302.6531982421875,
+  "n_pos": 944
+ },
+ {
+  "arena": "a2610448506932361",
+  "ship": "2",
+  "spawn_clock": 61.944,
+  "first_seen": 240.2372283935547,
+  "onset": 303.6536865234375,
+  "n_pos": 1216
+ },
+ {
+  "arena": "a2610448506932361",
+  "ship": "COMMUNICATION",
+  "spawn_clock": 61.944,
+  "first_seen": 241.9688720703125,
+  "onset": 295.3745422363281,
+  "n_pos": 996
+ },
+ {
+  "arena": "a2610448506932361",
+  "ship": "4",
+  "spawn_clock": 61.944,
+  "first_seen": 241.9688720703125,
+  "onset": 303.853759765625,
+  "n_pos": 1712
+ },
+ {
+  "arena": "a2610448506932361",
+  "ship": "3",
+  "spawn_clock": 61.944,
+  "first_seen": 277.9572448730469,
+  "onset": 297.9534912109375,
+  "n_pos": 1876
+ },
+ {
+  "arena": "a1120558712052872",
+  "ship": "COMMUNICATION",
+  "spawn_clock": 60.584,
+  "first_seen": 346.4671936035156,
+  "onset": 346.4671936035156,
+  "n_pos": 671
+ },
+ {
+  "arena": "a1120558712052872",
+  "ship": "2",
+  "spawn_clock": 60.584,
+  "first_seen": 366.47210693359375,
+  "onset": 366.47210693359375,
+  "n_pos": 1187
+ },
+ {
+  "arena": "a1120558712052872",
+  "ship": "1",
+  "spawn_clock": 60.584,
+  "first_seen": 366.47210693359375,
+  "onset": 366.47210693359375,
+  "n_pos": 1051
+ },
+ {
+  "arena": "a1120558712052872",
+  "ship": "4",
+  "spawn_clock": 60.584,
+  "first_seen": 369.4875793457031,
+  "onset": 369.4875793457031,
+  "n_pos": 1090
+ },
+ {
+  "arena": "a1120558712052872",
+  "ship": "3",
+  "spawn_clock": 60.584,
+  "first_seen": 375.49114990234375,
+  "onset": 375.49114990234375,
+  "n_pos": 960
+ },
+ {
+  "arena": "a4586472765993215",
+  "ship": "COMMUNICATION",
+  "spawn_clock": 53.311,
+  "first_seen": 325.3085632324219,
+  "onset": 325.3085632324219,
+  "n_pos": 1072
+ },
+ {
+  "arena": "a4586472765993215",
+  "ship": "2",
+  "spawn_clock": 53.311,
+  "first_seen": 376.7497253417969,
+  "onset": 376.7497253417969,
+  "n_pos": 1300
+ },
+ {
+  "arena": "a4586472765993215",
+  "ship": "1",
+  "spawn_clock": 53.311,
+  "first_seen": 382.4556884765625,
+  "onset": 382.4556884765625,
+  "n_pos": 920
+ },
+ {
+  "arena": "a4586472765993215",
+  "ship": "4",
+  "spawn_clock": 53.311,
+  "first_seen": 429.32177734375,
+  "onset": 429.32177734375,
+  "n_pos": 1540
+ },
+ {
+  "arena": "a4586472765993215",
+  "ship": "3",
+  "spawn_clock": 53.311,
+  "first_seen": 486.4945983886719,
+  "onset": 486.4945983886719,
+  "n_pos": 940
+ },
+ {
+  "arena": "a4971705563856736",
+  "ship": "COMMUNICATION",
+  "spawn_clock": 59.525,
+  "first_seen": 379.4072570800781,
+  "onset": 379.4072570800781,
+  "n_pos": 1321
+ },
+ {
+  "arena": "a4971705563856736",
+  "ship": "4",
+  "spawn_clock": 59.525,
+  "first_seen": 439.421875,
+  "onset": 439.421875,
+  "n_pos": 1349
+ },
+ {
+  "arena": "a4971705563856736",
+  "ship": "1",
+  "spawn_clock": 59.525,
+  "first_seen": 456.4073486328125,
+  "onset": 456.4073486328125,
+  "n_pos": 766
+ },
+ {
+  "arena": "a4971705563856736",
+  "ship": "2",
+  "spawn_clock": 59.525,
+  "first_seen": 462.4298095703125,
+  "onset": 462.4298095703125,
+  "n_pos": 652
+ },
+ {
+  "arena": "a4971705563856736",
+  "ship": "3",
+  "spawn_clock": 59.525,
+  "first_seen": 512.6561279296875,
+  "onset": 512.6561279296875,
+  "n_pos": 668
+ },
+ {
+  "arena": "a1986028983472517",
+  "ship": "COMMUNICATION",
+  "spawn_clock": 46.641,
+  "first_seen": 291.8157653808594,
+  "onset": 291.8157653808594,
+  "n_pos": 428
+ },
+ {
+  "arena": "a1986028983472517",
+  "ship": "1",
+  "spawn_clock": 46.641,
+  "first_seen": 292.975830078125,
+  "onset": 292.975830078125,
+  "n_pos": 1513
+ },
+ {
+  "arena": "a1986028983472517",
+  "ship": "4",
+  "spawn_clock": 46.641,
+  "first_seen": 372.5329284667969,
+  "onset": 372.5329284667969,
+  "n_pos": 1299
+ },
+ {
+  "arena": "a1986028983472517",
+  "ship": "2",
+  "spawn_clock": 46.641,
+  "first_seen": 414.5137023925781,
+  "onset": 414.5137023925781,
+  "n_pos": 1097
+ },
+ {
+  "arena": "a1986028983472517",
+  "ship": "3",
+  "spawn_clock": 46.641,
+  "first_seen": 437.5533142089844,
+  "onset": 437.5533142089844,
+  "n_pos": 732
+ },
+ {
+  "arena": "a6613327964004796",
+  "ship": "COMMUNICATION",
+  "spawn_clock": 45.18,
+  "first_seen": 315.4656677246094,
+  "onset": 315.4656677246094,
+  "n_pos": 1028
+ },
+ {
+  "arena": "a6613327964004796",
+  "ship": "4",
+  "spawn_clock": 45.18,
+  "first_seen": 325.2013244628906,
+  "onset": 325.2013244628906,
+  "n_pos": 1328
+ },
+ {
+  "arena": "a6613327964004796",
+  "ship": "1",
+  "spawn_clock": 45.18,
+  "first_seen": 356.5938415527344,
+  "onset": 356.5938415527344,
+  "n_pos": 972
+ },
+ {
+  "arena": "a6613327964004796",
+  "ship": "2",
+  "spawn_clock": 45.18,
+  "first_seen": 356.5938415527344,
+  "onset": 356.5938415527344,
+  "n_pos": 1152
+ },
+ {
+  "arena": "a6613327964004796",
+  "ship": "3",
+  "spawn_clock": 45.18,
+  "first_seen": 391.48443603515625,
+  "onset": 391.48443603515625,
+  "n_pos": 476
+ },
+ {
+  "arena": "a2636841085275730",
+  "ship": "COMMUNICATION",
+  "spawn_clock": 62.498,
+  "first_seen": 338.4928283691406,
+  "onset": 338.4928283691406,
+  "n_pos": 1280
+ },
+ {
+  "arena": "a2636841085275730",
+  "ship": "4",
+  "spawn_clock": 62.498,
+  "first_seen": 365.9381408691406,
+  "onset": 365.9381408691406,
+  "n_pos": 1288
+ },
+ {
+  "arena": "a2636841085275730",
+  "ship": "3",
+  "spawn_clock": 62.498,
+  "first_seen": 384.7845458984375,
+  "onset": 384.7845458984375,
+  "n_pos": 1084
+ },
+ {
+  "arena": "a2636841085275730",
+  "ship": "1",
+  "spawn_clock": 62.498,
+  "first_seen": 407.6328430175781,
+  "onset": 407.6328430175781,
+  "n_pos": 732
+ },
+ {
+  "arena": "a2636841085275730",
+  "ship": "2",
+  "spawn_clock": 62.498,
+  "first_seen": 408.78375244140625,
+  "onset": 408.78375244140625,
+  "n_pos": 988
+ },
+ {
+  "arena": "a4316619974914425",
+  "ship": "COMMUNICATION",
+  "spawn_clock": 58.859,
+  "first_seen": 298.765380859375,
+  "onset": 298.765380859375,
+  "n_pos": 819
+ },
+ {
+  "arena": "a4316619974914425",
+  "ship": "1",
+  "spawn_clock": 58.859,
+  "first_seen": 300.76519775390625,
+  "onset": 300.76519775390625,
+  "n_pos": 638
+ },
+ {
+  "arena": "a4316619974914425",
+  "ship": "2",
+  "spawn_clock": 58.859,
+  "first_seen": 387.7748718261719,
+  "onset": 387.7748718261719,
+  "n_pos": 1183
+ },
+ {
+  "arena": "a4316619974914425",
+  "ship": "4",
+  "spawn_clock": 58.859,
+  "first_seen": 398.2973937988281,
+  "onset": 398.2973937988281,
+  "n_pos": 1376
+ },
+ {
+  "arena": "a4316619974914425",
+  "ship": "3",
+  "spawn_clock": 58.859,
+  "first_seen": 435.74176025390625,
+  "onset": 435.74176025390625,
+  "n_pos": 585
+ },
+ {
+  "arena": "a5531262496656089",
+  "ship": "4",
+  "spawn_clock": 46.947,
+  "first_seen": 387.8298034667969,
+  "onset": 387.8298034667969,
+  "n_pos": 1332
+ },
+ {
+  "arena": "a5531262496656089",
+  "ship": "3",
+  "spawn_clock": 46.947,
+  "first_seen": 460.8521728515625,
+  "onset": 460.8521728515625,
+  "n_pos": 998
+ },
+ {
+  "arena": "a5531262496656089",
+  "ship": "1",
+  "spawn_clock": 46.947,
+  "first_seen": 517.8308715820312,
+  "onset": 517.8308715820312,
+  "n_pos": 1224
+ },
+ {
+  "arena": "a5531262496656089",
+  "ship": "2",
+  "spawn_clock": 46.947,
+  "first_seen": 518.8241577148438,
+  "onset": 518.8241577148438,
+  "n_pos": 1188
+ },
+ {
+  "arena": "a3224800634229985",
+  "ship": "4",
+  "spawn_clock": 61.897,
+  "first_seen": 333.32647705078125,
+  "onset": 333.32647705078125,
+  "n_pos": 1470
+ },
+ {
+  "arena": "a3224800634229985",
+  "ship": "COMMUNICATION",
+  "spawn_clock": 61.897,
+  "first_seen": 369.3367919921875,
+  "onset": 369.3367919921875,
+  "n_pos": 995
+ },
+ {
+  "arena": "a3224800634229985",
+  "ship": "3",
+  "spawn_clock": 61.897,
+  "first_seen": 381.3277893066406,
+  "onset": 381.3277893066406,
+  "n_pos": 1151
+ },
+ {
+  "arena": "a3224800634229985",
+  "ship": "2",
+  "spawn_clock": 61.897,
+  "first_seen": 441.90277099609375,
+  "onset": 441.90277099609375,
+  "n_pos": 548
+ },
+ {
+  "arena": "a3224800634229985",
+  "ship": "1",
+  "spawn_clock": 61.897,
+  "first_seen": 445.3174743652344,
+  "onset": 445.3174743652344,
+  "n_pos": 950
+ },
+ {
+  "arena": "a4492863961541079",
+  "ship": "4",
+  "spawn_clock": 44.809,
+  "first_seen": 312.2376403808594,
+  "onset": 312.2376403808594,
+  "n_pos": 1160
+ },
+ {
+  "arena": "a4492863961541079",
+  "ship": "2",
+  "spawn_clock": 44.809,
+  "first_seen": 323.10357666015625,
+  "onset": 323.10357666015625,
+  "n_pos": 1452
+ },
+ {
+  "arena": "a4492863961541079",
+  "ship": "COMMUNICATION",
+  "spawn_clock": 44.809,
+  "first_seen": 333.96807861328125,
+  "onset": 333.96807861328125,
+  "n_pos": 268
+ },
+ {
+  "arena": "a4492863961541079",
+  "ship": "1",
+  "spawn_clock": 44.809,
+  "first_seen": 338.0176086425781,
+  "onset": 338.0176086425781,
+  "n_pos": 1332
+ },
+ {
+  "arena": "a4492863961541079",
+  "ship": "3",
+  "spawn_clock": 44.809,
+  "first_seen": 424.2360534667969,
+  "onset": 424.2360534667969,
+  "n_pos": 940
+ },
+ {
+  "arena": "a4916304788305826",
+  "ship": "4",
+  "spawn_clock": 40.783,
+  "first_seen": 419.0677185058594,
+  "onset": 419.0677185058594,
+  "n_pos": 1472
+ },
+ {
+  "arena": "a4916304788305826",
+  "ship": "2",
+  "spawn_clock": 40.783,
+  "first_seen": 558.6685791015625,
+  "onset": 558.6685791015625,
+  "n_pos": 91
+ },
+ {
+  "arena": "a4916304788305826",
+  "ship": "1",
+  "spawn_clock": 40.783,
+  "first_seen": 560.66552734375,
+  "onset": 560.66552734375,
+  "n_pos": 77
+ },
+ {
+  "arena": "a5517647454648970",
+  "ship": "COMMUNICATION",
+  "spawn_clock": 43.777,
+  "first_seen": 287.1650085449219,
+  "onset": 287.1650085449219,
+  "n_pos": 992
+ },
+ {
+  "arena": "a5517647454648970",
+  "ship": "1",
+  "spawn_clock": 43.777,
+  "first_seen": 288.91485595703125,
+  "onset": 288.91485595703125,
+  "n_pos": 1340
+ },
+ {
+  "arena": "a5517647454648970",
+  "ship": "2",
+  "spawn_clock": 43.777,
+  "first_seen": 294.06671142578125,
+  "onset": 294.06671142578125,
+  "n_pos": 1644
+ },
+ {
+  "arena": "a5517647454648970",
+  "ship": "4",
+  "spawn_clock": 43.777,
+  "first_seen": 302.06964111328125,
+  "onset": 302.06964111328125,
+  "n_pos": 1500
+ },
+ {
+  "arena": "a5517647454648970",
+  "ship": "3",
+  "spawn_clock": 43.777,
+  "first_seen": 327.20269775390625,
+  "onset": 327.20269775390625,
+  "n_pos": 812
+ },
+ {
+  "arena": "a5951263058067596",
+  "ship": "1",
+  "spawn_clock": 53.789,
+  "first_seen": 263.6782531738281,
+  "onset": 314.4947814941406,
+  "n_pos": 1163
+ },
+ {
+  "arena": "a5951263058067596",
+  "ship": "2",
+  "spawn_clock": 53.789,
+  "first_seen": 265.6444396972656,
+  "onset": 329.2024230957031,
+  "n_pos": 689
+ },
+ {
+  "arena": "a5951263058067596",
+  "ship": "COMMUNICATION",
+  "spawn_clock": 53.789,
+  "first_seen": 268.68072509765625,
+  "onset": 307.20001220703125,
+  "n_pos": 1276
+ },
+ {
+  "arena": "a5951263058067596",
+  "ship": "4",
+  "spawn_clock": 53.789,
+  "first_seen": 269.6599426269531,
+  "onset": 314.4947814941406,
+  "n_pos": 1189
+ },
+ {
+  "arena": "a5951263058067596",
+  "ship": "3",
+  "spawn_clock": 53.789,
+  "first_seen": 333.77880859375,
+  "onset": 333.77880859375,
+  "n_pos": 1144
+ },
+ {
+  "arena": "a10069969193746026",
+  "ship": "COMMUNICATION",
+  "spawn_clock": 62.752,
+  "first_seen": 347.3882751464844,
+  "onset": 373.66082763671875,
+  "n_pos": 1078
+ },
+ {
+  "arena": "a10069969193746026",
+  "ship": "4",
+  "spawn_clock": 62.752,
+  "first_seen": 380.5401306152344,
+  "onset": 380.5401306152344,
+  "n_pos": 1384
+ },
+ {
+  "arena": "a10069969193746026",
+  "ship": "1",
+  "spawn_clock": 62.752,
+  "first_seen": 383.1380615234375,
+  "onset": 383.1380615234375,
+  "n_pos": 1046
+ },
+ {
+  "arena": "a10069969193746026",
+  "ship": "2",
+  "spawn_clock": 62.752,
+  "first_seen": 464.5167541503906,
+  "onset": 464.5167541503906,
+  "n_pos": 864
+ },
+ {
+  "arena": "a10069969193746026",
+  "ship": "3",
+  "spawn_clock": 62.752,
+  "first_seen": 464.6418762207031,
+  "onset": 464.6418762207031,
+  "n_pos": 1131
+ },
+ {
+  "arena": "fe1da253e4bd35995",
+  "ship": "4",
+  "spawn_clock": 35.4,
+  "first_seen": 369.66595458984375,
+  "onset": 369.66595458984375,
+  "n_pos": 1548
+ },
+ {
+  "arena": "fe1da253e4bd35995",
+  "ship": "COMMUNICATION",
+  "spawn_clock": 35.4,
+  "first_seen": 418.7939453125,
+  "onset": 418.7939453125,
+  "n_pos": 1148
+ },
+ {
+  "arena": "fe1da253e4bd35995",
+  "ship": "3",
+  "spawn_clock": 35.4,
+  "first_seen": 440.5606384277344,
+  "onset": 440.5606384277344,
+  "n_pos": 1252
+ },
+ {
+  "arena": "fe1da253e4bd35995",
+  "ship": "2",
+  "spawn_clock": 35.4,
+  "first_seen": 480.5643615722656,
+  "onset": 480.5643615722656,
+  "n_pos": 684
+ },
+ {
+  "arena": "fe1da253e4bd35995",
+  "ship": "1",
+  "spawn_clock": 35.4,
+  "first_seen": 480.5643615722656,
+  "onset": 480.5643615722656,
+  "n_pos": 672
+ },
+ {
+  "arena": "a2178821488385374",
+  "ship": "COMMUNICATION",
+  "spawn_clock": 62.675,
+  "first_seen": 372.5566101074219,
+  "onset": 372.5566101074219,
+  "n_pos": 974
+ },
+ {
+  "arena": "a2178821488385374",
+  "ship": "2",
+  "spawn_clock": 62.675,
+  "first_seen": 423.8415832519531,
+  "onset": 423.8415832519531,
+  "n_pos": 983
+ },
+ {
+  "arena": "a2178821488385374",
+  "ship": "1",
+  "spawn_clock": 62.675,
+  "first_seen": 423.8415832519531,
+  "onset": 423.8415832519531,
+  "n_pos": 551
+ },
+ {
+  "arena": "a2178821488385374",
+  "ship": "3",
+  "spawn_clock": 62.675,
+  "first_seen": 423.9657897949219,
+  "onset": 423.9657897949219,
+  "n_pos": 1163
+ },
+ {
+  "arena": "a2178821488385374",
+  "ship": "4",
+  "spawn_clock": 62.675,
+  "first_seen": 423.9657897949219,
+  "onset": 423.9657897949219,
+  "n_pos": 1198
+ },
+ {
+  "arena": "a2351431930526094",
+  "ship": "COMMUNICATION",
+  "spawn_clock": 61.445,
+  "first_seen": 359.746337890625,
+  "onset": 359.746337890625,
+  "n_pos": 1363
+ },
+ {
+  "arena": "a2351431930526094",
+  "ship": "2",
+  "spawn_clock": 61.445,
+  "first_seen": 361.44049072265625,
+  "onset": 361.44049072265625,
+  "n_pos": 1299
+ },
+ {
+  "arena": "a2351431930526094",
+  "ship": "4",
+  "spawn_clock": 61.445,
+  "first_seen": 373.4470520019531,
+  "onset": 373.4470520019531,
+  "n_pos": 1212
+ },
+ {
+  "arena": "a2351431930526094",
+  "ship": "3",
+  "spawn_clock": 61.445,
+  "first_seen": 386.5953063964844,
+  "onset": 386.5953063964844,
+  "n_pos": 1124
+ },
+ {
+  "arena": "a2351431930526094",
+  "ship": "1",
+  "spawn_clock": 61.445,
+  "first_seen": 439.7422790527344,
+  "onset": 439.7422790527344,
+  "n_pos": 1156
+ },
+ {
+  "arena": "a4827970203157485",
+  "ship": "1",
+  "spawn_clock": 55.773,
+  "first_seen": 339.77508544921875,
+  "onset": 339.77508544921875,
+  "n_pos": 1700
+ },
+ {
+  "arena": "a4827970203157485",
+  "ship": "4",
+  "spawn_clock": 55.773,
+  "first_seen": 342.0670471191406,
+  "onset": 342.0670471191406,
+  "n_pos": 1400
+ },
+ {
+  "arena": "a4827970203157485",
+  "ship": "2",
+  "spawn_clock": 55.773,
+  "first_seen": 344.904541015625,
+  "onset": 344.904541015625,
+  "n_pos": 1804
+ },
+ {
+  "arena": "a4827970203157485",
+  "ship": "COMMUNICATION",
+  "spawn_clock": 55.773,
+  "first_seen": 351.79833984375,
+  "onset": 351.79833984375,
+  "n_pos": 1284
+ },
+ {
+  "arena": "a4827970203157485",
+  "ship": "3",
+  "spawn_clock": 55.773,
+  "first_seen": 418.0569763183594,
+  "onset": 418.0569763183594,
+  "n_pos": 1324
+ },
+ {
+  "arena": "a7883654752265710",
+  "ship": "4",
+  "spawn_clock": 59.387,
+  "first_seen": 340.5515441894531,
+  "onset": 340.5515441894531,
+  "n_pos": 1472
+ },
+ {
+  "arena": "a7883654752265710",
+  "ship": "COMMUNICATION",
+  "spawn_clock": 59.387,
+  "first_seen": 366.32281494140625,
+  "onset": 366.32281494140625,
+  "n_pos": 688
+ },
+ {
+  "arena": "a7883654752265710",
+  "ship": "1",
+  "spawn_clock": 59.387,
+  "first_seen": 418.8341064453125,
+  "onset": 418.8341064453125,
+  "n_pos": 404
+ },
+ {
+  "arena": "a7883654752265710",
+  "ship": "2",
+  "spawn_clock": 59.387,
+  "first_seen": 425.6841125488281,
+  "onset": 425.6841125488281,
+  "n_pos": 532
+ },
+ {
+  "arena": "a7883654752265710",
+  "ship": "3",
+  "spawn_clock": 59.387,
+  "first_seen": 430.8359680175781,
+  "onset": 430.8359680175781,
+  "n_pos": 820
+ },
+ {
+  "arena": "a6536095879970279",
+  "ship": "COMMUNICATION",
+  "spawn_clock": 57.711,
+  "first_seen": 293.8905944824219,
+  "onset": 293.8905944824219,
+  "n_pos": 1138
+ },
+ {
+  "arena": "a6536095879970279",
+  "ship": "1",
+  "spawn_clock": 57.711,
+  "first_seen": 295.6557922363281,
+  "onset": 295.6557922363281,
+  "n_pos": 1193
+ },
+ {
+  "arena": "a6536095879970279",
+  "ship": "2",
+  "spawn_clock": 57.711,
+  "first_seen": 370.3113708496094,
+  "onset": 370.3113708496094,
+  "n_pos": 444
+ },
+ {
+  "arena": "a6536095879970279",
+  "ship": "4",
+  "spawn_clock": 57.711,
+  "first_seen": 381.724853515625,
+  "onset": 381.724853515625,
+  "n_pos": 1128
+ },
+ {
+  "arena": "a6536095879970279",
+  "ship": "3",
+  "spawn_clock": 57.711,
+  "first_seen": 386.6405029296875,
+  "onset": 386.6405029296875,
+  "n_pos": 778
+ },
+ {
+  "arena": "a3808735814891733",
+  "ship": "COMMUNICATION",
+  "spawn_clock": 61.15,
+  "first_seen": 309.1568603515625,
+  "onset": 309.1568603515625,
+  "n_pos": 1356
+ },
+ {
+  "arena": "a3808735814891733",
+  "ship": "1",
+  "spawn_clock": 61.15,
+  "first_seen": 311.4367370605469,
+  "onset": 313.0344543457031,
+  "n_pos": 960
+ },
+ {
+  "arena": "a3808735814891733",
+  "ship": "2",
+  "spawn_clock": 61.15,
+  "first_seen": 341.0294494628906,
+  "onset": 341.0294494628906,
+  "n_pos": 1013
+ },
+ {
+  "arena": "a3808735814891733",
+  "ship": "4",
+  "spawn_clock": 61.15,
+  "first_seen": 395.44647216796875,
+  "onset": 395.44647216796875,
+  "n_pos": 1128
+ },
+ {
+  "arena": "a3808735814891733",
+  "ship": "3",
+  "spawn_clock": 61.15,
+  "first_seen": 424.5761413574219,
+  "onset": 424.5761413574219,
+  "n_pos": 1002
+ },
+ {
+  "arena": "a3405468451164477",
+  "ship": "COMMUNICATION",
+  "spawn_clock": 52.385,
+  "first_seen": 311.7977600097656,
+  "onset": 311.7977600097656,
+  "n_pos": 1140
+ },
+ {
+  "arena": "a3405468451164477",
+  "ship": "4",
+  "spawn_clock": 52.385,
+  "first_seen": 369.509033203125,
+  "onset": 369.509033203125,
+  "n_pos": 1252
+ },
+ {
+  "arena": "a3405468451164477",
+  "ship": "3",
+  "spawn_clock": 52.385,
+  "first_seen": 410.6512756347656,
+  "onset": 410.6512756347656,
+  "n_pos": 1076
+ },
+ {
+  "arena": "a3405468451164477",
+  "ship": "1",
+  "spawn_clock": 52.385,
+  "first_seen": 414.6460266113281,
+  "onset": 414.6460266113281,
+  "n_pos": 1052
+ },
+ {
+  "arena": "a3405468451164477",
+  "ship": "2",
+  "spawn_clock": 52.385,
+  "first_seen": 417.49468994140625,
+  "onset": 417.49468994140625,
+  "n_pos": 1016
+ },
+ {
+  "arena": "a3408268770362055",
+  "ship": "COMMUNICATION",
+  "spawn_clock": 62.377,
+  "first_seen": 347.1643371582031,
+  "onset": 347.1643371582031,
+  "n_pos": 954
+ },
+ {
+  "arena": "a3408268770362055",
+  "ship": "1",
+  "spawn_clock": 62.377,
+  "first_seen": 406.2344665527344,
+  "onset": 406.2344665527344,
+  "n_pos": 529
+ },
+ {
+  "arena": "a3408268770362055",
+  "ship": "2",
+  "spawn_clock": 62.377,
+  "first_seen": 407.18072509765625,
+  "onset": 407.18072509765625,
+  "n_pos": 886
+ },
+ {
+  "arena": "a3408268770362055",
+  "ship": "3",
+  "spawn_clock": 62.377,
+  "first_seen": 407.4303283691406,
+  "onset": 407.4303283691406,
+  "n_pos": 1056
+ },
+ {
+  "arena": "a3408268770362055",
+  "ship": "4",
+  "spawn_clock": 62.377,
+  "first_seen": 407.4303283691406,
+  "onset": 407.4303283691406,
+  "n_pos": 1050
+ },
+ {
+  "arena": "a2894294332213291",
+  "ship": "COMMUNICATION",
+  "spawn_clock": 61.867,
+  "first_seen": 332.8000793457031,
+  "onset": 332.8000793457031,
+  "n_pos": 714
+ },
+ {
+  "arena": "a2894294332213291",
+  "ship": "1",
+  "spawn_clock": 61.867,
+  "first_seen": 333.7718505859375,
+  "onset": 333.7718505859375,
+  "n_pos": 906
+ },
+ {
+  "arena": "a2894294332213291",
+  "ship": "2",
+  "spawn_clock": 61.867,
+  "first_seen": 369.770263671875,
+  "onset": 369.770263671875,
+  "n_pos": 461
+ },
+ {
+  "arena": "a2894294332213291",
+  "ship": "4",
+  "spawn_clock": 61.867,
+  "first_seen": 437.8813781738281,
+  "onset": 437.8813781738281,
+  "n_pos": 728
+ },
+ {
+  "arena": "a2894294332213291",
+  "ship": "3",
+  "spawn_clock": 61.867,
+  "first_seen": 445.8799743652344,
+  "onset": 445.8799743652344,
+  "n_pos": 1003
+ },
+ {
+  "arena": "a2456774604550877",
+  "ship": "1",
+  "spawn_clock": 58.939,
+  "first_seen": 232.16075134277344,
+  "onset": 289.6195068359375,
+  "n_pos": 1556
+ },
+ {
+  "arena": "a2456774604550877",
+  "ship": "COMMUNICATION",
+  "spawn_clock": 58.939,
+  "first_seen": 233.22415161132812,
+  "onset": 282.4420471191406,
+  "n_pos": 1380
+ },
+ {
+  "arena": "a2456774604550877",
+  "ship": "2",
+  "spawn_clock": 58.939,
+  "first_seen": 238.36569213867188,
+  "onset": 289.6195068359375,
+  "n_pos": 1796
+ },
+ {
+  "arena": "a2456774604550877",
+  "ship": "4",
+  "spawn_clock": 58.939,
+  "first_seen": 241.20591735839844,
+  "onset": 290.48223876953125,
+  "n_pos": 1776
+ },
+ {
+  "arena": "a2456774604550877",
+  "ship": "3",
+  "spawn_clock": 58.939,
+  "first_seen": 246.9286651611328,
+  "onset": 285.30914306640625,
+  "n_pos": 1060
+ },
+ {
+  "arena": "a6337741413203298",
+  "ship": "1",
+  "spawn_clock": 60.183,
+  "first_seen": 326.45697021484375,
+  "onset": 326.45697021484375,
+  "n_pos": 603
+ },
+ {
+  "arena": "a6337741413203298",
+  "ship": "COMMUNICATION",
+  "spawn_clock": 60.183,
+  "first_seen": 334.17205810546875,
+  "onset": 334.17205810546875,
+  "n_pos": 1002
+ },
+ {
+  "arena": "a6337741413203298",
+  "ship": "4",
+  "spawn_clock": 60.183,
+  "first_seen": 400.7068176269531,
+  "onset": 400.7068176269531,
+  "n_pos": 1228
+ },
+ {
+  "arena": "a6337741413203298",
+  "ship": "2",
+  "spawn_clock": 60.183,
+  "first_seen": 401.15545654296875,
+  "onset": 401.15545654296875,
+  "n_pos": 541
+ },
+ {
+  "arena": "a6337741413203298",
+  "ship": "3",
+  "spawn_clock": 60.183,
+  "first_seen": 457.8396301269531,
+  "onset": 457.8396301269531,
+  "n_pos": 1000
+ },
+ {
+  "arena": "a2258368591775236",
+  "ship": "COMMUNICATION",
+  "spawn_clock": 60.96,
+  "first_seen": 328.3950500488281,
+  "onset": 328.3950500488281,
+  "n_pos": 928
+ },
+ {
+  "arena": "a2258368591775236",
+  "ship": "2",
+  "spawn_clock": 60.96,
+  "first_seen": 356.396484375,
+  "onset": 356.396484375,
+  "n_pos": 504
+ },
+ {
+  "arena": "a2258368591775236",
+  "ship": "4",
+  "spawn_clock": 60.96,
+  "first_seen": 408.4062805175781,
+  "onset": 408.4062805175781,
+  "n_pos": 1640
+ },
+ {
+  "arena": "a2258368591775236",
+  "ship": "1",
+  "spawn_clock": 60.96,
+  "first_seen": 435.2327575683594,
+  "onset": 435.2327575683594,
+  "n_pos": 384
+ },
+ {
+  "arena": "a2258368591775236",
+  "ship": "3",
+  "spawn_clock": 60.96,
+  "first_seen": 478.0984802246094,
+  "onset": 478.0984802246094,
+  "n_pos": 924
+ },
+ {
+  "arena": "a4823705313522358",
+  "ship": "2",
+  "spawn_clock": 55.014,
+  "first_seen": 349.3039855957031,
+  "onset": 349.3039855957031,
+  "n_pos": 1063
+ },
+ {
+  "arena": "a4823705313522358",
+  "ship": "COMMUNICATION",
+  "spawn_clock": 55.014,
+  "first_seen": 354.4597473144531,
+  "onset": 354.4597473144531,
+  "n_pos": 728
+ },
+ {
+  "arena": "a4823705313522358",
+  "ship": "4",
+  "spawn_clock": 55.014,
+  "first_seen": 366.46978759765625,
+  "onset": 366.46978759765625,
+  "n_pos": 1356
+ },
+ {
+  "arena": "a4823705313522358",
+  "ship": "3",
+  "spawn_clock": 55.014,
+  "first_seen": 417.3100891113281,
+  "onset": 417.3100891113281,
+  "n_pos": 1092
+ },
+ {
+  "arena": "a4823705313522358",
+  "ship": "1",
+  "spawn_clock": 55.014,
+  "first_seen": 434.4762878417969,
+  "onset": 434.4762878417969,
+  "n_pos": 608
+ },
+ {
+  "arena": "a1635001257395781",
+  "ship": "1",
+  "spawn_clock": 62.481,
+  "first_seen": 178.36053466796875,
+  "onset": null,
+  "n_pos": 865
+ },
+ {
+  "arena": "a1635001257395781",
+  "ship": "2",
+  "spawn_clock": 62.481,
+  "first_seen": 183.3602752685547,
+  "onset": 271.3763427734375,
+  "n_pos": 864
+ },
+ {
+  "arena": "a1635001257395781",
+  "ship": "COMMUNICATION",
+  "spawn_clock": 62.481,
+  "first_seen": 183.3602752685547,
+  "onset": 271.3763427734375,
+  "n_pos": 643
+ },
+ {
+  "arena": "a1635001257395781",
+  "ship": "4",
+  "spawn_clock": 62.481,
+  "first_seen": 184.3675537109375,
+  "onset": 271.3763427734375,
+  "n_pos": 1075
+ },
+ {
+  "arena": "a1635001257395781",
+  "ship": "3",
+  "spawn_clock": 62.481,
+  "first_seen": 194.37945556640625,
+  "onset": 304.40216064453125,
+  "n_pos": 458
+ },
+ {
+  "arena": "a2908042525867330",
+  "ship": "1",
+  "spawn_clock": 62.084,
+  "first_seen": 161.52499389648438,
+  "onset": 424.9990234375,
+  "n_pos": 744
+ },
+ {
+  "arena": "a2908042525867330",
+  "ship": "2",
+  "spawn_clock": 62.084,
+  "first_seen": 165.5386505126953,
+  "onset": 345.9678039550781,
+  "n_pos": 1024
+ },
+ {
+  "arena": "a2908042525867330",
+  "ship": "COMMUNICATION",
+  "spawn_clock": 62.084,
+  "first_seen": 167.24729919433594,
+  "onset": 344.9775085449219,
+  "n_pos": 1184
+ },
+ {
+  "arena": "a2908042525867330",
+  "ship": "4",
+  "spawn_clock": 62.084,
+  "first_seen": 167.24729919433594,
+  "onset": 361.5225524902344,
+  "n_pos": 1475
+ },
+ {
+  "arena": "a2908042525867330",
+  "ship": "3",
+  "spawn_clock": 62.084,
+  "first_seen": 457.9643859863281,
+  "onset": 457.9643859863281,
+  "n_pos": 881
+ },
+ {
+  "arena": "a5772094222296675",
+  "ship": "4",
+  "spawn_clock": 44.084,
+  "first_seen": 305.23321533203125,
+  "onset": 305.23321533203125,
+  "n_pos": 1448
+ },
+ {
+  "arena": "a5772094222296675",
+  "ship": "1",
+  "spawn_clock": 44.084,
+  "first_seen": 342.3865051269531,
+  "onset": 342.3865051269531,
+  "n_pos": 944
+ },
+ {
+  "arena": "a5772094222296675",
+  "ship": "COMMUNICATION",
+  "spawn_clock": 44.084,
+  "first_seen": 348.12554931640625,
+  "onset": 348.12554931640625,
+  "n_pos": 1296
+ },
+ {
+  "arena": "a5772094222296675",
+  "ship": "2",
+  "spawn_clock": 44.084,
+  "first_seen": 413.2565002441406,
+  "onset": 413.2565002441406,
+  "n_pos": 1008
+ },
+ {
+  "arena": "a5772094222296675",
+  "ship": "3",
+  "spawn_clock": 44.084,
+  "first_seen": 414.3714599609375,
+  "onset": 414.3714599609375,
+  "n_pos": 988
+ },
+ {
+  "arena": "a7464315632425555",
+  "ship": "COMMUNICATION",
+  "spawn_clock": 57.247,
+  "first_seen": 421.2778015136719,
+  "onset": 421.2778015136719,
+  "n_pos": 1244
+ },
+ {
+  "arena": "a7464315632425555",
+  "ship": "1",
+  "spawn_clock": 57.247,
+  "first_seen": 453.2767639160156,
+  "onset": 453.2767639160156,
+  "n_pos": 856
+ },
+ {
+  "arena": "a7464315632425555",
+  "ship": "2",
+  "spawn_clock": 57.247,
+  "first_seen": 461.2521057128906,
+  "onset": 461.2521057128906,
+  "n_pos": 1356
+ },
+ {
+  "arena": "a7464315632425555",
+  "ship": "4",
+  "spawn_clock": 57.247,
+  "first_seen": 471.54852294921875,
+  "onset": 471.54852294921875,
+  "n_pos": 1036
+ },
+ {
+  "arena": "a7464315632425555",
+  "ship": "3",
+  "spawn_clock": 57.247,
+  "first_seen": 517.2503051757812,
+  "onset": 517.2503051757812,
+  "n_pos": 1112
+ },
+ {
+  "arena": "a3002046476224217",
+  "ship": "COMMUNICATION",
+  "spawn_clock": 62.046,
+  "first_seen": 305.9368896484375,
+  "onset": 305.9368896484375,
+  "n_pos": 741
+ },
+ {
+  "arena": "a3002046476224217",
+  "ship": "1",
+  "spawn_clock": 62.046,
+  "first_seen": 307.94134521484375,
+  "onset": 307.94134521484375,
+  "n_pos": 1103
+ },
+ {
+  "arena": "a3002046476224217",
+  "ship": "4",
+  "spawn_clock": 62.046,
+  "first_seen": 307.94134521484375,
+  "onset": 307.94134521484375,
+  "n_pos": 1183
+ },
+ {
+  "arena": "a3002046476224217",
+  "ship": "2",
+  "spawn_clock": 62.046,
+  "first_seen": 353.50299072265625,
+  "onset": 353.50299072265625,
+  "n_pos": 952
+ },
+ {
+  "arena": "a3002046476224217",
+  "ship": "3",
+  "spawn_clock": 62.046,
+  "first_seen": 390.9364013671875,
+  "onset": 390.9364013671875,
+  "n_pos": 950
+ },
+ {
+  "arena": "a2517020117193111",
+  "ship": "2",
+  "spawn_clock": 62.59,
+  "first_seen": 347.45098876953125,
+  "onset": 347.45098876953125,
+  "n_pos": 950
+ },
+ {
+  "arena": "a2517020117193111",
+  "ship": "COMMUNICATION",
+  "spawn_clock": 62.59,
+  "first_seen": 354.4590759277344,
+  "onset": 354.4590759277344,
+  "n_pos": 921
+ },
+ {
+  "arena": "a2517020117193111",
+  "ship": "1",
+  "spawn_clock": 62.59,
+  "first_seen": 396.8573303222656,
+  "onset": 396.8573303222656,
+  "n_pos": 568
+ },
+ {
+  "arena": "a2517020117193111",
+  "ship": "4",
+  "spawn_clock": 62.59,
+  "first_seen": 396.9786682128906,
+  "onset": 396.9786682128906,
+  "n_pos": 1128
+ },
+ {
+  "arena": "a2517020117193111",
+  "ship": "3",
+  "spawn_clock": 62.59,
+  "first_seen": 396.9786682128906,
+  "onset": 396.9786682128906,
+  "n_pos": 954
+ },
+ {
+  "arena": "a4613101602109950",
+  "ship": "1",
+  "spawn_clock": 61.254,
+  "first_seen": 342.43841552734375,
+  "onset": 358.97705078125,
+  "n_pos": 1694
+ },
+ {
+  "arena": "a4613101602109950",
+  "ship": "COMMUNICATION",
+  "spawn_clock": 61.254,
+  "first_seen": 344.70953369140625,
+  "onset": 349.6885681152344,
+  "n_pos": 1031
+ },
+ {
+  "arena": "a4613101602109950",
+  "ship": "2",
+  "spawn_clock": 61.254,
+  "first_seen": 345.2997741699219,
+  "onset": 358.97705078125,
+  "n_pos": 1462
+ },
+ {
+  "arena": "a4613101602109950",
+  "ship": "4",
+  "spawn_clock": 61.254,
+  "first_seen": 349.30267333984375,
+  "onset": 357.9873046875,
+  "n_pos": 1990
+ },
+ {
+  "arena": "a4613101602109950",
+  "ship": "3",
+  "spawn_clock": 61.254,
+  "first_seen": 522.5340576171875,
+  "onset": 522.5340576171875,
+  "n_pos": 1119
+ },
+ {
+  "arena": "a4664258959383923",
+  "ship": "2",
+  "spawn_clock": 60.752,
+  "first_seen": 305.9051208496094,
+  "onset": 305.9051208496094,
+  "n_pos": 1560
+ },
+ {
+  "arena": "a4664258959383923",
+  "ship": "4",
+  "spawn_clock": 60.752,
+  "first_seen": 306.064208984375,
+  "onset": 306.064208984375,
+  "n_pos": 1415
+ },
+ {
+  "arena": "a4664258959383923",
+  "ship": "COMMUNICATION",
+  "spawn_clock": 60.752,
+  "first_seen": 306.064208984375,
+  "onset": 306.064208984375,
+  "n_pos": 1075
+ },
+ {
+  "arena": "a4664258959383923",
+  "ship": "1",
+  "spawn_clock": 60.752,
+  "first_seen": 306.20648193359375,
+  "onset": 306.20648193359375,
+  "n_pos": 1194
+ },
+ {
+  "arena": "a4664258959383923",
+  "ship": "3",
+  "spawn_clock": 60.752,
+  "first_seen": 312.1988525390625,
+  "onset": 312.1988525390625,
+  "n_pos": 760
+ }
+]

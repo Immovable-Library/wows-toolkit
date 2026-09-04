@@ -1,4 +1,5 @@
 mod battle_results_cmd;
+mod events_cmd;
 
 use battle_results_cmd::ResultsFormat;
 
@@ -184,6 +185,15 @@ enum Commands {
         pr_expected_values: Option<PathBuf>,
         #[arg(required = true)]
         replays: Vec<PathBuf>,
+    },
+    /// Export the per-match event stream (roster, salvos, hits) as JSONL.
+    Events {
+        /// Replay files or directories to export
+        #[arg(required = true)]
+        replays: Vec<PathBuf>,
+        /// Write to this file; defaults to stdout
+        #[arg(short, long)]
+        out: Option<PathBuf>,
     },
 }
 
@@ -1453,6 +1463,9 @@ fn main() {
                 replays,
             )
             .expect("battle-results command failed");
+        }
+        Commands::Events { replays, out } => {
+            events_cmd::run(ctx, replays, out).expect("events command failed");
         }
         Commands::Query { command } => match command {
             QueryCommands::ArenaId { replays } => {

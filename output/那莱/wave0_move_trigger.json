@@ -1,0 +1,5706 @@
+[
+ {
+  "arena": "fb8f5b237094388fe",
+  "ship": "Foxtrot",
+  "onset": 389.866455078125,
+  "first_seen": 327.583,
+  "min_player_dist": 87.9,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "fb8f5b237094388fe",
+  "ship": "King",
+  "onset": 371.5696716308594,
+  "first_seen": 312.713,
+  "min_player_dist": 461.6,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "fb8f5b237094388fe",
+  "ship": "Apache-Farragut",
+  "onset": 384.70391845703125,
+  "first_seen": 320.723,
+  "min_player_dist": 65.3,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "fd261874630946105",
+  "ship": "Foxtrot",
+  "onset": null,
+  "first_seen": 364.719,
+  "min_player_dist": null,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "fd261874630946105",
+  "ship": "King",
+  "onset": 345.8662414550781,
+  "first_seen": 341.287,
+  "min_player_dist": 455.3,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "f9d56a69dfa825eef",
+  "ship": "Foxtrot",
+  "onset": 488.9151611328125,
+  "first_seen": 485.347,
+  "min_player_dist": 418.4,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "f9d56a69dfa825eef",
+  "ship": "King",
+  "onset": 456.2003173828125,
+  "first_seen": 445.364,
+  "min_player_dist": 430.6,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "f9d56a69dfa825eef",
+  "ship": "Apache-Farragut",
+  "onset": 529.3405151367188,
+  "first_seen": 522.494,
+  "min_player_dist": 68.3,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "a3113255979094769",
+  "ship": "Foxtrot",
+  "onset": 344.0179138183594,
+  "first_seen": 340.01,
+  "min_player_dist": 98.9,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "a3113255979094769",
+  "ship": "King",
+  "onset": 321.01788330078125,
+  "first_seen": 314.02,
+  "min_player_dist": 606.7,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "a3113255979094769",
+  "ship": "Apache-Farragut",
+  "onset": 337.4580078125,
+  "first_seen": 335.029,
+  "min_player_dist": 83.8,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "a3140052280139295",
+  "ship": "Foxtrot",
+  "onset": 453.96038818359375,
+  "first_seen": 450.335,
+  "min_player_dist": 89.3,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "a3140052280139295",
+  "ship": "King",
+  "onset": 434.50445556640625,
+  "first_seen": 430.357,
+  "min_player_dist": 51.2,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "a3140052280139295",
+  "ship": "Apache-Farragut",
+  "onset": 431.2082214355469,
+  "first_seen": 427.493,
+  "min_player_dist": 36.8,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "a3716389647228880",
+  "ship": "Foxtrot",
+  "onset": 416.86553955078125,
+  "first_seen": 413.144,
+  "min_player_dist": 66.9,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "a3716389647228880",
+  "ship": "King",
+  "onset": 426.1431579589844,
+  "first_seen": 422.157,
+  "min_player_dist": 21.2,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "a3716389647228880",
+  "ship": "Apache-Farragut",
+  "onset": 464.4305419921875,
+  "first_seen": 460.563,
+  "min_player_dist": 354.5,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "a2931604633035639",
+  "ship": "Foxtrot",
+  "onset": 485.0016784667969,
+  "first_seen": 481.141,
+  "min_player_dist": 104.9,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "a2931604633035639",
+  "ship": "King",
+  "onset": 465.86126708984375,
+  "first_seen": 461.142,
+  "min_player_dist": 448.7,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "a2931604633035639",
+  "ship": "Apache-Farragut",
+  "onset": 481.3092346191406,
+  "first_seen": 478.852,
+  "min_player_dist": 86.3,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "a3666310329240282",
+  "ship": "Foxtrot",
+  "onset": 454.8170471191406,
+  "first_seen": 450.969,
+  "min_player_dist": 33.2,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "a3666310329240282",
+  "ship": "King",
+  "onset": 368.09539794921875,
+  "first_seen": 302.955,
+  "min_player_dist": 481.3,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "a3666310329240282",
+  "ship": "Apache-Farragut",
+  "onset": 443.383056640625,
+  "first_seen": 440.094,
+  "min_player_dist": 73.5,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "a3846351064451322",
+  "ship": "Foxtrot",
+  "onset": 490.62542724609375,
+  "first_seen": 487.025,
+  "min_player_dist": 126.6,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "a3846351064451322",
+  "ship": "King",
+  "onset": 478.8858642578125,
+  "first_seen": 475.034,
+  "min_player_dist": 443.1,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "a3846351064451322",
+  "ship": "Apache-Farragut",
+  "onset": 497.4486999511719,
+  "first_seen": 495.022,
+  "min_player_dist": 86.8,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "a3575415938263382",
+  "ship": "Foxtrot",
+  "onset": 445.1314697265625,
+  "first_seen": 441.252,
+  "min_player_dist": 84.4,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "a3575415938263382",
+  "ship": "King",
+  "onset": 432.23828125,
+  "first_seen": 428.227,
+  "min_player_dist": 49.9,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "a3575415938263382",
+  "ship": "Apache-Farragut",
+  "onset": 418.9633483886719,
+  "first_seen": 415.239,
+  "min_player_dist": 416.5,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "a3375296232415436",
+  "ship": "Foxtrot",
+  "onset": 511.5640869140625,
+  "first_seen": 507.67,
+  "min_player_dist": 115.6,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "a3375296232415436",
+  "ship": "King",
+  "onset": 497.3993225097656,
+  "first_seen": 493.824,
+  "min_player_dist": 454.8,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "a3375296232415436",
+  "ship": "Apache-Farragut",
+  "onset": 515.0910034179688,
+  "first_seen": 512.676,
+  "min_player_dist": 80.9,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "a3423477175977245",
+  "ship": "Foxtrot",
+  "onset": 402.2283630371094,
+  "first_seen": 399.213,
+  "min_player_dist": 41.2,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "a3423477175977245",
+  "ship": "King",
+  "onset": 392.3394775390625,
+  "first_seen": 388.212,
+  "min_player_dist": 26.4,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "a3423477175977245",
+  "ship": "Apache-Farragut",
+  "onset": 462.76165771484375,
+  "first_seen": 460.235,
+  "min_player_dist": 61.6,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "a3656161325241176",
+  "ship": "Foxtrot",
+  "onset": 370.5906066894531,
+  "first_seen": 366.584,
+  "min_player_dist": 103.8,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "a3656161325241176",
+  "ship": "King",
+  "onset": 350.8691711425781,
+  "first_seen": 345.458,
+  "min_player_dist": 448.1,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "a3656161325241176",
+  "ship": "Apache-Farragut",
+  "onset": 367.8656921386719,
+  "first_seen": 365.447,
+  "min_player_dist": 83.3,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "a3612777860844461",
+  "ship": "Foxtrot",
+  "onset": 454.42938232421875,
+  "first_seen": 451.139,
+  "min_player_dist": 422.6,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "a3612777860844461",
+  "ship": "King",
+  "onset": 441.28302001953125,
+  "first_seen": 437.412,
+  "min_player_dist": 443.5,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "a3612777860844461",
+  "ship": "Apache-Farragut",
+  "onset": 466.7282409667969,
+  "first_seen": 464.277,
+  "min_player_dist": 108.4,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "a277125871421871",
+  "ship": "Foxtrot",
+  "onset": 405.1142272949219,
+  "first_seen": 401.246,
+  "min_player_dist": 39.8,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "a277125871421871",
+  "ship": "King",
+  "onset": 397.6883850097656,
+  "first_seen": 393.833,
+  "min_player_dist": 23.9,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "a277125871421871",
+  "ship": "Apache-Farragut",
+  "onset": 399.5625,
+  "first_seen": 396.124,
+  "min_player_dist": 31.2,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "a3692784521479778",
+  "ship": "Foxtrot",
+  "onset": 521.8165893554688,
+  "first_seen": 518.383,
+  "min_player_dist": 29.8,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "a3692784521479778",
+  "ship": "King",
+  "onset": 435.5495910644531,
+  "first_seen": 431.546,
+  "min_player_dist": 451.9,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "a3692784521479778",
+  "ship": "Apache-Farragut",
+  "onset": 511.83477783203125,
+  "first_seen": 507.123,
+  "min_player_dist": 78.3,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "a4221628139694999",
+  "ship": "Foxtrot",
+  "onset": 354.8839416503906,
+  "first_seen": 350.628,
+  "min_player_dist": 94.8,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "a4221628139694999",
+  "ship": "King",
+  "onset": 332.05279541015625,
+  "first_seen": 322.06,
+  "min_player_dist": 428.8,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "a4221628139694999",
+  "ship": "Apache-Farragut",
+  "onset": 345.05731201171875,
+  "first_seen": 342.652,
+  "min_player_dist": 55.2,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "a3654731111498033",
+  "ship": "Foxtrot",
+  "onset": 477.4461364746094,
+  "first_seen": 473.308,
+  "min_player_dist": 122.8,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "a3654731111498033",
+  "ship": "King",
+  "onset": 457.294921875,
+  "first_seen": 449.303,
+  "min_player_dist": 488.5,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "a3654731111498033",
+  "ship": "Apache-Farragut",
+  "onset": 481.20928955078125,
+  "first_seen": 478.727,
+  "min_player_dist": 90.1,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "a5156870174637131",
+  "ship": "Foxtrot",
+  "onset": 467.04827880859375,
+  "first_seen": 463.342,
+  "min_player_dist": 35.5,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "a5156870174637131",
+  "ship": "King",
+  "onset": 458.0726318359375,
+  "first_seen": 454.208,
+  "min_player_dist": 19.8,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "a5156870174637131",
+  "ship": "Apache-Farragut",
+  "onset": 525.7761840820312,
+  "first_seen": 522.192,
+  "min_player_dist": 84.1,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "a5118430217511943",
+  "ship": "Foxtrot",
+  "onset": 397.6308898925781,
+  "first_seen": 393.921,
+  "min_player_dist": 95.9,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "a5118430217511943",
+  "ship": "King",
+  "onset": 379.3460998535156,
+  "first_seen": 375.626,
+  "min_player_dist": 34.1,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "a5118430217511943",
+  "ship": "Apache-Farragut",
+  "onset": 374.2323913574219,
+  "first_seen": 370.489,
+  "min_player_dist": 18.7,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "a4295488769788617",
+  "ship": "Foxtrot",
+  "onset": 387.5813903808594,
+  "first_seen": 383.855,
+  "min_player_dist": 17.1,
+  "self_dmg": 33500.0
+ },
+ {
+  "arena": "a4295488769788617",
+  "ship": "King",
+  "onset": 379.85552978515625,
+  "first_seen": 313.011,
+  "min_player_dist": 10.3,
+  "self_dmg": 61351.0
+ },
+ {
+  "arena": "a4295488769788617",
+  "ship": "Apache-Farragut",
+  "onset": 419.4314880371094,
+  "first_seen": 415.284,
+  "min_player_dist": 337.4,
+  "self_dmg": 12350.0
+ },
+ {
+  "arena": "a4071334427465993",
+  "ship": "Foxtrot",
+  "onset": 481.0137939453125,
+  "first_seen": 477.276,
+  "min_player_dist": 28.3,
+  "self_dmg": 36538.0
+ },
+ {
+  "arena": "a4071334427465993",
+  "ship": "King",
+  "onset": 483.03155517578125,
+  "first_seen": 479.568,
+  "min_player_dist": 9.6,
+  "self_dmg": 79160.0
+ },
+ {
+  "arena": "a4071334427465993",
+  "ship": "Apache-Farragut",
+  "onset": 493.5717468261719,
+  "first_seen": 491.149,
+  "min_player_dist": 60.2,
+  "self_dmg": 15550.0
+ },
+ {
+  "arena": "a3853536636408028",
+  "ship": "Foxtrot",
+  "onset": 517.7819213867188,
+  "first_seen": 514.053,
+  "min_player_dist": 15.8,
+  "self_dmg": 26200.0
+ },
+ {
+  "arena": "a3853536636408028",
+  "ship": "King",
+  "onset": 498.6713562011719,
+  "first_seen": 495.229,
+  "min_player_dist": 470.3,
+  "self_dmg": 75838.0
+ },
+ {
+  "arena": "a3853536636408028",
+  "ship": "Apache-Farragut",
+  "onset": 601.49072265625,
+  "first_seen": 598.079,
+  "min_player_dist": 143.5,
+  "self_dmg": 14900.0
+ },
+ {
+  "arena": "a4365050062439356",
+  "ship": "Foxtrot",
+  "onset": 519.0359497070312,
+  "first_seen": 515.319,
+  "min_player_dist": 16.7,
+  "self_dmg": 19200.0
+ },
+ {
+  "arena": "a4365050062439356",
+  "ship": "King",
+  "onset": 515.3187255859375,
+  "first_seen": 511.33,
+  "min_player_dist": 3.5,
+  "self_dmg": 41468.0
+ },
+ {
+  "arena": "a4365050062439356",
+  "ship": "Apache-Farragut",
+  "onset": 502.89599609375,
+  "first_seen": 499.428,
+  "min_player_dist": 437.6,
+  "self_dmg": 8251.0
+ },
+ {
+  "arena": "a4523946672524347",
+  "ship": "Foxtrot",
+  "onset": 372.38543701171875,
+  "first_seen": 368.501,
+  "min_player_dist": 411.2,
+  "self_dmg": 25838.0
+ },
+ {
+  "arena": "a4523946672524347",
+  "ship": "King",
+  "onset": 356.35040283203125,
+  "first_seen": 345.656,
+  "min_player_dist": 443.1,
+  "self_dmg": 55998.0
+ },
+ {
+  "arena": "a4523946672524347",
+  "ship": "Apache-Farragut",
+  "onset": 405.9640808105469,
+  "first_seen": 403.35,
+  "min_player_dist": 230.0,
+  "self_dmg": 9126.0
+ },
+ {
+  "arena": "a4494577686245263",
+  "ship": "Foxtrot",
+  "onset": 409.08245849609375,
+  "first_seen": 405.35,
+  "min_player_dist": 15.8,
+  "self_dmg": 18800.0
+ },
+ {
+  "arena": "a4494577686245263",
+  "ship": "King",
+  "onset": 338.3705749511719,
+  "first_seen": 325.943,
+  "min_player_dist": 460.8,
+  "self_dmg": 40528.0
+ },
+ {
+  "arena": "a4494577686245263",
+  "ship": "Apache-Farragut",
+  "onset": 384.6853942871094,
+  "first_seen": 381.363,
+  "min_player_dist": 263.2,
+  "self_dmg": 8050.0
+ },
+ {
+  "arena": "a4528207280173772",
+  "ship": "Foxtrot",
+  "onset": 448.0546875,
+  "first_seen": 444.712,
+  "min_player_dist": 16.8,
+  "self_dmg": 20400.0
+ },
+ {
+  "arena": "a4528207280173772",
+  "ship": "King",
+  "onset": 436.7258605957031,
+  "first_seen": 433.302,
+  "min_player_dist": 7.5,
+  "self_dmg": 43550.0
+ },
+ {
+  "arena": "a4528207280173772",
+  "ship": "Apache-Farragut",
+  "onset": 442.2942810058594,
+  "first_seen": 439.583,
+  "min_player_dist": 43.9,
+  "self_dmg": 8750.0
+ },
+ {
+  "arena": "a4922326364674803",
+  "ship": "Foxtrot",
+  "onset": 478.5755310058594,
+  "first_seen": 474.856,
+  "min_player_dist": 17.2,
+  "self_dmg": 32450.0
+ },
+ {
+  "arena": "a4922326364674803",
+  "ship": "King",
+  "onset": 463.8557434082031,
+  "first_seen": 459.866,
+  "min_player_dist": 495.5,
+  "self_dmg": 70139.0
+ },
+ {
+  "arena": "a4922326364674803",
+  "ship": "Apache-Farragut",
+  "onset": 546.85888671875,
+  "first_seen": 543.859,
+  "min_player_dist": 251.7,
+  "self_dmg": 13950.0
+ },
+ {
+  "arena": "a3819529083625818",
+  "ship": "Foxtrot",
+  "onset": 422.4895324707031,
+  "first_seen": 419.202,
+  "min_player_dist": 34.8,
+  "self_dmg": 27200.0
+ },
+ {
+  "arena": "a3819529083625818",
+  "ship": "King",
+  "onset": 341.35711669921875,
+  "first_seen": 336.362,
+  "min_player_dist": 472.9,
+  "self_dmg": 58150.0
+ },
+ {
+  "arena": "a3819529083625818",
+  "ship": "Apache-Farragut",
+  "onset": 420.91876220703125,
+  "first_seen": 418.056,
+  "min_player_dist": 110.1,
+  "self_dmg": 11700.0
+ },
+ {
+  "arena": "f3fb417e3c5fc49b6",
+  "ship": "Foxtrot",
+  "onset": 441.9191589355469,
+  "first_seen": 438.209,
+  "min_player_dist": 37.6,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "f3fb417e3c5fc49b6",
+  "ship": "King",
+  "onset": 433.65765380859375,
+  "first_seen": 430.211,
+  "min_player_dist": 22.5,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "f3fb417e3c5fc49b6",
+  "ship": "Apache-Farragut",
+  "onset": 440.787841796875,
+  "first_seen": 438.209,
+  "min_player_dist": 46.8,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "f1355577ef1f5ce7c",
+  "ship": "Foxtrot",
+  "onset": 558.7019653320312,
+  "first_seen": 555.401,
+  "min_player_dist": 489.3,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "f1355577ef1f5ce7c",
+  "ship": "King",
+  "onset": 535.2749633789062,
+  "first_seen": 531.416,
+  "min_player_dist": 509.6,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "f1355577ef1f5ce7c",
+  "ship": "Apache-Farragut",
+  "onset": 646.8406372070312,
+  "first_seen": 643.417,
+  "min_player_dist": 198.0,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "fdd5f690ae9a97f23",
+  "ship": "Foxtrot",
+  "onset": 415.04620361328125,
+  "first_seen": 411.465,
+  "min_player_dist": 36.0,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "fdd5f690ae9a97f23",
+  "ship": "King",
+  "onset": 408.6040954589844,
+  "first_seen": 404.604,
+  "min_player_dist": 20.1,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "fdd5f690ae9a97f23",
+  "ship": "Apache-Farragut",
+  "onset": 416.31256103515625,
+  "first_seen": 413.734,
+  "min_player_dist": 30.0,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "fb3721761784565e9",
+  "ship": "Foxtrot",
+  "onset": 386.0539855957031,
+  "first_seen": 382.638,
+  "min_player_dist": 36.8,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "fb3721761784565e9",
+  "ship": "King",
+  "onset": 382.2041931152344,
+  "first_seen": 378.621,
+  "min_player_dist": 19.5,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "fb3721761784565e9",
+  "ship": "Apache-Farragut",
+  "onset": 377.3373718261719,
+  "first_seen": 373.637,
+  "min_player_dist": 22.9,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "f2fa8ae76d28752e7",
+  "ship": "Foxtrot",
+  "onset": 426.85150146484375,
+  "first_seen": 423.718,
+  "min_player_dist": 34.9,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "f2fa8ae76d28752e7",
+  "ship": "King",
+  "onset": 403.1509094238281,
+  "first_seen": 371.15,
+  "min_player_dist": 440.6,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "f2fa8ae76d28752e7",
+  "ship": "Apache-Farragut",
+  "onset": 420.58587646484375,
+  "first_seen": 416.851,
+  "min_player_dist": 18.3,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "f2918ccd84d9b8a7b",
+  "ship": "Foxtrot",
+  "onset": 491.03436279296875,
+  "first_seen": 487.271,
+  "min_player_dist": 39.3,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "f2918ccd84d9b8a7b",
+  "ship": "King",
+  "onset": 484.4293518066406,
+  "first_seen": 480.404,
+  "min_player_dist": 24.0,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "f2918ccd84d9b8a7b",
+  "ship": "Apache-Farragut",
+  "onset": 525.8634033203125,
+  "first_seen": 523.249,
+  "min_player_dist": 167.7,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "fd552023516063c4f",
+  "ship": "Foxtrot",
+  "onset": 459.7223205566406,
+  "first_seen": 456.289,
+  "min_player_dist": 104.5,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "fd552023516063c4f",
+  "ship": "King",
+  "onset": 508.8731384277344,
+  "first_seen": 442.005,
+  "min_player_dist": 93.6,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "fd552023516063c4f",
+  "ship": "Apache-Farragut",
+  "onset": 459.2890625,
+  "first_seen": 456.856,
+  "min_player_dist": 79.4,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "fa59a268b9c303e3d",
+  "ship": "Foxtrot",
+  "onset": 482.8606262207031,
+  "first_seen": 478.985,
+  "min_player_dist": 403.8,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "fa59a268b9c303e3d",
+  "ship": "King",
+  "onset": 468.11419677734375,
+  "first_seen": 464.693,
+  "min_player_dist": 431.8,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "fa59a268b9c303e3d",
+  "ship": "Apache-Farragut",
+  "onset": 532.427001953125,
+  "first_seen": 529.826,
+  "min_player_dist": 85.9,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "fbfc97918c47efcfe",
+  "ship": "Foxtrot",
+  "onset": 452.68914794921875,
+  "first_seen": 449.082,
+  "min_player_dist": 42.3,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "fbfc97918c47efcfe",
+  "ship": "King",
+  "onset": 451.39215087890625,
+  "first_seen": 447.833,
+  "min_player_dist": 19.8,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "fbfc97918c47efcfe",
+  "ship": "Apache-Farragut",
+  "onset": 557.9545288085938,
+  "first_seen": 554.209,
+  "min_player_dist": 161.8,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "f6a20d4ecb2320e43",
+  "ship": "Foxtrot",
+  "onset": 387.87188720703125,
+  "first_seen": 383.76,
+  "min_player_dist": 42.7,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "f6a20d4ecb2320e43",
+  "ship": "King",
+  "onset": 364.0278625488281,
+  "first_seen": 354.166,
+  "min_player_dist": 439.3,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "f6a20d4ecb2320e43",
+  "ship": "Apache-Farragut",
+  "onset": 378.6041564941406,
+  "first_seen": 374.739,
+  "min_player_dist": 16.8,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "f59fe1a7f3125d8f2",
+  "ship": "Foxtrot",
+  "onset": 437.3123779296875,
+  "first_seen": 433.591,
+  "min_player_dist": 459.0,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "f59fe1a7f3125d8f2",
+  "ship": "King",
+  "onset": 513.9144897460938,
+  "first_seen": 510.167,
+  "min_player_dist": 5.6,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "f59fe1a7f3125d8f2",
+  "ship": "Apache-Farragut",
+  "onset": 512.1595458984375,
+  "first_seen": 508.433,
+  "min_player_dist": 35.6,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "fae27d86a7b03ff35",
+  "ship": "Foxtrot",
+  "onset": 408.66827392578125,
+  "first_seen": 405.261,
+  "min_player_dist": 28.4,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "fae27d86a7b03ff35",
+  "ship": "King",
+  "onset": 393.1460266113281,
+  "first_seen": 388.654,
+  "min_player_dist": 491.8,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "fae27d86a7b03ff35",
+  "ship": "Apache-Farragut",
+  "onset": 445.3721923828125,
+  "first_seen": 442.391,
+  "min_player_dist": 384.7,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "fa828942f0063c07e",
+  "ship": "Foxtrot",
+  "onset": 453.61676025390625,
+  "first_seen": 449.866,
+  "min_player_dist": 178.5,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "fa828942f0063c07e",
+  "ship": "King",
+  "onset": 484.1361999511719,
+  "first_seen": 287.028,
+  "min_player_dist": 26.4,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "fa828942f0063c07e",
+  "ship": "Apache-Farragut",
+  "onset": 467.73773193359375,
+  "first_seen": 464.158,
+  "min_player_dist": 59.3,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "fd89e9679a4ecc236",
+  "ship": "Foxtrot",
+  "onset": 478.6574401855469,
+  "first_seen": 474.784,
+  "min_player_dist": 34.3,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "fd89e9679a4ecc236",
+  "ship": "King",
+  "onset": 469.0833740234375,
+  "first_seen": 465.06,
+  "min_player_dist": 18.8,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "fd89e9679a4ecc236",
+  "ship": "Apache-Farragut",
+  "onset": 488.06903076171875,
+  "first_seen": 485.637,
+  "min_player_dist": 83.5,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "f3d1bc19de4a7c062",
+  "ship": "Foxtrot",
+  "onset": 493.3482971191406,
+  "first_seen": 490.032,
+  "min_player_dist": 111.5,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "f3d1bc19de4a7c062",
+  "ship": "King",
+  "onset": 483.7986755371094,
+  "first_seen": 480.332,
+  "min_player_dist": 22.3,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "f3d1bc19de4a7c062",
+  "ship": "Apache-Farragut",
+  "onset": 497.3323059082031,
+  "first_seen": 494.903,
+  "min_player_dist": 77.2,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "f5650378d13a192b0",
+  "ship": "Foxtrot",
+  "onset": 410.5571594238281,
+  "first_seen": 406.541,
+  "min_player_dist": 97.6,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "f5650378d13a192b0",
+  "ship": "King",
+  "onset": 386.1347961425781,
+  "first_seen": 377.557,
+  "min_player_dist": 572.6,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "f5650378d13a192b0",
+  "ship": "Apache-Farragut",
+  "onset": 402.99420166015625,
+  "first_seen": 400.547,
+  "min_player_dist": 81.3,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "fca87ff63cc97f16f",
+  "ship": "Foxtrot",
+  "onset": 635.2213745117188,
+  "first_seen": 631.795,
+  "min_player_dist": 52.6,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "fca87ff63cc97f16f",
+  "ship": "King",
+  "onset": 458.1285400390625,
+  "first_seen": 454.145,
+  "min_player_dist": 561.2,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "fca87ff63cc97f16f",
+  "ship": "Apache-Farragut",
+  "onset": 577.2531127929688,
+  "first_seen": 574.691,
+  "min_player_dist": 275.5,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "f657842f08609a171",
+  "ship": "Foxtrot",
+  "onset": 481.7846374511719,
+  "first_seen": 478.067,
+  "min_player_dist": 36.4,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "f657842f08609a171",
+  "ship": "King",
+  "onset": 468.7879638671875,
+  "first_seen": 464.902,
+  "min_player_dist": 466.7,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "f657842f08609a171",
+  "ship": "Apache-Farragut",
+  "onset": 521.9287109375,
+  "first_seen": 518.521,
+  "min_player_dist": 300.4,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "f7dd3984b1dd10a36",
+  "ship": "Foxtrot",
+  "onset": 532.710205078125,
+  "first_seen": 529.389,
+  "min_player_dist": 35.4,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "f7dd3984b1dd10a36",
+  "ship": "King",
+  "onset": 452.5418701171875,
+  "first_seen": 436.273,
+  "min_player_dist": 520.8,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "f7dd3984b1dd10a36",
+  "ship": "Apache-Farragut",
+  "onset": 537.978271484375,
+  "first_seen": 533.844,
+  "min_player_dist": 86.1,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "ff51b372239d7a08e",
+  "ship": "Foxtrot",
+  "onset": 396.48126220703125,
+  "first_seen": 392.195,
+  "min_player_dist": 42.1,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "ff51b372239d7a08e",
+  "ship": "King",
+  "onset": 374.9308166503906,
+  "first_seen": 363.79,
+  "min_player_dist": 583.4,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "ff51b372239d7a08e",
+  "ship": "Apache-Farragut",
+  "onset": 388.92596435546875,
+  "first_seen": 385.81,
+  "min_player_dist": 31.9,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "fac6d7f916934f7f8",
+  "ship": "Foxtrot",
+  "onset": 464.6687927246094,
+  "first_seen": 461.381,
+  "min_player_dist": 405.5,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "fac6d7f916934f7f8",
+  "ship": "King",
+  "onset": 451.2386474609375,
+  "first_seen": 447.227,
+  "min_player_dist": 429.8,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "fac6d7f916934f7f8",
+  "ship": "Apache-Farragut",
+  "onset": 525.2362060546875,
+  "first_seen": 521.234,
+  "min_player_dist": 68.5,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "f0899a843d020c656",
+  "ship": "Foxtrot",
+  "onset": 444.6561279296875,
+  "first_seen": 441.095,
+  "min_player_dist": 414.0,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "f0899a843d020c656",
+  "ship": "King",
+  "onset": 416.09918212890625,
+  "first_seen": 383.968,
+  "min_player_dist": 450.2,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "f0899a843d020c656",
+  "ship": "Apache-Farragut",
+  "onset": 489.24566650390625,
+  "first_seen": 486.258,
+  "min_player_dist": 78.1,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "f680a3adb4a0061ec",
+  "ship": "Foxtrot",
+  "onset": 516.7979125976562,
+  "first_seen": 513.371,
+  "min_player_dist": 91.5,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "f680a3adb4a0061ec",
+  "ship": "King",
+  "onset": 500.22894287109375,
+  "first_seen": 496.219,
+  "min_player_dist": 60.3,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "f680a3adb4a0061ec",
+  "ship": "Apache-Farragut",
+  "onset": 503.93902587890625,
+  "first_seen": 501.364,
+  "min_player_dist": 40.2,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "f8d9ede3494f15a06",
+  "ship": "Foxtrot",
+  "onset": 449.8548583984375,
+  "first_seen": 446.289,
+  "min_player_dist": 31.4,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "f8d9ede3494f15a06",
+  "ship": "King",
+  "onset": 364.2768859863281,
+  "first_seen": 354.278,
+  "min_player_dist": 53.8,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "f8d9ede3494f15a06",
+  "ship": "Apache-Farragut",
+  "onset": 370.99639892578125,
+  "first_seen": 368.003,
+  "min_player_dist": 41.1,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "fb58d43ec86009ef7",
+  "ship": "Foxtrot",
+  "onset": 434.15765380859375,
+  "first_seen": 430.871,
+  "min_player_dist": 72.5,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "fb58d43ec86009ef7",
+  "ship": "King",
+  "onset": 501.1492614746094,
+  "first_seen": 441.733,
+  "min_player_dist": 14.0,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "fb58d43ec86009ef7",
+  "ship": "Apache-Farragut",
+  "onset": 447.1566467285156,
+  "first_seen": 443.596,
+  "min_player_dist": 41.5,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "f2255c6bca78855ed",
+  "ship": "Foxtrot",
+  "onset": 487.16595458984375,
+  "first_seen": 483.614,
+  "min_player_dist": 37.8,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "f2255c6bca78855ed",
+  "ship": "King",
+  "onset": 474.4605712890625,
+  "first_seen": 470.46,
+  "min_player_dist": 39.9,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "f2255c6bca78855ed",
+  "ship": "Apache-Farragut",
+  "onset": 471.1885070800781,
+  "first_seen": 467.621,
+  "min_player_dist": 23.0,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "fb34ad7a5a092969b",
+  "ship": "Foxtrot",
+  "onset": 456.1751708984375,
+  "first_seen": 452.777,
+  "min_player_dist": 345.1,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "fb34ad7a5a092969b",
+  "ship": "King",
+  "onset": 435.76666259765625,
+  "first_seen": 431.772,
+  "min_player_dist": 340.6,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "fb34ad7a5a092969b",
+  "ship": "Apache-Farragut",
+  "onset": 472.03955078125,
+  "first_seen": 468.175,
+  "min_player_dist": 223.2,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "f1ea2fc316992755a",
+  "ship": "Foxtrot",
+  "onset": 489.3525085449219,
+  "first_seen": 486.767,
+  "min_player_dist": 26.4,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "f1ea2fc316992755a",
+  "ship": "King",
+  "onset": 479.3471984863281,
+  "first_seen": 475.355,
+  "min_player_dist": 12.6,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "f1ea2fc316992755a",
+  "ship": "Apache-Farragut",
+  "onset": 563.6268920898438,
+  "first_seen": 560.485,
+  "min_player_dist": 99.5,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "f37ebd807c06310aa",
+  "ship": "Foxtrot",
+  "onset": 447.4087219238281,
+  "first_seen": 443.824,
+  "min_player_dist": 37.1,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "f37ebd807c06310aa",
+  "ship": "King",
+  "onset": 517.5315551757812,
+  "first_seen": 444.972,
+  "min_player_dist": 7.7,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "f37ebd807c06310aa",
+  "ship": "Apache-Farragut",
+  "onset": 461.1167297363281,
+  "first_seen": 458.697,
+  "min_player_dist": 77.2,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "f0aac9f8626b00ae7",
+  "ship": "Foxtrot",
+  "onset": 379.1681823730469,
+  "first_seen": 375.02,
+  "min_player_dist": 42.6,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "f0aac9f8626b00ae7",
+  "ship": "King",
+  "onset": 377.1808166503906,
+  "first_seen": 373.313,
+  "min_player_dist": 21.6,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "f0aac9f8626b00ae7",
+  "ship": "Apache-Farragut",
+  "onset": 447.73968505859375,
+  "first_seen": 445.299,
+  "min_player_dist": 106.6,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "fb1284698a17370b7",
+  "ship": "Foxtrot",
+  "onset": 455.75372314453125,
+  "first_seen": 452.181,
+  "min_player_dist": 32.7,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "fb1284698a17370b7",
+  "ship": "King",
+  "onset": 455.0461120605469,
+  "first_seen": 447.022,
+  "min_player_dist": 11.9,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "fb1284698a17370b7",
+  "ship": "Apache-Farragut",
+  "onset": 449.16986083984375,
+  "first_seen": 445.869,
+  "min_player_dist": 27.1,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "fd3be6c19898e5312",
+  "ship": "Foxtrot",
+  "onset": 363.83392333984375,
+  "first_seen": 360.088,
+  "min_player_dist": 35.9,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "fd3be6c19898e5312",
+  "ship": "King",
+  "onset": 332.8194274902344,
+  "first_seen": 321.798,
+  "min_player_dist": 460.1,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "fd3be6c19898e5312",
+  "ship": "Apache-Farragut",
+  "onset": 409.8064270019531,
+  "first_seen": 352.09,
+  "min_player_dist": 235.7,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "f66efa73180f7021f",
+  "ship": "Foxtrot",
+  "onset": 476.98419189453125,
+  "first_seen": 473.153,
+  "min_player_dist": 37.7,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "f66efa73180f7021f",
+  "ship": "King",
+  "onset": 468.0084228515625,
+  "first_seen": 464.002,
+  "min_player_dist": 21.7,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "f66efa73180f7021f",
+  "ship": "Apache-Farragut",
+  "onset": 540.2954711914062,
+  "first_seen": 537.138,
+  "min_player_dist": 95.5,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "fc6adee38394716de",
+  "ship": "Foxtrot",
+  "onset": 472.0367736816406,
+  "first_seen": 468.469,
+  "min_player_dist": 35.1,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "fc6adee38394716de",
+  "ship": "King",
+  "onset": 462.4769592285156,
+  "first_seen": 458.463,
+  "min_player_dist": 19.7,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "fc6adee38394716de",
+  "ship": "Apache-Farragut",
+  "onset": 479.8926086425781,
+  "first_seen": 477.489,
+  "min_player_dist": 78.3,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "fd856c5c562a7a4ff",
+  "ship": "Foxtrot",
+  "onset": 453.3781433105469,
+  "first_seen": 449.798,
+  "min_player_dist": 36.1,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "fd856c5c562a7a4ff",
+  "ship": "King",
+  "onset": 445.7993469238281,
+  "first_seen": 441.816,
+  "min_player_dist": 20.3,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "fd856c5c562a7a4ff",
+  "ship": "Apache-Farragut",
+  "onset": 446.1163024902344,
+  "first_seen": 442.374,
+  "min_player_dist": 28.2,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "fc150af6d461bb4d1",
+  "ship": "Foxtrot",
+  "onset": 487.4700622558594,
+  "first_seen": 484.882,
+  "min_player_dist": 9.2,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "fc150af6d461bb4d1",
+  "ship": "King",
+  "onset": 429.3412780761719,
+  "first_seen": 425.469,
+  "min_player_dist": 493.7,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "fc150af6d461bb4d1",
+  "ship": "Apache-Farragut",
+  "onset": 454.3165588378906,
+  "first_seen": 451.918,
+  "min_player_dist": 450.7,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "f19f97cc99984eb0c",
+  "ship": "Foxtrot",
+  "onset": 710.9694213867188,
+  "first_seen": 622.996,
+  "min_player_dist": 68.8,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "f19f97cc99984eb0c",
+  "ship": "King",
+  "onset": 620.1323852539062,
+  "first_seen": 594.403,
+  "min_player_dist": 41.8,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "f19f97cc99984eb0c",
+  "ship": "Apache-Farragut",
+  "onset": 576.1055908203125,
+  "first_seen": 572.13,
+  "min_player_dist": 205.1,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "f4f5b09f0ec31e8d3",
+  "ship": "Foxtrot",
+  "onset": 389.6324462890625,
+  "first_seen": 385.897,
+  "min_player_dist": 34.2,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "f4f5b09f0ec31e8d3",
+  "ship": "King",
+  "onset": 384.6687927246094,
+  "first_seen": 380.758,
+  "min_player_dist": 18.8,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "f4f5b09f0ec31e8d3",
+  "ship": "Apache-Farragut",
+  "onset": 374.63055419921875,
+  "first_seen": 371.045,
+  "min_player_dist": 25.2,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "f609e4cda7927d581",
+  "ship": "Foxtrot",
+  "onset": 485.76129150390625,
+  "first_seen": 482.169,
+  "min_player_dist": 373.2,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "f609e4cda7927d581",
+  "ship": "King",
+  "onset": 460.6024169921875,
+  "first_seen": 457.055,
+  "min_player_dist": 445.8,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "f609e4cda7927d581",
+  "ship": "Apache-Farragut",
+  "onset": 514.3067626953125,
+  "first_seen": 510.196,
+  "min_player_dist": 215.2,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "fe713fc6f59b6d511",
+  "ship": "Foxtrot",
+  "onset": 420.735595703125,
+  "first_seen": 417.449,
+  "min_player_dist": 35.0,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "fe713fc6f59b6d511",
+  "ship": "King",
+  "onset": 410.4472351074219,
+  "first_seen": 406.594,
+  "min_player_dist": 20.4,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "fe713fc6f59b6d511",
+  "ship": "Apache-Farragut",
+  "onset": 419.8665771484375,
+  "first_seen": 417.449,
+  "min_player_dist": 47.0,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "f3baa5c0b250052f3",
+  "ship": "Foxtrot",
+  "onset": 535.9303588867188,
+  "first_seen": 532.506,
+  "min_player_dist": 31.8,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "f3baa5c0b250052f3",
+  "ship": "King",
+  "onset": 452.789306640625,
+  "first_seen": 447.368,
+  "min_player_dist": 463.6,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "f3baa5c0b250052f3",
+  "ship": "Apache-Farragut",
+  "onset": 498.35540771484375,
+  "first_seen": 493.655,
+  "min_player_dist": 343.9,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "fcc476e571a8f1e1b",
+  "ship": "Foxtrot",
+  "onset": 480.1430969238281,
+  "first_seen": 476.259,
+  "min_player_dist": 36.2,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "fcc476e571a8f1e1b",
+  "ship": "King",
+  "onset": 471.11773681640625,
+  "first_seen": 467.139,
+  "min_player_dist": 20.4,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "fcc476e571a8f1e1b",
+  "ship": "Apache-Farragut",
+  "onset": 475.7185363769531,
+  "first_seen": 472.844,
+  "min_player_dist": 40.2,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "f84cb609afb2b729a",
+  "ship": "Foxtrot",
+  "onset": 519.4880981445312,
+  "first_seen": 516.193,
+  "min_player_dist": 91.7,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "f84cb609afb2b729a",
+  "ship": "King",
+  "onset": 495.6448974609375,
+  "first_seen": 492.195,
+  "min_player_dist": 55.7,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "f84cb609afb2b729a",
+  "ship": "Apache-Farragut",
+  "onset": 501.32989501953125,
+  "first_seen": 498.487,
+  "min_player_dist": 42.3,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "a1732952275117821",
+  "ship": "Foxtrot",
+  "onset": 488.180908203125,
+  "first_seen": 484.317,
+  "min_player_dist": 36.8,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "a1732952275117821",
+  "ship": "King",
+  "onset": 479.1792907714844,
+  "first_seen": 475.189,
+  "min_player_dist": 21.4,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "a1732952275117821",
+  "ship": "Apache-Farragut",
+  "onset": 490.7663269042969,
+  "first_seen": 488.332,
+  "min_player_dist": 62.3,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "a268450031510666",
+  "ship": "Foxtrot",
+  "onset": 459.7255859375,
+  "first_seen": 457.159,
+  "min_player_dist": 12.1,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "a268450031510666",
+  "ship": "King",
+  "onset": 446.0115966796875,
+  "first_seen": 442.283,
+  "min_player_dist": 482.7,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "a268450031510666",
+  "ship": "Apache-Farragut",
+  "onset": 567.7389526367188,
+  "first_seen": 564.016,
+  "min_player_dist": 107.3,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "a4962711847907737",
+  "ship": "Foxtrot",
+  "onset": 465.2845458984375,
+  "first_seen": 461.425,
+  "min_player_dist": 16.4,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "a4962711847907737",
+  "ship": "King",
+  "onset": 465.2845458984375,
+  "first_seen": 461.425,
+  "min_player_dist": 2.6,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "a4962711847907737",
+  "ship": "Apache-Farragut",
+  "onset": 523.0574951171875,
+  "first_seen": 519.726,
+  "min_player_dist": 69.6,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "a2486710446856863",
+  "ship": "Foxtrot",
+  "onset": 449.4597473144531,
+  "first_seen": 445.92,
+  "min_player_dist": 46.5,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "a2486710446856863",
+  "ship": "King",
+  "onset": 448.779052734375,
+  "first_seen": 445.308,
+  "min_player_dist": 23.1,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "a2486710446856863",
+  "ship": "Apache-Farragut",
+  "onset": 562.643798828125,
+  "first_seen": 557.323,
+  "min_player_dist": 208.0,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "a2267271978201000",
+  "ship": "Foxtrot",
+  "onset": 494.831298828125,
+  "first_seen": 491.247,
+  "min_player_dist": 450.2,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "a2267271978201000",
+  "ship": "King",
+  "onset": 480.2674560546875,
+  "first_seen": 476.4,
+  "min_player_dist": 453.8,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "a2267271978201000",
+  "ship": "Apache-Farragut",
+  "onset": 567.2727661132812,
+  "first_seen": 564.425,
+  "min_player_dist": 98.3,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "a4059390032357055",
+  "ship": "Foxtrot",
+  "onset": 516.223388671875,
+  "first_seen": 507.1,
+  "min_player_dist": 18.5,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "a4059390032357055",
+  "ship": "King",
+  "onset": 363.3606872558594,
+  "first_seen": 359.811,
+  "min_player_dist": 555.9,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "a4059390032357055",
+  "ship": "Apache-Farragut",
+  "onset": 470.9518127441406,
+  "first_seen": 468.231,
+  "min_player_dist": 249.9,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "a1573664825202859",
+  "ship": "Foxtrot",
+  "onset": 425.17431640625,
+  "first_seen": 421.753,
+  "min_player_dist": 442.7,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "a1573664825202859",
+  "ship": "King",
+  "onset": 411.61773681640625,
+  "first_seen": 408.043,
+  "min_player_dist": 454.7,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "a1573664825202859",
+  "ship": "Apache-Farragut",
+  "onset": 498.9126281738281,
+  "first_seen": 494.899,
+  "min_player_dist": 126.0,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "a3629274829109279",
+  "ship": "Foxtrot",
+  "onset": 345.8578186035156,
+  "first_seen": 342.373,
+  "min_player_dist": 35.6,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "a3629274829109279",
+  "ship": "King",
+  "onset": 336.9583435058594,
+  "first_seen": 332.959,
+  "min_player_dist": 20.5,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "a3629274829109279",
+  "ship": "Apache-Farragut",
+  "onset": 331.645263671875,
+  "first_seen": 328.082,
+  "min_player_dist": 23.4,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "a3246219580955065",
+  "ship": "Foxtrot",
+  "onset": 401.5903015136719,
+  "first_seen": 398.294,
+  "min_player_dist": 38.3,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "a3246219580955065",
+  "ship": "King",
+  "onset": 397.17559814453125,
+  "first_seen": 393.148,
+  "min_player_dist": 21.8,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "a3246219580955065",
+  "ship": "Apache-Farragut",
+  "onset": 477.3028869628906,
+  "first_seen": 473.152,
+  "min_player_dist": 59.7,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "a1514806596630150",
+  "ship": "Foxtrot",
+  "onset": 473.5801696777344,
+  "first_seen": 469.852,
+  "min_player_dist": 44.5,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "a1514806596630150",
+  "ship": "King",
+  "onset": 470.17340087890625,
+  "first_seen": 430.512,
+  "min_player_dist": 28.0,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "a1514806596630150",
+  "ship": "Apache-Farragut",
+  "onset": 455.1880187988281,
+  "first_seen": 452.705,
+  "min_player_dist": 372.4,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "a2044010992458555",
+  "ship": "Foxtrot",
+  "onset": 474.85552978515625,
+  "first_seen": 471.587,
+  "min_player_dist": 380.8,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "a2044010992458555",
+  "ship": "King",
+  "onset": 442.7403259277344,
+  "first_seen": 428.574,
+  "min_player_dist": 474.3,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "a2044010992458555",
+  "ship": "Apache-Farragut",
+  "onset": 513.5050048828125,
+  "first_seen": 509.619,
+  "min_player_dist": 84.8,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "a26359911652244",
+  "ship": "Foxtrot",
+  "onset": 447.94757080078125,
+  "first_seen": 444.373,
+  "min_player_dist": 44.1,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "a26359911652244",
+  "ship": "King",
+  "onset": 446.5208740234375,
+  "first_seen": 442.653,
+  "min_player_dist": 21.2,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "a26359911652244",
+  "ship": "Apache-Farragut",
+  "onset": 444.9336853027344,
+  "first_seen": 441.519,
+  "min_player_dist": 23.8,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "a2397323592951212",
+  "ship": "Foxtrot",
+  "onset": 446.23895263671875,
+  "first_seen": 442.379,
+  "min_player_dist": 95.7,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "a2397323592951212",
+  "ship": "King",
+  "onset": 423.67999267578125,
+  "first_seen": 420.076,
+  "min_player_dist": 65.7,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "a2397323592951212",
+  "ship": "Apache-Farragut",
+  "onset": 430.6731262207031,
+  "first_seen": 428.084,
+  "min_player_dist": 39.8,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "f32788acf80cd8646",
+  "ship": "Foxtrot",
+  "onset": 530.9662475585938,
+  "first_seen": 528.408,
+  "min_player_dist": 16.0,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "f32788acf80cd8646",
+  "ship": "King",
+  "onset": 372.5620422363281,
+  "first_seen": 368.995,
+  "min_player_dist": 50.7,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "f32788acf80cd8646",
+  "ship": "Apache-Farragut",
+  "onset": 374.8314514160156,
+  "first_seen": 371.278,
+  "min_player_dist": 42.3,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "a793226322672951",
+  "ship": "Foxtrot",
+  "onset": 478.9779357910156,
+  "first_seen": 475.089,
+  "min_player_dist": 91.9,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "a793226322672951",
+  "ship": "King",
+  "onset": 498.12115478515625,
+  "first_seen": 460.092,
+  "min_player_dist": 58.3,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "a793226322672951",
+  "ship": "Apache-Farragut",
+  "onset": 473.53668212890625,
+  "first_seen": 471.108,
+  "min_player_dist": 78.2,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "a778627729402888",
+  "ship": "Foxtrot",
+  "onset": 444.1166076660156,
+  "first_seen": 440.851,
+  "min_player_dist": 34.7,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "a778627729402888",
+  "ship": "King",
+  "onset": 437.70147705078125,
+  "first_seen": 433.983,
+  "min_player_dist": 19.2,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "a778627729402888",
+  "ship": "Apache-Farragut",
+  "onset": 546.441162109375,
+  "first_seen": 542.563,
+  "min_player_dist": 227.7,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "a940221579225057",
+  "ship": "Foxtrot",
+  "onset": 473.8064270019531,
+  "first_seen": 470.08,
+  "min_player_dist": 85.1,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "a940221579225057",
+  "ship": "King",
+  "onset": 448.64654541015625,
+  "first_seen": 436.381,
+  "min_player_dist": 442.4,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "a940221579225057",
+  "ship": "Apache-Farragut",
+  "onset": 464.24090576171875,
+  "first_seen": 461.509,
+  "min_player_dist": 46.2,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "a2079560439193563",
+  "ship": "Foxtrot",
+  "onset": null,
+  "first_seen": 521.291,
+  "min_player_dist": null,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "a2079560439193563",
+  "ship": "King",
+  "onset": 466.304443359375,
+  "first_seen": 462.478,
+  "min_player_dist": 434.9,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "a2079560439193563",
+  "ship": "Apache-Farragut",
+  "onset": 524.71240234375,
+  "first_seen": 522.307,
+  "min_player_dist": 53.9,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "a3156892857282623",
+  "ship": "Foxtrot",
+  "onset": 436.3287353515625,
+  "first_seen": 432.342,
+  "min_player_dist": 46.4,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "a3156892857282623",
+  "ship": "King",
+  "onset": 435.4754638671875,
+  "first_seen": 431.768,
+  "min_player_dist": 22.3,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "a3156892857282623",
+  "ship": "Apache-Farragut",
+  "onset": 471.1905822753906,
+  "first_seen": 467.764,
+  "min_player_dist": 356.0,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "a4970137857345104",
+  "ship": "Foxtrot",
+  "onset": 463.6386413574219,
+  "first_seen": 460.939,
+  "min_player_dist": 33.1,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "a4970137857345104",
+  "ship": "King",
+  "onset": 458.19793701171875,
+  "first_seen": 454.632,
+  "min_player_dist": 16.0,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "a4970137857345104",
+  "ship": "Apache-Farragut",
+  "onset": 462.07366943359375,
+  "first_seen": 458.643,
+  "min_player_dist": 35.0,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "a1963149650339128",
+  "ship": "Foxtrot",
+  "onset": 442.22021484375,
+  "first_seen": 438.781,
+  "min_player_dist": 531.5,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "a1963149650339128",
+  "ship": "King",
+  "onset": 531.332275390625,
+  "first_seen": 254.196,
+  "min_player_dist": 442.7,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "a1963149650339128",
+  "ship": "Apache-Farragut",
+  "onset": 583.3331298828125,
+  "first_seen": 579.334,
+  "min_player_dist": 181.5,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "a2367993269163151",
+  "ship": "Foxtrot",
+  "onset": 355.44720458984375,
+  "first_seen": 351.442,
+  "min_player_dist": 40.2,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "a2367993269163151",
+  "ship": "King",
+  "onset": 331.4490051269531,
+  "first_seen": 320.591,
+  "min_player_dist": 453.0,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "a2367993269163151",
+  "ship": "Apache-Farragut",
+  "onset": 350.6000671386719,
+  "first_seen": 347.448,
+  "min_player_dist": 26.1,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "a5175527491846126",
+  "ship": "Foxtrot",
+  "onset": 475.6651306152344,
+  "first_seen": 472.073,
+  "min_player_dist": 139.2,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "a5175527491846126",
+  "ship": "King",
+  "onset": 452.6782531738281,
+  "first_seen": 448.649,
+  "min_player_dist": 351.0,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "a5175527491846126",
+  "ship": "Apache-Farragut",
+  "onset": 484.08941650390625,
+  "first_seen": 480.656,
+  "min_player_dist": 124.7,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "a3068180313287033",
+  "ship": "Foxtrot",
+  "onset": 494.592529296875,
+  "first_seen": 492.035,
+  "min_player_dist": 27.6,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "a3068180313287033",
+  "ship": "King",
+  "onset": 490.8772888183594,
+  "first_seen": 486.88,
+  "min_player_dist": 9.6,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "a3068180313287033",
+  "ship": "Apache-Farragut",
+  "onset": 500.0184631347656,
+  "first_seen": 497.603,
+  "min_player_dist": 52.5,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "a1504863758917835",
+  "ship": "Foxtrot",
+  "onset": 567.382568359375,
+  "first_seen": 564.804,
+  "min_player_dist": 12.3,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "a1504863758917835",
+  "ship": "King",
+  "onset": 490.24041748046875,
+  "first_seen": 478.51,
+  "min_player_dist": 625.3,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "a1504863758917835",
+  "ship": "Apache-Farragut",
+  "onset": 562.9561767578125,
+  "first_seen": 559.359,
+  "min_player_dist": 80.9,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "a3149265002689081",
+  "ship": "Foxtrot",
+  "onset": 411.4808654785156,
+  "first_seen": 399.481,
+  "min_player_dist": 30.0,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "a3149265002689081",
+  "ship": "King",
+  "onset": 401.9066467285156,
+  "first_seen": 397.183,
+  "min_player_dist": 39.8,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "a3149265002689081",
+  "ship": "Apache-Farragut",
+  "onset": 404.05291748046875,
+  "first_seen": 401.199,
+  "min_player_dist": 31.9,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "a893913243489531",
+  "ship": "Foxtrot",
+  "onset": 502.8056335449219,
+  "first_seen": 499.247,
+  "min_player_dist": 35.6,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "a893913243489531",
+  "ship": "King",
+  "onset": 498.08551025390625,
+  "first_seen": 494.662,
+  "min_player_dist": 19.8,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "a893913243489531",
+  "ship": "Apache-Farragut",
+  "onset": 552.3783569335938,
+  "first_seen": 549.519,
+  "min_player_dist": 351.2,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "a1281478214784069",
+  "ship": "Foxtrot",
+  "onset": 518.1620483398438,
+  "first_seen": 512.992,
+  "min_player_dist": 32.4,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "a1281478214784069",
+  "ship": "King",
+  "onset": 433.560546875,
+  "first_seen": 430.151,
+  "min_player_dist": 536.8,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "a1281478214784069",
+  "ship": "Apache-Farragut",
+  "onset": 542.4173583984375,
+  "first_seen": 538.145,
+  "min_player_dist": 85.6,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "a5276502174295701",
+  "ship": "Foxtrot",
+  "onset": 466.7613525390625,
+  "first_seen": 462.895,
+  "min_player_dist": 37.9,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "a5276502174295701",
+  "ship": "King",
+  "onset": 455.7608947753906,
+  "first_seen": 452.305,
+  "min_player_dist": 22.8,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "a5276502174295701",
+  "ship": "Apache-Farragut",
+  "onset": 463.4618835449219,
+  "first_seen": 460.873,
+  "min_player_dist": 42.2,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "a2600063239920907",
+  "ship": "Foxtrot",
+  "onset": 473.4286193847656,
+  "first_seen": 469.554,
+  "min_player_dist": 363.4,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "a2600063239920907",
+  "ship": "King",
+  "onset": 449.54150390625,
+  "first_seen": 445.548,
+  "min_player_dist": 414.8,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "a2600063239920907",
+  "ship": "Apache-Farragut",
+  "onset": 498.4237976074219,
+  "first_seen": 495.85,
+  "min_player_dist": 283.5,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "a222489603694707",
+  "ship": "Foxtrot",
+  "onset": 473.9024963378906,
+  "first_seen": 469.901,
+  "min_player_dist": 40.7,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "a222489603694707",
+  "ship": "King",
+  "onset": 448.4521179199219,
+  "first_seen": 305.335,
+  "min_player_dist": 449.9,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "a222489603694707",
+  "ship": "Apache-Farragut",
+  "onset": 471.7549133300781,
+  "first_seen": 469.336,
+  "min_player_dist": 60.7,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "a5159601755450909",
+  "ship": "Foxtrot",
+  "onset": 470.95355224609375,
+  "first_seen": 466.799,
+  "min_player_dist": 429.6,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "a5159601755450909",
+  "ship": "King",
+  "onset": 449.5234680175781,
+  "first_seen": 440.527,
+  "min_player_dist": 440.6,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "a5159601755450909",
+  "ship": "Apache-Farragut",
+  "onset": 494.6613464355469,
+  "first_seen": 490.814,
+  "min_player_dist": 40.3,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "a3411352497828746",
+  "ship": "Foxtrot",
+  "onset": 471.12957763671875,
+  "first_seen": 368.267,
+  "min_player_dist": 85.1,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "a3411352497828746",
+  "ship": "King",
+  "onset": 448.2548828125,
+  "first_seen": 299.142,
+  "min_player_dist": 277.8,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "a3411352497828746",
+  "ship": "Apache-Farragut",
+  "onset": 457.97540283203125,
+  "first_seen": 357.966,
+  "min_player_dist": 55.8,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "a4370809536875650",
+  "ship": "Foxtrot",
+  "onset": 375.1744384765625,
+  "first_seen": 371.761,
+  "min_player_dist": 38.0,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "a4370809536875650",
+  "ship": "King",
+  "onset": 364.3109436035156,
+  "first_seen": 360.304,
+  "min_player_dist": 23.2,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "a4370809536875650",
+  "ship": "Apache-Farragut",
+  "onset": 370.3166809082031,
+  "first_seen": 367.776,
+  "min_player_dist": 46.6,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "a1519616973719449",
+  "ship": "Foxtrot",
+  "onset": 483.4714660644531,
+  "first_seen": 479.766,
+  "min_player_dist": 38.7,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "a1519616973719449",
+  "ship": "King",
+  "onset": 476.8905944824219,
+  "first_seen": 472.899,
+  "min_player_dist": 23.2,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "a1519616973719449",
+  "ship": "Apache-Farragut",
+  "onset": 482.47412109375,
+  "first_seen": 479.766,
+  "min_player_dist": 43.7,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "a2198303410920215",
+  "ship": "Foxtrot",
+  "onset": 490.63238525390625,
+  "first_seen": 486.204,
+  "min_player_dist": 121.6,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "a2198303410920215",
+  "ship": "King",
+  "onset": 475.2160949707031,
+  "first_seen": 471.241,
+  "min_player_dist": 440.4,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "a2198303410920215",
+  "ship": "Apache-Farragut",
+  "onset": 493.93292236328125,
+  "first_seen": 491.505,
+  "min_player_dist": 85.8,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "a1705945540390746",
+  "ship": "Foxtrot",
+  "onset": 432.1361999511719,
+  "first_seen": 428.556,
+  "min_player_dist": 25.5,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "a1705945540390746",
+  "ship": "King",
+  "onset": 416.5246276855469,
+  "first_seen": 329.094,
+  "min_player_dist": 96.6,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "a1705945540390746",
+  "ship": "Apache-Farragut",
+  "onset": 387.97003173828125,
+  "first_seen": 384.542,
+  "min_player_dist": 512.1,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "f87ec09a2a6393e8e",
+  "ship": "Foxtrot",
+  "onset": 353.3261413574219,
+  "first_seen": 349.315,
+  "min_player_dist": 97.0,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "f87ec09a2a6393e8e",
+  "ship": "King",
+  "onset": 330.3492126464844,
+  "first_seen": 322.337,
+  "min_player_dist": 576.2,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "f87ec09a2a6393e8e",
+  "ship": "Apache-Farragut",
+  "onset": 348.7314147949219,
+  "first_seen": 346.348,
+  "min_player_dist": 81.0,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "a3960988055048162",
+  "ship": "Foxtrot",
+  "onset": 514.7439575195312,
+  "first_seen": 511.304,
+  "min_player_dist": 388.7,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "a3960988055048162",
+  "ship": "King",
+  "onset": 493.1728820800781,
+  "first_seen": 489.613,
+  "min_player_dist": 423.2,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "a3960988055048162",
+  "ship": "Apache-Farragut",
+  "onset": 550.3245239257812,
+  "first_seen": 546.164,
+  "min_player_dist": 191.2,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "a2476612997024019",
+  "ship": "Foxtrot",
+  "onset": 423.699951171875,
+  "first_seen": 419.836,
+  "min_player_dist": 36.5,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "a2476612997024019",
+  "ship": "King",
+  "onset": 412.5542297363281,
+  "first_seen": 408.94,
+  "min_player_dist": 20.6,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "a2476612997024019",
+  "ship": "Apache-Farragut",
+  "onset": 420.09979248046875,
+  "first_seen": 417.534,
+  "min_player_dist": 48.9,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "a2397168988121099",
+  "ship": "Foxtrot",
+  "onset": 538.6629028320312,
+  "first_seen": 535.522,
+  "min_player_dist": 27.2,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "a2397168988121099",
+  "ship": "King",
+  "onset": 458.3623352050781,
+  "first_seen": 454.375,
+  "min_player_dist": 469.9,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "a2397168988121099",
+  "ship": "Apache-Farragut",
+  "onset": 471.11627197265625,
+  "first_seen": 468.639,
+  "min_player_dist": 61.8,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "a2372116444627874",
+  "ship": "Foxtrot",
+  "onset": 487.2837219238281,
+  "first_seen": 483.694,
+  "min_player_dist": 52.6,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "a2372116444627874",
+  "ship": "King",
+  "onset": 489.984130859375,
+  "first_seen": 485.988,
+  "min_player_dist": 21.4,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "a2372116444627874",
+  "ship": "Apache-Farragut",
+  "onset": 516.4188232421875,
+  "first_seen": 513.972,
+  "min_player_dist": 113.9,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "a5360065064730826",
+  "ship": "Foxtrot",
+  "onset": 480.021484375,
+  "first_seen": 476.452,
+  "min_player_dist": 60.3,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "a5360065064730826",
+  "ship": "King",
+  "onset": 485.5967712402344,
+  "first_seen": 481.613,
+  "min_player_dist": 23.1,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "a5360065064730826",
+  "ship": "Apache-Farragut",
+  "onset": 483.7433776855469,
+  "first_seen": 480.466,
+  "min_player_dist": 23.3,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "a4223938842734840",
+  "ship": "Foxtrot",
+  "onset": 417.763916015625,
+  "first_seen": 413.63,
+  "min_player_dist": 42.3,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "a4223938842734840",
+  "ship": "King",
+  "onset": 406.1966857910156,
+  "first_seen": 287.345,
+  "min_player_dist": 32.9,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "a4223938842734840",
+  "ship": "Apache-Farragut",
+  "onset": 449.1912536621094,
+  "first_seen": 445.638,
+  "min_player_dist": 259.1,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "a3458094634378006",
+  "ship": "Foxtrot",
+  "onset": 387.68951416015625,
+  "first_seen": 384.374,
+  "min_player_dist": 401.6,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "a3458094634378006",
+  "ship": "King",
+  "onset": 365.2411804199219,
+  "first_seen": 361.53,
+  "min_player_dist": 457.2,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "a3458094634378006",
+  "ship": "Apache-Farragut",
+  "onset": 404.5270080566406,
+  "first_seen": 400.369,
+  "min_player_dist": 297.2,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "a3763419564876887",
+  "ship": "Foxtrot",
+  "onset": 464.43109130859375,
+  "first_seen": 461.829,
+  "min_player_dist": 12.6,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "a3763419564876887",
+  "ship": "King",
+  "onset": 404.94805908203125,
+  "first_seen": 401.53,
+  "min_player_dist": 472.8,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "a3763419564876887",
+  "ship": "Apache-Farragut",
+  "onset": 458.54644775390625,
+  "first_seen": 456.131,
+  "min_player_dist": 61.7,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "a3517695895943536",
+  "ship": "Foxtrot",
+  "onset": 480.70526123046875,
+  "first_seen": 477.435,
+  "min_player_dist": 481.8,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "a3517695895943536",
+  "ship": "King",
+  "onset": 464.4091491699219,
+  "first_seen": 460.444,
+  "min_player_dist": 516.1,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "a3517695895943536",
+  "ship": "Apache-Farragut",
+  "onset": 635.5862426757812,
+  "first_seen": 631.862,
+  "min_player_dist": 183.8,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "a4337347454972563",
+  "ship": "Foxtrot",
+  "onset": 474.3179931640625,
+  "first_seen": 470.786,
+  "min_player_dist": 117.0,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "a4337347454972563",
+  "ship": "King",
+  "onset": 454.7911682128906,
+  "first_seen": 450.761,
+  "min_player_dist": 492.2,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "a4337347454972563",
+  "ship": "Apache-Farragut",
+  "onset": 476.15399169921875,
+  "first_seen": 473.785,
+  "min_player_dist": 92.1,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "a3305683426463851",
+  "ship": "Foxtrot",
+  "onset": 455.1481628417969,
+  "first_seen": 451.853,
+  "min_player_dist": 42.6,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "a3305683426463851",
+  "ship": "King",
+  "onset": 454.3041687011719,
+  "first_seen": 450.709,
+  "min_player_dist": 19.7,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "a3305683426463851",
+  "ship": "Apache-Farragut",
+  "onset": 456.5737609863281,
+  "first_seen": 453.568,
+  "min_player_dist": 32.2,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "a2684356277626718",
+  "ship": "Foxtrot",
+  "onset": 469.3285827636719,
+  "first_seen": 466.144,
+  "min_player_dist": 363.4,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "a2684356277626718",
+  "ship": "King",
+  "onset": 447.7833251953125,
+  "first_seen": 443.255,
+  "min_player_dist": 403.9,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "a2684356277626718",
+  "ship": "Apache-Farragut",
+  "onset": 494.48162841796875,
+  "first_seen": 491.723,
+  "min_player_dist": 178.3,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "a4733661267841725",
+  "ship": "Foxtrot",
+  "onset": 410.0267333984375,
+  "first_seen": 406.456,
+  "min_player_dist": 33.9,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "a4733661267841725",
+  "ship": "King",
+  "onset": 397.9230041503906,
+  "first_seen": 357.952,
+  "min_player_dist": 62.4,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "a4733661267841725",
+  "ship": "Apache-Farragut",
+  "onset": 407.44659423828125,
+  "first_seen": 404.758,
+  "min_player_dist": 44.6,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "a3143295008230506",
+  "ship": "Foxtrot",
+  "onset": 321.4434509277344,
+  "first_seen": 317.879,
+  "min_player_dist": 280.5,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "a3143295008230506",
+  "ship": "King",
+  "onset": 472.3183288574219,
+  "first_seen": 348.332,
+  "min_player_dist": 116.3,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "a3143295008230506",
+  "ship": "Apache-Farragut",
+  "onset": 350.89215087890625,
+  "first_seen": 347.171,
+  "min_player_dist": 47.0,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "a2894706595960058",
+  "ship": "Foxtrot",
+  "onset": 471.744384765625,
+  "first_seen": 469.021,
+  "min_player_dist": 401.5,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "a2894706595960058",
+  "ship": "King",
+  "onset": 457.0225830078125,
+  "first_seen": 453.014,
+  "min_player_dist": 439.9,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "a2894706595960058",
+  "ship": "Apache-Farragut",
+  "onset": 565.1639404296875,
+  "first_seen": 562.738,
+  "min_player_dist": 118.5,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "a3173806456365724",
+  "ship": "Foxtrot",
+  "onset": 433.3529357910156,
+  "first_seen": 343.615,
+  "min_player_dist": 27.3,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "a3173806456365724",
+  "ship": "King",
+  "onset": 423.627197265625,
+  "first_seen": 216.109,
+  "min_player_dist": 64.5,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "a3173806456365724",
+  "ship": "Apache-Farragut",
+  "onset": 430.48089599609375,
+  "first_seen": 340.208,
+  "min_player_dist": 37.0,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "a2717238548665513",
+  "ship": "Foxtrot",
+  "onset": 453.1061706542969,
+  "first_seen": 449.655,
+  "min_player_dist": 104.9,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "a2717238548665513",
+  "ship": "King",
+  "onset": 439.5301513671875,
+  "first_seen": 435.928,
+  "min_player_dist": 437.7,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "a2717238548665513",
+  "ship": "Apache-Farragut",
+  "onset": 453.2365417480469,
+  "first_seen": 450.791,
+  "min_player_dist": 79.2,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "a2724389668835639",
+  "ship": "Foxtrot",
+  "onset": 362.2876892089844,
+  "first_seen": 289.149,
+  "min_player_dist": 33.8,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "a2724389668835639",
+  "ship": "King",
+  "onset": 347.4358825683594,
+  "first_seen": 276.538,
+  "min_player_dist": 418.1,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "a2724389668835639",
+  "ship": "Apache-Farragut",
+  "onset": 357.147705078125,
+  "first_seen": 282.269,
+  "min_player_dist": 52.4,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "a5024112728406167",
+  "ship": "Foxtrot",
+  "onset": 431.1705627441406,
+  "first_seen": 427.478,
+  "min_player_dist": 101.3,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "a5024112728406167",
+  "ship": "King",
+  "onset": 408.4434509277344,
+  "first_seen": 401.444,
+  "min_player_dist": 471.9,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "a5024112728406167",
+  "ship": "Apache-Farragut",
+  "onset": 426.8817443847656,
+  "first_seen": 424.464,
+  "min_player_dist": 85.9,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "a3877682878056264",
+  "ship": "Foxtrot",
+  "onset": 552.7913818359375,
+  "first_seen": 167.644,
+  "min_player_dist": 51.2,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "a3877682878056264",
+  "ship": "King",
+  "onset": 466.4871826171875,
+  "first_seen": 149.334,
+  "min_player_dist": 469.5,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "a3877682878056264",
+  "ship": "Apache-Farragut",
+  "onset": 530.48974609375,
+  "first_seen": 160.764,
+  "min_player_dist": 90.1,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "a3514504738422202",
+  "ship": "Foxtrot",
+  "onset": 459.21826171875,
+  "first_seen": 455.368,
+  "min_player_dist": 37.6,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "a3514504738422202",
+  "ship": "King",
+  "onset": 454.08966064453125,
+  "first_seen": 450.373,
+  "min_player_dist": 22.1,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "a3514504738422202",
+  "ship": "Apache-Farragut",
+  "onset": 525.5054931640625,
+  "first_seen": 521.376,
+  "min_player_dist": 103.9,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "a5011640143609213",
+  "ship": "Foxtrot",
+  "onset": 427.5928955078125,
+  "first_seen": 424.209,
+  "min_player_dist": 40.1,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "a5011640143609213",
+  "ship": "King",
+  "onset": 419.6088562011719,
+  "first_seen": 416.16,
+  "min_player_dist": 24.3,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "a5011640143609213",
+  "ship": "Apache-Farragut",
+  "onset": 495.299072265625,
+  "first_seen": 491.6,
+  "min_player_dist": 223.8,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "a3444479591757390",
+  "ship": "Foxtrot",
+  "onset": 470.8548583984375,
+  "first_seen": 467.013,
+  "min_player_dist": 33.5,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "a3444479591757390",
+  "ship": "King",
+  "onset": 463.73663330078125,
+  "first_seen": 460.136,
+  "min_player_dist": 17.7,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "a3444479591757390",
+  "ship": "Apache-Farragut",
+  "onset": 468.42681884765625,
+  "first_seen": 465.875,
+  "min_player_dist": 40.0,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "a3325826825413590",
+  "ship": "Foxtrot",
+  "onset": 425.31060791015625,
+  "first_seen": 422.041,
+  "min_player_dist": 32.1,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "a3325826825413590",
+  "ship": "King",
+  "onset": 420.6046447753906,
+  "first_seen": 417.033,
+  "min_player_dist": 16.9,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "a3325826825413590",
+  "ship": "Apache-Farragut",
+  "onset": 418.5878601074219,
+  "first_seen": 415.022,
+  "min_player_dist": 21.4,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "a2957297156658701",
+  "ship": "Foxtrot",
+  "onset": 472.3376770019531,
+  "first_seen": 469.005,
+  "min_player_dist": 411.5,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "a2957297156658701",
+  "ship": "King",
+  "onset": 448.8516845703125,
+  "first_seen": 445.002,
+  "min_player_dist": 457.0,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "a2957297156658701",
+  "ship": "Apache-Farragut",
+  "onset": 509.4414978027344,
+  "first_seen": 506.436,
+  "min_player_dist": 74.2,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "a2652186973971586",
+  "ship": "Foxtrot",
+  "onset": 431.237060546875,
+  "first_seen": 427.34,
+  "min_player_dist": 52.9,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "a2652186973971586",
+  "ship": "King",
+  "onset": 438.230224609375,
+  "first_seen": 434.487,
+  "min_player_dist": 15.4,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "a2652186973971586",
+  "ship": "Apache-Farragut",
+  "onset": 563.345458984375,
+  "first_seen": 560.774,
+  "min_player_dist": 184.7,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "a3986216702207438",
+  "ship": "Foxtrot",
+  "onset": 450.3919372558594,
+  "first_seen": 446.662,
+  "min_player_dist": 423.1,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "a3986216702207438",
+  "ship": "King",
+  "onset": 437.52947998046875,
+  "first_seen": 433.563,
+  "min_player_dist": 456.9,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "a3986216702207438",
+  "ship": "Apache-Farragut",
+  "onset": 537.3670654296875,
+  "first_seen": 533.52,
+  "min_player_dist": 140.9,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "a2313103602786726",
+  "ship": "Foxtrot",
+  "onset": 483.92547607421875,
+  "first_seen": 133.053,
+  "min_player_dist": 120.0,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "a2313103602786726",
+  "ship": "King",
+  "onset": 465.92242431640625,
+  "first_seen": 102.229,
+  "min_player_dist": 492.3,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "a2313103602786726",
+  "ship": "Apache-Farragut",
+  "onset": 490.9138488769531,
+  "first_seen": 488.477,
+  "min_player_dist": 95.3,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "a2585473248904695",
+  "ship": "Foxtrot",
+  "onset": 471.5710144042969,
+  "first_seen": 467.677,
+  "min_player_dist": 394.8,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "a2585473248904695",
+  "ship": "King",
+  "onset": 447.6787414550781,
+  "first_seen": 443.728,
+  "min_player_dist": 436.7,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "a2585473248904695",
+  "ship": "Apache-Farragut",
+  "onset": 551.6700439453125,
+  "first_seen": 549.099,
+  "min_player_dist": 130.3,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "a2797348280831832",
+  "ship": "Foxtrot",
+  "onset": 347.2818908691406,
+  "first_seen": 343.699,
+  "min_player_dist": 36.0,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "a2797348280831832",
+  "ship": "King",
+  "onset": 339.697998046875,
+  "first_seen": 335.699,
+  "min_player_dist": 20.1,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "a2797348280831832",
+  "ship": "Apache-Farragut",
+  "onset": 347.13604736328125,
+  "first_seen": 344.699,
+  "min_player_dist": 51.2,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "a2574637047017371",
+  "ship": "Foxtrot",
+  "onset": 391.6138000488281,
+  "first_seen": 387.745,
+  "min_player_dist": 428.8,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "a2574637047017371",
+  "ship": "King",
+  "onset": 375.18133544921875,
+  "first_seen": 371.751,
+  "min_player_dist": 452.5,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "a2574637047017371",
+  "ship": "Apache-Farragut",
+  "onset": 451.44342041015625,
+  "first_seen": 447.755,
+  "min_player_dist": 48.2,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "a2717573559063225",
+  "ship": "Foxtrot",
+  "onset": 478.2996520996094,
+  "first_seen": 421.189,
+  "min_player_dist": 24.4,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "a2717573559063225",
+  "ship": "King",
+  "onset": 399.0243225097656,
+  "first_seen": 394.505,
+  "min_player_dist": 462.8,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "a2717573559063225",
+  "ship": "Apache-Farragut",
+  "onset": 419.5739440917969,
+  "first_seen": 417.158,
+  "min_player_dist": 96.4,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "a2790794161355098",
+  "ship": "Foxtrot",
+  "onset": 549.12841796875,
+  "first_seen": 545.266,
+  "min_player_dist": 23.8,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "a2790794161355098",
+  "ship": "King",
+  "onset": 417.8345031738281,
+  "first_seen": 368.138,
+  "min_player_dist": 488.2,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "a2790794161355098",
+  "ship": "Apache-Farragut",
+  "onset": 545.43017578125,
+  "first_seen": 542.981,
+  "min_player_dist": 118.0,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "a3037273745159660",
+  "ship": "Foxtrot",
+  "onset": 460.2131652832031,
+  "first_seen": 370.493,
+  "min_player_dist": 28.1,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "a3037273745159660",
+  "ship": "King",
+  "onset": 444.79296875,
+  "first_seen": 296.224,
+  "min_player_dist": 366.7,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "a3037273745159660",
+  "ship": "Apache-Farragut",
+  "onset": 489.3651428222656,
+  "first_seen": 361.23,
+  "min_player_dist": 279.6,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "a2939717854755369",
+  "ship": "Foxtrot",
+  "onset": 450.50543212890625,
+  "first_seen": 447.207,
+  "min_player_dist": 415.7,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "a2939717854755369",
+  "ship": "King",
+  "onset": 499.20477294921875,
+  "first_seen": 495.196,
+  "min_player_dist": 12.9,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "a2939717854755369",
+  "ship": "Apache-Farragut",
+  "onset": 498.36175537109375,
+  "first_seen": 495.196,
+  "min_player_dist": 48.8,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "a2349284409386605",
+  "ship": "Foxtrot",
+  "onset": 457.57354736328125,
+  "first_seen": 453.702,
+  "min_player_dist": 44.9,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "a2349284409386605",
+  "ship": "King",
+  "onset": 457.43048095703125,
+  "first_seen": 453.702,
+  "min_player_dist": 19.8,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "a2349284409386605",
+  "ship": "Apache-Farragut",
+  "onset": 510.4378662109375,
+  "first_seen": 507.982,
+  "min_player_dist": 232.8,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "a2311067790698653",
+  "ship": "Foxtrot",
+  "onset": 445.1606750488281,
+  "first_seen": 441.164,
+  "min_player_dist": 94.3,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "a2311067790698653",
+  "ship": "King",
+  "onset": 422.88037109375,
+  "first_seen": 416.034,
+  "min_player_dist": 447.7,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "a2311067790698653",
+  "ship": "Apache-Farragut",
+  "onset": 438.4616394042969,
+  "first_seen": 436.044,
+  "min_player_dist": 79.7,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "a3183581806629632",
+  "ship": "Foxtrot",
+  "onset": 452.7135314941406,
+  "first_seen": 448.805,
+  "min_player_dist": 36.1,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "a3183581806629632",
+  "ship": "King",
+  "onset": 439.7868347167969,
+  "first_seen": 436.055,
+  "min_player_dist": 451.4,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "a3183581806629632",
+  "ship": "Apache-Farragut",
+  "onset": 453.23760986328125,
+  "first_seen": 450.804,
+  "min_player_dist": 64.2,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "a3159177802538887",
+  "ship": "Foxtrot",
+  "onset": 452.052734375,
+  "first_seen": 448.176,
+  "min_player_dist": 39.8,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "a3159177802538887",
+  "ship": "King",
+  "onset": 441.17254638671875,
+  "first_seen": 437.173,
+  "min_player_dist": 24.1,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "a3159177802538887",
+  "ship": "Apache-Farragut",
+  "onset": 517.4840087890625,
+  "first_seen": 513.616,
+  "min_player_dist": 73.7,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "a2531910714307423",
+  "ship": "Foxtrot",
+  "onset": 452.43499755859375,
+  "first_seen": 448.584,
+  "min_player_dist": 34.7,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "a2531910714307423",
+  "ship": "King",
+  "onset": 439.0221252441406,
+  "first_seen": 435.43,
+  "min_player_dist": 420.1,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "a2531910714307423",
+  "ship": "Apache-Farragut",
+  "onset": 544.7249145507812,
+  "first_seen": 541.744,
+  "min_player_dist": 160.9,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "a2594239279796140",
+  "ship": "Foxtrot",
+  "onset": 495.2093811035156,
+  "first_seen": 491.911,
+  "min_player_dist": 48.2,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "a2594239279796140",
+  "ship": "King",
+  "onset": 498.0638122558594,
+  "first_seen": 494.21,
+  "min_player_dist": 17.6,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "a2594239279796140",
+  "ship": "Apache-Farragut",
+  "onset": 508.7687683105469,
+  "first_seen": 506.183,
+  "min_player_dist": 58.2,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "a2290984524147473",
+  "ship": "Foxtrot",
+  "onset": 481.2519836425781,
+  "first_seen": 477.378,
+  "min_player_dist": 39.3,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "a2290984524147473",
+  "ship": "King",
+  "onset": 479.6578063964844,
+  "first_seen": 413.384,
+  "min_player_dist": 18.3,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "a2290984524147473",
+  "ship": "Apache-Farragut",
+  "onset": 415.3877868652344,
+  "first_seen": 411.67,
+  "min_player_dist": 36.2,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "a2564307653053066",
+  "ship": "Foxtrot",
+  "onset": 401.3996276855469,
+  "first_seen": 397.803,
+  "min_player_dist": 423.1,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "a2564307653053066",
+  "ship": "King",
+  "onset": 385.814208984375,
+  "first_seen": 380.23,
+  "min_player_dist": 456.4,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "a2564307653053066",
+  "ship": "Apache-Farragut",
+  "onset": 416.6537170410156,
+  "first_seen": 414.242,
+  "min_player_dist": 326.8,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "a2298019681544746",
+  "ship": "Foxtrot",
+  "onset": 521.5178833007812,
+  "first_seen": 518.076,
+  "min_player_dist": 405.4,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "a2298019681544746",
+  "ship": "King",
+  "onset": 496.4054870605469,
+  "first_seen": 492.941,
+  "min_player_dist": 470.1,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "a2298019681544746",
+  "ship": "Apache-Farragut",
+  "onset": 541.0663452148438,
+  "first_seen": 536.925,
+  "min_player_dist": 65.7,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "a5499965045427366",
+  "ship": "Foxtrot",
+  "onset": 454.05810546875,
+  "first_seen": 450.231,
+  "min_player_dist": 132.0,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "a5499965045427366",
+  "ship": "King",
+  "onset": 438.19573974609375,
+  "first_seen": 434.205,
+  "min_player_dist": 456.8,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "a5499965045427366",
+  "ship": "Apache-Farragut",
+  "onset": 459.5042724609375,
+  "first_seen": 457.046,
+  "min_player_dist": 97.6,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "a6100757956041114",
+  "ship": "Foxtrot",
+  "onset": 491.2840270996094,
+  "first_seen": 487.281,
+  "min_player_dist": 107.6,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "a6100757956041114",
+  "ship": "King",
+  "onset": 473.2773742675781,
+  "first_seen": 468.423,
+  "min_player_dist": 446.3,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "a6100757956041114",
+  "ship": "Apache-Farragut",
+  "onset": 489.7028503417969,
+  "first_seen": 487.281,
+  "min_player_dist": 84.0,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "a5867485397289464",
+  "ship": "Foxtrot",
+  "onset": 474.0421142578125,
+  "first_seen": 470.783,
+  "min_player_dist": 40.0,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "a5867485397289464",
+  "ship": "King",
+  "onset": 467.5990295410156,
+  "first_seen": 463.888,
+  "min_player_dist": 23.8,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "a5867485397289464",
+  "ship": "Apache-Farragut",
+  "onset": 531.209228515625,
+  "first_seen": 527.878,
+  "min_player_dist": 253.6,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "a4896427651564136",
+  "ship": "Foxtrot",
+  "onset": 451.0727844238281,
+  "first_seen": 447.385,
+  "min_player_dist": 455.5,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "a4896427651564136",
+  "ship": "King",
+  "onset": 433.4021911621094,
+  "first_seen": 429.689,
+  "min_player_dist": 469.2,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "a4896427651564136",
+  "ship": "Apache-Farragut",
+  "onset": 500.976806640625,
+  "first_seen": 497.635,
+  "min_player_dist": 85.0,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "a4668918939009274",
+  "ship": "Foxtrot",
+  "onset": 455.68206787109375,
+  "first_seen": 451.812,
+  "min_player_dist": 36.1,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "a4668918939009274",
+  "ship": "King",
+  "onset": 442.2857971191406,
+  "first_seen": 438.717,
+  "min_player_dist": 452.4,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "a4668918939009274",
+  "ship": "Apache-Farragut",
+  "onset": 553.5154418945312,
+  "first_seen": 549.535,
+  "min_player_dist": 151.7,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "a7316164981691393",
+  "ship": "Foxtrot",
+  "onset": 480.31671142578125,
+  "first_seen": 476.619,
+  "min_player_dist": 37.9,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "a7316164981691393",
+  "ship": "King",
+  "onset": 471.3243103027344,
+  "first_seen": 467.699,
+  "min_player_dist": 22.3,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "a7316164981691393",
+  "ship": "Apache-Farragut",
+  "onset": 535.385009765625,
+  "first_seen": 532.021,
+  "min_player_dist": 246.9,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "a5031311099917329",
+  "ship": "Foxtrot",
+  "onset": 486.7557067871094,
+  "first_seen": 483.262,
+  "min_player_dist": 37.2,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "a5031311099917329",
+  "ship": "King",
+  "onset": 477.187255859375,
+  "first_seen": 473.474,
+  "min_player_dist": 21.6,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "a5031311099917329",
+  "ship": "Apache-Farragut",
+  "onset": 481.3338928222656,
+  "first_seen": 478.65,
+  "min_player_dist": 39.0,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "a2651040225298515",
+  "ship": "Foxtrot",
+  "onset": 475.88885498046875,
+  "first_seen": 472.009,
+  "min_player_dist": 31.9,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "a2651040225298515",
+  "ship": "King",
+  "onset": 462.8548278808594,
+  "first_seen": 458.869,
+  "min_player_dist": 460.2,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "a2651040225298515",
+  "ship": "Apache-Farragut",
+  "onset": 578.9168701171875,
+  "first_seen": 574.901,
+  "min_player_dist": 118.3,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "a4642311617821301",
+  "ship": "Foxtrot",
+  "onset": 497.7870178222656,
+  "first_seen": 493.923,
+  "min_player_dist": 31.5,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "a4642311617821301",
+  "ship": "King",
+  "onset": 473.9444580078125,
+  "first_seen": 411.092,
+  "min_player_dist": 87.3,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "a4642311617821301",
+  "ship": "Apache-Farragut",
+  "onset": 461.638671875,
+  "first_seen": 459.062,
+  "min_player_dist": 237.7,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "a5358183881998856",
+  "ship": "Foxtrot",
+  "onset": 424.51263427734375,
+  "first_seen": 421.215,
+  "min_player_dist": 39.5,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "a5358183881998856",
+  "ship": "King",
+  "onset": 415.06536865234375,
+  "first_seen": 411.493,
+  "min_player_dist": 24.1,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "a5358183881998856",
+  "ship": "Apache-Farragut",
+  "onset": 417.34808349609375,
+  "first_seen": 414.332,
+  "min_player_dist": 34.4,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "a5104308365210967",
+  "ship": "Foxtrot",
+  "onset": 421.3992919921875,
+  "first_seen": 417.906,
+  "min_player_dist": 441.4,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "a5104308365210967",
+  "ship": "King",
+  "onset": 402.62347412109375,
+  "first_seen": 399.046,
+  "min_player_dist": 458.0,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "a5104308365210967",
+  "ship": "Apache-Farragut",
+  "onset": 488.39013671875,
+  "first_seen": 484.785,
+  "min_player_dist": 87.2,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "a5933829759885681",
+  "ship": "Foxtrot",
+  "onset": 476.8525085449219,
+  "first_seen": 473.126,
+  "min_player_dist": 36.9,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "a5933829759885681",
+  "ship": "King",
+  "onset": 469.9878234863281,
+  "first_seen": 465.976,
+  "min_player_dist": 21.2,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "a5933829759885681",
+  "ship": "Apache-Farragut",
+  "onset": 474.7218322753906,
+  "first_seen": 472.005,
+  "min_player_dist": 41.0,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "a4370758016941642",
+  "ship": "Foxtrot",
+  "onset": 488.68145751953125,
+  "first_seen": 484.964,
+  "min_player_dist": 45.3,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "a4370758016941642",
+  "ship": "King",
+  "onset": 484.96417236328125,
+  "first_seen": 350.129,
+  "min_player_dist": 29.0,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "a4370758016941642",
+  "ship": "Apache-Farragut",
+  "onset": 590.1270751953125,
+  "first_seen": 359.266,
+  "min_player_dist": 119.8,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "a4778487852379251",
+  "ship": "Foxtrot",
+  "onset": 495.1368103027344,
+  "first_seen": 491.288,
+  "min_player_dist": 420.4,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "a4778487852379251",
+  "ship": "King",
+  "onset": 481.2908020019531,
+  "first_seen": 477.842,
+  "min_player_dist": 440.8,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "a4778487852379251",
+  "ship": "Apache-Farragut",
+  "onset": 540.6883544921875,
+  "first_seen": 537.875,
+  "min_player_dist": 362.7,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "a2485662511116420",
+  "ship": "Foxtrot",
+  "onset": 481.96075439453125,
+  "first_seen": 478.078,
+  "min_player_dist": 35.0,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "a2485662511116420",
+  "ship": "King",
+  "onset": 475.8037109375,
+  "first_seen": 471.796,
+  "min_player_dist": 19.2,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "a2485662511116420",
+  "ship": "Apache-Farragut",
+  "onset": 522.3884887695312,
+  "first_seen": 518.1,
+  "min_player_dist": 274.0,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "a5898628205424007",
+  "ship": "Foxtrot",
+  "onset": 386.9309997558594,
+  "first_seen": 383.051,
+  "min_player_dist": 87.8,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "a5898628205424007",
+  "ship": "King",
+  "onset": 452.9105224609375,
+  "first_seen": 371.026,
+  "min_player_dist": 75.9,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "a5898628205424007",
+  "ship": "Apache-Farragut",
+  "onset": 377.4881591796875,
+  "first_seen": 374.474,
+  "min_player_dist": 46.3,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "a7280903303385112",
+  "ship": "Foxtrot",
+  "onset": 343.29693603515625,
+  "first_seen": 339.311,
+  "min_player_dist": 97.9,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "a7280903303385112",
+  "ship": "King",
+  "onset": 377.8892517089844,
+  "first_seen": 374.162,
+  "min_player_dist": 53.9,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "a7280903303385112",
+  "ship": "Apache-Farragut",
+  "onset": 336.5862731933594,
+  "first_seen": 334.141,
+  "min_player_dist": 82.9,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "a2572433736196278",
+  "ship": "Foxtrot",
+  "onset": 462.8397521972656,
+  "first_seen": 459.53,
+  "min_player_dist": 39.8,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "a2572433736196278",
+  "ship": "King",
+  "onset": 451.6671142578125,
+  "first_seen": 448.093,
+  "min_player_dist": 24.7,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "a2572433736196278",
+  "ship": "Apache-Farragut",
+  "onset": 460.38385009765625,
+  "first_seen": 457.948,
+  "min_player_dist": 54.5,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "a5132487647897469",
+  "ship": "Foxtrot",
+  "onset": 501.16461181640625,
+  "first_seen": 497.859,
+  "min_player_dist": 111.8,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "a5132487647897469",
+  "ship": "King",
+  "onset": 477.8638610839844,
+  "first_seen": 277.882,
+  "min_player_dist": 447.9,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "a5132487647897469",
+  "ship": "Apache-Farragut",
+  "onset": 499.7312927246094,
+  "first_seen": 497.3,
+  "min_player_dist": 89.3,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "a5222334070092130",
+  "ship": "Foxtrot",
+  "onset": 438.3492126464844,
+  "first_seen": 434.773,
+  "min_player_dist": 450.1,
+  "self_dmg": 33849.0
+ },
+ {
+  "arena": "a5222334070092130",
+  "ship": "King",
+  "onset": 417.35565185546875,
+  "first_seen": 413.631,
+  "min_player_dist": 506.7,
+  "self_dmg": 28021.0
+ },
+ {
+  "arena": "a5222334070092130",
+  "ship": "Apache-Farragut",
+  "onset": 529.9088134765625,
+  "first_seen": 525.639,
+  "min_player_dist": 221.3,
+  "self_dmg": 13649.0
+ },
+ {
+  "arena": "a4524955936086941",
+  "ship": "Foxtrot",
+  "onset": 439.5955505371094,
+  "first_seen": 435.878,
+  "min_player_dist": 34.9,
+  "self_dmg": 18801.0
+ },
+ {
+  "arena": "a4524955936086941",
+  "ship": "King",
+  "onset": 429.4747009277344,
+  "first_seen": 425.889,
+  "min_player_dist": 19.5,
+  "self_dmg": 40151.0
+ },
+ {
+  "arena": "a4524955936086941",
+  "ship": "Apache-Farragut",
+  "onset": 436.466064453125,
+  "first_seen": 433.905,
+  "min_player_dist": 50.0,
+  "self_dmg": 8050.0
+ },
+ {
+  "arena": "a8870754170574288",
+  "ship": "Foxtrot",
+  "onset": 478.5396423339844,
+  "first_seen": 474.682,
+  "min_player_dist": 132.9,
+  "self_dmg": 38004.0
+ },
+ {
+  "arena": "a8870754170574288",
+  "ship": "King",
+  "onset": 461.50885009765625,
+  "first_seen": 457.507,
+  "min_player_dist": 426.1,
+  "self_dmg": 20310.0
+ },
+ {
+  "arena": "a8870754170574288",
+  "ship": "Apache-Farragut",
+  "onset": 485.0877990722656,
+  "first_seen": 482.676,
+  "min_player_dist": 104.7,
+  "self_dmg": 13450.0
+ },
+ {
+  "arena": "a1418479105769836",
+  "ship": "Foxtrot",
+  "onset": 407.2535095214844,
+  "first_seen": 403.393,
+  "min_player_dist": 121.7,
+  "self_dmg": 19733.0
+ },
+ {
+  "arena": "a1418479105769836",
+  "ship": "King",
+  "onset": 326.9750061035156,
+  "first_seen": 319.977,
+  "min_player_dist": 546.9,
+  "self_dmg": 58950.0
+ },
+ {
+  "arena": "a1418479105769836",
+  "ship": "Apache-Farragut",
+  "onset": 345.41925048828125,
+  "first_seen": 342.971,
+  "min_player_dist": 498.3,
+  "self_dmg": 11850.0
+ },
+ {
+  "arena": "a5338345433150461",
+  "ship": "Foxtrot",
+  "onset": 472.1711120605469,
+  "first_seen": 468.859,
+  "min_player_dist": 97.8,
+  "self_dmg": 24842.0
+ },
+ {
+  "arena": "a5338345433150461",
+  "ship": "King",
+  "onset": 444.5638122558594,
+  "first_seen": 436.845,
+  "min_player_dist": 442.6,
+  "self_dmg": 47851.0
+ },
+ {
+  "arena": "a5338345433150461",
+  "ship": "Apache-Farragut",
+  "onset": 460.9750061035156,
+  "first_seen": 458.558,
+  "min_player_dist": 78.3,
+  "self_dmg": 9154.0
+ },
+ {
+  "arena": "a8274621300267072",
+  "ship": "Foxtrot",
+  "onset": 502.4072570800781,
+  "first_seen": 498.539,
+  "min_player_dist": 31.8,
+  "self_dmg": 39199.0
+ },
+ {
+  "arena": "a8274621300267072",
+  "ship": "King",
+  "onset": 419.3577880859375,
+  "first_seen": 415.944,
+  "min_player_dist": 462.4,
+  "self_dmg": 80002.0
+ },
+ {
+  "arena": "a8274621300267072",
+  "ship": "Apache-Farragut",
+  "onset": 495.37249755859375,
+  "first_seen": 491.923,
+  "min_player_dist": 90.5,
+  "self_dmg": 12517.0
+ },
+ {
+  "arena": "a8434982494363497",
+  "ship": "Foxtrot",
+  "onset": 494.0651550292969,
+  "first_seen": 490.23,
+  "min_player_dist": 89.7,
+  "self_dmg": 21200.0
+ },
+ {
+  "arena": "a8434982494363497",
+  "ship": "King",
+  "onset": 476.487060546875,
+  "first_seen": 472.496,
+  "min_player_dist": 38.8,
+  "self_dmg": 47791.0
+ },
+ {
+  "arena": "a8434982494363497",
+  "ship": "Apache-Farragut",
+  "onset": 469.2659912109375,
+  "first_seen": 465.636,
+  "min_player_dist": 23.0,
+  "self_dmg": 9100.0
+ },
+ {
+  "arena": "a6110176826661266",
+  "ship": "Foxtrot",
+  "onset": 456.1085510253906,
+  "first_seen": 452.523,
+  "min_player_dist": 495.5,
+  "self_dmg": 18800.0
+ },
+ {
+  "arena": "a6110176826661266",
+  "ship": "King",
+  "onset": 440.4294738769531,
+  "first_seen": 436.626,
+  "min_player_dist": 505.9,
+  "self_dmg": 40151.0
+ },
+ {
+  "arena": "a6110176826661266",
+  "ship": "Apache-Farragut",
+  "onset": 497.2464904785156,
+  "first_seen": 494.831,
+  "min_player_dist": 304.3,
+  "self_dmg": 8050.0
+ },
+ {
+  "arena": "a7574644710992227",
+  "ship": "Foxtrot",
+  "onset": 431.48248291015625,
+  "first_seen": 427.613,
+  "min_player_dist": 461.2,
+  "self_dmg": 24982.0
+ },
+ {
+  "arena": "a7574644710992227",
+  "ship": "King",
+  "onset": 445.3210754394531,
+  "first_seen": 441.325,
+  "min_player_dist": 17.8,
+  "self_dmg": 56818.0
+ },
+ {
+  "arena": "a7574644710992227",
+  "ship": "Apache-Farragut",
+  "onset": 478.3529968261719,
+  "first_seen": 474.472,
+  "min_player_dist": 301.1,
+  "self_dmg": 11850.0
+ },
+ {
+  "arena": "a5716461470287492",
+  "ship": "Foxtrot",
+  "onset": 381.79669189453125,
+  "first_seen": 378.46,
+  "min_player_dist": 40.2,
+  "self_dmg": 33600.0
+ },
+ {
+  "arena": "a5716461470287492",
+  "ship": "King",
+  "onset": 380.1469421386719,
+  "first_seen": 376.178,
+  "min_player_dist": 20.1,
+  "self_dmg": 73383.0
+ },
+ {
+  "arena": "a5716461470287492",
+  "ship": "Apache-Farragut",
+  "onset": 403.8068542480469,
+  "first_seen": 401.323,
+  "min_player_dist": 104.4,
+  "self_dmg": 14400.0
+ },
+ {
+  "arena": "a3541129256629069",
+  "ship": "Foxtrot",
+  "onset": 494.14678955078125,
+  "first_seen": 490.866,
+  "min_player_dist": 35.4,
+  "self_dmg": 24000.0
+ },
+ {
+  "arena": "a3541129256629069",
+  "ship": "King",
+  "onset": 487.844482421875,
+  "first_seen": 483.998,
+  "min_player_dist": 19.4,
+  "self_dmg": 35734.0
+ },
+ {
+  "arena": "a3541129256629069",
+  "ship": "Apache-Farragut",
+  "onset": 577.7113647460938,
+  "first_seen": 509.142,
+  "min_player_dist": 179.5,
+  "self_dmg": 10301.0
+ },
+ {
+  "arena": "a8356333057486714",
+  "ship": "Foxtrot",
+  "onset": 462.58697509765625,
+  "first_seen": 396.302,
+  "min_player_dist": 45.9,
+  "self_dmg": 19600.0
+ },
+ {
+  "arena": "a8356333057486714",
+  "ship": "King",
+  "onset": 380.30206298828125,
+  "first_seen": 376.302,
+  "min_player_dist": 432.1,
+  "self_dmg": 42327.0
+ },
+ {
+  "arena": "a8356333057486714",
+  "ship": "Apache-Farragut",
+  "onset": 449.7122802734375,
+  "first_seen": 446.289,
+  "min_player_dist": 92.1,
+  "self_dmg": 8400.0
+ },
+ {
+  "arena": "a1978517076656141",
+  "ship": "Foxtrot",
+  "onset": 486.2904052734375,
+  "first_seen": 482.416,
+  "min_player_dist": 99.3,
+  "self_dmg": 34700.0
+ },
+ {
+  "arena": "a1978517076656141",
+  "ship": "King",
+  "onset": 461.41741943359375,
+  "first_seen": 452.856,
+  "min_player_dist": 434.1,
+  "self_dmg": 74995.0
+ },
+ {
+  "arena": "a1978517076656141",
+  "ship": "Apache-Farragut",
+  "onset": 472.9791564941406,
+  "first_seen": 470.412,
+  "min_player_dist": 50.1,
+  "self_dmg": 13362.0
+ },
+ {
+  "arena": "a4530397661962051",
+  "ship": "Foxtrot",
+  "onset": 476.57135009765625,
+  "first_seen": 472.834,
+  "min_player_dist": 31.0,
+  "self_dmg": 26531.0
+ },
+ {
+  "arena": "a4530397661962051",
+  "ship": "King",
+  "onset": 466.7007141113281,
+  "first_seen": 463.152,
+  "min_player_dist": 15.7,
+  "self_dmg": 53005.0
+ },
+ {
+  "arena": "a4530397661962051",
+  "ship": "Apache-Farragut",
+  "onset": 483.2751770019531,
+  "first_seen": 480.827,
+  "min_player_dist": 78.8,
+  "self_dmg": 9450.0
+ },
+ {
+  "arena": "a6285458742169038",
+  "ship": "Foxtrot",
+  "onset": 477.8533630371094,
+  "first_seen": 474.303,
+  "min_player_dist": 385.6,
+  "self_dmg": 36199.0
+ },
+ {
+  "arena": "a6285458742169038",
+  "ship": "King",
+  "onset": 456.720458984375,
+  "first_seen": 452.87,
+  "min_player_dist": 438.1,
+  "self_dmg": 78411.0
+ },
+ {
+  "arena": "a6285458742169038",
+  "ship": "Apache-Farragut",
+  "onset": 524.2709350585938,
+  "first_seen": 520.871,
+  "min_player_dist": 89.5,
+  "self_dmg": 15550.0
+ },
+ {
+  "arena": "a2394085228282937",
+  "ship": "Foxtrot",
+  "onset": 467.0558166503906,
+  "first_seen": 463.481,
+  "min_player_dist": 462.0,
+  "self_dmg": 40374.0
+ },
+ {
+  "arena": "a2394085228282937",
+  "ship": "King",
+  "onset": 669.2028198242188,
+  "first_seen": 357.206,
+  "min_player_dist": 301.5,
+  "self_dmg": 57305.0
+ },
+ {
+  "arena": "a2394085228282937",
+  "ship": "Apache-Farragut",
+  "onset": 760.1930541992188,
+  "first_seen": 753.205,
+  "min_player_dist": 59.0,
+  "self_dmg": 17546.0
+ },
+ {
+  "arena": "a2314997702219418",
+  "ship": "Foxtrot",
+  "onset": 482.2261047363281,
+  "first_seen": 478.796,
+  "min_player_dist": 442.1,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "a2314997702219418",
+  "ship": "King",
+  "onset": 462.7943420410156,
+  "first_seen": 458.789,
+  "min_player_dist": 462.4,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "a2314997702219418",
+  "ship": "Apache-Farragut",
+  "onset": 560.2164306640625,
+  "first_seen": 556.505,
+  "min_player_dist": 102.8,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "a6698153561705901",
+  "ship": "Foxtrot",
+  "onset": 415.1210021972656,
+  "first_seen": 411.385,
+  "min_player_dist": 39.9,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "a6698153561705901",
+  "ship": "King",
+  "onset": 402.83111572265625,
+  "first_seen": 398.895,
+  "min_player_dist": 54.9,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "a6698153561705901",
+  "ship": "Apache-Farragut",
+  "onset": 406.5400695800781,
+  "first_seen": 403.399,
+  "min_player_dist": 37.3,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "a5808536986197630",
+  "ship": "Foxtrot",
+  "onset": 502.31298828125,
+  "first_seen": 498.917,
+  "min_player_dist": 26.2,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "a5808536986197630",
+  "ship": "King",
+  "onset": 501.61456298828125,
+  "first_seen": 497.742,
+  "min_player_dist": 3.5,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "a5808536986197630",
+  "ship": "Apache-Farragut",
+  "onset": 506.7451477050781,
+  "first_seen": 504.046,
+  "min_player_dist": 42.0,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "a2791648878478034",
+  "ship": "Foxtrot",
+  "onset": 441.3712158203125,
+  "first_seen": 437.468,
+  "min_player_dist": 433.2,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "a2791648878478034",
+  "ship": "King",
+  "onset": 418.4726257324219,
+  "first_seen": 414.759,
+  "min_player_dist": 463.8,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "a2791648878478034",
+  "ship": "Apache-Farragut",
+  "onset": 492.1903381347656,
+  "first_seen": 489.617,
+  "min_player_dist": 89.5,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "a6014111301125274",
+  "ship": "Foxtrot",
+  "onset": 515.8388671875,
+  "first_seen": 511.997,
+  "min_player_dist": 30.3,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "a6014111301125274",
+  "ship": "King",
+  "onset": 433.9695129394531,
+  "first_seen": 430.553,
+  "min_player_dist": 501.7,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "a6014111301125274",
+  "ship": "Apache-Farragut",
+  "onset": 509.71453857421875,
+  "first_seen": 505.111,
+  "min_player_dist": 73.7,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "a3243449374549118",
+  "ship": "Foxtrot",
+  "onset": 432.0956115722656,
+  "first_seen": 428.39,
+  "min_player_dist": 424.6,
+  "self_dmg": 36200.0
+ },
+ {
+  "arena": "a3243449374549118",
+  "ship": "King",
+  "onset": 417.5082702636719,
+  "first_seen": 414.096,
+  "min_player_dist": 442.1,
+  "self_dmg": 69685.0
+ },
+ {
+  "arena": "a3243449374549118",
+  "ship": "Apache-Farragut",
+  "onset": 535.3806762695312,
+  "first_seen": 532.371,
+  "min_player_dist": 111.5,
+  "self_dmg": 15550.0
+ },
+ {
+  "arena": "a5044861738691156",
+  "ship": "Foxtrot",
+  "onset": 526.6383056640625,
+  "first_seen": 474.354,
+  "min_player_dist": 9.7,
+  "self_dmg": 31700.0
+ },
+ {
+  "arena": "a5044861738691156",
+  "ship": "King",
+  "onset": 452.458740234375,
+  "first_seen": 448.891,
+  "min_player_dist": 436.5,
+  "self_dmg": 68522.0
+ },
+ {
+  "arena": "a5044861738691156",
+  "ship": "Apache-Farragut",
+  "onset": 486.61639404296875,
+  "first_seen": 482.624,
+  "min_player_dist": 291.3,
+  "self_dmg": 13600.0
+ },
+ {
+  "arena": "a4095897304739941",
+  "ship": "Foxtrot",
+  "onset": 455.9955749511719,
+  "first_seen": 452.414,
+  "min_player_dist": 418.3,
+  "self_dmg": 30200.0
+ },
+ {
+  "arena": "a4095897304739941",
+  "ship": "King",
+  "onset": 436.4183349609375,
+  "first_seen": 432.418,
+  "min_player_dist": 454.0,
+  "self_dmg": 64550.0
+ },
+ {
+  "arena": "a4095897304739941",
+  "ship": "Apache-Farragut",
+  "onset": 487.8341369628906,
+  "first_seen": 485.275,
+  "min_player_dist": 271.1,
+  "self_dmg": 12508.0
+ },
+ {
+  "arena": "a2419992476203630",
+  "ship": "Foxtrot",
+  "onset": 476.89404296875,
+  "first_seen": 473.316,
+  "min_player_dist": 87.4,
+  "self_dmg": 24000.0
+ },
+ {
+  "arena": "a2419992476203630",
+  "ship": "King",
+  "onset": 457.6158447265625,
+  "first_seen": 453.63,
+  "min_player_dist": 64.6,
+  "self_dmg": 45455.0
+ },
+ {
+  "arena": "a2419992476203630",
+  "ship": "Apache-Farragut",
+  "onset": 462.9117431640625,
+  "first_seen": 460.327,
+  "min_player_dist": 43.2,
+  "self_dmg": 10300.0
+ },
+ {
+  "arena": "a2900818360233097",
+  "ship": "Foxtrot",
+  "onset": 493.53082275390625,
+  "first_seen": 431.943,
+  "min_player_dist": 22.1,
+  "self_dmg": 36539.0
+ },
+ {
+  "arena": "a2900818360233097",
+  "ship": "King",
+  "onset": 419.9328918457031,
+  "first_seen": 415.927,
+  "min_player_dist": 74.9,
+  "self_dmg": 80767.0
+ },
+ {
+  "arena": "a2900818360233097",
+  "ship": "Apache-Farragut",
+  "onset": 430.511962890625,
+  "first_seen": 427.927,
+  "min_player_dist": 55.9,
+  "self_dmg": 15551.0
+ },
+ {
+  "arena": "a4514690976455305",
+  "ship": "Foxtrot",
+  "onset": 497.1182861328125,
+  "first_seen": 493.797,
+  "min_player_dist": 462.6,
+  "self_dmg": 2178.0
+ },
+ {
+  "arena": "a4514690976455305",
+  "ship": "King",
+  "onset": 478.9399108886719,
+  "first_seen": 474.968,
+  "min_player_dist": 464.1,
+  "self_dmg": 12614.0
+ },
+ {
+  "arena": "a4514690976455305",
+  "ship": "Apache-Farragut",
+  "onset": 673.269287109375,
+  "first_seen": 669.828,
+  "min_player_dist": 219.6,
+  "self_dmg": 12100.0
+ },
+ {
+  "arena": "a4796878918074673",
+  "ship": "Foxtrot",
+  "onset": 439.6083068847656,
+  "first_seen": 435.991,
+  "min_player_dist": 36.9,
+  "self_dmg": 28700.0
+ },
+ {
+  "arena": "a4796878918074673",
+  "ship": "King",
+  "onset": 427.69818115234375,
+  "first_seen": 423.708,
+  "min_player_dist": 61.4,
+  "self_dmg": 62047.0
+ },
+ {
+  "arena": "a4796878918074673",
+  "ship": "Apache-Farragut",
+  "onset": 433.26324462890625,
+  "first_seen": 430.718,
+  "min_player_dist": 43.6,
+  "self_dmg": 12351.0
+ },
+ {
+  "arena": "a2610448506932361",
+  "ship": "Foxtrot",
+  "onset": 444.84075927734375,
+  "first_seen": 441.509,
+  "min_player_dist": 22.4,
+  "self_dmg": 36539.0
+ },
+ {
+  "arena": "a2610448506932361",
+  "ship": "King",
+  "onset": 435.958251953125,
+  "first_seen": 375.231,
+  "min_player_dist": 16.3,
+  "self_dmg": 79160.0
+ },
+ {
+  "arena": "a2610448506932361",
+  "ship": "Apache-Farragut",
+  "onset": 388.0869140625,
+  "first_seen": 385.524,
+  "min_player_dist": 239.0,
+  "self_dmg": 15551.0
+ },
+ {
+  "arena": "a1120558712052872",
+  "ship": "Foxtrot",
+  "onset": 464.2979736328125,
+  "first_seen": 460.723,
+  "min_player_dist": 35.1,
+  "self_dmg": 9314.0
+ },
+ {
+  "arena": "a1120558712052872",
+  "ship": "King",
+  "onset": 458.0167541503906,
+  "first_seen": 453.865,
+  "min_player_dist": 18.7,
+  "self_dmg": 75803.0
+ },
+ {
+  "arena": "a1120558712052872",
+  "ship": "Apache-Farragut",
+  "onset": 461.7315368652344,
+  "first_seen": 459.006,
+  "min_player_dist": 38.4,
+  "self_dmg": 12657.0
+ },
+ {
+  "arena": "a4586472765993215",
+  "ship": "Foxtrot",
+  "onset": 466.22802734375,
+  "first_seen": 462.305,
+  "min_player_dist": 417.4,
+  "self_dmg": 34350.0
+ },
+ {
+  "arena": "a4586472765993215",
+  "ship": "King",
+  "onset": 444.5859069824219,
+  "first_seen": 440.871,
+  "min_player_dist": 453.5,
+  "self_dmg": 74186.0
+ },
+ {
+  "arena": "a4586472765993215",
+  "ship": "Apache-Farragut",
+  "onset": 497.8858337402344,
+  "first_seen": 495.327,
+  "min_player_dist": 55.6,
+  "self_dmg": 14751.0
+ },
+ {
+  "arena": "a4971705563856736",
+  "ship": "Foxtrot",
+  "onset": 510.4023742675781,
+  "first_seen": 507.098,
+  "min_player_dist": 449.9,
+  "self_dmg": 24158.0
+ },
+ {
+  "arena": "a4971705563856736",
+  "ship": "King",
+  "onset": 495.4202880859375,
+  "first_seen": 491.662,
+  "min_player_dist": 482.7,
+  "self_dmg": 53901.0
+ },
+ {
+  "arena": "a4971705563856736",
+  "ship": "Apache-Farragut",
+  "onset": 575.087890625,
+  "first_seen": 571.656,
+  "min_player_dist": 185.1,
+  "self_dmg": 10851.0
+ },
+ {
+  "arena": "a1986028983472517",
+  "ship": "Foxtrot",
+  "onset": 570.2227172851562,
+  "first_seen": 502.225,
+  "min_player_dist": 10.3,
+  "self_dmg": 30950.0
+ },
+ {
+  "arena": "a1986028983472517",
+  "ship": "King",
+  "onset": 480.6329650878906,
+  "first_seen": 477.077,
+  "min_player_dist": 416.5,
+  "self_dmg": 53545.0
+ },
+ {
+  "arena": "a1986028983472517",
+  "ship": "Apache-Farragut",
+  "onset": 516.0640869140625,
+  "first_seen": 513.1,
+  "min_player_dist": 278.0,
+  "self_dmg": 13300.0
+ },
+ {
+  "arena": "a6613327964004796",
+  "ship": "Foxtrot",
+  "onset": 423.5912780761719,
+  "first_seen": 387.589,
+  "min_player_dist": 23.3,
+  "self_dmg": 30601.0
+ },
+ {
+  "arena": "a6613327964004796",
+  "ship": "King",
+  "onset": 376.8722229003906,
+  "first_seen": 373.31,
+  "min_player_dist": 62.2,
+  "self_dmg": 66837.0
+ },
+ {
+  "arena": "a6613327964004796",
+  "ship": "Apache-Farragut",
+  "onset": 383.302001953125,
+  "first_seen": 380.734,
+  "min_player_dist": 53.7,
+  "self_dmg": 13150.0
+ },
+ {
+  "arena": "a2636841085275730",
+  "ship": "Foxtrot",
+  "onset": 474.7934265136719,
+  "first_seen": 471.501,
+  "min_player_dist": 85.7,
+  "self_dmg": 27950.0
+ },
+ {
+  "arena": "a2636841085275730",
+  "ship": "King",
+  "onset": 457.9389953613281,
+  "first_seen": 454.075,
+  "min_player_dist": 62.3,
+  "self_dmg": 62658.0
+ },
+ {
+  "arena": "a2636841085275730",
+  "ship": "Apache-Farragut",
+  "onset": 463.0704650878906,
+  "first_seen": 460.512,
+  "min_player_dist": 43.0,
+  "self_dmg": 12000.0
+ },
+ {
+  "arena": "a4316619974914425",
+  "ship": "Foxtrot",
+  "onset": 524.581298828125,
+  "first_seen": 521.27,
+  "min_player_dist": 25.3,
+  "self_dmg": 18961.0
+ },
+ {
+  "arena": "a4316619974914425",
+  "ship": "King",
+  "onset": 456.8693542480469,
+  "first_seen": 452.851,
+  "min_player_dist": 376.3,
+  "self_dmg": 41062.0
+ },
+ {
+  "arena": "a4316619974914425",
+  "ship": "Apache-Farragut",
+  "onset": 478.5574645996094,
+  "first_seen": 476.145,
+  "min_player_dist": 229.6,
+  "self_dmg": 8050.0
+ },
+ {
+  "arena": "a5531262496656089",
+  "ship": "Foxtrot",
+  "onset": 457.9686279296875,
+  "first_seen": 454.52,
+  "min_player_dist": 30.3,
+  "self_dmg": 32101.0
+ },
+ {
+  "arena": "a5531262496656089",
+  "ship": "King",
+  "onset": 454.5198059082031,
+  "first_seen": 451.104,
+  "min_player_dist": 15.0,
+  "self_dmg": 70890.0
+ },
+ {
+  "arena": "a5531262496656089",
+  "ship": "Apache-Farragut",
+  "onset": 465.10174560546875,
+  "first_seen": 462.521,
+  "min_player_dist": 61.1,
+  "self_dmg": 13800.0
+ },
+ {
+  "arena": "a3224800634229985",
+  "ship": "Foxtrot",
+  "onset": 408.32330322265625,
+  "first_seen": 404.899,
+  "min_player_dist": 27.0,
+  "self_dmg": 36201.0
+ },
+ {
+  "arena": "a3224800634229985",
+  "ship": "King",
+  "onset": 401.9121398925781,
+  "first_seen": 397.904,
+  "min_player_dist": 10.9,
+  "self_dmg": 77400.0
+ },
+ {
+  "arena": "a3224800634229985",
+  "ship": "Apache-Farragut",
+  "onset": 482.90911865234375,
+  "first_seen": 477.904,
+  "min_player_dist": 420.3,
+  "self_dmg": 15550.0
+ },
+ {
+  "arena": "a4492863961541079",
+  "ship": "Foxtrot",
+  "onset": 397.82916259765625,
+  "first_seen": 394.097,
+  "min_player_dist": 32.2,
+  "self_dmg": 35850.0
+ },
+ {
+  "arena": "a4492863961541079",
+  "ship": "King",
+  "onset": 388.4117126464844,
+  "first_seen": 384.987,
+  "min_player_dist": 16.3,
+  "self_dmg": 77473.0
+ },
+ {
+  "arena": "a4492863961541079",
+  "ship": "Apache-Farragut",
+  "onset": 392.9705505371094,
+  "first_seen": 390.088,
+  "min_player_dist": 39.6,
+  "self_dmg": 15400.0
+ },
+ {
+  "arena": "a4916304788305826",
+  "ship": "Foxtrot",
+  "onset": 409.497314453125,
+  "first_seen": 406.046,
+  "min_player_dist": 101.1,
+  "self_dmg": 27600.0
+ },
+ {
+  "arena": "a4916304788305826",
+  "ship": "King",
+  "onset": 387.20111083984375,
+  "first_seen": 382.11,
+  "min_player_dist": 458.4,
+  "self_dmg": 59623.0
+ },
+ {
+  "arena": "a4916304788305826",
+  "ship": "Apache-Farragut",
+  "onset": 405.6438293457031,
+  "first_seen": 403.217,
+  "min_player_dist": 88.4,
+  "self_dmg": 11851.0
+ },
+ {
+  "arena": "a5517647454648970",
+  "ship": "Foxtrot",
+  "onset": 393.4798583984375,
+  "first_seen": 390.206,
+  "min_player_dist": 31.4,
+  "self_dmg": 32753.0
+ },
+ {
+  "arena": "a5517647454648970",
+  "ship": "King",
+  "onset": 388.920654296875,
+  "first_seen": 385.059,
+  "min_player_dist": 16.5,
+  "self_dmg": 44074.0
+ },
+ {
+  "arena": "a5517647454648970",
+  "ship": "Apache-Farragut",
+  "onset": 383.4721984863281,
+  "first_seen": 379.91,
+  "min_player_dist": 23.5,
+  "self_dmg": 21236.0
+ },
+ {
+  "arena": "a5951263058067596",
+  "ship": "Foxtrot",
+  "onset": 401.056396484375,
+  "first_seen": 397.372,
+  "min_player_dist": 450.1,
+  "self_dmg": 19201.0
+ },
+ {
+  "arena": "a5951263058067596",
+  "ship": "King",
+  "onset": 414.7586669921875,
+  "first_seen": 410.767,
+  "min_player_dist": 15.3,
+  "self_dmg": 41468.0
+ },
+ {
+  "arena": "a5951263058067596",
+  "ship": "Apache-Farragut",
+  "onset": 441.8094482421875,
+  "first_seen": 439.045,
+  "min_player_dist": 116.9,
+  "self_dmg": 8251.0
+ },
+ {
+  "arena": "a10069969193746026",
+  "ship": "Foxtrot",
+  "onset": 506.0862731933594,
+  "first_seen": 502.365,
+  "min_player_dist": 31.8,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "a10069969193746026",
+  "ship": "King",
+  "onset": 489.79913330078125,
+  "first_seen": 340.66,
+  "min_player_dist": 422.3,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "a10069969193746026",
+  "ship": "Apache-Farragut",
+  "onset": 625.7982177734375,
+  "first_seen": 622.363,
+  "min_player_dist": 87.0,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "fe1da253e4bd35995",
+  "ship": "Foxtrot",
+  "onset": 544.6509399414062,
+  "first_seen": 478.941,
+  "min_player_dist": 9.0,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "fe1da253e4bd35995",
+  "ship": "King",
+  "onset": 452.6427307128906,
+  "first_seen": 355.514,
+  "min_player_dist": 472.9,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "fe1da253e4bd35995",
+  "ship": "Apache-Farragut",
+  "onset": 491.1018981933594,
+  "first_seen": 487.517,
+  "min_player_dist": 338.6,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "a2178821488385374",
+  "ship": "Foxtrot",
+  "onset": 416.40301513671875,
+  "first_seen": 413.109,
+  "min_player_dist": 106.5,
+  "self_dmg": 34591.0
+ },
+ {
+  "arena": "a2178821488385374",
+  "ship": "King",
+  "onset": 397.28369140625,
+  "first_seen": 393.268,
+  "min_player_dist": 66.3,
+  "self_dmg": 76211.0
+ },
+ {
+  "arena": "a2178821488385374",
+  "ship": "Apache-Farragut",
+  "onset": 374.820556640625,
+  "first_seen": 370.841,
+  "min_player_dist": 232.7,
+  "self_dmg": 13950.0
+ },
+ {
+  "arena": "a2351431930526094",
+  "ship": "Foxtrot",
+  "onset": 392.7339782714844,
+  "first_seen": 389.014,
+  "min_player_dist": 366.2,
+  "self_dmg": 38171.0
+ },
+ {
+  "arena": "a2351431930526094",
+  "ship": "King",
+  "onset": 405.02783203125,
+  "first_seen": 314.731,
+  "min_player_dist": 13.1,
+  "self_dmg": 28163.0
+ },
+ {
+  "arena": "a2351431930526094",
+  "ship": "Apache-Farragut",
+  "onset": 441.0158386230469,
+  "first_seen": 329.008,
+  "min_player_dist": 260.0,
+  "self_dmg": 13800.0
+ },
+ {
+  "arena": "a4827970203157485",
+  "ship": "Foxtrot",
+  "onset": 389.6656799316406,
+  "first_seen": 386.206,
+  "min_player_dist": 11.1,
+  "self_dmg": 36201.0
+ },
+ {
+  "arena": "a4827970203157485",
+  "ship": "King",
+  "onset": 383.4947814941406,
+  "first_seen": 379.925,
+  "min_player_dist": 4.3,
+  "self_dmg": 78281.0
+ },
+ {
+  "arena": "a4827970203157485",
+  "ship": "Apache-Farragut",
+  "onset": 403.1985778808594,
+  "first_seen": 400.774,
+  "min_player_dist": 378.3,
+  "self_dmg": 15551.0
+ },
+ {
+  "arena": "a7883654752265710",
+  "ship": "Foxtrot",
+  "onset": 502.8168640136719,
+  "first_seen": 498.948,
+  "min_player_dist": 23.8,
+  "self_dmg": 27600.0
+ },
+ {
+  "arena": "a7883654752265710",
+  "ship": "King",
+  "onset": 525.8348388671875,
+  "first_seen": 501.81,
+  "min_player_dist": 106.6,
+  "self_dmg": 59183.0
+ },
+ {
+  "arena": "a7883654752265710",
+  "ship": "Apache-Farragut",
+  "onset": 508.6837158203125,
+  "first_seen": 504.683,
+  "min_player_dist": 117.8,
+  "self_dmg": 11850.0
+ },
+ {
+  "arena": "a6536095879970279",
+  "ship": "Foxtrot",
+  "onset": 402.62432861328125,
+  "first_seen": 399.049,
+  "min_player_dist": 18.0,
+  "self_dmg": 21200.0
+ },
+ {
+  "arena": "a6536095879970279",
+  "ship": "King",
+  "onset": 398.77203369140625,
+  "first_seen": 395.007,
+  "min_player_dist": 7.8,
+  "self_dmg": 45816.0
+ },
+ {
+  "arena": "a6536095879970279",
+  "ship": "Apache-Farragut",
+  "onset": 397.0244445800781,
+  "first_seen": 393.924,
+  "min_player_dist": 39.1,
+  "self_dmg": 9100.0
+ },
+ {
+  "arena": "a3808735814891733",
+  "ship": "Foxtrot",
+  "onset": 477.5672607421875,
+  "first_seen": 474.137,
+  "min_player_dist": 16.7,
+  "self_dmg": 35024.0
+ },
+ {
+  "arena": "a3808735814891733",
+  "ship": "King",
+  "onset": 468.4280700683594,
+  "first_seen": 464.699,
+  "min_player_dist": 9.5,
+  "self_dmg": 74995.0
+ },
+ {
+  "arena": "a3808735814891733",
+  "ship": "Apache-Farragut",
+  "onset": 480.5819396972656,
+  "first_seen": 478.141,
+  "min_player_dist": 68.0,
+  "self_dmg": 14901.0
+ },
+ {
+  "arena": "a3405468451164477",
+  "ship": "Foxtrot",
+  "onset": 469.9325866699219,
+  "first_seen": 466.373,
+  "min_player_dist": 433.3,
+  "self_dmg": 33200.0
+ },
+ {
+  "arena": "a3405468451164477",
+  "ship": "King",
+  "onset": 452.95135498046875,
+  "first_seen": 447.36,
+  "min_player_dist": 467.6,
+  "self_dmg": 71759.0
+ },
+ {
+  "arena": "a3405468451164477",
+  "ship": "Apache-Farragut",
+  "onset": 482.9224853515625,
+  "first_seen": 480.5,
+  "min_player_dist": 127.3,
+  "self_dmg": 14250.0
+ },
+ {
+  "arena": "a3408268770362055",
+  "ship": "Foxtrot",
+  "onset": 388.8431091308594,
+  "first_seen": 384.719,
+  "min_player_dist": 12.4,
+  "self_dmg": 22800.0
+ },
+ {
+  "arena": "a3408268770362055",
+  "ship": "King",
+  "onset": 375.1759338378906,
+  "first_seen": 371.571,
+  "min_player_dist": 445.6,
+  "self_dmg": 49306.0
+ },
+ {
+  "arena": "a3408268770362055",
+  "ship": "Apache-Farragut",
+  "onset": 494.2893981933594,
+  "first_seen": 489.872,
+  "min_player_dist": 4.7,
+  "self_dmg": 9800.0
+ },
+ {
+  "arena": "a2894294332213291",
+  "ship": "Foxtrot",
+  "onset": 458.86529541015625,
+  "first_seen": 455.164,
+  "min_player_dist": 21.0,
+  "self_dmg": 30200.0
+ },
+ {
+  "arena": "a2894294332213291",
+  "ship": "King",
+  "onset": 441.5826416015625,
+  "first_seen": 438.023,
+  "min_player_dist": 68.6,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "a2894294332213291",
+  "ship": "Apache-Farragut",
+  "onset": 443.7464904785156,
+  "first_seen": 440.303,
+  "min_player_dist": 60.0,
+  "self_dmg": 12950.0
+ },
+ {
+  "arena": "a2456774604550877",
+  "ship": "Foxtrot",
+  "onset": 482.80120849609375,
+  "first_seen": 479.148,
+  "min_player_dist": 16.8,
+  "self_dmg": 36200.0
+ },
+ {
+  "arena": "a2456774604550877",
+  "ship": "King",
+  "onset": 423.06195068359375,
+  "first_seen": 402.495,
+  "min_player_dist": 449.7,
+  "self_dmg": 77400.0
+ },
+ {
+  "arena": "a2456774604550877",
+  "ship": "Apache-Farragut",
+  "onset": 454.0578918457031,
+  "first_seen": 450.593,
+  "min_player_dist": 304.2,
+  "self_dmg": 15552.0
+ },
+ {
+  "arena": "a6337741413203298",
+  "ship": "Foxtrot",
+  "onset": 404.738525390625,
+  "first_seen": 401.426,
+  "min_player_dist": 18.9,
+  "self_dmg": 36538.0
+ },
+ {
+  "arena": "a6337741413203298",
+  "ship": "King",
+  "onset": 388.4216003417969,
+  "first_seen": 381.424,
+  "min_player_dist": 450.3,
+  "self_dmg": 77400.0
+ },
+ {
+  "arena": "a6337741413203298",
+  "ship": "Apache-Farragut",
+  "onset": 406.1557922363281,
+  "first_seen": 403.723,
+  "min_player_dist": 87.9,
+  "self_dmg": 15550.0
+ },
+ {
+  "arena": "a2258368591775236",
+  "ship": "Foxtrot",
+  "onset": 493.6817932128906,
+  "first_seen": 490.248,
+  "min_player_dist": 22.7,
+  "self_dmg": 35850.0
+ },
+ {
+  "arena": "a2258368591775236",
+  "ship": "King",
+  "onset": 492.53216552734375,
+  "first_seen": 488.499,
+  "min_player_dist": 8.2,
+  "self_dmg": 44347.0
+ },
+ {
+  "arena": "a2258368591775236",
+  "ship": "Apache-Farragut",
+  "onset": 606.349853515625,
+  "first_seen": 603.367,
+  "min_player_dist": 143.8,
+  "self_dmg": 15400.0
+ },
+ {
+  "arena": "a4823705313522358",
+  "ship": "Foxtrot",
+  "onset": 490.2849426269531,
+  "first_seen": 486.561,
+  "min_player_dist": 16.6,
+  "self_dmg": 35850.0
+ },
+ {
+  "arena": "a4823705313522358",
+  "ship": "King",
+  "onset": 480.1966857910156,
+  "first_seen": 476.364,
+  "min_player_dist": 6.8,
+  "self_dmg": 78344.0
+ },
+ {
+  "arena": "a4823705313522358",
+  "ship": "Apache-Farragut",
+  "onset": 543.024169921875,
+  "first_seen": 539.141,
+  "min_player_dist": 242.2,
+  "self_dmg": 15400.0
+ },
+ {
+  "arena": "a1635001257395781",
+  "ship": "Foxtrot",
+  "onset": 392.21600341796875,
+  "first_seen": 388.631,
+  "min_player_dist": 144.0,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "a1635001257395781",
+  "ship": "King",
+  "onset": 369.1898193359375,
+  "first_seen": 364.782,
+  "min_player_dist": 412.8,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "a1635001257395781",
+  "ship": "Apache-Farragut",
+  "onset": 401.6461486816406,
+  "first_seen": 398.915,
+  "min_player_dist": 129.6,
+  "self_dmg": 0.0
+ },
+ {
+  "arena": "a2908042525867330",
+  "ship": "Foxtrot",
+  "onset": 407.3628234863281,
+  "first_seen": 322.222,
+  "min_player_dist": 13.1,
+  "self_dmg": 36200.0
+ },
+ {
+  "arena": "a2908042525867330",
+  "ship": "King",
+  "onset": 321.9803466796875,
+  "first_seen": 318.254,
+  "min_player_dist": 12.2,
+  "self_dmg": 106799.0
+ },
+ {
+  "arena": "a2908042525867330",
+  "ship": "Apache-Farragut",
+  "onset": 379.6503601074219,
+  "first_seen": 377.098,
+  "min_player_dist": 382.5,
+  "self_dmg": 15550.0
+ },
+ {
+  "arena": "a5772094222296675",
+  "ship": "Foxtrot",
+  "onset": 496.666015625,
+  "first_seen": 493.35,
+  "min_player_dist": 14.7,
+  "self_dmg": 36201.0
+ },
+ {
+  "arena": "a5772094222296675",
+  "ship": "King",
+  "onset": 476.1110534667969,
+  "first_seen": 472.247,
+  "min_player_dist": 78.0,
+  "self_dmg": 80921.0
+ },
+ {
+  "arena": "a5772094222296675",
+  "ship": "Apache-Farragut",
+  "onset": 481.3537292480469,
+  "first_seen": 478.51,
+  "min_player_dist": 42.8,
+  "self_dmg": 15550.0
+ },
+ {
+  "arena": "a7464315632425555",
+  "ship": "Foxtrot",
+  "onset": 528.5151977539062,
+  "first_seen": 524.786,
+  "min_player_dist": 13.5,
+  "self_dmg": 32850.0
+ },
+ {
+  "arena": "a7464315632425555",
+  "ship": "King",
+  "onset": 450.9834899902344,
+  "first_seen": 442.538,
+  "min_player_dist": 443.0,
+  "self_dmg": 71749.0
+ },
+ {
+  "arena": "a7464315632425555",
+  "ship": "Apache-Farragut",
+  "onset": 466.1148986816406,
+  "first_seen": 463.675,
+  "min_player_dist": 90.4,
+  "self_dmg": 14100.0
+ },
+ {
+  "arena": "a3002046476224217",
+  "ship": "Foxtrot",
+  "onset": 428.9354248046875,
+  "first_seen": 425.614,
+  "min_player_dist": 16.6,
+  "self_dmg": 36201.0
+ },
+ {
+  "arena": "a3002046476224217",
+  "ship": "King",
+  "onset": 407.3230895996094,
+  "first_seen": 403.323,
+  "min_player_dist": 308.7,
+  "self_dmg": 79160.0
+ },
+ {
+  "arena": "a3002046476224217",
+  "ship": "Apache-Farragut",
+  "onset": 425.7569885253906,
+  "first_seen": 423.33,
+  "min_player_dist": 85.8,
+  "self_dmg": 15550.0
+ },
+ {
+  "arena": "a2517020117193111",
+  "ship": "Foxtrot",
+  "onset": 455.4449157714844,
+  "first_seen": 451.863,
+  "min_player_dist": 22.1,
+  "self_dmg": 18974.0
+ },
+ {
+  "arena": "a2517020117193111",
+  "ship": "King",
+  "onset": 453.9989013671875,
+  "first_seen": 450.147,
+  "min_player_dist": 12.7,
+  "self_dmg": 40606.0
+ },
+ {
+  "arena": "a2517020117193111",
+  "ship": "Apache-Farragut",
+  "onset": 456.97772216796875,
+  "first_seen": 454.144,
+  "min_player_dist": 43.8,
+  "self_dmg": 8050.0
+ },
+ {
+  "arena": "a4613101602109950",
+  "ship": "Foxtrot",
+  "onset": 464.96221923828125,
+  "first_seen": 461.239,
+  "min_player_dist": 20.2,
+  "self_dmg": 21600.0
+ },
+ {
+  "arena": "a4613101602109950",
+  "ship": "King",
+  "onset": 462.1613464355469,
+  "first_seen": 458.523,
+  "min_player_dist": 7.6,
+  "self_dmg": 46675.0
+ },
+ {
+  "arena": "a4613101602109950",
+  "ship": "Apache-Farragut",
+  "onset": 546.559326171875,
+  "first_seen": 543.265,
+  "min_player_dist": 97.5,
+  "self_dmg": 9300.0
+ },
+ {
+  "arena": "a4664258959383923",
+  "ship": "Foxtrot",
+  "onset": 491.7494812011719,
+  "first_seen": 488.311,
+  "min_player_dist": 14.5,
+  "self_dmg": 24799.0
+ },
+ {
+  "arena": "a4664258959383923",
+  "ship": "King",
+  "onset": 479.1968078613281,
+  "first_seen": 475.179,
+  "min_player_dist": 408.2,
+  "self_dmg": 53077.0
+ },
+ {
+  "arena": "a4664258959383923",
+  "ship": "Apache-Farragut",
+  "onset": 504.4792175292969,
+  "first_seen": 502.021,
+  "min_player_dist": 108.6,
+  "self_dmg": 10651.0
+ }
+]

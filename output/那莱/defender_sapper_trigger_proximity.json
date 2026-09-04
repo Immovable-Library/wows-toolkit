@@ -1,0 +1,1622 @@
+[
+ {
+  "arena": "a3692784521479778",
+  "ship": "Defender",
+  "onset": 510.4,
+  "min_dist": 125.0,
+  "closest_player_x": 71.7,
+  "closest_player_z": -144.3,
+  "ship_x": 190.3,
+  "ship_z": -183.8
+ },
+ {
+  "arena": "fdd5f690ae9a97f23",
+  "ship": "Defender",
+  "onset": 461.7,
+  "min_dist": 162.7,
+  "closest_player_x": 221.1,
+  "closest_player_z": -56.4,
+  "ship_x": 201.5,
+  "ship_z": -217.9
+ },
+ {
+  "arena": "f2fa8ae76d28752e7",
+  "ship": "Defender",
+  "onset": 530.1,
+  "min_dist": 227.9,
+  "closest_player_x": -14.0,
+  "closest_player_z": -271.5,
+  "ship_x": 213.2,
+  "ship_z": -252.9
+ },
+ {
+  "arena": "ff51b372239d7a08e",
+  "ship": "Defender",
+  "onset": 443.1,
+  "min_dist": 260.7,
+  "closest_player_x": -19.3,
+  "closest_player_z": -264.9,
+  "ship_x": 200.4,
+  "ship_z": -124.5
+ },
+ {
+  "arena": "fc150af6d461bb4d1",
+  "ship": "Defender",
+  "onset": 425.5,
+  "min_dist": 196.7,
+  "closest_player_x": -61.7,
+  "closest_player_z": -341.7,
+  "ship_x": 105.8,
+  "ship_z": -238.5
+ },
+ {
+  "arena": "a4962711847907737",
+  "ship": "Defender",
+  "onset": 522.2,
+  "min_dist": 154.6,
+  "closest_player_x": 181.6,
+  "closest_player_z": 2.4,
+  "ship_x": 196.3,
+  "ship_z": -151.5
+ },
+ {
+  "arena": "a1504863758917835",
+  "ship": "Defender",
+  "onset": 548.8,
+  "min_dist": 230.2,
+  "closest_player_x": 34.0,
+  "closest_player_z": -5.3,
+  "ship_x": 189.2,
+  "ship_z": -175.3
+ },
+ {
+  "arena": "a1281478214784069",
+  "ship": "Defender",
+  "onset": 439.3,
+  "min_dist": 306.3,
+  "closest_player_x": -34.9,
+  "closest_player_z": -34.1,
+  "ship_x": 203.2,
+  "ship_z": -226.7
+ },
+ {
+  "arena": "a222489603694707",
+  "ship": "Defender",
+  "onset": 488.3,
+  "min_dist": 281.3,
+  "closest_player_x": 208.1,
+  "closest_player_z": 28.4,
+  "ship_x": 213.2,
+  "ship_z": -252.8
+ },
+ {
+  "arena": "a5159601755450909",
+  "ship": "Defender",
+  "onset": 452.5,
+  "min_dist": 143.7,
+  "closest_player_x": 155.4,
+  "closest_player_z": 51.5,
+  "ship_x": 206.1,
+  "ship_z": -83.0
+ },
+ {
+  "arena": "a4733661267841725",
+  "ship": "Defender",
+  "onset": 446.5,
+  "min_dist": 291.0,
+  "closest_player_x": -82.0,
+  "closest_player_z": -237.5,
+  "ship_x": 208.9,
+  "ship_z": -244.2
+ },
+ {
+  "arena": "a3514504738422202",
+  "ship": "Defender",
+  "onset": 529.9,
+  "min_dist": 194.4,
+  "closest_player_x": 203.5,
+  "closest_player_z": -32.2,
+  "ship_x": 203.3,
+  "ship_z": -226.7
+ },
+ {
+  "arena": "a5011640143609213",
+  "ship": "Defender",
+  "onset": 510.5,
+  "min_dist": 166.3,
+  "closest_player_x": 56.4,
+  "closest_player_z": -100.3,
+  "ship_x": 193.7,
+  "ship_z": -194.1
+ },
+ {
+  "arena": "a2313103602786726",
+  "ship": "Defender",
+  "onset": 557.1,
+  "min_dist": 149.0,
+  "closest_player_x": 173.1,
+  "closest_player_z": -32.6,
+  "ship_x": 187.8,
+  "ship_z": -180.9
+ },
+ {
+  "arena": "a2574637047017371",
+  "ship": "Defender",
+  "onset": 447.8,
+  "min_dist": 150.8,
+  "closest_player_x": 87.2,
+  "closest_player_z": -39.1,
+  "ship_x": 166.9,
+  "ship_z": -167.2
+ },
+ {
+  "arena": "a2790794161355098",
+  "ship": "Defender",
+  "onset": 417.3,
+  "min_dist": 228.2,
+  "closest_player_x": 4.4,
+  "closest_player_z": -27.2,
+  "ship_x": 178.5,
+  "ship_z": -174.8
+ },
+ {
+  "arena": "a3037273745159660",
+  "ship": "Defender",
+  "onset": 442.5,
+  "min_dist": 149.6,
+  "closest_player_x": 65.8,
+  "closest_player_z": -118.4,
+  "ship_x": 194.1,
+  "ship_z": -195.5
+ },
+ {
+  "arena": "a4642311617821301",
+  "ship": "Defender",
+  "onset": 559.6,
+  "min_dist": 214.8,
+  "closest_player_x": 172.4,
+  "closest_player_z": 2.5,
+  "ship_x": 198.2,
+  "ship_z": -210.8
+ },
+ {
+  "arena": "a5222334070092130",
+  "ship": "Defender",
+  "onset": 484.5,
+  "min_dist": 108.9,
+  "closest_player_x": 123.0,
+  "closest_player_z": -40.9,
+  "ship_x": 200.2,
+  "ship_z": -117.7
+ },
+ {
+  "arena": "a6285458742169038",
+  "ship": "Defender",
+  "onset": 555.7,
+  "min_dist": 158.0,
+  "closest_player_x": 57.9,
+  "closest_player_z": -130.1,
+  "ship_x": 196.7,
+  "ship_z": -205.6
+ },
+ {
+  "arena": "a6698153561705901",
+  "ship": "Defender",
+  "onset": 515.8,
+  "min_dist": 214.6,
+  "closest_player_x": 0.3,
+  "closest_player_z": -279.7,
+  "ship_x": 213.2,
+  "ship_z": -252.8
+ },
+ {
+  "arena": "a4316619974914425",
+  "ship": "Defender",
+  "onset": 522.4,
+  "min_dist": 271.8,
+  "closest_player_x": 198.6,
+  "closest_player_z": 18.6,
+  "ship_x": 213.2,
+  "ship_z": -252.8
+ },
+ {
+  "arena": "a3224800634229985",
+  "ship": "Defender",
+  "onset": 485.9,
+  "min_dist": 243.2,
+  "closest_player_x": -40.3,
+  "closest_player_z": -258.4,
+  "ship_x": 197.7,
+  "ship_z": -208.5
+ },
+ {
+  "arena": "fe1da253e4bd35995",
+  "ship": "Defender",
+  "onset": 524.4,
+  "min_dist": 199.3,
+  "closest_player_x": 126.2,
+  "closest_player_z": -6.9,
+  "ship_x": 193.9,
+  "ship_z": -194.3
+ },
+ {
+  "arena": "a2351431930526094",
+  "ship": "Defender",
+  "onset": 494.7,
+  "min_dist": 225.0,
+  "closest_player_x": 64.0,
+  "closest_player_z": -9.2,
+  "ship_x": 194.3,
+  "ship_z": -192.6
+ },
+ {
+  "arena": "a1635001257395781",
+  "ship": "Defender",
+  "onset": 447.5,
+  "min_dist": 183.5,
+  "closest_player_x": 136.8,
+  "closest_player_z": 30.4,
+  "ship_x": 191.8,
+  "ship_z": -144.7
+ },
+ {
+  "arena": "fb8f5b237094388fe",
+  "ship": "Sapper",
+  "onset": 443.6,
+  "min_dist": 95.0,
+  "closest_player_x": 210.3,
+  "closest_player_z": -13.4,
+  "ship_x": 195.4,
+  "ship_z": -107.2
+ },
+ {
+  "arena": "f9d56a69dfa825eef",
+  "ship": "Sapper",
+  "onset": 548.2,
+  "min_dist": 60.0,
+  "closest_player_x": 69.4,
+  "closest_player_z": -179.7,
+  "ship_x": 129.2,
+  "ship_z": -174.6
+ },
+ {
+  "arena": "a3140052280139295",
+  "ship": "Sapper",
+  "onset": 535.1,
+  "min_dist": 170.1,
+  "closest_player_x": 162.0,
+  "closest_player_z": -16.5,
+  "ship_x": 127.0,
+  "ship_z": -183.0
+ },
+ {
+  "arena": "a3025037351093606",
+  "ship": "Sapper",
+  "onset": 351.5,
+  "min_dist": 253.9,
+  "closest_player_x": -41.7,
+  "closest_player_z": -82.6,
+  "ship_x": 211.3,
+  "ship_z": -104.5
+ },
+ {
+  "arena": "a3666310329240282",
+  "ship": "Sapper",
+  "onset": 431.8,
+  "min_dist": 145.0,
+  "closest_player_x": 55.4,
+  "closest_player_z": -145.3,
+  "ship_x": 195.3,
+  "ship_z": -107.3
+ },
+ {
+  "arena": "a3575415938263382",
+  "ship": "Sapper",
+  "onset": 543.7,
+  "min_dist": 125.8,
+  "closest_player_x": 48.8,
+  "closest_player_z": -77.9,
+  "ship_x": 129.1,
+  "ship_z": -174.7
+ },
+ {
+  "arena": "a4221628139694999",
+  "ship": "Sapper",
+  "onset": 372.6,
+  "min_dist": 90.3,
+  "closest_player_x": 156.5,
+  "closest_player_z": -25.7,
+  "ship_x": 196.2,
+  "ship_z": -106.8
+ },
+ {
+  "arena": "a3654731111498033",
+  "ship": "Sapper",
+  "onset": 514.7,
+  "min_dist": 149.2,
+  "closest_player_x": 66.0,
+  "closest_player_z": -51.5,
+  "ship_x": 127.1,
+  "ship_z": -187.6
+ },
+ {
+  "arena": "a4295488769788617",
+  "ship": "Sapper",
+  "onset": 471.9,
+  "min_dist": 147.7,
+  "closest_player_x": 212.7,
+  "closest_player_z": -72.9,
+  "ship_x": 129.9,
+  "ship_z": -195.2
+ },
+ {
+  "arena": "a4071334427465993",
+  "ship": "Sapper",
+  "onset": 392.3,
+  "min_dist": 349.0,
+  "closest_player_x": 283.4,
+  "closest_player_z": 230.5,
+  "ship_x": 195.3,
+  "ship_z": -107.2
+ },
+ {
+  "arena": "a4365050062439356",
+  "ship": "Sapper",
+  "onset": 490.3,
+  "min_dist": 157.4,
+  "closest_player_x": 90.6,
+  "closest_player_z": -30.8,
+  "ship_x": 224.4,
+  "ship_z": -113.6
+ },
+ {
+  "arena": "a4523946672524347",
+  "ship": "Sapper",
+  "onset": 357.2,
+  "min_dist": 166.6,
+  "closest_player_x": 152.3,
+  "closest_player_z": 53.7,
+  "ship_x": 195.4,
+  "ship_z": -107.2
+ },
+ {
+  "arena": "a4922326364674803",
+  "ship": "Sapper",
+  "onset": 549.0,
+  "min_dist": 138.7,
+  "closest_player_x": 35.1,
+  "closest_player_z": -297.2,
+  "ship_x": 132.0,
+  "ship_z": -198.1
+ },
+ {
+  "arena": "a3819529083625818",
+  "ship": "Sapper",
+  "onset": 464.9,
+  "min_dist": 143.0,
+  "closest_player_x": 121.2,
+  "closest_player_z": -6.2,
+  "ship_x": 220.5,
+  "ship_z": -109.2
+ },
+ {
+  "arena": "fdd5f690ae9a97f23",
+  "ship": "Sapper",
+  "onset": 468.6,
+  "min_dist": 163.1,
+  "closest_player_x": 232.5,
+  "closest_player_z": -66.0,
+  "ship_x": 128.0,
+  "ship_z": -191.2
+ },
+ {
+  "arena": "fb3721761784565e9",
+  "ship": "Sapper",
+  "onset": 413.8,
+  "min_dist": 114.0,
+  "closest_player_x": 155.2,
+  "closest_player_z": -0.5,
+  "ship_x": 195.4,
+  "ship_z": -107.2
+ },
+ {
+  "arena": "f2fa8ae76d28752e7",
+  "ship": "Sapper",
+  "onset": 537.7,
+  "min_dist": 172.4,
+  "closest_player_x": 101.5,
+  "closest_player_z": -4.1,
+  "ship_x": 129.4,
+  "ship_z": -174.2
+ },
+ {
+  "arena": "f6a20d4ecb2320e43",
+  "ship": "Sapper",
+  "onset": 410.6,
+  "min_dist": 100.8,
+  "closest_player_x": 199.1,
+  "closest_player_z": -6.7,
+  "ship_x": 195.1,
+  "ship_z": -107.4
+ },
+ {
+  "arena": "f59fe1a7f3125d8f2",
+  "ship": "Sapper",
+  "onset": 531.2,
+  "min_dist": 191.2,
+  "closest_player_x": 138.3,
+  "closest_player_z": 16.1,
+  "ship_x": 129.0,
+  "ship_z": -175.0
+ },
+ {
+  "arena": "fae27d86a7b03ff35",
+  "ship": "Sapper",
+  "onset": 501.8,
+  "min_dist": 60.8,
+  "closest_player_x": 67.4,
+  "closest_player_z": -189.6,
+  "ship_x": 128.1,
+  "ship_z": -191.5
+ },
+ {
+  "arena": "fa828942f0063c07e",
+  "ship": "Sapper",
+  "onset": 468.2,
+  "min_dist": 221.4,
+  "closest_player_x": 18.0,
+  "closest_player_z": -12.8,
+  "ship_x": 218.2,
+  "ship_z": -107.4
+ },
+ {
+  "arena": "fd89e9679a4ecc236",
+  "ship": "Sapper",
+  "onset": 505.1,
+  "min_dist": 143.1,
+  "closest_player_x": 167.1,
+  "closest_player_z": -47.9,
+  "ship_x": 126.9,
+  "ship_z": -185.2
+ },
+ {
+  "arena": "f5650378d13a192b0",
+  "ship": "Sapper",
+  "onset": 432.0,
+  "min_dist": 202.8,
+  "closest_player_x": 17.0,
+  "closest_player_z": -18.8,
+  "ship_x": 127.4,
+  "ship_z": -188.9
+ },
+ {
+  "arena": "f7dd3984b1dd10a36",
+  "ship": "Sapper",
+  "onset": 458.0,
+  "min_dist": 214.1,
+  "closest_player_x": 31.5,
+  "closest_player_z": 30.6,
+  "ship_x": 195.3,
+  "ship_z": -107.2
+ },
+ {
+  "arena": "ff51b372239d7a08e",
+  "ship": "Sapper",
+  "onset": 402.1,
+  "min_dist": 299.1,
+  "closest_player_x": -93.0,
+  "closest_player_z": -187.1,
+  "ship_x": 195.3,
+  "ship_z": -107.3
+ },
+ {
+  "arena": "f0899a843d020c656",
+  "ship": "Sapper",
+  "onset": 488.7,
+  "min_dist": 85.3,
+  "closest_player_x": 187.4,
+  "closest_player_z": -22.3,
+  "ship_x": 195.3,
+  "ship_z": -107.2
+ },
+ {
+  "arena": "f680a3adb4a0061ec",
+  "ship": "Sapper",
+  "onset": 529.4,
+  "min_dist": 86.6,
+  "closest_player_x": 157.3,
+  "closest_player_z": -48.0,
+  "ship_x": 219.4,
+  "ship_z": -108.3
+ },
+ {
+  "arena": "f8d9ede3494f15a06",
+  "ship": "Sapper",
+  "onset": 373.0,
+  "min_dist": 284.9,
+  "closest_player_x": -38.7,
+  "closest_player_z": 55.1,
+  "ship_x": 195.4,
+  "ship_z": -107.2
+ },
+ {
+  "arena": "fb58d43ec86009ef7",
+  "ship": "Sapper",
+  "onset": 305.9,
+  "min_dist": 301.2,
+  "closest_player_x": -27.6,
+  "closest_player_z": 95.4,
+  "ship_x": 195.3,
+  "ship_z": -107.2
+ },
+ {
+  "arena": "f1ea2fc316992755a",
+  "ship": "Sapper",
+  "onset": 576.5,
+  "min_dist": 128.2,
+  "closest_player_x": 46.2,
+  "closest_player_z": -77.3,
+  "ship_x": 128.9,
+  "ship_z": -175.2
+ },
+ {
+  "arena": "f37ebd807c06310aa",
+  "ship": "Sapper",
+  "onset": 441.0,
+  "min_dist": 259.9,
+  "closest_player_x": 18.6,
+  "closest_player_z": 42.6,
+  "ship_x": 225.2,
+  "ship_z": -115.1
+ },
+ {
+  "arena": "fb1284698a17370b7",
+  "ship": "Sapper",
+  "onset": 548.6,
+  "min_dist": 95.9,
+  "closest_player_x": 156.7,
+  "closest_player_z": -48.4,
+  "ship_x": 212.4,
+  "ship_z": -126.6
+ },
+ {
+  "arena": "fd3be6c19898e5312",
+  "ship": "Sapper",
+  "onset": 430.8,
+  "min_dist": 62.6,
+  "closest_player_x": 183.1,
+  "closest_player_z": -45.8,
+  "ship_x": 195.4,
+  "ship_z": -107.2
+ },
+ {
+  "arena": "f66efa73180f7021f",
+  "ship": "Sapper",
+  "onset": 519.0,
+  "min_dist": 92.2,
+  "closest_player_x": 198.6,
+  "closest_player_z": -14.2,
+  "ship_x": 196.9,
+  "ship_z": -106.4
+ },
+ {
+  "arena": "fc6adee38394716de",
+  "ship": "Sapper",
+  "onset": 523.9,
+  "min_dist": 137.3,
+  "closest_player_x": 115.5,
+  "closest_player_z": -52.2,
+  "ship_x": 127.4,
+  "ship_z": -188.9
+ },
+ {
+  "arena": "fd856c5c562a7a4ff",
+  "ship": "Sapper",
+  "onset": 495.5,
+  "min_dist": 155.5,
+  "closest_player_x": 66.4,
+  "closest_player_z": -35.2,
+  "ship_x": 205.8,
+  "ship_z": -104.0
+ },
+ {
+  "arena": "fc150af6d461bb4d1",
+  "ship": "Sapper",
+  "onset": 385.5,
+  "min_dist": 291.1,
+  "closest_player_x": -123.9,
+  "closest_player_z": -312.5,
+  "ship_x": 146.8,
+  "ship_z": -205.5
+ },
+ {
+  "arena": "f609e4cda7927d581",
+  "ship": "Sapper",
+  "onset": 518.0,
+  "min_dist": 112.6,
+  "closest_player_x": 39.5,
+  "closest_player_z": -107.8,
+  "ship_x": 128.2,
+  "ship_z": -177.1
+ },
+ {
+  "arena": "fe713fc6f59b6d511",
+  "ship": "Sapper",
+  "onset": 470.5,
+  "min_dist": 204.8,
+  "closest_player_x": 68.9,
+  "closest_player_z": 53.9,
+  "ship_x": 195.3,
+  "ship_z": -107.2
+ },
+ {
+  "arena": "f3baa5c0b250052f3",
+  "ship": "Sapper",
+  "onset": 534.5,
+  "min_dist": 73.4,
+  "closest_player_x": 202.3,
+  "closest_player_z": -34.2,
+  "ship_x": 195.3,
+  "ship_z": -107.2
+ },
+ {
+  "arena": "a1732952275117821",
+  "ship": "Sapper",
+  "onset": 484.3,
+  "min_dist": 123.2,
+  "closest_player_x": 44.9,
+  "closest_player_z": -116.7,
+  "ship_x": 134.8,
+  "ship_z": -200.9
+ },
+ {
+  "arena": "a4059390032357055",
+  "ship": "Sapper",
+  "onset": 441.9,
+  "min_dist": 150.4,
+  "closest_player_x": 97.3,
+  "closest_player_z": -42.4,
+  "ship_x": 127.6,
+  "ship_z": -189.7
+ },
+ {
+  "arena": "a3629274829109279",
+  "ship": "Sapper",
+  "onset": 333.1,
+  "min_dist": 54.3,
+  "closest_player_x": 170.7,
+  "closest_player_z": -59.1,
+  "ship_x": 198.5,
+  "ship_z": -105.7
+ },
+ {
+  "arena": "a1514806596630150",
+  "ship": "Sapper",
+  "onset": 501.5,
+  "min_dist": 100.5,
+  "closest_player_x": 190.3,
+  "closest_player_z": -6.2,
+  "ship_x": 196.8,
+  "ship_z": -106.5
+ },
+ {
+  "arena": "a2044010992458555",
+  "ship": "Sapper",
+  "onset": 500.9,
+  "min_dist": 168.6,
+  "closest_player_x": 189.6,
+  "closest_player_z": 61.3,
+  "ship_x": 195.3,
+  "ship_z": -107.2
+ },
+ {
+  "arena": "a26359911652244",
+  "ship": "Sapper",
+  "onset": 544.5,
+  "min_dist": 125.5,
+  "closest_player_x": 48.4,
+  "closest_player_z": -78.3,
+  "ship_x": 129.4,
+  "ship_z": -174.2
+ },
+ {
+  "arena": "a2397323592951212",
+  "ship": "Sapper",
+  "onset": 464.9,
+  "min_dist": 131.2,
+  "closest_player_x": 150.9,
+  "closest_player_z": 16.2,
+  "ship_x": 195.3,
+  "ship_z": -107.3
+ },
+ {
+  "arena": "a793226322672951",
+  "ship": "Sapper",
+  "onset": 423.4,
+  "min_dist": 233.5,
+  "closest_player_x": -13.5,
+  "closest_player_z": 10.5,
+  "ship_x": 129.4,
+  "ship_z": -174.2
+ },
+ {
+  "arena": "a940221579225057",
+  "ship": "Sapper",
+  "onset": 536.1,
+  "min_dist": 68.7,
+  "closest_player_x": 205.9,
+  "closest_player_z": -39.3,
+  "ship_x": 195.4,
+  "ship_z": -107.2
+ },
+ {
+  "arena": "a2079560439193563",
+  "ship": "Sapper",
+  "onset": 516.4,
+  "min_dist": 54.7,
+  "closest_player_x": 174.1,
+  "closest_player_z": -56.8,
+  "ship_x": 195.9,
+  "ship_z": -106.9
+ },
+ {
+  "arena": "a3156892857282623",
+  "ship": "Sapper",
+  "onset": 471.8,
+  "min_dist": 65.4,
+  "closest_player_x": 67.7,
+  "closest_player_z": -206.5,
+  "ship_x": 132.7,
+  "ship_z": -198.8
+ },
+ {
+  "arena": "a4970137857345104",
+  "ship": "Sapper",
+  "onset": 572.9,
+  "min_dist": 86.3,
+  "closest_player_x": 189.0,
+  "closest_player_z": -23.2,
+  "ship_x": 214.7,
+  "ship_z": -105.6
+ },
+ {
+  "arena": "a1963149650339128",
+  "ship": "Sapper",
+  "onset": 475.4,
+  "min_dist": 200.7,
+  "closest_player_x": -49.8,
+  "closest_player_z": -88.7,
+  "ship_x": 126.9,
+  "ship_z": -183.8
+ },
+ {
+  "arena": "a2367993269163151",
+  "ship": "Sapper",
+  "onset": 418.5,
+  "min_dist": 110.1,
+  "closest_player_x": 140.8,
+  "closest_player_z": -11.6,
+  "ship_x": 195.4,
+  "ship_z": -107.2
+ },
+ {
+  "arena": "a5175527491846126",
+  "ship": "Sapper",
+  "onset": 413.7,
+  "min_dist": 229.2,
+  "closest_player_x": 140.7,
+  "closest_player_z": 115.3,
+  "ship_x": 195.4,
+  "ship_z": -107.2
+ },
+ {
+  "arena": "a3068180313287033",
+  "ship": "Sapper",
+  "onset": 435.9,
+  "min_dist": 274.8,
+  "closest_player_x": -12.6,
+  "closest_player_z": 72.4,
+  "ship_x": 195.3,
+  "ship_z": -107.2
+ },
+ {
+  "arena": "a1504863758917835",
+  "ship": "Sapper",
+  "onset": 528.8,
+  "min_dist": 238.6,
+  "closest_player_x": -1.7,
+  "closest_player_z": 13.3,
+  "ship_x": 206.0,
+  "ship_z": -104.0
+ },
+ {
+  "arena": "a3149265002689081",
+  "ship": "Sapper",
+  "onset": 415.0,
+  "min_dist": 162.2,
+  "closest_player_x": 36.1,
+  "closest_player_z": -41.4,
+  "ship_x": 129.4,
+  "ship_z": -174.1
+ },
+ {
+  "arena": "a1281478214784069",
+  "ship": "Sapper",
+  "onset": 440.0,
+  "min_dist": 214.2,
+  "closest_player_x": -33.4,
+  "closest_player_z": -35.0,
+  "ship_x": 129.4,
+  "ship_z": -174.2
+ },
+ {
+  "arena": "a5276502174295701",
+  "ship": "Sapper",
+  "onset": 449.9,
+  "min_dist": 227.3,
+  "closest_player_x": -0.0,
+  "closest_player_z": 7.3,
+  "ship_x": 196.8,
+  "ship_z": -106.5
+ },
+ {
+  "arena": "a2600063239920907",
+  "ship": "Sapper",
+  "onset": 494.7,
+  "min_dist": 208.4,
+  "closest_player_x": 180.5,
+  "closest_player_z": 1.5,
+  "ship_x": 137.0,
+  "ship_z": -202.3
+ },
+ {
+  "arena": "a222489603694707",
+  "ship": "Sapper",
+  "onset": 496.2,
+  "min_dist": 209.1,
+  "closest_player_x": 210.4,
+  "closest_player_z": 9.7,
+  "ship_x": 127.1,
+  "ship_z": -182.1
+ },
+ {
+  "arena": "a5159601755450909",
+  "ship": "Sapper",
+  "onset": 433.6,
+  "min_dist": 244.4,
+  "closest_player_x": -20.2,
+  "closest_player_z": -34.3,
+  "ship_x": 155.6,
+  "ship_z": -204.1
+ },
+ {
+  "arena": "a3411352497828746",
+  "ship": "Sapper",
+  "onset": 509.0,
+  "min_dist": 185.8,
+  "closest_player_x": 195.2,
+  "closest_player_z": -0.4,
+  "ship_x": 129.4,
+  "ship_z": -174.2
+ },
+ {
+  "arena": "a4370809536875650",
+  "ship": "Sapper",
+  "onset": 441.5,
+  "min_dist": 194.6,
+  "closest_player_x": 216.4,
+  "closest_player_z": -24.5,
+  "ship_x": 143.5,
+  "ship_z": -204.9
+ },
+ {
+  "arena": "a1519616973719449",
+  "ship": "Sapper",
+  "onset": 505.5,
+  "min_dist": 219.0,
+  "closest_player_x": 123.2,
+  "closest_player_z": 28.4,
+  "ship_x": 127.9,
+  "ship_z": -190.6
+ },
+ {
+  "arena": "f87ec09a2a6393e8e",
+  "ship": "Sapper",
+  "onset": 441.7,
+  "min_dist": 236.2,
+  "closest_player_x": -50.7,
+  "closest_player_z": -209.4,
+  "ship_x": 184.6,
+  "ship_z": -189.1
+ },
+ {
+  "arena": "a2397168988121099",
+  "ship": "Sapper",
+  "onset": 484.5,
+  "min_dist": 139.4,
+  "closest_player_x": 79.0,
+  "closest_player_z": -33.0,
+  "ship_x": 197.9,
+  "ship_z": -105.8
+ },
+ {
+  "arena": "a2372116444627874",
+  "ship": "Sapper",
+  "onset": 547.5,
+  "min_dist": 100.7,
+  "closest_player_x": 215.3,
+  "closest_player_z": -7.0,
+  "ship_x": 197.5,
+  "ship_z": -106.1
+ },
+ {
+  "arena": "a4223938842734840",
+  "ship": "Sapper",
+  "onset": 451.4,
+  "min_dist": 166.4,
+  "closest_player_x": 219.9,
+  "closest_player_z": -55.4,
+  "ship_x": 130.0,
+  "ship_z": -195.3
+ },
+ {
+  "arena": "a3458094634378006",
+  "ship": "Sapper",
+  "onset": 487.8,
+  "min_dist": 117.5,
+  "closest_player_x": 60.7,
+  "closest_player_z": -215.5,
+  "ship_x": 176.4,
+  "ship_z": -194.9
+ },
+ {
+  "arena": "a3763419564876887",
+  "ship": "Sapper",
+  "onset": 547.7,
+  "min_dist": 161.7,
+  "closest_player_x": 41.8,
+  "closest_player_z": -38.3,
+  "ship_x": 129.4,
+  "ship_z": -174.2
+ },
+ {
+  "arena": "a3305683426463851",
+  "ship": "Sapper",
+  "onset": 494.6,
+  "min_dist": 108.8,
+  "closest_player_x": 185.3,
+  "closest_player_z": 2.5,
+  "ship_x": 199.5,
+  "ship_z": -105.3
+ },
+ {
+  "arena": "a2684356277626718",
+  "ship": "Sapper",
+  "onset": 444.9,
+  "min_dist": 174.4,
+  "closest_player_x": 120.0,
+  "closest_player_z": 48.5,
+  "ship_x": 204.4,
+  "ship_z": -104.2
+ },
+ {
+  "arena": "a4733661267841725",
+  "ship": "Sapper",
+  "onset": 453.5,
+  "min_dist": 203.2,
+  "closest_player_x": 81.7,
+  "closest_player_z": 61.2,
+  "ship_x": 195.3,
+  "ship_z": -107.3
+ },
+ {
+  "arena": "a3173806456365724",
+  "ship": "Sapper",
+  "onset": 517.2,
+  "min_dist": 140.6,
+  "closest_player_x": 91.9,
+  "closest_player_z": -38.6,
+  "ship_x": 129.4,
+  "ship_z": -174.1
+ },
+ {
+  "arena": "a2717238548665513",
+  "ship": "Sapper",
+  "onset": 513.7,
+  "min_dist": 101.7,
+  "closest_player_x": 76.6,
+  "closest_player_z": -169.7,
+  "ship_x": 174.8,
+  "ship_z": -195.9
+ },
+ {
+  "arena": "a5024112728406167",
+  "ship": "Sapper",
+  "onset": 445.6,
+  "min_dist": 133.3,
+  "closest_player_x": 65.7,
+  "closest_player_z": -138.1,
+  "ship_x": 195.3,
+  "ship_z": -107.3
+ },
+ {
+  "arena": "a3877682878056264",
+  "ship": "Sapper",
+  "onset": 504.6,
+  "min_dist": 57.4,
+  "closest_player_x": 72.9,
+  "closest_player_z": -184.5,
+  "ship_x": 129.4,
+  "ship_z": -174.2
+ },
+ {
+  "arena": "a3514504738422202",
+  "ship": "Sapper",
+  "onset": 545.9,
+  "min_dist": 141.1,
+  "closest_player_x": 34.4,
+  "closest_player_z": -96.8,
+  "ship_x": 132.3,
+  "ship_z": -198.4
+ },
+ {
+  "arena": "a2957297156658701",
+  "ship": "Sapper",
+  "onset": 549.7,
+  "min_dist": 87.9,
+  "closest_player_x": 62.6,
+  "closest_player_z": -119.4,
+  "ship_x": 127.8,
+  "ship_z": -178.4
+ },
+ {
+  "arena": "a2652186973971586",
+  "ship": "Sapper",
+  "onset": 433.4,
+  "min_dist": 209.6,
+  "closest_player_x": 23.8,
+  "closest_player_z": -32.6,
+  "ship_x": 219.3,
+  "ship_z": -108.2
+ },
+ {
+  "arena": "a3986216702207438",
+  "ship": "Sapper",
+  "onset": 501.5,
+  "min_dist": 150.0,
+  "closest_player_x": 124.3,
+  "closest_player_z": -36.2,
+  "ship_x": 127.0,
+  "ship_z": -186.1
+ },
+ {
+  "arena": "a2313103602786726",
+  "ship": "Sapper",
+  "onset": 532.1,
+  "min_dist": 105.0,
+  "closest_player_x": 127.3,
+  "closest_player_z": -27.2,
+  "ship_x": 195.4,
+  "ship_z": -107.2
+ },
+ {
+  "arena": "a2797348280831832",
+  "ship": "Sapper",
+  "onset": 381.0,
+  "min_dist": 166.0,
+  "closest_player_x": 158.3,
+  "closest_player_z": 54.6,
+  "ship_x": 195.4,
+  "ship_z": -107.2
+ },
+ {
+  "arena": "a2574637047017371",
+  "ship": "Sapper",
+  "onset": 415.6,
+  "min_dist": 172.4,
+  "closest_player_x": 133.5,
+  "closest_player_z": 53.7,
+  "ship_x": 195.3,
+  "ship_z": -107.2
+ },
+ {
+  "arena": "a2790794161355098",
+  "ship": "Sapper",
+  "onset": 413.3,
+  "min_dist": 231.4,
+  "closest_player_x": 24.5,
+  "closest_player_z": -2.0,
+  "ship_x": 225.8,
+  "ship_z": -116.2
+ },
+ {
+  "arena": "a3037273745159660",
+  "ship": "Sapper",
+  "onset": 430.4,
+  "min_dist": 131.9,
+  "closest_player_x": 65.0,
+  "closest_player_z": -86.8,
+  "ship_x": 195.3,
+  "ship_z": -107.2
+ },
+ {
+  "arena": "a2349284409386605",
+  "ship": "Sapper",
+  "onset": 537.7,
+  "min_dist": 109.3,
+  "closest_player_x": 217.0,
+  "closest_player_z": -0.1,
+  "ship_x": 195.4,
+  "ship_z": -107.2
+ },
+ {
+  "arena": "a3183581806629632",
+  "ship": "Sapper",
+  "onset": 530.9,
+  "min_dist": 167.5,
+  "closest_player_x": 126.5,
+  "closest_player_z": -6.7,
+  "ship_x": 129.4,
+  "ship_z": -174.1
+ },
+ {
+  "arena": "a2531910714307423",
+  "ship": "Sapper",
+  "onset": 492.6,
+  "min_dist": 161.8,
+  "closest_player_x": 77.2,
+  "closest_player_z": -181.1,
+  "ship_x": 224.2,
+  "ship_z": -113.3
+ },
+ {
+  "arena": "a2594239279796140",
+  "ship": "Sapper",
+  "onset": 545.8,
+  "min_dist": 94.2,
+  "closest_player_x": 144.9,
+  "closest_player_z": -27.7,
+  "ship_x": 195.3,
+  "ship_z": -107.2
+ },
+ {
+  "arena": "a2290984524147473",
+  "ship": "Sapper",
+  "onset": 437.4,
+  "min_dist": 141.0,
+  "closest_player_x": 120.4,
+  "closest_player_z": -53.5,
+  "ship_x": 129.4,
+  "ship_z": -194.2
+ },
+ {
+  "arena": "a2298019681544746",
+  "ship": "Sapper",
+  "onset": 561.6,
+  "min_dist": 61.4,
+  "closest_player_x": 70.0,
+  "closest_player_z": -157.8,
+  "ship_x": 127.5,
+  "ship_z": -179.5
+ },
+ {
+  "arena": "a5867485397289464",
+  "ship": "Sapper",
+  "onset": 531.4,
+  "min_dist": 143.9,
+  "closest_player_x": 200.1,
+  "closest_player_z": -48.8,
+  "ship_x": 129.4,
+  "ship_z": -174.1
+ },
+ {
+  "arena": "a4896427651564136",
+  "ship": "Sapper",
+  "onset": 496.5,
+  "min_dist": 96.4,
+  "closest_player_x": 193.7,
+  "closest_player_z": -9.4,
+  "ship_x": 198.6,
+  "ship_z": -105.7
+ },
+ {
+  "arena": "a7316164981691393",
+  "ship": "Sapper",
+  "onset": 564.6,
+  "min_dist": 202.6,
+  "closest_player_x": 41.3,
+  "closest_player_z": -36.7,
+  "ship_x": 155.2,
+  "ship_z": -204.3
+ },
+ {
+  "arena": "a4642311617821301",
+  "ship": "Sapper",
+  "onset": 593.5,
+  "min_dist": 204.9,
+  "closest_player_x": 202.7,
+  "closest_player_z": -2.8,
+  "ship_x": 158.7,
+  "ship_z": -202.9
+ },
+ {
+  "arena": "a5933829759885681",
+  "ship": "Sapper",
+  "onset": 506.0,
+  "min_dist": 162.8,
+  "closest_player_x": 48.5,
+  "closest_player_z": -136.1,
+  "ship_x": 208.2,
+  "ship_z": -104.0
+ },
+ {
+  "arena": "a4370758016941642",
+  "ship": "Sapper",
+  "onset": 515.1,
+  "min_dist": 139.1,
+  "closest_player_x": 81.5,
+  "closest_player_z": -27.3,
+  "ship_x": 195.4,
+  "ship_z": -107.2
+ },
+ {
+  "arena": "a2485662511116420",
+  "ship": "Sapper",
+  "onset": 555.8,
+  "min_dist": 156.9,
+  "closest_player_x": 238.9,
+  "closest_player_z": -73.5,
+  "ship_x": 153.2,
+  "ship_z": -204.9
+ },
+ {
+  "arena": "a5132487647897469",
+  "ship": "Sapper",
+  "onset": 548.9,
+  "min_dist": 95.0,
+  "closest_player_x": 144.2,
+  "closest_player_z": -27.1,
+  "ship_x": 195.7,
+  "ship_z": -107.0
+ },
+ {
+  "arena": "a5222334070092130",
+  "ship": "Sapper",
+  "onset": 441.5,
+  "min_dist": 172.6,
+  "closest_player_x": 37.3,
+  "closest_player_z": -37.9,
+  "ship_x": 195.3,
+  "ship_z": -107.3
+ },
+ {
+  "arena": "a4524955936086941",
+  "ship": "Sapper",
+  "onset": 385.4,
+  "min_dist": 245.8,
+  "closest_player_x": -7.2,
+  "closest_player_z": 7.8,
+  "ship_x": 211.5,
+  "ship_z": -104.5
+ },
+ {
+  "arena": "a8870754170574288",
+  "ship": "Sapper",
+  "onset": 528.2,
+  "min_dist": 172.8,
+  "closest_player_x": 98.3,
+  "closest_player_z": -5.2,
+  "ship_x": 128.9,
+  "ship_z": -175.3
+ },
+ {
+  "arena": "a5338345433150461",
+  "ship": "Sapper",
+  "onset": 524.4,
+  "min_dist": 59.9,
+  "closest_player_x": 168.8,
+  "closest_player_z": -53.5,
+  "ship_x": 195.3,
+  "ship_z": -107.3
+ },
+ {
+  "arena": "a8274621300267072",
+  "ship": "Sapper",
+  "onset": 471.5,
+  "min_dist": 208.9,
+  "closest_player_x": -1.5,
+  "closest_player_z": -35.7,
+  "ship_x": 131.2,
+  "ship_z": -197.0
+ },
+ {
+  "arena": "a8434982494363497",
+  "ship": "Sapper",
+  "onset": 503.3,
+  "min_dist": 79.9,
+  "closest_player_x": 145.9,
+  "closest_player_z": -44.5,
+  "ship_x": 195.4,
+  "ship_z": -107.2
+ },
+ {
+  "arena": "a7574644710992227",
+  "ship": "Sapper",
+  "onset": 499.2,
+  "min_dist": 125.6,
+  "closest_player_x": 116.3,
+  "closest_player_z": -9.6,
+  "ship_x": 195.3,
+  "ship_z": -107.3
+ },
+ {
+  "arena": "a1978517076656141",
+  "ship": "Sapper",
+  "onset": 471.0,
+  "min_dist": 110.9,
+  "closest_player_x": 136.8,
+  "closest_player_z": -13.1,
+  "ship_x": 195.4,
+  "ship_z": -107.2
+ },
+ {
+  "arena": "a4530397661962051",
+  "ship": "Sapper",
+  "onset": 534.8,
+  "min_dist": 136.4,
+  "closest_player_x": 82.4,
+  "closest_player_z": -46.1,
+  "ship_x": 129.4,
+  "ship_z": -174.2
+ },
+ {
+  "arena": "a2394085228282937",
+  "ship": "Sapper",
+  "onset": 590.2,
+  "min_dist": 160.2,
+  "closest_player_x": 55.1,
+  "closest_player_z": -29.9,
+  "ship_x": 195.4,
+  "ship_z": -107.2
+ },
+ {
+  "arena": "a2900818360233097",
+  "ship": "Sapper",
+  "onset": 478.8,
+  "min_dist": 245.6,
+  "closest_player_x": -5.9,
+  "closest_player_z": 4.8,
+  "ship_x": 132.2,
+  "ship_z": -198.3
+ },
+ {
+  "arena": "a2610448506932361",
+  "ship": "Sapper",
+  "onset": 464.3,
+  "min_dist": 322.6,
+  "closest_player_x": -169.8,
+  "closest_player_z": -174.0,
+  "ship_x": 151.3,
+  "ship_z": -205.1
+ },
+ {
+  "arena": "a6613327964004796",
+  "ship": "Sapper",
+  "onset": 491.6,
+  "min_dist": 113.8,
+  "closest_player_x": 157.2,
+  "closest_player_z": -49.3,
+  "ship_x": 194.2,
+  "ship_z": -156.8
+ },
+ {
+  "arena": "a2636841085275730",
+  "ship": "Sapper",
+  "onset": 485.6,
+  "min_dist": 201.8,
+  "closest_player_x": -73.1,
+  "closest_player_z": -179.8,
+  "ship_x": 128.7,
+  "ship_z": -175.8
+ },
+ {
+  "arena": "a4316619974914425",
+  "ship": "Sapper",
+  "onset": 530.0,
+  "min_dist": 157.6,
+  "closest_player_x": 32.8,
+  "closest_player_z": -49.6,
+  "ship_x": 129.4,
+  "ship_z": -174.1
+ },
+ {
+  "arena": "a5531262496656089",
+  "ship": "Sapper",
+  "onset": 344.1,
+  "min_dist": 334.2,
+  "closest_player_x": 301.6,
+  "closest_player_z": 209.7,
+  "ship_x": 195.3,
+  "ship_z": -107.2
+ },
+ {
+  "arena": "a3224800634229985",
+  "ship": "Sapper",
+  "onset": 528.3,
+  "min_dist": 152.5,
+  "closest_player_x": 46.7,
+  "closest_player_z": -112.1,
+  "ship_x": 174.0,
+  "ship_z": -195.9
+ },
+ {
+  "arena": "a5517647454648970",
+  "ship": "Sapper",
+  "onset": 416.9,
+  "min_dist": 137.3,
+  "closest_player_x": 154.8,
+  "closest_player_z": -41.7,
+  "ship_x": 128.4,
+  "ship_z": -176.4
+ },
+ {
+  "arena": "a5951263058067596",
+  "ship": "Sapper",
+  "onset": 378.9,
+  "min_dist": 223.0,
+  "closest_player_x": -19.6,
+  "closest_player_z": -52.2,
+  "ship_x": 196.7,
+  "ship_z": -106.5
+ },
+ {
+  "arena": "a10069969193746026",
+  "ship": "Sapper",
+  "onset": 532.6,
+  "min_dist": 72.5,
+  "closest_player_x": 62.0,
+  "closest_player_z": -192.9,
+  "ship_x": 134.1,
+  "ship_z": -200.2
+ },
+ {
+  "arena": "fe1da253e4bd35995",
+  "ship": "Sapper",
+  "onset": 510.7,
+  "min_dist": 167.1,
+  "closest_player_x": 50.2,
+  "closest_player_z": -27.0,
+  "ship_x": 129.4,
+  "ship_z": -174.1
+ },
+ {
+  "arena": "a2351431930526094",
+  "ship": "Sapper",
+  "onset": 487.9,
+  "min_dist": 180.6,
+  "closest_player_x": 59.2,
+  "closest_player_z": -7.2,
+  "ship_x": 211.3,
+  "ship_z": -104.5
+ },
+ {
+  "arena": "a4827970203157485",
+  "ship": "Sapper",
+  "onset": 454.1,
+  "min_dist": 115.9,
+  "closest_player_x": 101.7,
+  "closest_player_z": -39.0,
+  "ship_x": 195.4,
+  "ship_z": -107.2
+ },
+ {
+  "arena": "a6536095879970279",
+  "ship": "Sapper",
+  "onset": 411.9,
+  "min_dist": 102.2,
+  "closest_player_x": 156.0,
+  "closest_player_z": -12.9,
+  "ship_x": 195.3,
+  "ship_z": -107.3
+ },
+ {
+  "arena": "a3808735814891733",
+  "ship": "Sapper",
+  "onset": 447.6,
+  "min_dist": 228.1,
+  "closest_player_x": 15.1,
+  "closest_player_z": 5.0,
+  "ship_x": 214.6,
+  "ship_z": -105.5
+ },
+ {
+  "arena": "a3405468451164477",
+  "ship": "Sapper",
+  "onset": 436.7,
+  "min_dist": 279.3,
+  "closest_player_x": -76.4,
+  "closest_player_z": -42.5,
+  "ship_x": 195.4,
+  "ship_z": -107.2
+ },
+ {
+  "arena": "a2456774604550877",
+  "ship": "Sapper",
+  "onset": 405.1,
+  "min_dist": 162.6,
+  "closest_player_x": 16.1,
+  "closest_player_z": -57.5,
+  "ship_x": 129.4,
+  "ship_z": -174.1
+ },
+ {
+  "arena": "a6337741413203298",
+  "ship": "Sapper",
+  "onset": 466.3,
+  "min_dist": 163.6,
+  "closest_player_x": 193.4,
+  "closest_player_z": -42.5,
+  "ship_x": 128.7,
+  "ship_z": -192.8
+ },
+ {
+  "arena": "a4823705313522358",
+  "ship": "Sapper",
+  "onset": 547.2,
+  "min_dist": 171.8,
+  "closest_player_x": 232.9,
+  "closest_player_z": -56.5,
+  "ship_x": 128.8,
+  "ship_z": -193.1
+ },
+ {
+  "arena": "a1635001257395781",
+  "ship": "Sapper",
+  "onset": 435.6,
+  "min_dist": 207.6,
+  "closest_player_x": -69.8,
+  "closest_player_z": -207.2,
+  "ship_x": 137.7,
+  "ship_z": -202.7
+ },
+ {
+  "arena": "a2908042525867330",
+  "ship": "Sapper",
+  "onset": 498.2,
+  "min_dist": 49.0,
+  "closest_player_x": 210.1,
+  "closest_player_z": -65.7,
+  "ship_x": 223.8,
+  "ship_z": -112.8
+ },
+ {
+  "arena": "a7464315632425555",
+  "ship": "Sapper",
+  "onset": 494.4,
+  "min_dist": 62.5,
+  "closest_player_x": 190.5,
+  "closest_player_z": -44.9,
+  "ship_x": 195.4,
+  "ship_z": -107.2
+ },
+ {
+  "arena": "a3002046476224217",
+  "ship": "Sapper",
+  "onset": 464.5,
+  "min_dist": 152.3,
+  "closest_player_x": 177.1,
+  "closest_player_z": -26.7,
+  "ship_x": 210.3,
+  "ship_z": -175.3
+ },
+ {
+  "arena": "a4613101602109950",
+  "ship": "Sapper",
+  "onset": 514.4,
+  "min_dist": 131.3,
+  "closest_player_x": 67.9,
+  "closest_player_z": -138.9,
+  "ship_x": 195.3,
+  "ship_z": -107.3
+ }
+]

@@ -1,0 +1,2180 @@
+[
+ {
+  "arena": "fb8f5b237094388fe",
+  "spawn": 32.57,
+  "closest_player_dist": 265.6,
+  "closest_player_x": -456.4,
+  "closest_player_z": 357.9,
+  "a1_z_at_spawn": 397.5,
+  "a1_onset": 53.3
+ },
+ {
+  "arena": "fd261874630946105",
+  "spawn": 34.29,
+  "closest_player_dist": 266.4,
+  "closest_player_x": -457.8,
+  "closest_player_z": 359.0,
+  "a1_z_at_spawn": 397.5,
+  "a1_onset": 54.0
+ },
+ {
+  "arena": "f9d56a69dfa825eef",
+  "spawn": 34.92,
+  "closest_player_dist": 266.3,
+  "closest_player_x": -457.6,
+  "closest_player_z": 358.9,
+  "a1_z_at_spawn": 397.5,
+  "a1_onset": 55.7
+ },
+ {
+  "arena": "a3113255979094769",
+  "spawn": 34.16,
+  "closest_player_dist": 266.4,
+  "closest_player_x": -457.8,
+  "closest_player_z": 359.0,
+  "a1_z_at_spawn": 397.5,
+  "a1_onset": 54.9
+ },
+ {
+  "arena": "a3140052280139295",
+  "spawn": 34.19,
+  "closest_player_dist": 264.6,
+  "closest_player_x": -454.4,
+  "closest_player_z": 356.3,
+  "a1_z_at_spawn": 397.5,
+  "a1_onset": 53.9
+ },
+ {
+  "arena": "a3025037351093606",
+  "spawn": 35.31,
+  "closest_player_dist": 266.3,
+  "closest_player_x": -457.6,
+  "closest_player_z": 358.9,
+  "a1_z_at_spawn": 397.5,
+  "a1_onset": 56.1
+ },
+ {
+  "arena": "a3716389647228880",
+  "spawn": 35.27,
+  "closest_player_dist": 265.6,
+  "closest_player_x": -456.4,
+  "closest_player_z": 357.9,
+  "a1_z_at_spawn": 397.5,
+  "a1_onset": 56.0
+ },
+ {
+  "arena": "a2931604633035639",
+  "spawn": 35.85,
+  "closest_player_dist": 266.4,
+  "closest_player_x": -457.8,
+  "closest_player_z": 359.0,
+  "a1_z_at_spawn": 397.5,
+  "a1_onset": 56.6
+ },
+ {
+  "arena": "a3666310329240282",
+  "spawn": 34.8,
+  "closest_player_dist": 265.5,
+  "closest_player_x": -456.3,
+  "closest_player_z": 357.8,
+  "a1_z_at_spawn": 397.5,
+  "a1_onset": 55.5
+ },
+ {
+  "arena": "a3598394011998480",
+  "spawn": 34.95,
+  "closest_player_dist": 264.6,
+  "closest_player_x": -454.5,
+  "closest_player_z": 356.4,
+  "a1_z_at_spawn": 397.5,
+  "a1_onset": 55.7
+ },
+ {
+  "arena": "a3846351064451322",
+  "spawn": 34.89,
+  "closest_player_dist": 266.0,
+  "closest_player_x": -457.1,
+  "closest_player_z": 358.4,
+  "a1_z_at_spawn": 397.5,
+  "a1_onset": 55.6
+ },
+ {
+  "arena": "a3575415938263382",
+  "spawn": 34.38,
+  "closest_player_dist": 265.5,
+  "closest_player_x": -456.2,
+  "closest_player_z": 357.7,
+  "a1_z_at_spawn": 397.5,
+  "a1_onset": 54.1
+ },
+ {
+  "arena": "a3375296232415436",
+  "spawn": 34.82,
+  "closest_player_dist": 266.4,
+  "closest_player_x": -457.8,
+  "closest_player_z": 359.0,
+  "a1_z_at_spawn": 397.5,
+  "a1_onset": 54.6
+ },
+ {
+  "arena": "a3423477175977245",
+  "spawn": 34.33,
+  "closest_player_dist": 265.6,
+  "closest_player_x": -456.3,
+  "closest_player_z": 357.8,
+  "a1_z_at_spawn": 397.5,
+  "a1_onset": 54.1
+ },
+ {
+  "arena": "a3656161325241176",
+  "spawn": 34.44,
+  "closest_player_dist": 266.4,
+  "closest_player_x": -457.8,
+  "closest_player_z": 359.0,
+  "a1_z_at_spawn": 397.5,
+  "a1_onset": 54.2
+ },
+ {
+  "arena": "a3612777860844461",
+  "spawn": 35.0,
+  "closest_player_dist": 305.0,
+  "closest_player_x": -423.5,
+  "closest_player_z": 389.3,
+  "a1_z_at_spawn": 397.5,
+  "a1_onset": 55.7
+ },
+ {
+  "arena": "a277125871421871",
+  "spawn": 34.83,
+  "closest_player_dist": 264.8,
+  "closest_player_x": -454.5,
+  "closest_player_z": 356.6,
+  "a1_z_at_spawn": 397.5,
+  "a1_onset": 55.5
+ },
+ {
+  "arena": "a3692784521479778",
+  "spawn": 34.11,
+  "closest_player_dist": 265.6,
+  "closest_player_x": -456.4,
+  "closest_player_z": 357.9,
+  "a1_z_at_spawn": 397.5,
+  "a1_onset": 54.0
+ },
+ {
+  "arena": "a3702598521837362",
+  "spawn": 31.33,
+  "closest_player_dist": 265.6,
+  "closest_player_x": -456.4,
+  "closest_player_z": 357.9,
+  "a1_z_at_spawn": 397.5,
+  "a1_onset": 51.2
+ },
+ {
+  "arena": "a4221628139694999",
+  "spawn": 35.48,
+  "closest_player_dist": 265.6,
+  "closest_player_x": -456.4,
+  "closest_player_z": 357.9,
+  "a1_z_at_spawn": 397.5,
+  "a1_onset": 55.8
+ },
+ {
+  "arena": "a3654731111498033",
+  "spawn": 33.3,
+  "closest_player_dist": 266.4,
+  "closest_player_x": -457.8,
+  "closest_player_z": 359.0,
+  "a1_z_at_spawn": 397.5,
+  "a1_onset": 53.2
+ },
+ {
+  "arena": "a5156870174637131",
+  "spawn": 35.06,
+  "closest_player_dist": 304.0,
+  "closest_player_x": -422.0,
+  "closest_player_z": 387.7,
+  "a1_z_at_spawn": 397.5,
+  "a1_onset": 54.9
+ },
+ {
+  "arena": "a5118430217511943",
+  "spawn": 35.32,
+  "closest_player_dist": 266.4,
+  "closest_player_x": -457.8,
+  "closest_player_z": 359.0,
+  "a1_z_at_spawn": 397.5,
+  "a1_onset": 55.2
+ },
+ {
+  "arena": "a4295488769788617",
+  "spawn": 32.69,
+  "closest_player_dist": 266.4,
+  "closest_player_x": -457.8,
+  "closest_player_z": 359.0,
+  "a1_z_at_spawn": 397.5,
+  "a1_onset": 52.6
+ },
+ {
+  "arena": "a4071334427465993",
+  "spawn": 34.14,
+  "closest_player_dist": 304.3,
+  "closest_player_x": -422.4,
+  "closest_player_z": 388.2,
+  "a1_z_at_spawn": 397.5,
+  "a1_onset": 54.0
+ },
+ {
+  "arena": "a3853536636408028",
+  "spawn": 33.77,
+  "closest_player_dist": 264.8,
+  "closest_player_x": -454.7,
+  "closest_player_z": 356.7,
+  "a1_z_at_spawn": 397.5,
+  "a1_onset": 53.7
+ },
+ {
+  "arena": "a4365050062439356",
+  "spawn": 34.32,
+  "closest_player_dist": 302.1,
+  "closest_player_x": -419.5,
+  "closest_player_z": 384.9,
+  "a1_z_at_spawn": 397.5,
+  "a1_onset": 55.2
+ },
+ {
+  "arena": "a4523946672524347",
+  "spawn": 35.04,
+  "closest_player_dist": 265.5,
+  "closest_player_x": -456.2,
+  "closest_player_z": 357.8,
+  "a1_z_at_spawn": 397.5,
+  "a1_onset": 54.9
+ },
+ {
+  "arena": "a4494577686245263",
+  "spawn": 34.79,
+  "closest_player_dist": 265.6,
+  "closest_player_x": -456.3,
+  "closest_player_z": 357.8,
+  "a1_z_at_spawn": 397.5,
+  "a1_onset": 54.7
+ },
+ {
+  "arena": "a4528207280173772",
+  "spawn": 34.15,
+  "closest_player_dist": 304.3,
+  "closest_player_x": -422.4,
+  "closest_player_z": 388.2,
+  "a1_z_at_spawn": 397.5,
+  "a1_onset": 54.0
+ },
+ {
+  "arena": "a4922326364674803",
+  "spawn": 33.86,
+  "closest_player_dist": 266.4,
+  "closest_player_x": -457.8,
+  "closest_player_z": 359.0,
+  "a1_z_at_spawn": 397.5,
+  "a1_onset": 53.7
+ },
+ {
+  "arena": "a3819529083625818",
+  "spawn": 33.76,
+  "closest_player_dist": 266.3,
+  "closest_player_x": -457.8,
+  "closest_player_z": 359.0,
+  "a1_z_at_spawn": 397.5,
+  "a1_onset": 53.6
+ },
+ {
+  "arena": "f3fb417e3c5fc49b6",
+  "spawn": 16.92,
+  "closest_player_dist": 304.2,
+  "closest_player_x": -422.4,
+  "closest_player_z": 388.1,
+  "a1_z_at_spawn": 397.5,
+  "a1_onset": 36.7
+ },
+ {
+  "arena": "f1355577ef1f5ce7c",
+  "spawn": 31.28,
+  "closest_player_dist": 266.4,
+  "closest_player_x": -457.8,
+  "closest_player_z": 359.0,
+  "a1_z_at_spawn": 397.5,
+  "a1_onset": 51.0
+ },
+ {
+  "arena": "fdd5f690ae9a97f23",
+  "spawn": 35.3,
+  "closest_player_dist": 263.8,
+  "closest_player_x": -452.9,
+  "closest_player_z": 355.1,
+  "a1_z_at_spawn": 397.5,
+  "a1_onset": 55.2
+ },
+ {
+  "arena": "fb3721761784565e9",
+  "spawn": 33.75,
+  "closest_player_dist": 264.7,
+  "closest_player_x": -454.6,
+  "closest_player_z": 356.5,
+  "a1_z_at_spawn": 397.5,
+  "a1_onset": 53.5
+ },
+ {
+  "arena": "f2fa8ae76d28752e7",
+  "spawn": 36.71,
+  "closest_player_dist": 302.4,
+  "closest_player_x": -419.7,
+  "closest_player_z": 385.3,
+  "a1_z_at_spawn": 397.5,
+  "a1_onset": 57.5
+ },
+ {
+  "arena": "f2918ccd84d9b8a7b",
+  "spawn": 17.98,
+  "closest_player_dist": 265.7,
+  "closest_player_x": -456.5,
+  "closest_player_z": 358.0,
+  "a1_z_at_spawn": 397.5,
+  "a1_onset": 39.8
+ },
+ {
+  "arena": "fd552023516063c4f",
+  "spawn": 33.87,
+  "closest_player_dist": 265.1,
+  "closest_player_x": -455.2,
+  "closest_player_z": 357.1,
+  "a1_z_at_spawn": 397.5,
+  "a1_onset": 53.7
+ },
+ {
+  "arena": "fa59a268b9c303e3d",
+  "spawn": 33.71,
+  "closest_player_dist": 265.5,
+  "closest_player_x": -456.2,
+  "closest_player_z": 357.7,
+  "a1_z_at_spawn": 397.5,
+  "a1_onset": 53.4
+ },
+ {
+  "arena": "fbfc97918c47efcfe",
+  "spawn": 23.78,
+  "closest_player_dist": 266.4,
+  "closest_player_x": -457.8,
+  "closest_player_z": 359.0,
+  "a1_z_at_spawn": 397.5,
+  "a1_onset": 43.5
+ },
+ {
+  "arena": "f6a20d4ecb2320e43",
+  "spawn": 19.75,
+  "closest_player_dist": 266.4,
+  "closest_player_x": -457.8,
+  "closest_player_z": 359.0,
+  "a1_z_at_spawn": 397.5,
+  "a1_onset": 41.3
+ },
+ {
+  "arena": "f59fe1a7f3125d8f2",
+  "spawn": 35.16,
+  "closest_player_dist": 265.8,
+  "closest_player_x": -456.7,
+  "closest_player_z": 358.1,
+  "a1_z_at_spawn": 397.5,
+  "a1_onset": 54.9
+ },
+ {
+  "arena": "fae27d86a7b03ff35",
+  "spawn": 27.39,
+  "closest_player_dist": 266.4,
+  "closest_player_x": -457.8,
+  "closest_player_z": 359.0,
+  "a1_z_at_spawn": 397.5,
+  "a1_onset": 48.1
+ },
+ {
+  "arena": "fa828942f0063c07e",
+  "spawn": 34.87,
+  "closest_player_dist": 304.3,
+  "closest_player_x": -422.5,
+  "closest_player_z": 388.2,
+  "a1_z_at_spawn": 397.5,
+  "a1_onset": 54.6
+ },
+ {
+  "arena": "fd89e9679a4ecc236",
+  "spawn": 35.05,
+  "closest_player_dist": 260.5,
+  "closest_player_x": -450.4,
+  "closest_player_z": 351.0,
+  "a1_z_at_spawn": 397.5,
+  "a1_onset": 55.4
+ },
+ {
+  "arena": "f3d1bc19de4a7c062",
+  "spawn": 35.1,
+  "closest_player_dist": 265.6,
+  "closest_player_x": -456.3,
+  "closest_player_z": 357.8,
+  "a1_z_at_spawn": 397.5,
+  "a1_onset": 54.8
+ },
+ {
+  "arena": "f5650378d13a192b0",
+  "spawn": 30.67,
+  "closest_player_dist": 265.4,
+  "closest_player_x": -456.0,
+  "closest_player_z": 357.6,
+  "a1_z_at_spawn": 397.5,
+  "a1_onset": 50.4
+ },
+ {
+  "arena": "fca87ff63cc97f16f",
+  "spawn": 19.65,
+  "closest_player_dist": 266.4,
+  "closest_player_x": -457.8,
+  "closest_player_z": 359.0,
+  "a1_z_at_spawn": 397.5,
+  "a1_onset": 41.5
+ },
+ {
+  "arena": "f657842f08609a171",
+  "spawn": 31.61,
+  "closest_player_dist": 265.5,
+  "closest_player_x": -456.1,
+  "closest_player_z": 357.6,
+  "a1_z_at_spawn": 397.5,
+  "a1_onset": 51.5
+ },
+ {
+  "arena": "f7dd3984b1dd10a36",
+  "spawn": 34.97,
+  "closest_player_dist": 266.4,
+  "closest_player_x": -457.8,
+  "closest_player_z": 359.0,
+  "a1_z_at_spawn": 397.5,
+  "a1_onset": 54.7
+ },
+ {
+  "arena": "ff51b372239d7a08e",
+  "spawn": 34.92,
+  "closest_player_dist": 265.6,
+  "closest_player_x": -456.4,
+  "closest_player_z": 357.9,
+  "a1_z_at_spawn": 397.5,
+  "a1_onset": 56.8
+ },
+ {
+  "arena": "fac6d7f916934f7f8",
+  "spawn": 30.41,
+  "closest_player_dist": 266.3,
+  "closest_player_x": -457.7,
+  "closest_player_z": 358.9,
+  "a1_z_at_spawn": 397.5,
+  "a1_onset": 50.1
+ },
+ {
+  "arena": "f0899a843d020c656",
+  "spawn": 35.51,
+  "closest_player_dist": 265.7,
+  "closest_player_x": -456.6,
+  "closest_player_z": 358.1,
+  "a1_z_at_spawn": 397.5,
+  "a1_onset": 55.3
+ },
+ {
+  "arena": "f680a3adb4a0061ec",
+  "spawn": 34.94,
+  "closest_player_dist": 303.4,
+  "closest_player_x": -421.1,
+  "closest_player_z": 386.8,
+  "a1_z_at_spawn": 397.5,
+  "a1_onset": 54.7
+ },
+ {
+  "arena": "f8d9ede3494f15a06",
+  "spawn": 28.97,
+  "closest_player_dist": 265.5,
+  "closest_player_x": -456.3,
+  "closest_player_z": 357.8,
+  "a1_z_at_spawn": 397.5,
+  "a1_onset": 48.7
+ },
+ {
+  "arena": "fb58d43ec86009ef7",
+  "spawn": 34.72,
+  "closest_player_dist": 263.9,
+  "closest_player_x": -453.0,
+  "closest_player_z": 355.2,
+  "a1_z_at_spawn": 397.5,
+  "a1_onset": 54.6
+ },
+ {
+  "arena": "f2255c6bca78855ed",
+  "spawn": 25.18,
+  "closest_player_dist": 265.7,
+  "closest_player_x": -456.5,
+  "closest_player_z": 357.9,
+  "a1_z_at_spawn": 397.5,
+  "a1_onset": 44.9
+ },
+ {
+  "arena": "fb34ad7a5a092969b",
+  "spawn": 34.93,
+  "closest_player_dist": 266.0,
+  "closest_player_x": -457.1,
+  "closest_player_z": 358.5,
+  "a1_z_at_spawn": 397.5,
+  "a1_onset": 54.7
+ },
+ {
+  "arena": "f1ea2fc316992755a",
+  "spawn": 36.34,
+  "closest_player_dist": 265.6,
+  "closest_player_x": -456.3,
+  "closest_player_z": 357.8,
+  "a1_z_at_spawn": 397.5,
+  "a1_onset": 56.1
+ },
+ {
+  "arena": "f37ebd807c06310aa",
+  "spawn": 34.54,
+  "closest_player_dist": 304.0,
+  "closest_player_x": -422.1,
+  "closest_player_z": 387.8,
+  "a1_z_at_spawn": 397.5,
+  "a1_onset": 54.3
+ },
+ {
+  "arena": "f0aac9f8626b00ae7",
+  "spawn": 34.9,
+  "closest_player_dist": 266.2,
+  "closest_player_x": -457.4,
+  "closest_player_z": 358.7,
+  "a1_z_at_spawn": 397.5,
+  "a1_onset": 55.6
+ },
+ {
+  "arena": "fb1284698a17370b7",
+  "spawn": 33.76,
+  "closest_player_dist": 265.8,
+  "closest_player_x": -456.7,
+  "closest_player_z": 358.2,
+  "a1_z_at_spawn": 397.5,
+  "a1_onset": 53.5
+ },
+ {
+  "arena": "fd3be6c19898e5312",
+  "spawn": 34.81,
+  "closest_player_dist": 265.6,
+  "closest_player_x": -456.3,
+  "closest_player_z": 357.8,
+  "a1_z_at_spawn": 397.5,
+  "a1_onset": 56.5
+ },
+ {
+  "arena": "f66efa73180f7021f",
+  "spawn": 29.03,
+  "closest_player_dist": 265.0,
+  "closest_player_x": -455.0,
+  "closest_player_z": 356.9,
+  "a1_z_at_spawn": 397.5,
+  "a1_onset": 48.8
+ },
+ {
+  "arena": "fc6adee38394716de",
+  "spawn": 34.6,
+  "closest_player_dist": 265.9,
+  "closest_player_x": -456.9,
+  "closest_player_z": 358.3,
+  "a1_z_at_spawn": 397.5,
+  "a1_onset": 54.3
+ },
+ {
+  "arena": "fd856c5c562a7a4ff",
+  "spawn": 35.37,
+  "closest_player_dist": 265.6,
+  "closest_player_x": -456.3,
+  "closest_player_z": 357.8,
+  "a1_z_at_spawn": 397.5,
+  "a1_onset": 56.1
+ },
+ {
+  "arena": "fc150af6d461bb4d1",
+  "spawn": 35.03,
+  "closest_player_dist": 266.4,
+  "closest_player_x": -457.8,
+  "closest_player_z": 359.0,
+  "a1_z_at_spawn": 397.5,
+  "a1_onset": 55.8
+ },
+ {
+  "arena": "f19f97cc99984eb0c",
+  "spawn": 31.98,
+  "closest_player_dist": 265.5,
+  "closest_player_x": -456.3,
+  "closest_player_z": 357.8,
+  "a1_z_at_spawn": 397.5,
+  "a1_onset": 52.7
+ },
+ {
+  "arena": "f4f5b09f0ec31e8d3",
+  "spawn": 33.75,
+  "closest_player_dist": 263.4,
+  "closest_player_x": -452.2,
+  "closest_player_z": 354.5,
+  "a1_z_at_spawn": 397.5,
+  "a1_onset": 53.6
+ },
+ {
+  "arena": "f609e4cda7927d581",
+  "spawn": 33.99,
+  "closest_player_dist": 266.4,
+  "closest_player_x": -457.8,
+  "closest_player_z": 359.0,
+  "a1_z_at_spawn": 397.5,
+  "a1_onset": 53.8
+ },
+ {
+  "arena": "fe713fc6f59b6d511",
+  "spawn": 30.44,
+  "closest_player_dist": 264.0,
+  "closest_player_x": -453.4,
+  "closest_player_z": 355.5,
+  "a1_z_at_spawn": 397.5,
+  "a1_onset": 50.2
+ },
+ {
+  "arena": "f3baa5c0b250052f3",
+  "spawn": 33.52,
+  "closest_player_dist": 264.0,
+  "closest_player_x": -452.4,
+  "closest_player_z": 355.2,
+  "a1_z_at_spawn": 397.5,
+  "a1_onset": 53.2
+ },
+ {
+  "arena": "fcc476e571a8f1e1b",
+  "spawn": 33.82,
+  "closest_player_dist": 266.2,
+  "closest_player_x": -457.5,
+  "closest_player_z": 358.8,
+  "a1_z_at_spawn": 397.5,
+  "a1_onset": 53.7
+ },
+ {
+  "arena": "f84cb609afb2b729a",
+  "spawn": 31.89,
+  "closest_player_dist": 264.7,
+  "closest_player_x": -454.6,
+  "closest_player_z": 356.5,
+  "a1_z_at_spawn": 397.5,
+  "a1_onset": 52.6
+ },
+ {
+  "arena": "a1732952275117821",
+  "spawn": 33.91,
+  "closest_player_dist": 265.6,
+  "closest_player_x": -456.3,
+  "closest_player_z": 357.8,
+  "a1_z_at_spawn": 397.5,
+  "a1_onset": 53.6
+ },
+ {
+  "arena": "a268450031510666",
+  "spawn": 23.88,
+  "closest_player_dist": 266.4,
+  "closest_player_x": -457.8,
+  "closest_player_z": 359.0,
+  "a1_z_at_spawn": 397.5,
+  "a1_onset": 44.6
+ },
+ {
+  "arena": "a4962711847907737",
+  "spawn": 33.33,
+  "closest_player_dist": 304.3,
+  "closest_player_x": -422.5,
+  "closest_player_z": 388.3,
+  "a1_z_at_spawn": 397.5,
+  "a1_onset": 53.1
+ },
+ {
+  "arena": "a2486710446856863",
+  "spawn": 34.88,
+  "closest_player_dist": 265.2,
+  "closest_player_x": -455.5,
+  "closest_player_z": 357.3,
+  "a1_z_at_spawn": 397.5,
+  "a1_onset": 54.7
+ },
+ {
+  "arena": "a2267271978201000",
+  "spawn": 33.88,
+  "closest_player_dist": 304.3,
+  "closest_player_x": -422.4,
+  "closest_player_z": 388.2,
+  "a1_z_at_spawn": 397.5,
+  "a1_onset": 54.7
+ },
+ {
+  "arena": "a4059390032357055",
+  "spawn": 10.94,
+  "closest_player_dist": 265.4,
+  "closest_player_x": -455.9,
+  "closest_player_z": 357.5,
+  "a1_z_at_spawn": 397.5,
+  "a1_onset": 30.7
+ },
+ {
+  "arena": "a1573664825202859",
+  "spawn": 30.74,
+  "closest_player_dist": 265.6,
+  "closest_player_x": -456.3,
+  "closest_player_z": 357.8,
+  "a1_z_at_spawn": 397.5,
+  "a1_onset": 50.6
+ },
+ {
+  "arena": "a3629274829109279",
+  "spawn": 33.07,
+  "closest_player_dist": 263.5,
+  "closest_player_x": -451.1,
+  "closest_player_z": 354.4,
+  "a1_z_at_spawn": 397.5,
+  "a1_onset": 53.8
+ },
+ {
+  "arena": "a3246219580955065",
+  "spawn": 34.15,
+  "closest_player_dist": 265.3,
+  "closest_player_x": -455.8,
+  "closest_player_z": 357.4,
+  "a1_z_at_spawn": 397.5,
+  "a1_onset": 53.9
+ },
+ {
+  "arena": "a1514806596630150",
+  "spawn": 35.43,
+  "closest_player_dist": 266.4,
+  "closest_player_x": -457.8,
+  "closest_player_z": 359.0,
+  "a1_z_at_spawn": 397.5,
+  "a1_onset": 56.2
+ },
+ {
+  "arena": "a2044010992458555",
+  "spawn": 34.74,
+  "closest_player_dist": 265.5,
+  "closest_player_x": -456.2,
+  "closest_player_z": 357.7,
+  "a1_z_at_spawn": 397.5,
+  "a1_onset": 54.6
+ },
+ {
+  "arena": "a26359911652244",
+  "spawn": 34.37,
+  "closest_player_dist": 266.0,
+  "closest_player_x": -457.1,
+  "closest_player_z": 358.4,
+  "a1_z_at_spawn": 397.5,
+  "a1_onset": 54.2
+ },
+ {
+  "arena": "a2397323592951212",
+  "spawn": 23.76,
+  "closest_player_dist": 265.2,
+  "closest_player_x": -455.5,
+  "closest_player_z": 357.2,
+  "a1_z_at_spawn": 397.5,
+  "a1_onset": 43.6
+ },
+ {
+  "arena": "f32788acf80cd8646",
+  "spawn": 25.98,
+  "closest_player_dist": 266.4,
+  "closest_player_x": -457.8,
+  "closest_player_z": 359.0,
+  "a1_z_at_spawn": 397.5,
+  "a1_onset": 47.8
+ },
+ {
+  "arena": "a793226322672951",
+  "spawn": 29.08,
+  "closest_player_dist": 266.4,
+  "closest_player_x": -457.8,
+  "closest_player_z": 359.0,
+  "a1_z_at_spawn": 397.5,
+  "a1_onset": 49.0
+ },
+ {
+  "arena": "a778627729402888",
+  "spawn": 35.4,
+  "closest_player_dist": 264.9,
+  "closest_player_x": -455.5,
+  "closest_player_z": 357.0,
+  "a1_z_at_spawn": 397.5,
+  "a1_onset": 55.3
+ },
+ {
+  "arena": "a940221579225057",
+  "spawn": 34.94,
+  "closest_player_dist": 266.0,
+  "closest_player_x": -457.1,
+  "closest_player_z": 358.5,
+  "a1_z_at_spawn": 397.5,
+  "a1_onset": 54.8
+ },
+ {
+  "arena": "a2079560439193563",
+  "spawn": 35.28,
+  "closest_player_dist": 266.4,
+  "closest_player_x": -457.8,
+  "closest_player_z": 359.0,
+  "a1_z_at_spawn": 397.5,
+  "a1_onset": 55.2
+ },
+ {
+  "arena": "a3156892857282623",
+  "spawn": 0.0,
+  "closest_player_dist": 36.6,
+  "closest_player_x": -504.2,
+  "closest_player_z": 133.0,
+  "a1_z_at_spawn": 392.2,
+  "a1_onset": null
+ },
+ {
+  "arena": "a4970137857345104",
+  "spawn": 35.49,
+  "closest_player_dist": 264.7,
+  "closest_player_x": -454.7,
+  "closest_player_z": 356.6,
+  "a1_z_at_spawn": 397.5,
+  "a1_onset": 55.4
+ },
+ {
+  "arena": "a1963149650339128",
+  "spawn": 32.75,
+  "closest_player_dist": 264.7,
+  "closest_player_x": -454.6,
+  "closest_player_z": 356.5,
+  "a1_z_at_spawn": 397.5,
+  "a1_onset": 52.6
+ },
+ {
+  "arena": "a2367993269163151",
+  "spawn": 35.15,
+  "closest_player_dist": 264.7,
+  "closest_player_x": -454.8,
+  "closest_player_z": 356.6,
+  "a1_z_at_spawn": 397.5,
+  "a1_onset": 55.2
+ },
+ {
+  "arena": "a5175527491846126",
+  "spawn": 33.5,
+  "closest_player_dist": 266.4,
+  "closest_player_x": -457.8,
+  "closest_player_z": 359.0,
+  "a1_z_at_spawn": 397.5,
+  "a1_onset": 53.4
+ },
+ {
+  "arena": "a3068180313287033",
+  "spawn": 34.6,
+  "closest_player_dist": 265.8,
+  "closest_player_x": -456.7,
+  "closest_player_z": 358.1,
+  "a1_z_at_spawn": 397.5,
+  "a1_onset": 54.6
+ },
+ {
+  "arena": "a1504863758917835",
+  "spawn": 35.38,
+  "closest_player_dist": 266.1,
+  "closest_player_x": -457.3,
+  "closest_player_z": 358.6,
+  "a1_z_at_spawn": 397.5,
+  "a1_onset": 55.3
+ },
+ {
+  "arena": "a3149265002689081",
+  "spawn": 32.9,
+  "closest_player_dist": 266.4,
+  "closest_player_x": -457.8,
+  "closest_player_z": 359.0,
+  "a1_z_at_spawn": 397.5,
+  "a1_onset": 52.8
+ },
+ {
+  "arena": "a893913243489531",
+  "spawn": 36.08,
+  "closest_player_dist": 266.1,
+  "closest_player_x": -457.2,
+  "closest_player_z": 358.6,
+  "a1_z_at_spawn": 397.5,
+  "a1_onset": 56.0
+ },
+ {
+  "arena": "a1281478214784069",
+  "spawn": 33.85,
+  "closest_player_dist": 265.6,
+  "closest_player_x": -456.3,
+  "closest_player_z": 357.8,
+  "a1_z_at_spawn": 397.5,
+  "a1_onset": 53.8
+ },
+ {
+  "arena": "a5276502174295701",
+  "spawn": 34.88,
+  "closest_player_dist": 262.9,
+  "closest_player_x": -450.6,
+  "closest_player_z": 353.6,
+  "a1_z_at_spawn": 397.5,
+  "a1_onset": 54.8
+ },
+ {
+  "arena": "f46b29c96c100de38",
+  "spawn": 24.92,
+  "closest_player_dist": 266.3,
+  "closest_player_x": -457.7,
+  "closest_player_z": 358.9,
+  "a1_z_at_spawn": 397.5,
+  "a1_onset": 44.7
+ },
+ {
+  "arena": "a2600063239920907",
+  "spawn": 26.39,
+  "closest_player_dist": 265.6,
+  "closest_player_x": -456.4,
+  "closest_player_z": 357.9,
+  "a1_z_at_spawn": 397.5,
+  "a1_onset": 46.4
+ },
+ {
+  "arena": "a222489603694707",
+  "spawn": 34.77,
+  "closest_player_dist": 266.4,
+  "closest_player_x": -457.8,
+  "closest_player_z": 359.0,
+  "a1_z_at_spawn": 397.5,
+  "a1_onset": 54.7
+ },
+ {
+  "arena": "a5159601755450909",
+  "spawn": 24.23,
+  "closest_player_dist": 266.4,
+  "closest_player_x": -457.8,
+  "closest_player_z": 359.0,
+  "a1_z_at_spawn": 397.5,
+  "a1_onset": 44.1
+ },
+ {
+  "arena": "a3411352497828746",
+  "spawn": 33.7,
+  "closest_player_dist": 265.6,
+  "closest_player_x": -456.3,
+  "closest_player_z": 357.8,
+  "a1_z_at_spawn": 397.5,
+  "a1_onset": 53.7
+ },
+ {
+  "arena": "a4370809536875650",
+  "spawn": 33.15,
+  "closest_player_dist": 305.0,
+  "closest_player_x": -423.5,
+  "closest_player_z": 389.3,
+  "a1_z_at_spawn": 397.5,
+  "a1_onset": 53.0
+ },
+ {
+  "arena": "a1519616973719449",
+  "spawn": 15.47,
+  "closest_player_dist": 266.4,
+  "closest_player_x": -457.8,
+  "closest_player_z": 359.0,
+  "a1_z_at_spawn": 397.5,
+  "a1_onset": 35.4
+ },
+ {
+  "arena": "a2198303410920215",
+  "spawn": 35.2,
+  "closest_player_dist": 266.4,
+  "closest_player_x": -457.8,
+  "closest_player_z": 359.0,
+  "a1_z_at_spawn": 397.5,
+  "a1_onset": 55.2
+ },
+ {
+  "arena": "a1705945540390746",
+  "spawn": 26.52,
+  "closest_player_dist": 265.6,
+  "closest_player_x": -456.4,
+  "closest_player_z": 357.9,
+  "a1_z_at_spawn": 397.5,
+  "a1_onset": 46.6
+ },
+ {
+  "arena": "f87ec09a2a6393e8e",
+  "spawn": 4.29,
+  "closest_player_dist": 265.6,
+  "closest_player_x": -456.3,
+  "closest_player_z": 357.8,
+  "a1_z_at_spawn": 397.5,
+  "a1_onset": 24.2
+ },
+ {
+  "arena": "a3960988055048162",
+  "spawn": 31.04,
+  "closest_player_dist": 264.7,
+  "closest_player_x": -454.7,
+  "closest_player_z": 356.5,
+  "a1_z_at_spawn": 397.5,
+  "a1_onset": 50.9
+ },
+ {
+  "arena": "a2476612997024019",
+  "spawn": 34.4,
+  "closest_player_dist": 266.4,
+  "closest_player_x": -457.8,
+  "closest_player_z": 359.0,
+  "a1_z_at_spawn": 397.5,
+  "a1_onset": 54.4
+ },
+ {
+  "arena": "a2397168988121099",
+  "spawn": 35.23,
+  "closest_player_dist": 265.6,
+  "closest_player_x": -456.3,
+  "closest_player_z": 357.8,
+  "a1_z_at_spawn": 397.5,
+  "a1_onset": 55.1
+ },
+ {
+  "arena": "a2372116444627874",
+  "spawn": 35.4,
+  "closest_player_dist": 266.4,
+  "closest_player_x": -457.8,
+  "closest_player_z": 359.0,
+  "a1_z_at_spawn": 397.5,
+  "a1_onset": 55.3
+ },
+ {
+  "arena": "a5360065064730826",
+  "spawn": 33.31,
+  "closest_player_dist": 265.0,
+  "closest_player_x": -455.3,
+  "closest_player_z": 357.0,
+  "a1_z_at_spawn": 397.5,
+  "a1_onset": 53.2
+ },
+ {
+  "arena": "a4223938842734840",
+  "spawn": 31.07,
+  "closest_player_dist": 265.0,
+  "closest_player_x": -455.2,
+  "closest_player_z": 356.9,
+  "a1_z_at_spawn": 397.5,
+  "a1_onset": 51.1
+ },
+ {
+  "arena": "a3458094634378006",
+  "spawn": 29.21,
+  "closest_player_dist": 266.4,
+  "closest_player_x": -457.8,
+  "closest_player_z": 359.0,
+  "a1_z_at_spawn": 397.5,
+  "a1_onset": 49.2
+ },
+ {
+  "arena": "a3763419564876887",
+  "spawn": 21.52,
+  "closest_player_dist": 265.6,
+  "closest_player_x": -456.3,
+  "closest_player_z": 357.9,
+  "a1_z_at_spawn": 397.5,
+  "a1_onset": 41.4
+ },
+ {
+  "arena": "a3517695895943536",
+  "spawn": 22.4,
+  "closest_player_dist": 305.0,
+  "closest_player_x": -423.5,
+  "closest_player_z": 389.3,
+  "a1_z_at_spawn": 397.5,
+  "a1_onset": 42.3
+ },
+ {
+  "arena": "a4337347454972563",
+  "spawn": 23.73,
+  "closest_player_dist": 266.4,
+  "closest_player_x": -457.8,
+  "closest_player_z": 359.0,
+  "a1_z_at_spawn": 397.5,
+  "a1_onset": 43.6
+ },
+ {
+  "arena": "a3305683426463851",
+  "spawn": 34.44,
+  "closest_player_dist": 265.6,
+  "closest_player_x": -456.4,
+  "closest_player_z": 357.9,
+  "a1_z_at_spawn": 397.5,
+  "a1_onset": 55.3
+ },
+ {
+  "arena": "a2684356277626718",
+  "spawn": 16.56,
+  "closest_player_dist": 265.8,
+  "closest_player_x": -456.8,
+  "closest_player_z": 358.2,
+  "a1_z_at_spawn": 397.5,
+  "a1_onset": 36.5
+ },
+ {
+  "arena": "a4733661267841725",
+  "spawn": 31.3,
+  "closest_player_dist": 262.9,
+  "closest_player_x": -452.8,
+  "closest_player_z": 354.2,
+  "a1_z_at_spawn": 397.5,
+  "a1_onset": 51.2
+ },
+ {
+  "arena": "a3143295008230506",
+  "spawn": 34.87,
+  "closest_player_dist": 263.5,
+  "closest_player_x": -452.4,
+  "closest_player_z": 354.7,
+  "a1_z_at_spawn": 397.5,
+  "a1_onset": 54.9
+ },
+ {
+  "arena": "a2894706595960058",
+  "spawn": 34.44,
+  "closest_player_dist": 265.2,
+  "closest_player_x": -455.6,
+  "closest_player_z": 357.2,
+  "a1_z_at_spawn": 397.5,
+  "a1_onset": 54.3
+ },
+ {
+  "arena": "a3173806456365724",
+  "spawn": 9.04,
+  "closest_player_dist": 265.6,
+  "closest_player_x": -456.4,
+  "closest_player_z": 357.9,
+  "a1_z_at_spawn": 397.5,
+  "a1_onset": 28.9
+ },
+ {
+  "arena": "a2717238548665513",
+  "spawn": 26.51,
+  "closest_player_dist": 265.8,
+  "closest_player_x": -456.7,
+  "closest_player_z": 358.1,
+  "a1_z_at_spawn": 397.5,
+  "a1_onset": 46.4
+ },
+ {
+  "arena": "a2724389668835639",
+  "spawn": 33.98,
+  "closest_player_dist": 265.6,
+  "closest_player_x": -456.4,
+  "closest_player_z": 357.9,
+  "a1_z_at_spawn": 397.5,
+  "a1_onset": 54.0
+ },
+ {
+  "arena": "a5024112728406167",
+  "spawn": 33.43,
+  "closest_player_dist": 264.7,
+  "closest_player_x": -454.8,
+  "closest_player_z": 356.6,
+  "a1_z_at_spawn": 397.5,
+  "a1_onset": 53.3
+ },
+ {
+  "arena": "a3877682878056264",
+  "spawn": 34.46,
+  "closest_player_dist": 265.5,
+  "closest_player_x": -456.2,
+  "closest_player_z": 357.7,
+  "a1_z_at_spawn": 397.5,
+  "a1_onset": 54.2
+ },
+ {
+  "arena": "a3514504738422202",
+  "spawn": 35.33,
+  "closest_player_dist": 266.4,
+  "closest_player_x": -457.8,
+  "closest_player_z": 359.0,
+  "a1_z_at_spawn": 397.5,
+  "a1_onset": 55.3
+ },
+ {
+  "arena": "a5011640143609213",
+  "spawn": 29.05,
+  "closest_player_dist": 265.7,
+  "closest_player_x": -456.5,
+  "closest_player_z": 357.9,
+  "a1_z_at_spawn": 397.5,
+  "a1_onset": 48.9
+ },
+ {
+  "arena": "a3444479591757390",
+  "spawn": 34.71,
+  "closest_player_dist": 264.7,
+  "closest_player_x": -454.7,
+  "closest_player_z": 356.5,
+  "a1_z_at_spawn": 397.5,
+  "a1_onset": 54.6
+ },
+ {
+  "arena": "a3325826825413590",
+  "spawn": 34.03,
+  "closest_player_dist": 265.6,
+  "closest_player_x": -456.3,
+  "closest_player_z": 357.8,
+  "a1_z_at_spawn": 397.5,
+  "a1_onset": 53.9
+ },
+ {
+  "arena": "a2957297156658701",
+  "spawn": 34.41,
+  "closest_player_dist": 264.7,
+  "closest_player_x": -454.4,
+  "closest_player_z": 356.4,
+  "a1_z_at_spawn": 397.5,
+  "a1_onset": 54.3
+ },
+ {
+  "arena": "a2652186973971586",
+  "spawn": 31.32,
+  "closest_player_dist": 304.2,
+  "closest_player_x": -422.4,
+  "closest_player_z": 388.1,
+  "a1_z_at_spawn": 397.5,
+  "a1_onset": 52.2
+ },
+ {
+  "arena": "a3986216702207438",
+  "spawn": 25.23,
+  "closest_player_dist": 265.6,
+  "closest_player_x": -456.4,
+  "closest_player_z": 357.9,
+  "a1_z_at_spawn": 397.5,
+  "a1_onset": 45.1
+ },
+ {
+  "arena": "a2313103602786726",
+  "spawn": 33.92,
+  "closest_player_dist": 266.4,
+  "closest_player_x": -457.8,
+  "closest_player_z": 359.0,
+  "a1_z_at_spawn": 397.5,
+  "a1_onset": 53.8
+ },
+ {
+  "arena": "a2585473248904695",
+  "spawn": 13.29,
+  "closest_player_dist": 265.9,
+  "closest_player_x": -456.9,
+  "closest_player_z": 358.3,
+  "a1_z_at_spawn": 397.5,
+  "a1_onset": 33.0
+ },
+ {
+  "arena": "a2797348280831832",
+  "spawn": 18.7,
+  "closest_player_dist": 266.1,
+  "closest_player_x": -457.3,
+  "closest_player_z": 358.6,
+  "a1_z_at_spawn": 397.5,
+  "a1_onset": 38.7
+ },
+ {
+  "arena": "a2574637047017371",
+  "spawn": 31.48,
+  "closest_player_dist": 264.8,
+  "closest_player_x": -454.8,
+  "closest_player_z": 356.6,
+  "a1_z_at_spawn": 397.5,
+  "a1_onset": 51.3
+ },
+ {
+  "arena": "a2717573559063225",
+  "spawn": 24.88,
+  "closest_player_dist": 266.4,
+  "closest_player_x": -457.8,
+  "closest_player_z": 359.0,
+  "a1_z_at_spawn": 397.5,
+  "a1_onset": 44.8
+ },
+ {
+  "arena": "a2790794161355098",
+  "spawn": 26.68,
+  "closest_player_dist": 265.6,
+  "closest_player_x": -456.3,
+  "closest_player_z": 357.8,
+  "a1_z_at_spawn": 397.5,
+  "a1_onset": 46.5
+ },
+ {
+  "arena": "a3037273745159660",
+  "spawn": 22.21,
+  "closest_player_dist": 266.4,
+  "closest_player_x": -457.8,
+  "closest_player_z": 359.0,
+  "a1_z_at_spawn": 397.5,
+  "a1_onset": 42.1
+ },
+ {
+  "arena": "a2939717854755369",
+  "spawn": 34.93,
+  "closest_player_dist": 265.3,
+  "closest_player_x": -455.8,
+  "closest_player_z": 357.4,
+  "a1_z_at_spawn": 397.5,
+  "a1_onset": 54.8
+ },
+ {
+  "arena": "a2349284409386605",
+  "spawn": 34.56,
+  "closest_player_dist": 265.8,
+  "closest_player_x": -456.8,
+  "closest_player_z": 358.2,
+  "a1_z_at_spawn": 397.5,
+  "a1_onset": 54.4
+ },
+ {
+  "arena": "a2311067790698653",
+  "spawn": 35.74,
+  "closest_player_dist": 264.9,
+  "closest_player_x": -454.9,
+  "closest_player_z": 356.7,
+  "a1_z_at_spawn": 397.5,
+  "a1_onset": 55.6
+ },
+ {
+  "arena": "a3183581806629632",
+  "spawn": 19.8,
+  "closest_player_dist": 266.4,
+  "closest_player_x": -457.8,
+  "closest_player_z": 359.0,
+  "a1_z_at_spawn": 397.5,
+  "a1_onset": 39.7
+ },
+ {
+  "arena": "a3159177802538887",
+  "spawn": 28.18,
+  "closest_player_dist": 266.4,
+  "closest_player_x": -457.8,
+  "closest_player_z": 359.0,
+  "a1_z_at_spawn": 397.5,
+  "a1_onset": 48.0
+ },
+ {
+  "arena": "a2531910714307423",
+  "spawn": 31.14,
+  "closest_player_dist": 264.7,
+  "closest_player_x": -454.8,
+  "closest_player_z": 356.6,
+  "a1_z_at_spawn": 397.5,
+  "a1_onset": 51.2
+ },
+ {
+  "arena": "a2594239279796140",
+  "spawn": 35.61,
+  "closest_player_dist": 264.7,
+  "closest_player_x": -454.9,
+  "closest_player_z": 356.6,
+  "a1_z_at_spawn": 397.5,
+  "a1_onset": 55.5
+ },
+ {
+  "arena": "a2290984524147473",
+  "spawn": 34.23,
+  "closest_player_dist": 265.0,
+  "closest_player_x": -455.3,
+  "closest_player_z": 357.0,
+  "a1_z_at_spawn": 397.5,
+  "a1_onset": 54.1
+ },
+ {
+  "arena": "a2564307653053066",
+  "spawn": 35.21,
+  "closest_player_dist": 266.0,
+  "closest_player_x": -457.2,
+  "closest_player_z": 358.5,
+  "a1_z_at_spawn": 397.5,
+  "a1_onset": 55.1
+ },
+ {
+  "arena": "a2298019681544746",
+  "spawn": 35.5,
+  "closest_player_dist": 266.4,
+  "closest_player_x": -457.8,
+  "closest_player_z": 359.0,
+  "a1_z_at_spawn": 397.5,
+  "a1_onset": 55.4
+ },
+ {
+  "arena": "a5499965045427366",
+  "spawn": 11.86,
+  "closest_player_dist": 263.7,
+  "closest_player_x": -453.9,
+  "closest_player_z": 355.3,
+  "a1_z_at_spawn": 397.5,
+  "a1_onset": 31.5
+ },
+ {
+  "arena": "a6100757956041114",
+  "spawn": 34.98,
+  "closest_player_dist": 264.6,
+  "closest_player_x": -454.6,
+  "closest_player_z": 356.4,
+  "a1_z_at_spawn": 397.5,
+  "a1_onset": 54.9
+ },
+ {
+  "arena": "a5867485397289464",
+  "spawn": 13.49,
+  "closest_player_dist": 304.2,
+  "closest_player_x": -422.4,
+  "closest_player_z": 388.1,
+  "a1_z_at_spawn": 397.5,
+  "a1_onset": 33.2
+ },
+ {
+  "arena": "a4896427651564136",
+  "spawn": 19.12,
+  "closest_player_dist": 265.6,
+  "closest_player_x": -456.3,
+  "closest_player_z": 357.8,
+  "a1_z_at_spawn": 397.5,
+  "a1_onset": 39.0
+ },
+ {
+  "arena": "a4668918939009274",
+  "spawn": 21.22,
+  "closest_player_dist": 264.6,
+  "closest_player_x": -454.8,
+  "closest_player_z": 356.4,
+  "a1_z_at_spawn": 397.5,
+  "a1_onset": 41.1
+ },
+ {
+  "arena": "a7316164981691393",
+  "spawn": 14.6,
+  "closest_player_dist": 266.4,
+  "closest_player_x": -457.8,
+  "closest_player_z": 359.0,
+  "a1_z_at_spawn": 397.5,
+  "a1_onset": 34.5
+ },
+ {
+  "arena": "a5031311099917329",
+  "spawn": 20.04,
+  "closest_player_dist": 264.8,
+  "closest_player_x": -454.8,
+  "closest_player_z": 356.6,
+  "a1_z_at_spawn": 397.5,
+  "a1_onset": 39.9
+ },
+ {
+  "arena": "a2651040225298515",
+  "spawn": 31.93,
+  "closest_player_dist": 266.4,
+  "closest_player_x": -457.8,
+  "closest_player_z": 359.0,
+  "a1_z_at_spawn": 397.5,
+  "a1_onset": 51.7
+ },
+ {
+  "arena": "a4642311617821301",
+  "spawn": 16.49,
+  "closest_player_dist": 266.4,
+  "closest_player_x": -457.8,
+  "closest_player_z": 359.0,
+  "a1_z_at_spawn": 397.5,
+  "a1_onset": 36.4
+ },
+ {
+  "arena": "a5358183881998856",
+  "spawn": 26.07,
+  "closest_player_dist": 265.4,
+  "closest_player_x": -456.0,
+  "closest_player_z": 357.6,
+  "a1_z_at_spawn": 397.5,
+  "a1_onset": 45.9
+ },
+ {
+  "arena": "a5104308365210967",
+  "spawn": 24.47,
+  "closest_player_dist": 266.2,
+  "closest_player_x": -457.5,
+  "closest_player_z": 358.8,
+  "a1_z_at_spawn": 397.5,
+  "a1_onset": 44.4
+ },
+ {
+  "arena": "a5933829759885681",
+  "spawn": 25.02,
+  "closest_player_dist": 266.4,
+  "closest_player_x": -457.8,
+  "closest_player_z": 359.0,
+  "a1_z_at_spawn": 397.5,
+  "a1_onset": 44.9
+ },
+ {
+  "arena": "a4370758016941642",
+  "spawn": 35.0,
+  "closest_player_dist": 304.2,
+  "closest_player_x": -422.4,
+  "closest_player_z": 388.1,
+  "a1_z_at_spawn": 397.5,
+  "a1_onset": 54.9
+ },
+ {
+  "arena": "a4778487852379251",
+  "spawn": 19.26,
+  "closest_player_dist": 264.7,
+  "closest_player_x": -454.6,
+  "closest_player_z": 356.5,
+  "a1_z_at_spawn": 397.5,
+  "a1_onset": 39.2
+ },
+ {
+  "arena": "a2485662511116420",
+  "spawn": 35.52,
+  "closest_player_dist": 265.6,
+  "closest_player_x": -456.3,
+  "closest_player_z": 357.8,
+  "a1_z_at_spawn": 397.6,
+  "a1_onset": 55.4
+ },
+ {
+  "arena": "a5898628205424007",
+  "spawn": 35.88,
+  "closest_player_dist": 263.6,
+  "closest_player_x": -452.6,
+  "closest_player_z": 354.9,
+  "a1_z_at_spawn": 397.5,
+  "a1_onset": 55.8
+ },
+ {
+  "arena": "a7280903303385112",
+  "spawn": 23.0,
+  "closest_player_dist": 266.4,
+  "closest_player_x": -457.8,
+  "closest_player_z": 359.0,
+  "a1_z_at_spawn": 397.5,
+  "a1_onset": 42.9
+ },
+ {
+  "arena": "a2572433736196278",
+  "spawn": 32.96,
+  "closest_player_dist": 263.2,
+  "closest_player_x": -453.0,
+  "closest_player_z": 354.6,
+  "a1_z_at_spawn": 397.5,
+  "a1_onset": 53.0
+ },
+ {
+  "arena": "a5132487647897469",
+  "spawn": 34.72,
+  "closest_player_dist": 266.4,
+  "closest_player_x": -457.8,
+  "closest_player_z": 359.0,
+  "a1_z_at_spawn": 397.5,
+  "a1_onset": 54.6
+ },
+ {
+  "arena": "a5222334070092130",
+  "spawn": 34.32,
+  "closest_player_dist": 266.4,
+  "closest_player_x": -457.8,
+  "closest_player_z": 359.0,
+  "a1_z_at_spawn": 397.5,
+  "a1_onset": 54.2
+ },
+ {
+  "arena": "a4524955936086941",
+  "spawn": 18.88,
+  "closest_player_dist": 266.4,
+  "closest_player_x": -457.8,
+  "closest_player_z": 359.0,
+  "a1_z_at_spawn": 397.5,
+  "a1_onset": 38.8
+ },
+ {
+  "arena": "a8870754170574288",
+  "spawn": 16.1,
+  "closest_player_dist": 266.4,
+  "closest_player_x": -457.8,
+  "closest_player_z": 359.0,
+  "a1_z_at_spawn": 397.5,
+  "a1_onset": 36.0
+ },
+ {
+  "arena": "a1418479105769836",
+  "spawn": 33.97,
+  "closest_player_dist": 265.2,
+  "closest_player_x": -455.6,
+  "closest_player_z": 357.3,
+  "a1_z_at_spawn": 397.5,
+  "a1_onset": 53.8
+ },
+ {
+  "arena": "a5338345433150461",
+  "spawn": 22.27,
+  "closest_player_dist": 304.3,
+  "closest_player_x": -422.5,
+  "closest_player_z": 388.3,
+  "a1_z_at_spawn": 397.5,
+  "a1_onset": 42.1
+ },
+ {
+  "arena": "a8274621300267072",
+  "spawn": 14.47,
+  "closest_player_dist": 266.4,
+  "closest_player_x": -457.8,
+  "closest_player_z": 359.0,
+  "a1_z_at_spawn": 397.5,
+  "a1_onset": 34.4
+ },
+ {
+  "arena": "a8434982494363497",
+  "spawn": 31.05,
+  "closest_player_dist": 265.5,
+  "closest_player_x": -456.2,
+  "closest_player_z": 357.8,
+  "a1_z_at_spawn": 397.5,
+  "a1_onset": 50.9
+ },
+ {
+  "arena": "a6110176826661266",
+  "spawn": 30.53,
+  "closest_player_dist": 265.0,
+  "closest_player_x": -455.2,
+  "closest_player_z": 357.0,
+  "a1_z_at_spawn": 397.5,
+  "a1_onset": 50.4
+ },
+ {
+  "arena": "a7574644710992227",
+  "spawn": 26.05,
+  "closest_player_dist": 304.8,
+  "closest_player_x": -423.2,
+  "closest_player_z": 389.1,
+  "a1_z_at_spawn": 397.5,
+  "a1_onset": 45.9
+ },
+ {
+  "arena": "a5716461470287492",
+  "spawn": 0.0,
+  "closest_player_dist": 256.9,
+  "closest_player_x": -396.7,
+  "closest_player_z": 325.4,
+  "a1_z_at_spawn": 397.5,
+  "a1_onset": null
+ },
+ {
+  "arena": "a3541129256629069",
+  "spawn": 34.56,
+  "closest_player_dist": 266.4,
+  "closest_player_x": -457.8,
+  "closest_player_z": 359.0,
+  "a1_z_at_spawn": 397.5,
+  "a1_onset": 54.5
+ },
+ {
+  "arena": "a8356333057486714",
+  "spawn": 30.27,
+  "closest_player_dist": 263.3,
+  "closest_player_x": -451.9,
+  "closest_player_z": 354.3,
+  "a1_z_at_spawn": 397.5,
+  "a1_onset": 50.2
+ },
+ {
+  "arena": "a1978517076656141",
+  "spawn": 35.83,
+  "closest_player_dist": 266.0,
+  "closest_player_x": -457.2,
+  "closest_player_z": 358.5,
+  "a1_z_at_spawn": 397.5,
+  "a1_onset": 55.7
+ },
+ {
+  "arena": "a4530397661962051",
+  "spawn": 21.7,
+  "closest_player_dist": 266.2,
+  "closest_player_x": -457.5,
+  "closest_player_z": 358.8,
+  "a1_z_at_spawn": 397.5,
+  "a1_onset": 42.6
+ },
+ {
+  "arena": "a6285458742169038",
+  "spawn": 34.26,
+  "closest_player_dist": 266.4,
+  "closest_player_x": -457.8,
+  "closest_player_z": 359.0,
+  "a1_z_at_spawn": 397.5,
+  "a1_onset": 54.2
+ },
+ {
+  "arena": "a2394085228282937",
+  "spawn": 32.88,
+  "closest_player_dist": 304.3,
+  "closest_player_x": -422.5,
+  "closest_player_z": 388.3,
+  "a1_z_at_spawn": 397.5,
+  "a1_onset": 52.9
+ },
+ {
+  "arena": "a2314997702219418",
+  "spawn": 36.22,
+  "closest_player_dist": 266.4,
+  "closest_player_x": -457.8,
+  "closest_player_z": 359.0,
+  "a1_z_at_spawn": 397.5,
+  "a1_onset": 56.2
+ },
+ {
+  "arena": "a6698153561705901",
+  "spawn": 20.27,
+  "closest_player_dist": 266.4,
+  "closest_player_x": -457.8,
+  "closest_player_z": 359.0,
+  "a1_z_at_spawn": 397.5,
+  "a1_onset": 40.1
+ },
+ {
+  "arena": "a5808536986197630",
+  "spawn": 18.6,
+  "closest_player_dist": 265.6,
+  "closest_player_x": -456.4,
+  "closest_player_z": 357.9,
+  "a1_z_at_spawn": 397.5,
+  "a1_onset": 38.5
+ },
+ {
+  "arena": "a2791648878478034",
+  "spawn": 34.45,
+  "closest_player_dist": 263.3,
+  "closest_player_x": -453.6,
+  "closest_player_z": 354.8,
+  "a1_z_at_spawn": 397.5,
+  "a1_onset": 54.3
+ },
+ {
+  "arena": "a6014111301125274",
+  "spawn": 22.55,
+  "closest_player_dist": 303.4,
+  "closest_player_x": -421.2,
+  "closest_player_z": 386.9,
+  "a1_z_at_spawn": 397.5,
+  "a1_onset": 42.4
+ },
+ {
+  "arena": "a3243449374549118",
+  "spawn": 34.94,
+  "closest_player_dist": 265.6,
+  "closest_player_x": -456.4,
+  "closest_player_z": 357.9,
+  "a1_z_at_spawn": 397.5,
+  "a1_onset": 54.8
+ },
+ {
+  "arena": "a5044861738691156",
+  "spawn": 30.3,
+  "closest_player_dist": 266.2,
+  "closest_player_x": -457.6,
+  "closest_player_z": 358.8,
+  "a1_z_at_spawn": 397.5,
+  "a1_onset": 50.2
+ },
+ {
+  "arena": "a4095897304739941",
+  "spawn": 25.26,
+  "closest_player_dist": 264.0,
+  "closest_player_x": -453.4,
+  "closest_player_z": 355.5,
+  "a1_z_at_spawn": 397.5,
+  "a1_onset": 45.1
+ },
+ {
+  "arena": "a2419992476203630",
+  "spawn": 33.33,
+  "closest_player_dist": 263.8,
+  "closest_player_x": -453.0,
+  "closest_player_z": 355.2,
+  "a1_z_at_spawn": 397.5,
+  "a1_onset": 53.2
+ },
+ {
+  "arena": "a2900818360233097",
+  "spawn": 34.51,
+  "closest_player_dist": 265.5,
+  "closest_player_x": -456.2,
+  "closest_player_z": 357.8,
+  "a1_z_at_spawn": 397.5,
+  "a1_onset": 54.4
+ },
+ {
+  "arena": "a4514690976455305",
+  "spawn": 28.37,
+  "closest_player_dist": 266.4,
+  "closest_player_x": -457.8,
+  "closest_player_z": 359.0,
+  "a1_z_at_spawn": 397.5,
+  "a1_onset": 48.3
+ },
+ {
+  "arena": "a4796878918074673",
+  "spawn": 23.7,
+  "closest_player_dist": 304.2,
+  "closest_player_x": -422.4,
+  "closest_player_z": 388.1,
+  "a1_z_at_spawn": 397.5,
+  "a1_onset": 43.6
+ },
+ {
+  "arena": "a2610448506932361",
+  "spawn": 34.94,
+  "closest_player_dist": 265.6,
+  "closest_player_x": -456.3,
+  "closest_player_z": 357.8,
+  "a1_z_at_spawn": 397.5,
+  "a1_onset": 54.8
+ },
+ {
+  "arena": "a1120558712052872",
+  "spawn": 33.57,
+  "closest_player_dist": 265.6,
+  "closest_player_x": -456.4,
+  "closest_player_z": 357.9,
+  "a1_z_at_spawn": 397.5,
+  "a1_onset": 53.5
+ },
+ {
+  "arena": "a4586472765993215",
+  "spawn": 26.31,
+  "closest_player_dist": 265.6,
+  "closest_player_x": -456.4,
+  "closest_player_z": 357.9,
+  "a1_z_at_spawn": 397.5,
+  "a1_onset": 46.2
+ },
+ {
+  "arena": "a4971705563856736",
+  "spawn": 32.52,
+  "closest_player_dist": 266.0,
+  "closest_player_x": -457.2,
+  "closest_player_z": 358.5,
+  "a1_z_at_spawn": 397.5,
+  "a1_onset": 52.4
+ },
+ {
+  "arena": "a1986028983472517",
+  "spawn": 19.62,
+  "closest_player_dist": 263.9,
+  "closest_player_x": -452.5,
+  "closest_player_z": 355.1,
+  "a1_z_at_spawn": 397.5,
+  "a1_onset": 39.7
+ },
+ {
+  "arena": "a6613327964004796",
+  "spawn": 18.15,
+  "closest_player_dist": 264.6,
+  "closest_player_x": -454.6,
+  "closest_player_z": 356.3,
+  "a1_z_at_spawn": 397.5,
+  "a1_onset": 38.0
+ },
+ {
+  "arena": "a2636841085275730",
+  "spawn": 35.48,
+  "closest_player_dist": 264.8,
+  "closest_player_x": -454.6,
+  "closest_player_z": 356.6,
+  "a1_z_at_spawn": 397.5,
+  "a1_onset": 55.4
+ },
+ {
+  "arena": "a4316619974914425",
+  "spawn": 31.86,
+  "closest_player_dist": 265.6,
+  "closest_player_x": -456.3,
+  "closest_player_z": 357.8,
+  "a1_z_at_spawn": 397.5,
+  "a1_onset": 51.8
+ },
+ {
+  "arena": "a5531262496656089",
+  "spawn": 19.93,
+  "closest_player_dist": 266.4,
+  "closest_player_x": -457.8,
+  "closest_player_z": 359.0,
+  "a1_z_at_spawn": 397.5,
+  "a1_onset": 39.8
+ },
+ {
+  "arena": "a3224800634229985",
+  "spawn": 34.88,
+  "closest_player_dist": 265.6,
+  "closest_player_x": -456.4,
+  "closest_player_z": 357.9,
+  "a1_z_at_spawn": 397.5,
+  "a1_onset": 55.8
+ },
+ {
+  "arena": "a4492863961541079",
+  "spawn": 17.8,
+  "closest_player_dist": 265.6,
+  "closest_player_x": -456.3,
+  "closest_player_z": 357.8,
+  "a1_z_at_spawn": 397.5,
+  "a1_onset": 37.7
+ },
+ {
+  "arena": "a4916304788305826",
+  "spawn": 13.77,
+  "closest_player_dist": 263.4,
+  "closest_player_x": -452.1,
+  "closest_player_z": 354.5,
+  "a1_z_at_spawn": 397.5,
+  "a1_onset": 33.7
+ },
+ {
+  "arena": "a5517647454648970",
+  "spawn": 17.45,
+  "closest_player_dist": 266.4,
+  "closest_player_x": -457.8,
+  "closest_player_z": 359.0,
+  "a1_z_at_spawn": 397.5,
+  "a1_onset": 36.6
+ },
+ {
+  "arena": "a5951263058067596",
+  "spawn": 26.8,
+  "closest_player_dist": 265.6,
+  "closest_player_x": -456.3,
+  "closest_player_z": 357.9,
+  "a1_z_at_spawn": 397.5,
+  "a1_onset": 46.7
+ },
+ {
+  "arena": "a10069969193746026",
+  "spawn": 35.31,
+  "closest_player_dist": 264.4,
+  "closest_player_x": -452.1,
+  "closest_player_z": 355.5,
+  "a1_z_at_spawn": 397.5,
+  "a1_onset": 55.4
+ },
+ {
+  "arena": "fe1da253e4bd35995",
+  "spawn": 8.37,
+  "closest_player_dist": 266.4,
+  "closest_player_x": -457.8,
+  "closest_player_z": 359.0,
+  "a1_z_at_spawn": 397.5,
+  "a1_onset": 28.5
+ },
+ {
+  "arena": "a2178821488385374",
+  "spawn": 35.67,
+  "closest_player_dist": 265.6,
+  "closest_player_x": -456.3,
+  "closest_player_z": 357.8,
+  "a1_z_at_spawn": 397.5,
+  "a1_onset": 55.6
+ },
+ {
+  "arena": "a2351431930526094",
+  "spawn": 34.58,
+  "closest_player_dist": 265.6,
+  "closest_player_x": -456.4,
+  "closest_player_z": 357.9,
+  "a1_z_at_spawn": 397.5,
+  "a1_onset": 54.3
+ },
+ {
+  "arena": "a4827970203157485",
+  "spawn": 28.77,
+  "closest_player_dist": 266.4,
+  "closest_player_x": -457.8,
+  "closest_player_z": 359.0,
+  "a1_z_at_spawn": 397.5,
+  "a1_onset": 48.8
+ },
+ {
+  "arena": "a7883654752265710",
+  "spawn": 32.37,
+  "closest_player_dist": 265.6,
+  "closest_player_x": -456.3,
+  "closest_player_z": 357.8,
+  "a1_z_at_spawn": 397.5,
+  "a1_onset": 52.3
+ },
+ {
+  "arena": "a6536095879970279",
+  "spawn": 30.71,
+  "closest_player_dist": 304.3,
+  "closest_player_x": -422.4,
+  "closest_player_z": 388.2,
+  "a1_z_at_spawn": 397.5,
+  "a1_onset": 50.6
+ },
+ {
+  "arena": "a3808735814891733",
+  "spawn": 34.13,
+  "closest_player_dist": 266.0,
+  "closest_player_x": -457.0,
+  "closest_player_z": 358.4,
+  "a1_z_at_spawn": 397.5,
+  "a1_onset": 54.1
+ },
+ {
+  "arena": "a3405468451164477",
+  "spawn": 25.34,
+  "closest_player_dist": 265.6,
+  "closest_player_x": -456.3,
+  "closest_player_z": 357.8,
+  "a1_z_at_spawn": 397.5,
+  "a1_onset": 45.4
+ },
+ {
+  "arena": "a3408268770362055",
+  "spawn": 35.74,
+  "closest_player_dist": 304.2,
+  "closest_player_x": -422.3,
+  "closest_player_z": 388.1,
+  "a1_z_at_spawn": 397.6,
+  "a1_onset": 55.2
+ },
+ {
+  "arena": "a2894294332213291",
+  "spawn": 34.86,
+  "closest_player_dist": 266.4,
+  "closest_player_x": -457.8,
+  "closest_player_z": 359.0,
+  "a1_z_at_spawn": 397.5,
+  "a1_onset": 54.7
+ },
+ {
+  "arena": "a2456774604550877",
+  "spawn": 31.96,
+  "closest_player_dist": 264.6,
+  "closest_player_x": -454.5,
+  "closest_player_z": 356.3,
+  "a1_z_at_spawn": 397.5,
+  "a1_onset": 51.9
+ },
+ {
+  "arena": "a6337741413203298",
+  "spawn": 33.13,
+  "closest_player_dist": 303.4,
+  "closest_player_x": -421.1,
+  "closest_player_z": 386.8,
+  "a1_z_at_spawn": 397.5,
+  "a1_onset": 53.0
+ },
+ {
+  "arena": "a2258368591775236",
+  "spawn": 33.96,
+  "closest_player_dist": 266.1,
+  "closest_player_x": -457.3,
+  "closest_player_z": 358.6,
+  "a1_z_at_spawn": 397.5,
+  "a1_onset": 53.8
+ },
+ {
+  "arena": "a4823705313522358",
+  "spawn": 28.0,
+  "closest_player_dist": 266.4,
+  "closest_player_x": -457.8,
+  "closest_player_z": 359.0,
+  "a1_z_at_spawn": 397.5,
+  "a1_onset": 47.9
+ },
+ {
+  "arena": "a1635001257395781",
+  "spawn": 35.46,
+  "closest_player_dist": 265.6,
+  "closest_player_x": -456.3,
+  "closest_player_z": 357.9,
+  "a1_z_at_spawn": 397.5,
+  "a1_onset": 55.4
+ },
+ {
+  "arena": "a2908042525867330",
+  "spawn": 35.07,
+  "closest_player_dist": 304.4,
+  "closest_player_x": -422.5,
+  "closest_player_z": 388.3,
+  "a1_z_at_spawn": 397.5,
+  "a1_onset": 55.0
+ },
+ {
+  "arena": "a5772094222296675",
+  "spawn": 17.07,
+  "closest_player_dist": 264.7,
+  "closest_player_x": -454.7,
+  "closest_player_z": 356.5,
+  "a1_z_at_spawn": 397.5,
+  "a1_onset": 36.9
+ },
+ {
+  "arena": "a7464315632425555",
+  "spawn": 30.22,
+  "closest_player_dist": 265.3,
+  "closest_player_x": -455.8,
+  "closest_player_z": 357.4,
+  "a1_z_at_spawn": 397.5,
+  "a1_onset": 51.1
+ },
+ {
+  "arena": "a3002046476224217",
+  "spawn": 35.05,
+  "closest_player_dist": 265.6,
+  "closest_player_x": -456.4,
+  "closest_player_z": 357.9,
+  "a1_z_at_spawn": 397.5,
+  "a1_onset": 54.9
+ },
+ {
+  "arena": "a2517020117193111",
+  "spawn": 35.56,
+  "closest_player_dist": 265.6,
+  "closest_player_x": -456.4,
+  "closest_player_z": 357.9,
+  "a1_z_at_spawn": 397.6,
+  "a1_onset": 55.4
+ },
+ {
+  "arena": "a4613101602109950",
+  "spawn": 34.25,
+  "closest_player_dist": 305.0,
+  "closest_player_x": -423.5,
+  "closest_player_z": 389.3,
+  "a1_z_at_spawn": 397.5,
+  "a1_onset": 54.1
+ },
+ {
+  "arena": "a4664258959383923",
+  "spawn": 33.77,
+  "closest_player_dist": 265.5,
+  "closest_player_x": -456.2,
+  "closest_player_z": 357.7,
+  "a1_z_at_spawn": 397.5,
+  "a1_onset": 53.6
+ }
+]

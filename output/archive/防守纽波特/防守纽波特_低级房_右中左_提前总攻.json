@@ -1,0 +1,393 @@
+{
+ "meta": {
+  "map": "Naval_Defense",
+  "bracket": "BASE",
+  "direction": "右中左",
+  "boss": "G",
+  "title": "防守纽波特_低级房_右中左_提前总攻",
+  "countdown_sec": 31.4,
+  "time_system": "对局时间20:00倒计时；spawn_clock为replay包流clock（=对局时间+31.4s）"
+ },
+ "waves": {
+  "波1": {
+   "spawn_time": "19:55",
+   "dynamic": false,
+   "note": "固定：对局约3~5s出生（≈19:55）"
+  },
+  "波2": {
+   "spawn_time": null,
+   "dynamic": true,
+   "note": "波1全灭后立刻触发"
+  },
+  "波3": {
+   "spawn_time": null,
+   "dynamic": true,
+   "note": "波2出生后+180s（3:00）"
+  },
+  "波5": {
+   "spawn_time": null,
+   "dynamic": true,
+   "note": "总攻开始（G局提前触发，无Romeo/波4，动态）"
+  }
+ },
+ "ships": [
+  {
+   "name": "IDS_OP_01_04_ATAKER_C1",
+   "ship_name": "金刚",
+   "wave": "波2",
+   "x": -137.0,
+   "z": 245.0,
+   "spawn_clock": 173.26,
+   "dynamic": true,
+   "friendly": false,
+   "display": "波2 金刚",
+   "spawn_time": null
+  },
+  {
+   "name": "IDS_OP_01_04_ATAKER_C11",
+   "ship_name": "北风",
+   "wave": "波5",
+   "x": 1.5,
+   "z": 187.3,
+   "spawn_clock": 577.0,
+   "dynamic": true,
+   "friendly": false,
+   "display": "波5 北风",
+   "spawn_time": null
+  },
+  {
+   "name": "IDS_OP_01_04_ATAKER_C12",
+   "ship_name": "Z-23",
+   "wave": "波5",
+   "x": -170.9,
+   "z": 15.8,
+   "spawn_clock": 577.0,
+   "dynamic": true,
+   "friendly": false,
+   "display": "波5 Z-23",
+   "spawn_time": null
+  },
+  {
+   "name": "IDS_OP_01_04_ATAKER_C14",
+   "ship_name": "武藏",
+   "wave": "波5",
+   "x": -220.0,
+   "z": 192.4,
+   "spawn_clock": 592.17,
+   "dynamic": true,
+   "friendly": false,
+   "display": "波5 武藏",
+   "spawn_time": null
+  },
+  {
+   "name": "IDS_OP_01_04_ATAKER_C2",
+   "ship_name": "巴伐利亚",
+   "wave": "波2",
+   "x": -208.0,
+   "z": 174.0,
+   "spawn_clock": 173.26,
+   "dynamic": true,
+   "friendly": false,
+   "display": "波2 巴伐利亚",
+   "spawn_time": null
+  },
+  {
+   "name": "IDS_OP_01_04_ATAKER_C3",
+   "ship_name": "莱伯勒希特·马斯",
+   "wave": "波2",
+   "x": -65.0,
+   "z": 238.0,
+   "spawn_clock": 173.26,
+   "dynamic": true,
+   "friendly": false,
+   "display": "波2 莱伯勒希特·马斯",
+   "spawn_time": null
+  },
+  {
+   "name": "IDS_OP_01_04_ATAKER_C4",
+   "ship_name": "吹雪",
+   "wave": "波2",
+   "x": -215.0,
+   "z": 87.0,
+   "spawn_clock": 173.26,
+   "dynamic": true,
+   "friendly": false,
+   "display": "波2 吹雪",
+   "spawn_time": null
+  },
+  {
+   "name": "IDS_OP_01_04_ATAKER_C5",
+   "ship_name": "青叶",
+   "wave": "波2",
+   "x": -259.0,
+   "z": 246.0,
+   "spawn_clock": 173.26,
+   "dynamic": true,
+   "friendly": false,
+   "display": "波2 青叶",
+   "spawn_time": null
+  },
+  {
+   "name": "IDS_OP_01_04_ATAKER_CR_17",
+   "ship_name": "Z-23",
+   "wave": "波3",
+   "x": -519.7,
+   "z": -185.8,
+   "spawn_clock": 353.41,
+   "dynamic": true,
+   "friendly": false,
+   "display": "波3 Z-23",
+   "spawn_time": null
+  },
+  {
+   "name": "IDS_OP_01_04_ATAKER_CR_33",
+   "ship_name": "矢矧",
+   "wave": "波1",
+   "x": 280.2,
+   "z": 275.3,
+   "spawn_clock": 34.55,
+   "dynamic": false,
+   "friendly": false,
+   "display": "波1 矢矧 19:55",
+   "spawn_time": "19:55"
+  },
+  {
+   "name": "IDS_OP_01_04_ATAKER_CR_34",
+   "ship_name": "古鹰",
+   "wave": "波1",
+   "x": 379.1,
+   "z": 301.7,
+   "spawn_clock": 34.55,
+   "dynamic": false,
+   "friendly": false,
+   "display": "波1 古鹰 19:55",
+   "spawn_time": "19:55"
+  },
+  {
+   "name": "IDS_OP_01_04_ATAKER_CR_35",
+   "ship_name": "青叶",
+   "wave": "波1",
+   "x": 253.9,
+   "z": 214.6,
+   "spawn_clock": 34.55,
+   "dynamic": false,
+   "friendly": false,
+   "display": "波1 青叶 19:55",
+   "spawn_time": "19:55"
+  },
+  {
+   "name": "IDS_OP_01_04_ATAKER_CR_36",
+   "ship_name": "球磨",
+   "wave": "波1",
+   "x": 432.0,
+   "z": 259.9,
+   "spawn_clock": 34.55,
+   "dynamic": false,
+   "friendly": false,
+   "display": "波1 球磨 19:55",
+   "spawn_time": "19:55"
+  },
+  {
+   "name": "IDS_OP_01_04_ATAKER_L10",
+   "ship_name": "妙高",
+   "wave": "波3",
+   "x": -446.4,
+   "z": -331.4,
+   "spawn_clock": 353.41,
+   "dynamic": true,
+   "friendly": false,
+   "display": "波3 妙高",
+   "spawn_time": null
+  },
+  {
+   "name": "IDS_OP_01_04_ATAKER_L11",
+   "ship_name": "妙高",
+   "wave": "波5",
+   "x": 438.5,
+   "z": 475.0,
+   "spawn_clock": 577.0,
+   "dynamic": true,
+   "friendly": false,
+   "display": "波5 妙高",
+   "spawn_time": null
+  },
+  {
+   "name": "IDS_OP_01_04_ATAKER_L12",
+   "ship_name": "美因茨",
+   "wave": "波5",
+   "x": 315.9,
+   "z": 444.1,
+   "spawn_clock": 577.0,
+   "dynamic": true,
+   "friendly": false,
+   "display": "波5 美因茨",
+   "spawn_time": null
+  },
+  {
+   "name": "IDS_OP_01_04_ATAKER_L13",
+   "ship_name": "长门",
+   "wave": "波5",
+   "x": 221.9,
+   "z": 407.9,
+   "spawn_clock": 577.0,
+   "dynamic": true,
+   "friendly": false,
+   "display": "波5 长门",
+   "spawn_time": null
+  },
+  {
+   "name": "IDS_OP_01_04_ATAKER_L6",
+   "ship_name": "约克",
+   "wave": "波3",
+   "x": -442.8,
+   "z": -168.7,
+   "spawn_clock": 353.41,
+   "dynamic": true,
+   "friendly": false,
+   "display": "波3 约克",
+   "spawn_time": null
+  },
+  {
+   "name": "IDS_OP_01_04_ATAKER_L7",
+   "ship_name": "阳炎",
+   "wave": "波3",
+   "x": -483.2,
+   "z": -261.1,
+   "spawn_clock": 353.41,
+   "dynamic": true,
+   "friendly": false,
+   "display": "波3 阳炎",
+   "spawn_time": null
+  },
+  {
+   "name": "IDS_OP_01_04_ATAKER_L8",
+   "ship_name": "白露",
+   "wave": "波3",
+   "x": -370.7,
+   "z": -150.5,
+   "spawn_clock": 353.41,
+   "dynamic": true,
+   "friendly": false,
+   "display": "波3 白露",
+   "spawn_time": null
+  },
+  {
+   "name": "IDS_OP_01_04_ATAKER_L9",
+   "ship_name": "青叶",
+   "wave": "波3",
+   "x": -413.5,
+   "z": -237.7,
+   "spawn_clock": 353.41,
+   "dynamic": true,
+   "friendly": false,
+   "display": "波3 青叶",
+   "spawn_time": null
+  },
+  {
+   "name": "IDS_OP_01_04_ATAKER_R11",
+   "ship_name": "慕尼黑",
+   "wave": "波5",
+   "x": -370.7,
+   "z": -150.5,
+   "spawn_clock": 577.0,
+   "dynamic": true,
+   "friendly": false,
+   "display": "波5 慕尼黑",
+   "spawn_time": null
+  },
+  {
+   "name": "IDS_OP_01_04_ATAKER_R12",
+   "ship_name": "最上",
+   "wave": "波5",
+   "x": -446.2,
+   "z": -331.5,
+   "spawn_clock": 577.0,
+   "dynamic": true,
+   "friendly": false,
+   "display": "波5 最上",
+   "spawn_time": null
+  },
+  {
+   "name": "IDS_OP_01_04_ATAKER_R13",
+   "ship_name": "格奈森瑙",
+   "wave": "波5",
+   "x": -413.3,
+   "z": -237.8,
+   "spawn_clock": 577.0,
+   "dynamic": true,
+   "friendly": false,
+   "display": "波5 格奈森瑙",
+   "spawn_time": null
+  }
+ ],
+ "players": [
+  {
+   "slot": "P1",
+   "x": 222,
+   "z": -410,
+   "role": "弹性位(巡/驱/潜)"
+  },
+  {
+   "slot": "P2",
+   "x": 251,
+   "z": -343,
+   "role": "巡洋位 95%"
+  },
+  {
+   "slot": "P3",
+   "x": 297,
+   "z": -490,
+   "role": "战列位 80%"
+  },
+  {
+   "slot": "P4",
+   "x": 343,
+   "z": -261,
+   "role": "战列/巡洋"
+  },
+  {
+   "slot": "P5",
+   "x": 400,
+   "z": -400,
+   "role": "战列位 99%"
+  },
+  {
+   "slot": "P6",
+   "x": 410,
+   "z": -222,
+   "role": "驱逐位 58%"
+  },
+  {
+   "slot": "P7",
+   "x": 490,
+   "z": -297,
+   "role": "战列位 77%"
+  },
+  {
+   "slot": "P8",
+   "x": 505,
+   "z": -518,
+   "role": "航母位 100%"
+  }
+ ],
+ "facilities": [
+  {
+   "name": "IDS_OP_01_04_HELPME",
+   "ship_name": "通讯设施（剧情专用）",
+   "x": 492.0,
+   "z": -647.0
+  },
+  {
+   "name": "IDS_OP_01_04_PROTECTME",
+   "ship_name": "Maintainer 2",
+   "x": 573.0,
+   "z": -597.0
+  },
+  {
+   "name": "IDS_OP_01_04_REPAIRSHIP",
+   "ship_name": "Maintainer 1",
+   "x": 541.0,
+   "z": -600.0
+  }
+ ]
+}

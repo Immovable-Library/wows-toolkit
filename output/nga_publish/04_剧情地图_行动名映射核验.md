@@ -30,7 +30,7 @@
 
 ## 那莱（Narai / Advance）专判
 
-- bot 键 `IDS_OP_02_03_*`：运输船 `IDS_OP_02_03_AT_TRANSPORT_A_1..5`，合 5 艘；另有 `IDS_OP_02_03_AT_COMMUNICATION`、`IDS_OP_02_03_AT_SHIP_DEFENDER_*`。
+- bot 键 `IDS_OP_02_03_*`：运输船 `IDS_OP_02_03_AT_TRANSPORT_A_1..5`，合 5 艘；另有 `IDS_OP_02_03_AT_COMMUNICATION`（通讯舰，实为运输舰）、`IDS_OP_02_03_AT_SHIP_DEFENDER_*`。
 - 敌军签名（回放 `playersPublicInfo`）：Lexington×1、Missouri×1、Bretagne×1（玩家称“白劳易”）、New York×1、Queen Elizabeth×2、Leander×2，与玩家提供的“列克星敦 + 密苏里 + 白劳易 + 纽约 + 伊丽莎白女王 + 利安得”完全吻合。
 - 官方地图名 = Sunda Islands（巽他群岛），行动名 = Narai（那莱）。
 - 常态队列仅 6-8 档，无中/高级变体（与玩家“那莱没有高级模式”一致）。

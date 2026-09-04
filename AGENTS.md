@@ -20,9 +20,8 @@ Cargo workspace, edition 2024, rust 1.97. Crates under `crates/`:
 
 ## Version control
 
-- The repo is jj-colocated. Use `jj`, not `git`, as the authoritative interface.
+- The repo is a git project. Use `git` as the authoritative interface.
 - Never append `Co-Authored-By` or any AI attribution to commit messages.
-- Make focused commits, one per logical change or milestone.
 
 ## Types and data modeling
 
@@ -56,6 +55,21 @@ Cargo workspace, edition 2024, rust 1.97. Crates under `crates/`:
 ## Compatibility
 
 - Changes must work across old (0.6.x) and current game versions. Packet layout differences are version-gated; see `MODERN_PACKET_LAYOUT_MIN_VERSION` in `wows-replays` `packet2.rs`.
+
+## Approved replay data pool
+
+Replay and cache data for operations is governed by the approval pool in `C:/Users/asdfg/.codex/skills/wows-replay-cache/approval_pool.json`. New data entering the cache must pass the approval filter before any row is written; rejected arenas are skipped and must not be re-added. Analysis, spawn-map, and statistics pipelines must consume only approved arenas.
+
+Version gates per map (build is the client build stored in `arena.build`):
+
+- Killer Whale (`NavalBase`) and Narai (`Advance`): all versions accepted.
+- Newport (`Naval_Defense`), Raptor Rescue (`Labyrinth`), Ultimate Frontier (`Atoll`), Hermes (`LePVE`), Aegis (`Ridge`), Cherry Blossom (`USS_CL`): build >= 11189791 (14.11.0).
+- Arctic Convoy (`WW2_OPERATION_1`), Tokyo Express (`WW2_OPERATION_2`), Pacific Offensive (`WW2_OPERATION_3`): build >= 12116141 (15.2.0).
+- Flagships scenario variants are never accepted.
+
+Legacy scenario names map to their current families: `Attack_On_Base_Normal` -> `NavalBase`, `Defense` -> `Naval_Defense`, `OP_01_01_ATTACK_ON_CONVOY_1` -> `Ridge`, `OP_01_03_NORMAL` -> `Labyrinth`, `OP_02_02_NORMAL` -> `Atoll`.
+
+Filtering logic lives in `C:/Users/asdfg/.codex/skills/wows-replay-cache/scripts/approval_lib.py` (`classify` / `approved_arenas`); `cleanup_approved.py --dry-run` / `--execute` applies the filter to the existing cache and replay folders. Update the JSON config, not this section, when the pool rules change.
 
 ## Review
 
