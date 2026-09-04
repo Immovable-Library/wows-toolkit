@@ -106,6 +106,36 @@ pub fn world_offset_to_body(offset: Vec3, yaw: f32, pitch: f32, roll: f32) -> Ve
     rotate_z(rotate_x(rotate_y(offset, yaw), pitch), roll)
 }
 
+/// Strike angle from the belt-normal in the victim body frame, in degrees.
+///
+/// The belt plate is vertical, so its normal is the lateral (+/-Z) body axis.
+/// The shell's incoming direction is the world offset `impact - muzzle`;
+/// after rotating it into the victim body frame the strike angle from that
+/// normal is `acos(|z| / |v|)`, which is 0 head-on (broadside) and 90 along
+/// the keel (bow/stern on) where AP ricochets.
+pub fn belt_strike_angle(incoming_world: Vec3, yaw: f32, pitch: f32, roll: f32) -> f32 {
+    let body = world_offset_to_body(incoming_world, yaw, pitch, roll);
+    let len = (body.x * body.x + body.y * body.y + body.z * body.z).sqrt();
+    if len <= f32::EPSILON {
+        return 0.0;
+    }
+    (body.z / len).abs().clamp(0.0, 1.0).acos().to_degrees()
+}
+
+/// Angle-on-the-bow in degrees: between the victim's bow (+X body) and the
+/// line-of-sight to the shooter. 0 is bow-on, 90 is broadside, 180 is
+/// stern-on. The `muzzle` is the world position of the shooter's gun; the
+/// line to the shooter in body frame is `muzzle - impact`.
+pub fn angle_on_bow(muzzle_world: Vec3, impact_world: Vec3, yaw: f32, pitch: f32, roll: f32) -> f32 {
+    let to_shooter = Vec3::new(
+        muzzle_world.x - impact_world.x,
+        muzzle_world.y - impact_world.y,
+        muzzle_world.z - impact_world.z,
+    );
+    let body = world_offset_to_body(to_shooter, yaw, pitch, roll);
+    body.z.atan2(body.x).abs().to_degrees()
+}
+
 /// Burn node a hit lands in.
 ///
 /// `impact` and `victim_position` come off the packet stream, so their

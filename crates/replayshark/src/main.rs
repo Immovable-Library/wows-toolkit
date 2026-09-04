@@ -1,5 +1,6 @@
 mod battle_results_cmd;
 mod events_cmd;
+mod hit_value_cmd;
 
 use battle_results_cmd::ResultsFormat;
 
@@ -194,6 +195,57 @@ enum Commands {
         /// Write to this file; defaults to stdout
         #[arg(short, long)]
         out: Option<PathBuf>,
+    },
+    /// Emit per-hit single-shot value assessments for the recording player.
+    HitValue {
+        /// Replay files or directories to export
+        #[arg(required = true)]
+        replays: Vec<PathBuf>,
+        /// Write to this file; defaults to stdout
+        #[arg(short, long)]
+        out: Option<PathBuf>,
+        /// Local ship-name table (id -> Chinese), e.g. the skill's ship_names.json
+        #[arg(long)]
+        ship_names: Option<PathBuf>,
+    },
+    /// Emit per-target aggregated aiming/ammo lessons for the recording player.
+    HitSummary {
+        /// Replay files or directories to export
+        #[arg(required = true)]
+        replays: Vec<PathBuf>,
+        /// Write to this file; defaults to stdout
+        #[arg(short, long)]
+        out: Option<PathBuf>,
+        /// Local ship-name table (id -> Chinese)
+        #[arg(long)]
+        ship_names: Option<PathBuf>,
+    },
+    /// Emit per-volley quantified evaluations for the recording player.
+    Volleys {
+        /// Replay files or directories to export
+        #[arg(required = true)]
+        replays: Vec<PathBuf>,
+        /// Write to this file; defaults to stdout
+        #[arg(short, long)]
+        out: Option<PathBuf>,
+        /// Local ship-name table (id -> Chinese)
+        #[arg(long)]
+        ship_names: Option<PathBuf>,
+    },
+    /// Human-readable per-volley aiming/ammo report (text).
+    Report {
+        /// Replay files or directories to export
+        #[arg(required = true)]
+        replays: Vec<PathBuf>,
+        /// Write to this file; defaults to stdout
+        #[arg(short, long)]
+        out: Option<PathBuf>,
+        /// Deep per-volley report with per-hit detail (default: concise per-target)
+        #[arg(long, default_value_t = false)]
+        depth: bool,
+        /// Local ship-name table (id -> Chinese)
+        #[arg(long)]
+        ship_names: Option<PathBuf>,
     },
 }
 
@@ -1466,6 +1518,18 @@ fn main() {
         }
         Commands::Events { replays, out } => {
             events_cmd::run(ctx, replays, out).expect("events command failed");
+        }
+        Commands::HitValue { replays, out, ship_names } => {
+            hit_value_cmd::run(ctx, replays, out, ship_names).expect("hit-value command failed");
+        }
+        Commands::HitSummary { replays, out, ship_names } => {
+            hit_value_cmd::run_summary(ctx, replays, out, ship_names).expect("hit-summary command failed");
+        }
+        Commands::Volleys { replays, out, ship_names } => {
+            hit_value_cmd::run_volleys(ctx, replays, out, ship_names).expect("volleys command failed");
+        }
+        Commands::Report { replays, out, depth, ship_names } => {
+            hit_value_cmd::run_report(ctx, replays, out, depth, ship_names).expect("report command failed");
         }
         Commands::Query { command } => match command {
             QueryCommands::ArenaId { replays } => {

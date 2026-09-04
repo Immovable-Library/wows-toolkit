@@ -9,6 +9,7 @@
 
 use bevy_ecs::entity::Entity;
 use bevy_ecs::world::World;
+use std::collections::HashSet;
 use wows_replays::analyzer::battle_controller::state::ResolvedShotHit;
 use wows_replays::analyzer::battle_controller::state::VictimPose;
 use wows_replays::analyzer::decoder::ArtillerySalvo;
@@ -249,8 +250,19 @@ fn match_active_salvo(
 /// `None` when no entity in the world carries a position to compare against,
 /// leaving the caller to fall back to the self ship.
 fn resolve_victim(world: &mut World, impact: WorldPos) -> Option<EntityId> {
+    // A shell can only damage an enemy of the recording player. Restricting the
+    // nearest-ship search to enemies stops an out-of-AOI target from being
+    // attributed to a nearer ally or the recording player's own ship.
+    let enemies: HashSet<EntityId> = world
+        .resource::<PlayerIndex>()
+        .0
+        .iter()
+        .filter(|(_, p)| p.relation().is_enemy())
+        .map(|(eid, _)| *eid)
+        .collect();
     let mut q = world.query::<(&GameId, &Transform3d)>();
     q.iter(world)
+        .filter(|(gid, _)| enemies.contains(&gid.0))
         .min_by(|(_, a), (_, b)| {
             let da = a.pos.distance_xz(&impact);
             let db = b.pos.distance_xz(&impact);
