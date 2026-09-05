@@ -237,6 +237,7 @@ pub struct VolleyHitDetail {
 /// overpens and no-pens drag it down.
 pub fn analyze_volleys(report: &BattleReport, params: &dyn GameParamProvider) -> Vec<VolleyScore> {
     use std::collections::BTreeMap;
+    use std::collections::BTreeSet;
     let (self_entity, _) = self_shells(report, params);
 
     let mut fired: BTreeMap<u32, u32> = BTreeMap::new();
@@ -257,8 +258,14 @@ pub fn analyze_volleys(report: &BattleReport, params: &dyn GameParamProvider) ->
         by_salvo.entry(hit.salvo_id).or_default().push(hit);
     }
 
+    // A salvo that was fired but landed no resolved hit must still produce a row,
+    // so a miss drags the score down rather than disappearing from the report.
+    let mut salvo_ids: BTreeSet<u32> = fired.keys().copied().collect();
+    salvo_ids.extend(by_salvo.keys().copied());
+
     let mut out = Vec::new();
-    for (salvo_id, hits) in by_salvo {
+    for salvo_id in salvo_ids {
+        let hits = by_salvo.get(&salvo_id).map(|v| v.as_slice()).unwrap_or(&[]);
         let shells_fired = fired.get(&salvo_id).copied().unwrap_or(0);
         let shells_hit = hits.len() as u32;
         let damage_dealt = hits.iter().map(|h| h.estimated_damage).sum::<f32>();
@@ -267,7 +274,7 @@ pub fn analyze_volleys(report: &BattleReport, params: &dyn GameParamProvider) ->
         let potential = shells_fired as f32 * alpha * 0.33;
         let score = if potential > 0.0 { (damage_dealt / potential).clamp(0.0, 1.0) } else { 0.0 };
         let mut targets: Vec<String> = Vec::new();
-        for h in &hits {
+        for h in hits {
             if !targets.contains(&h.victim_ship) {
                 targets.push(h.victim_ship.clone());
             }
@@ -280,7 +287,7 @@ pub fn analyze_volleys(report: &BattleReport, params: &dyn GameParamProvider) ->
             Some(leads.iter().sum::<f32>() / leads.len() as f32)
         };
         let score_u32 = (score * 100.0).round() as u32;
-        let verdict = volley_verdict(&hits, shells_fired, shells_hit, score_u32, avg_lead);
+        let verdict = volley_verdict(hits, shells_fired, shells_hit, score_u32, avg_lead);
         let hit_details = hits
             .iter()
             .map(|h| VolleyHitDetail {
@@ -571,7 +578,8 @@ pub fn assess(report: &BattleReport, params: &dyn GameParamProvider) -> Vec<HitA
                 );
             }
         }
-        let est = estimate_damage(&used, &hit_type, zone_mm.as_ref());
+        let base = estimate_damage(&used, &hit_type, zone_mm.as_ref());
+        let est = if saturated { base / 6.0 } else { base };
         zone_damage.entry((victim_entity_id, zone.clone())).and_modify(|v| *v += est).or_insert(est);
         out.push(HitAssessment {
             victim_ship: victim,
@@ -931,10 +939,17 @@ fn is_belt_material(material_id: u32) -> bool {
 /// are approximate and the mesh-based resolver is the later refinement.
 pub(crate) fn zone_for_hit(hit: &ResolvedShotHit) -> String {
     let Some(pose) = hit.victim_pose else { return "unknown".to_owned() };
-    let Some(origin) = shot_origin(hit) else { return "unknown".to_owned() };
     let impact = hit.hit.position.0;
+    // The zone is the impact's offset from the victim's centre, not from the
+    // muzzle. `shot_origin` is the gun (kilometres away), so projecting the
+    // flight vector into the victim's body frame labels by shot range and makes
+    // bow/stern reachable and deck/superstructure/citadel unreachable.
     let body = world_offset_to_body(
-        Vec3::new(impact.x - origin.x, impact.y - origin.y, impact.z - origin.z),
+        Vec3::new(
+            impact.x - pose.position.x,
+            impact.y - pose.position.y,
+            impact.z - pose.position.z,
+        ),
         pose.yaw,
         pose.pitch,
         pose.roll,
