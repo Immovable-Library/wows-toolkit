@@ -4,7 +4,20 @@ Snapshot date: 2026-09-05. 新对话从这里无缝续接：**生存端评估引
 
 ## 一句话续接指令（新对话直接粘贴）
 
-> 继续 WOWS 回放生存端评估开发。先读 `docs/handoff-2026-09-05-wows-replay-survival.md` 与 `C:/Users/asdfg/.codex/skills/wows-replay-parser/specs/2026-09-05-survival-evaluation-engine.md`。**S1-S4 生存端评估引擎已全部实现且 S1 打分已诚实化，并已按"模块化维度组合"重构**：`replayshark` 新增 `survival` 子命令（默认 JSONL / `--text` 文本；`--dims s1,s2,s3,s4` 选择组合的维度；空 dims=集成 `SurvivalProfile`，给定 dims=模块化访问器）。`wows-replay-insights/src/survival.rs` 产出 `SurvivalProfile`(集成) + `SurvivalReport`(按维度 Option 组合)，维度 `assess_exposure`/`assess_hp_timeline`/`assess_output` 独立可组合；**输出端与生存端解耦**：自舰打敌输出时间线 `hit_value::self_output_timeline`(返回 `OutputTimeline{eVents,dropped}`)作为输出维度，生存端 S4 只组合它，输出端 hit_value 报告是独立消费方。**S1 诚实化**：`died`/`survival`/`avoidance_ratio`/`self_rescue`/`taken_frac_of_potential`/`survival_score`/`grade` 改 `Option`；规避比按炮弹 lane 对齐、有未识别/非炮弹伤害时置 `null`；复合分封顶在"已测量权重占比"；`has_dcp` 三态；去 `u32::MAX` 哨兵。**已修 bug**：`victim_entity_id` 改 `Option<EntityId>` 全链；死船过期 `Transform3d` 排除；unidentified 三分；S2 approach/kiting 距离化+插值+自舰位移门槛。**S2**：`PositionHistoryLog`+近似暴露/走位。**S3**：`HealthHistoryLog`(按变化去重)+`HpTimeline`。**S4**：`OutputCoupling`(输出估伤/分带 DPM/中性耦合结论非因果)。**下一步**：可选整合评分(生存分+输出端 hit_value 并成"整局表现")，或 H1/M4(visibilityFlags 逐目标被点亮)。`games_dir=D:/World_of_Warships`。
+> 继续 WOWS 回放生存端/输出端评估开发。先读 `docs/handoff-2026-09-05-wows-replay-survival.md` 与 `C:/Users/asdfg/.codex/skills/wows-replay-parser/specs/2026-09-05-survival-evaluation-engine.md`。仓库 `D:\codexProject\wows-toolkit`，工作树干净，分支 `codex/local-changes`；`games_dir=D:/World_of_Warships`（CLI `--game`），回放 `D:/World_of_Warships/replays/15.7.0.0/`。
+>
+> **当前状态（已完成并提交）**：
+> - **生存端 S1–S4 引擎**：`replayshark survival`（默认 JSONL / `--text` 文本；`--dims s1,s2,s3,s4` 选维度，空=集成 `SurvivalProfile`，给定=模块化访问器）。`wows-replay-insights/src/survival.rs` 产出 `SurvivalReport{ s1:Option<SurvivalProfile>, exposure, hp_timeline, output_coupling }`；维度函数 `assess_exposure`/`assess_hp_timeline`/`assess_output` 独立可组合，`assess_report` 按选中 dims 组合。
+> - **输出端 `hit_value.rs`**（命中质量/volley）：`assess` 返回 `AssessOutcome{assessments, excluded}`；`summarize` 按 `victim_entity_id` 分组；`analyze_volleys` 按 `(salvo_id, first_shot)` 拆卷、`SalvoEvent.shots` 按 `(salvo_id, first_shot)` 去重、0 命中卷用 `salvo.clock` 计时；`zone_for_hit` 用 `impact - pose.position`（受害者中心，非枪口）+ 15m/unit 换算；`events` 输出 `material_angle_deg`（服务端，缺则 null）与 `belt_strike_angle_deg`（本地）分开。
+> - **S1 诚实化**：`died`/`survival`/`avoidance_ratio`/`self_rescue`/`taken_frac_of_potential`/`survival_score`/`grade` 为 `Option`；规避比按炮弹 lane、缺失置 `null`；复合分封顶(已测量权重占比)；`has_dcp` 三态；去 `u32::MAX`。**已修 bug**：`victim_entity_id → Option<EntityId>` 全链贯通；死船排除；unidentified 三分；S2 approach/kiting 用"同一敌舰窗口两端测距 + 自舰须位移 + 敌位插值"。
+> - **输出/生存解耦**：输出维度 `hit_value::self_output_timeline → OutputTimeline{events, dropped}`；生存 S4 只组合它。
+> - **固定口径**（AGENTS.md）：先修 bug 再加新功能；新里程碑须在上个 bug/评审阻塞项清空（或用户明确顺延）后才开。提交前按 AGENTS.md 用新鲜 `v4_flash_worker` 子代理做对抗性评审（plaintext-handoff Hook 已配好）。
+>
+> **下一步（装甲网格分区，重要修正）**：原设计"用 `FireSectionGeometry.longitudinal()`(burn 节点) 精化 zone 边界"**不可行**——burn 节点只覆盖船体中段、不含船头/船尾端点，会导致真实命中被误判为"船体之外/中段"。**修正**：必须用**完整 hull 网格顶点包围盒**（models.assets.bin vertex data）提取每舰长/宽/高(转米) → 每舰缓存 → 用于 `zone_for_hit` 的逐舰阈值（替换 110m/14m/6m/8m 硬编码），缺失时回退启发式。**需先做的 P0 已完成**：`hit_value::zone_tests` 锁定 15m/unit + yaw 旋转（提交 `ab6ffda9`）。
+> **装甲网格开发顺序**：P1 线程化 `PrototypeDatabase`(assets.bin) 进 `hit_value::assess` + 逐受害舰解析 hull → 网格包围盒 + 每舰缓存（大工作量，建议独立成可测模块）；P2 用包围盒替换 zone 硬编码阈值；P3 与 `victim_hit_location`/`hit_location_for`(GameParams 装甲厚度) 对账；P4 可选整局表现整合(生存 + 输出一页)。
+> **其余可选项**：整局表现整合（S1–S4 + hit_value 并成"整局表现"）；H1/M4 解 `visibilityFlags` 逐目标被点亮（标"需数据"，暂缓）。
+>
+> **常用**：`cargo run -p replayshark -- --game D:/World_of_Warships survival [--dims s1,s2,s3,s4] [--text] <回放>`；`cargo run -p replayshark -- --game D:/World_of_Warships report --depth <回放>`；`cargo test -p wows-replay-insights`（132 lib）；`cargo test -p wows-battle-world`（43）；免 `cargo check --workspace`（rav1e/nasm 环境问题与改动无关）。
 
 **固定口径**：先修 bug，再加新功能；新里程碑须在上个里程碑的 bug/评审阻塞项清空（或用户明确顺延）后才开。
 
@@ -105,6 +118,6 @@ Snapshot date: 2026-09-05. 新对话从这里无缝续接：**生存端评估引
 
 ## 后续迭代（已记录，非本次重点）
 
-1. **装甲网格分区**（推后）：需启用 `models`（opt-in）+ 游戏几何加载器 + Möller–Trumbore 求交 + 每舰缓存；**第 0 步先验证坐标空间**（防 #42/#43 单位错配）。
+1. **装甲网格分区**：用完整 hull 网格顶点包围盒精化命中 zone（替换 `zone_for_hit` 硬编码阈值）。**修正**：不能用 `FireSectionGeometry.longitudinal()`（burn 节点仅船体中段，不含船头/船尾端点）；需加载 models.assets.bin 网格 → 每舰提取长/宽/高(转米) + 每舰缓存。**P0 坐标空间验证已完成**（`hit_value::zone_tests`，15m/unit + yaw，提交 `ab6ffda9`）。顺序：P1 线程化 `PrototypeDatabase` 进 `assess` + 每舰包围盒缓存 → P2 zone 阈值逐舰化 → P3 与 `hit_location` 对账 → P4 整局整合。
 2. `resolve_victim` 的 `MinimapPlacement` 边界换算（恢复 AOI 外目标，需地图边界）。
 3. 生存端（本次续接目标）：S1 → S2 → S3 → S4。
