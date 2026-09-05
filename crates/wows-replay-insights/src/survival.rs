@@ -53,6 +53,9 @@ const SURVIVAL_WEIGHT: f32 = 0.35;
 const SELF_RESCUE_WEIGHT: f32 = 0.25;
 /// HP fraction (of max) at or below which the ship is counted as near death.
 const NEAR_DEATH_FRAC: f32 = 0.20;
+/// HP fraction (of max) at or below which the output-vs-HP coupling compares a
+/// "low HP / reserved" band against the "high HP / free" band.
+const OUTPUT_LOW_HP_FRAC: f32 = 0.40;
 
 /// Whether an agro weapon belongs to the shell lane that `taken_damage` can
 /// represent. Non-shell potential (torpedo, aircraft, fire, flood, ram, etc.)
@@ -293,6 +296,26 @@ pub struct HpTimeline {
     pub under_threshold_time_frac: Option<f32>,
 }
 
+/// S4: survival -> output coupling. Compares the self ship's output (estimated
+/// damage dealt by its own hits on enemies) at high HP against at low HP, to
+/// surface whether being hurt suppressed output. This is a descriptive
+/// association, not a causal claim.
+#[derive(Clone, Debug)]
+#[cfg_attr(feature = "serde", derive(serde::Serialize))]
+pub struct OutputCoupling {
+    pub recorded: bool,
+    pub output_damage_estimated: f32,
+    pub output_hits: u32,
+    /// Self-fired hits on enemies that were skipped because their shell, pose,
+    /// or origin could not be resolved; disclosed so "output" is honest about
+    /// its lower estimate.
+    pub output_dropped: u32,
+    pub dpm_high_hp: Option<f32>,
+    pub dpm_low_hp: Option<f32>,
+    pub output_frac_at_low_hp: Option<f32>,
+    pub coupling_note: String,
+}
+
 /// The full S1 survival profile for the recording player.
 #[derive(Clone, Debug)]
 #[cfg_attr(feature = "serde", derive(serde::Serialize))]
@@ -393,6 +416,7 @@ pub struct SurvivalProfile {
     pub sources: Vec<IncomingSource>,
     pub exposure: Exposure,
     pub hp_timeline: HpTimeline,
+    pub output_coupling: OutputCoupling,
 }
 
 /// Adapt `&dyn GameParamProvider` to the generic `P: GameParamProvider` that
@@ -718,6 +742,7 @@ pub fn assess(report: &BattleReport, params: &dyn GameParamProvider) -> Survival
     sources.sort_by(|a, b| b.damage_estimated.partial_cmp(&a.damage_estimated).unwrap_or(std::cmp::Ordering::Equal));
     let exposure = assess_exposure(report, self_entity, &enemies);
     let hp_timeline = assess_hp_timeline(report, self_entity);
+    let output_coupling = assess_output(report, self_entity, &enemies, params);
 
     // Death timing and fate. Absence from the death log is NOT proof of
     // survival: it only means the recording never reported a death. Only a
@@ -860,6 +885,13 @@ pub fn assess(report: &BattleReport, params: &dyn GameParamProvider) -> Survival
     } else {
         conclusions.push("S3 HP 时间线无自舰血量变化(或未开启 record_health_history); S2 位置导出已做近似暴露/走位".to_owned());
     }
+    conclusions.push(format!(
+        "S4 生存→输出: 输出估伤 {:.0}({} 发命中, {} 发未估); 未计分区饱和, 估伤为上限; {}",
+        output_coupling.output_damage_estimated,
+        output_coupling.output_hits,
+        output_coupling.output_dropped,
+        output_coupling.coupling_note,
+    ));
     if saturating_hits > 0 {
         conclusions.push(format!("{saturating_hits} 发命中已饱和分区, 按 ~1/6 边际伤害计入"));
     } else if taken_damage > 0.0 {
@@ -964,6 +996,7 @@ pub fn assess(report: &BattleReport, params: &dyn GameParamProvider) -> Survival
         sources,
         exposure,
         hp_timeline,
+        output_coupling,
     }
 }
 
@@ -1167,6 +1200,158 @@ fn assess_hp_timeline(report: &BattleReport, self_entity: EntityId) -> HpTimelin
     }
 }
 
+/// The self ship's HP fraction (piecewise-constant) at an elapsed clock.
+fn hp_frac_at(hp: &[(f32, f32)], clock: f32) -> Option<f32> {
+    if hp.is_empty() {
+        return None;
+    }
+    let i = hp.partition_point(|(c, _)| *c <= clock);
+    if i == 0 {
+        Some(hp[0].1)
+    } else {
+        Some(hp[i - 1].1)
+    }
+}
+
+/// Build the S4 survival -> output coupling profile.
+fn assess_output(
+    report: &BattleReport,
+    self_entity: EntityId,
+    enemies: &HashSet<EntityId>,
+    params: &dyn GameParamProvider,
+) -> OutputCoupling {
+    // The self ship's own hits on enemies, with estimated damage, per clock.
+    // Hits that land on an enemy but cannot be fully estimated are counted so
+    // output is honest about its lower bound. Saturation is not modeled here,
+    // so the per-hit estimate is an upper bound (disclosed in the note).
+    let mut events: Vec<(f32, f32)> = Vec::new();
+    let mut output_dropped = 0u32;
+    for hit in report.hit_history().iter().filter(|h| h.hit.owner_id == self_entity) {
+        let Some(victim_id) = hit.victim_entity_id else { continue };
+        if !enemies.contains(&victim_id) {
+            continue;
+        }
+        let Some(shell) = hit_value::shell_for_hit(hit, params) else { output_dropped += 1; continue };
+        let Some(_pose) = hit.victim_pose else { output_dropped += 1; continue };
+        let Some(_origin) = hit_value::shot_origin(hit) else { output_dropped += 1; continue };
+        let zone = hit_value::zone_for_hit(hit);
+        let hitloc = hit_value::victim_hit_location(report, params, victim_id, &zone);
+        let zone_mm = hitloc.as_ref().map(|hl| hl.thickness());
+        let hit_type = hit.hit.hit_type.shell_hit.known().map(|s| s.name()).unwrap_or("UNKNOWN");
+        let est = hit_value::estimate_damage(&shell, hit_type, zone_mm.as_ref());
+        events.push((elapsed(report, hit.clock), est));
+    }
+    events.sort_by(|a, b| a.0.total_cmp(&b.0));
+    let output_hits = events.len() as u32;
+    let output_damage: f32 = events.iter().map(|(_, d)| *d).sum();
+
+    // Shared max-health denominator (mirrors S3) instead of a per-sample
+    // running value, so a zero max_health does not produce nonsense fractions.
+    let max_health = report
+        .hp_timeline()
+        .iter()
+        .filter(|s| s.entity == self_entity)
+        .map(|s| s.max_health)
+        .fold(0.0f32, f32::max);
+    let max_health = if max_health > 0.0 {
+        max_health
+    } else {
+        report
+            .hp_timeline()
+            .iter()
+            .find(|s| s.entity == self_entity)
+            .map(|s| s.health)
+            .unwrap_or(0.0)
+    };
+    let mut hp: Vec<(f32, f32)> = report
+        .hp_timeline()
+        .iter()
+        .filter(|s| s.entity == self_entity)
+        .map(|s| (elapsed(report, s.clock), if max_health > 0.0 { s.health / max_health } else { 1.0 }))
+        .collect();
+    hp.sort_by(|a, b| a.0.total_cmp(&b.0));
+    if hp.first().map(|(t, _)| *t > 0.0).unwrap_or(false) {
+        hp.insert(0, (0.0, 1.0));
+    }
+
+    if hp.is_empty() || max_health <= 0.0 {
+        return OutputCoupling {
+            recorded: false,
+            output_damage_estimated: output_damage,
+            output_hits,
+            output_dropped,
+            dpm_high_hp: None,
+            dpm_low_hp: None,
+            output_frac_at_low_hp: None,
+            coupling_note: "未耦合(缺 HP 时间线)".to_owned(),
+        };
+    }
+
+    let mut dmg_high = 0.0f32;
+    let mut dmg_low = 0.0f32;
+    for (t, dmg) in &events {
+        if let Some(frac) = hp_frac_at(&hp, *t) {
+            if frac < OUTPUT_LOW_HP_FRAC {
+                dmg_low += dmg;
+            } else {
+                dmg_high += dmg;
+            }
+        }
+    }
+
+    // Cap at the death clock (as S3 does), so dead time after sinking is not
+    // credited to the low-HP band and deflate the low-HP DPM for dead ships.
+    let end_t = report
+        .deaths_by_victim()
+        .get(&self_entity)
+        .map(|&c| elapsed(report, c))
+        .or_else(|| report.played_duration())
+        .unwrap_or_else(|| hp.last().map(|(t, _)| *t).unwrap_or(0.0));
+    let mut time_high = 0.0f32;
+    let mut time_low = 0.0f32;
+    for w in hp.windows(2) {
+        let dt = (w[1].0 - w[0].0).max(0.0);
+        if w[0].1 < OUTPUT_LOW_HP_FRAC {
+            time_low += dt;
+        } else {
+            time_high += dt;
+        }
+    }
+    if let Some(last) = hp.last() {
+        let dt = (end_t - last.0).max(0.0);
+        if last.1 < OUTPUT_LOW_HP_FRAC {
+            time_low += dt;
+        } else {
+            time_high += dt;
+        }
+    }
+    let dpm = |dmg: f32, secs: f32| (secs > 0.0).then_some(dmg / (secs / 60.0));
+    let dpm_high_hp = dpm(dmg_high, time_high);
+    let dpm_low_hp = dpm(dmg_low, time_low);
+    let output_frac_at_low_hp = (output_damage > 0.0).then_some(dmg_low / output_damage);
+
+    // Value-neutral wording: a lower low-HP DPM is an association (survival may
+    // have suppressed output), not evidence of a deliberate conservative choice.
+    let coupling_note = match (dpm_high_hp, dpm_low_hp) {
+        (Some(h), Some(l)) if h > 0.0 && l < h * 0.6 => {
+            "低血段 DPM 较低(关联, 非因果)".to_owned()
+        }
+        (Some(h), Some(l)) if l > h * 1.4 => "低血段 DPM 较高(关联, 非因果)".to_owned(),
+        _ => "输出与血量未见明显耦合(非因果)".to_owned(),
+    };
+
+    OutputCoupling {
+        recorded: true,
+        output_damage_estimated: output_damage,
+        output_hits,
+        output_dropped,
+        dpm_high_hp,
+        dpm_low_hp,
+        output_frac_at_low_hp,
+        coupling_note,
+    }
+}
+
 /// Render a human-readable S1 report for the recording player.
 pub fn render(report: &BattleReport, params: &dyn GameParamProvider) -> String {
     let p = assess(report, params);
@@ -1307,6 +1492,20 @@ pub fn render(report: &BattleReport, params: &dyn GameParamProvider) -> String {
     } else {
         s.push_str("  无血量变化或未开启记录\n");
     }
+    s.push_str("\n-- 生存→输出耦合(S4) --\n");
+    s.push_str(&format!(
+        "  输出估伤 {:.0} ({} 发命中, {} 发未估); 满血段DPM {} / 低血段DPM {}; 低血输出占比 {}\n",
+        p.output_coupling.output_damage_estimated,
+        p.output_coupling.output_hits,
+        p.output_coupling.output_dropped,
+        p.output_coupling.dpm_high_hp.map(|v| format!("{v:.0}")).unwrap_or_else(|| "?" .to_owned()),
+        p.output_coupling.dpm_low_hp.map(|v| format!("{v:.0}")).unwrap_or_else(|| "?" .to_owned()),
+        p.output_coupling.output_frac_at_low_hp
+            .map(|v| format!("{:.0}%", v * 100.0))
+            .unwrap_or_else(|| "?" .to_owned()),
+    ));
+    s.push_str("  (主/副炮命中估算, 未计分区饱和, 估伤为上限)\n");
+    s.push_str(&format!("  耦合结论: {}\n", p.output_coupling.coupling_note));
     s.push_str("\n-- 结论 --\n");
     for c in &p.conclusions {
         s.push_str(&format!("  - {}\n", c));
