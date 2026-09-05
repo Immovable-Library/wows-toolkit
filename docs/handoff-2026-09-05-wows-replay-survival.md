@@ -13,8 +13,9 @@ Snapshot date: 2026-09-05. 新对话从这里无缝续接：**生存端评估引
 > - **输出/生存解耦**：输出维度 `hit_value::self_output_timeline → OutputTimeline{events, dropped}`；生存 S4 只组合它。
 > - **固定口径**（AGENTS.md）：先修 bug 再加新功能；新里程碑须在上个 bug/评审阻塞项清空（或用户明确顺延）后才开。提交前按 AGENTS.md 用新鲜 `v4_flash_worker` 子代理做对抗性评审（plaintext-handoff Hook 已配好）。
 >
-> **下一步（装甲网格分区，重要修正）**：原设计"用 `FireSectionGeometry.longitudinal()`(burn 节点) 精化 zone 边界"**不可行**——burn 节点只覆盖船体中段、不含船头/船尾端点，会导致真实命中被误判为"船体之外/中段"。**修正**：必须用**完整 hull 网格顶点包围盒**（models.assets.bin vertex data）提取每舰长/宽/高(转米) → 每舰缓存 → 用于 `zone_for_hit` 的逐舰阈值（替换 110m/14m/6m/8m 硬编码），缺失时回退启发式。**需先做的 P0 已完成**：`hit_value::zone_tests` 锁定 15m/unit + yaw 旋转（提交 `ab6ffda9`）。
-> **装甲网格开发顺序**：P1 线程化 `PrototypeDatabase`(assets.bin) 进 `hit_value::assess` + 逐受害舰解析 hull → 网格包围盒 + 每舰缓存（大工作量，建议独立成可测模块）；P2 用包围盒替换 zone 硬编码阈值；P3 与 `victim_hit_location`/`hit_location_for`(GameParams 装甲厚度) 对账；P4 可选整局表现整合(生存 + 输出一页)。
+> **装甲网格分区（P1+P2 已完成，本会话）**：原设计"用 `FireSectionGeometry.longitudinal()`(burn 节点) 精化 zone 边界"**不可行**——burn 节点只覆盖船体中段、不含船头/船尾端点。已改用**完整 hull 装甲网格顶点包围盒**（`.geometry` armor_models 三角形）提取每舰长/宽/高(转米) → 每舰缓存 → `zone_for_hit` 逐舰阈值（替换 110m/8m 硬编码；deck/superstructure 6/14m 保持启发式），缺失回退固定值。P0（`hit_value::zone_tests` 15m/unit+yaw，提交 `ab6ffda9`）已并入。
+> **装甲网格当前状态**：`crates/wows-replay-insights/src/hull_dim.rs`（HullDim + `hull_dim_from_geometry` + `hull_dims_for_report`）；`hit_value`/`survival` 透传 `Option<&HashMap<EntityId,HullDim>>`；`replayshark` hit-value/survival 命令在 `--game` 可用时经 `open_build_vfs` 建 hull 缓存并透传；`wows-replay-insights` 仅在 `build` 特性下启用 `wowsunpack/models`。真实数据校验：`tests/hull_probe.rs`（ignored）Iowa 270.4m/33.0m、Kleber 141.0m/13.2m；真跑 Georgia Atoll `report --depth` 出现 `Johnston(stern)`（旧固定阈值对驱逐舰不可能产生 stern）。**已知近似（已标注）**：舰按 base model_path 解析（不区分 hull 升级）、bbox 视为以原点居中（前后/左右对称）、assets.bin 未跨回放缓存。
+> **剩余装甲网格**：P3 与 `victim_hit_location`/`hit_location_for`(GameParams 装甲厚度) 对账（含 base-model vs 装备 hull、per-side reach）；P4 可选整局表现整合(生存 + 输出一页)。
 > **其余可选项**：整局表现整合（S1–S4 + hit_value 并成"整局表现"）；H1/M4 解 `visibilityFlags` 逐目标被点亮（标"需数据"，暂缓）。
 >
 > **常用**：`cargo run -p replayshark -- --game D:/World_of_Warships survival [--dims s1,s2,s3,s4] [--text] <回放>`；`cargo run -p replayshark -- --game D:/World_of_Warships report --depth <回放>`；`cargo test -p wows-replay-insights`（132 lib）；`cargo test -p wows-battle-world`（43）；免 `cargo check --workspace`（rav1e/nasm 环境问题与改动无关）。
@@ -118,6 +119,6 @@ Snapshot date: 2026-09-05. 新对话从这里无缝续接：**生存端评估引
 
 ## 后续迭代（已记录，非本次重点）
 
-1. **装甲网格分区**：用完整 hull 网格顶点包围盒精化命中 zone（替换 `zone_for_hit` 硬编码阈值）。**修正**：不能用 `FireSectionGeometry.longitudinal()`（burn 节点仅船体中段，不含船头/船尾端点）；需加载 models.assets.bin 网格 → 每舰提取长/宽/高(转米) + 每舰缓存。**P0 坐标空间验证已完成**（`hit_value::zone_tests`，15m/unit + yaw，提交 `ab6ffda9`）。顺序：P1 线程化 `PrototypeDatabase` 进 `assess` + 每舰包围盒缓存 → P2 zone 阈值逐舰化 → P3 与 `hit_location` 对账 → P4 整局整合。
+1. **装甲网格分区**：P1（`hull_dim` 提取 + 线程化 + CLI 接线）与 P2（`zone_for_hit` 逐舰阈值）已完成并提交。P3 与 `hit_location` 对账（base-model vs 装备 hull、per-side reach、6/14m 垂直起线）与 P4 整局整合为后续。
 2. `resolve_victim` 的 `MinimapPlacement` 边界换算（恢复 AOI 外目标，需地图边界）。
 3. 生存端（本次续接目标）：S1 → S2 → S3 → S4。

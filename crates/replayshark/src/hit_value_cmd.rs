@@ -11,8 +11,23 @@ use wows_battle_world::ids::ShotTracking;
 use wows_battle_world::process::battle_report_for;
 use wows_battle_world::process::ProcessOptions;
 use wows_replay_insights::hit_value;
+use wows_replay_insights::hull_dim;
 use wows_replays::context::GameDataContext;
 use wows_replays::ReplayFile;
+
+/// Build the per-victim hull-dimensions map for a report, or `None` when the
+/// game VFS (and thus `assets.bin`) is unavailable so the output falls back to
+/// the fixed zone heuristic.
+fn hull_map(
+    report: &wows_battle_world::report::BattleReport,
+    provider: &dyn wowsunpack::game_params::types::GameParamProvider,
+    game_dir: Option<&str>,
+    extracted: Option<&str>,
+) -> Option<std::collections::HashMap<wows_replays::types::EntityId, hull_dim::HullDim>> {
+    crate::open_build_vfs(game_dir, extracted, &report.version())
+        .as_ref()
+        .map(|vfs| hull_dim::hull_dims_for_report(report, provider, vfs))
+}
 
 /// Install the runtime ship-name table (id -> Chinese) from a JSON map.
 fn load_ship_names(path: Option<&std::path::Path>) -> Result<()> {
@@ -45,6 +60,8 @@ fn expand_inputs(inputs: &[PathBuf]) -> Result<Vec<PathBuf>> {
 
 pub fn run(
     ctx: &dyn GameDataContext,
+    game_dir: Option<&str>,
+    extracted: Option<&str>,
     inputs: Vec<PathBuf>,
     out: Option<PathBuf>,
     ship_names: Option<PathBuf>,
@@ -73,7 +90,8 @@ pub fn run(
         let provider = ctx
             .metadata_provider(&report.version())
             .map_err(|e| report!("metadata provider {}: {e}", path.display()))?;
-        for assessment in hit_value::assess(&report, provider.as_ref()).assessments {
+        let hull = hull_map(&report, provider.as_ref(), game_dir, extracted);
+        for assessment in hit_value::assess(&report, provider.as_ref(), hull.as_ref()).assessments {
             let row = serde_json::to_string(&assessment).map_err(|e| report!("serialize assessment: {e}"))?;
             writeln!(sink, "{}", row).map_err(|e| report!("write assessment: {e}"))?;
         }
@@ -84,6 +102,8 @@ pub fn run(
 /// Per-target aggregated lessons, as JSONL.
 pub fn run_summary(
     ctx: &dyn GameDataContext,
+    game_dir: Option<&str>,
+    extracted: Option<&str>,
     inputs: Vec<PathBuf>,
     out: Option<PathBuf>,
     ship_names: Option<PathBuf>,
@@ -112,7 +132,8 @@ pub fn run_summary(
         let provider = ctx
             .metadata_provider(&report.version())
             .map_err(|e| report!("metadata provider {}: {e}", path.display()))?;
-        for lesson in hit_value::summarize(&report, provider.as_ref()) {
+        let hull = hull_map(&report, provider.as_ref(), game_dir, extracted);
+        for lesson in hit_value::summarize(&report, provider.as_ref(), hull.as_ref()) {
             let row = serde_json::to_string(&lesson).map_err(|e| report!("serialize lesson: {e}"))?;
             writeln!(sink, "{}", row).map_err(|e| report!("write lesson: {e}"))?;
         }
@@ -123,6 +144,8 @@ pub fn run_summary(
 /// Per-volley quantified evaluations, as JSONL.
 pub fn run_volleys(
     ctx: &dyn GameDataContext,
+    game_dir: Option<&str>,
+    extracted: Option<&str>,
     inputs: Vec<PathBuf>,
     out: Option<PathBuf>,
     ship_names: Option<PathBuf>,
@@ -151,7 +174,8 @@ pub fn run_volleys(
         let provider = ctx
             .metadata_provider(&report.version())
             .map_err(|e| report!("metadata provider {}: {e}", path.display()))?;
-        for volley in hit_value::analyze_volleys(&report, provider.as_ref()) {
+        let hull = hull_map(&report, provider.as_ref(), game_dir, extracted);
+        for volley in hit_value::analyze_volleys(&report, provider.as_ref(), hull.as_ref()) {
             let row = serde_json::to_string(&volley).map_err(|e| report!("serialize volley: {e}"))?;
             writeln!(sink, "{}", row).map_err(|e| report!("write volley: {e}"))?;
         }
@@ -162,6 +186,8 @@ pub fn run_volleys(
 /// Human-readable per-volley report, as text.
 pub fn run_report(
     ctx: &dyn GameDataContext,
+    game_dir: Option<&str>,
+    extracted: Option<&str>,
     inputs: Vec<PathBuf>,
     out: Option<PathBuf>,
     deep: bool,
@@ -191,7 +217,8 @@ pub fn run_report(
         let provider = ctx
             .metadata_provider(&report.version())
             .map_err(|e| report!("metadata provider {}: {e}", path.display()))?;
-        let text = hit_value::render_report(&report, provider.as_ref(), deep);
+        let hull = hull_map(&report, provider.as_ref(), game_dir, extracted);
+        let text = hit_value::render_report(&report, provider.as_ref(), deep, hull.as_ref());
         write!(sink, "{text}").map_err(|e| report!("write report: {e}"))?;
     }
     Ok(())

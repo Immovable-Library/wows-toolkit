@@ -34,7 +34,9 @@ serde_json = { workspace = true }
 
 [features]
 default = ["build", "arc"]
-build = []
+# `models` (assets.bin/geometry parsing) is needed only by the `build`-gated
+# `hull_dim` module; gate it so consumers without `build` do not pull gltf/image.
+build = ["wowsunpack/models"]
 serde = ["dep:serde", "wows-core/serde"]
 # Forwards to wowsunpack/wows_replays so Arc-backed `Param` storage in the
 # provider matches the smart pointer this crate hands back. On by default

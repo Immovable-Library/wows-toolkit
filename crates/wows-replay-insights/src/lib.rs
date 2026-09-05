@@ -18,6 +18,9 @@ pub use build::ResolvedBuild;
 
 pub mod fire_chance;
 
+#[cfg(feature = "build")]
+pub mod hull_dim;
+
 pub mod hit_value;
 
 pub mod survival;

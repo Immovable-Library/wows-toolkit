@@ -492,7 +492,14 @@ fn grade_for(score: Option<u32>) -> Option<&'static str> {
 }
 
 /// Build the S1 survival profile from a finished battle report.
-pub fn assess(report: &BattleReport, params: &dyn GameParamProvider) -> SurvivalProfile {
+///
+/// `hull` carries the self ship's hull dimensions so received-hit zones use the
+/// ship's own boundaries; pass `None` to fall back to the fixed heuristic.
+pub fn assess(
+    report: &BattleReport,
+    params: &dyn GameParamProvider,
+    hull: Option<&std::collections::HashMap<EntityId, crate::hull_dim::HullDim>>,
+) -> SurvivalProfile {
     let self_entity = report.self_player().initial_state().entity_id();
     let build = self_build(report, params);
     let (self_ship, self_class) = match &build {
@@ -716,7 +723,7 @@ pub fn assess(report: &BattleReport, params: &dyn GameParamProvider) -> Survival
             .known()
             .map(|s| s.name().to_owned())
             .unwrap_or_else(|| "UNKNOWN".to_owned());
-        let zone = hit_value::zone_for_hit(hit);
+        let zone = hit_value::zone_for_hit(hit, hull.and_then(|m| m.get(&self_entity)));
         let hitloc = hit_value::victim_hit_location(report, params, self_entity, &zone);
         let zone_mm = hitloc.as_ref().map(|hl| hl.thickness());
         let zone_max_hp = hitloc.as_ref().map(|hl| hl.max_hp()).unwrap_or(0.0);
@@ -778,7 +785,7 @@ pub fn assess(report: &BattleReport, params: &dyn GameParamProvider) -> Survival
     sources.sort_by(|a, b| b.damage_estimated.partial_cmp(&a.damage_estimated).unwrap_or(std::cmp::Ordering::Equal));
     let exposure = assess_exposure(report, self_entity, &enemies);
     let hp_timeline = assess_hp_timeline(report, self_entity);
-    let output_coupling = assess_output(report, self_entity, &enemies, params);
+    let output_coupling = assess_output(report, self_entity, &enemies, params, hull);
 
     // Death timing and fate. Absence from the death log is NOT proof of
     // survival: it only means the recording never reported a death. Only a
@@ -1051,10 +1058,11 @@ pub fn assess_report(
     report: &BattleReport,
     params: &dyn GameParamProvider,
     dims: &[SurvivalDimension],
+    hull: Option<&std::collections::HashMap<EntityId, crate::hull_dim::HullDim>>,
 ) -> SurvivalReport {
     if dims.is_empty() {
         return SurvivalReport {
-            s1: Some(assess(report, params)),
+            s1: Some(assess(report, params, hull)),
             exposure: None,
             hp_timeline: None,
             output_coupling: None,
@@ -1069,12 +1077,12 @@ pub fn assess_report(
         .map(|p| p.initial_state().entity_id())
         .collect();
 
-    let s1 = selected(SurvivalDimension::Incoming).then(|| assess(report, params));
+    let s1 = selected(SurvivalDimension::Incoming).then(|| assess(report, params, hull));
     let exposure = selected(SurvivalDimension::Exposure)
         .then(|| assess_exposure(report, self_entity, &enemies));
     let hp_timeline = selected(SurvivalDimension::HpTimeline).then(|| assess_hp_timeline(report, self_entity));
     let output_coupling = selected(SurvivalDimension::OutputCoupling)
-        .then(|| assess_output(report, self_entity, &enemies, params));
+        .then(|| assess_output(report, self_entity, &enemies, params, hull));
 
     SurvivalReport {
         s1,
@@ -1299,13 +1307,14 @@ pub fn assess_output(
     self_entity: EntityId,
     enemies: &HashSet<EntityId>,
     params: &dyn GameParamProvider,
+    hull: Option<&std::collections::HashMap<EntityId, crate::hull_dim::HullDim>>,
 ) -> OutputCoupling {
     // OUTPUT dimension: the self ship's own hits on enemies, sourced from the
     // hit_value output timeline (decoupled from the survival-end report). Hits
     // that land on an enemy but cannot be fully estimated are counted so output
     // is honest about its lower bound. Saturation is not modeled here, so the
     // per-hit estimate is an upper bound (disclosed in the note).
-    let out = hit_value::self_output_timeline(report, self_entity, enemies, params);
+    let out = hit_value::self_output_timeline(report, self_entity, enemies, params, hull);
     let events = out.events;
     let output_dropped = out.dropped;
     let output_hits = events.len() as u32;
@@ -1419,8 +1428,12 @@ pub fn assess_output(
 }
 
 /// Render a human-readable S1 report for the recording player.
-pub fn render(report: &BattleReport, params: &dyn GameParamProvider) -> String {
-    let p = assess(report, params);
+pub fn render(
+    report: &BattleReport,
+    params: &dyn GameParamProvider,
+    hull: Option<&std::collections::HashMap<EntityId, crate::hull_dim::HullDim>>,
+) -> String {
+    let p = assess(report, params, hull);
     let mut s = String::new();
     s.push_str(&format!(
         "=== 生存画像 S1: {} ({}) ===\n",

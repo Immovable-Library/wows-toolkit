@@ -1114,7 +1114,7 @@ fn load_game_constants(constants_path: Option<&Path>, version: Version) -> &'sta
 
 /// Open the game-file VFS for a build from whichever source the CLI flags
 /// name. `None` when neither flag is given or the build's files are absent.
-fn open_build_vfs(game_dir: Option<&str>, extracted_dir: Option<&str>, version: &Version) -> Option<VfsPath> {
+pub(crate) fn open_build_vfs(game_dir: Option<&str>, extracted_dir: Option<&str>, version: &Version) -> Option<VfsPath> {
     match (game_dir, extracted_dir) {
         (Some(game_dir), _) => {
             game_data::load_game_resources(Path::new(game_dir), version).ok().map(|resources| resources.vfs)
@@ -1541,19 +1541,19 @@ fn main() {
             events_cmd::run(ctx, replays, out).expect("events command failed");
         }
         Commands::HitValue { replays, out, ship_names } => {
-            hit_value_cmd::run(ctx, replays, out, ship_names).expect("hit-value command failed");
+            hit_value_cmd::run(ctx, game_dir, extracted, replays, out, ship_names).expect("hit-value command failed");
         }
         Commands::HitSummary { replays, out, ship_names } => {
-            hit_value_cmd::run_summary(ctx, replays, out, ship_names).expect("hit-summary command failed");
+            hit_value_cmd::run_summary(ctx, game_dir, extracted, replays, out, ship_names).expect("hit-summary command failed");
         }
         Commands::Volleys { replays, out, ship_names } => {
-            hit_value_cmd::run_volleys(ctx, replays, out, ship_names).expect("volleys command failed");
+            hit_value_cmd::run_volleys(ctx, game_dir, extracted, replays, out, ship_names).expect("volleys command failed");
         }
         Commands::Report { replays, out, depth, ship_names } => {
-            hit_value_cmd::run_report(ctx, replays, out, depth, ship_names).expect("report command failed");
+            hit_value_cmd::run_report(ctx, game_dir, extracted, replays, out, depth, ship_names).expect("report command failed");
         }
         Commands::Survival { replays, out, ship_names, text, dims } => {
-            survival_cmd::run(ctx, replays, out, ship_names, text, dims).expect("survival command failed");
+            survival_cmd::run(ctx, game_dir, extracted, replays, out, ship_names, text, dims).expect("survival command failed");
         }
         Commands::Query { command } => match command {
             QueryCommands::ArenaId { replays } => {

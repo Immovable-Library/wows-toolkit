@@ -20,7 +20,6 @@ use std::collections::HashMap;
 use std::collections::HashSet;
 use std::io::Read;
 use std::io::Write;
-use std::path::Path;
 use std::sync::Arc;
 
 use rootcause::prelude::*;
@@ -233,7 +232,8 @@ impl ShipAssets {
     /// found in the `bin/` directory.
     ///
     /// For callers who already have a VFS, use [`Self::load`] instead.
-    pub fn from_game_dir(game_dir: &Path) -> Result<Self, Report> {
+    #[cfg(feature = "vfs-mmap")]
+    pub fn from_game_dir(game_dir: &std::path::Path) -> Result<Self, Report> {
         let vfs = crate::game_data::build_game_vfs(game_dir)?;
         Self::load(&vfs)
     }

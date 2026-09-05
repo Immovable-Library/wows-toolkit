@@ -11,6 +11,7 @@ use wows_battle_world::ids::ShotTracking;
 use wows_battle_world::process::battle_report_for;
 use wows_battle_world::process::ProcessOptions;
 use wows_replay_insights::hit_value;
+use wows_replay_insights::hull_dim;
 use wows_replay_insights::survival;
 use wows_replays::context::GameDataContext;
 use wows_replays::ReplayFile;
@@ -44,8 +45,11 @@ fn expand_inputs(inputs: &[PathBuf]) -> Result<Vec<PathBuf>> {
     Ok(out)
 }
 
+#[allow(clippy::too_many_arguments)]
 pub fn run(
     ctx: &dyn GameDataContext,
+    game_dir: Option<&str>,
+    extracted: Option<&str>,
     inputs: Vec<PathBuf>,
     out: Option<PathBuf>,
     ship_names: Option<PathBuf>,
@@ -76,11 +80,14 @@ pub fn run(
         let provider = ctx
             .metadata_provider(&report.version())
             .map_err(|e| report!("metadata provider {}: {e}", path.display()))?;
+        let hull = crate::open_build_vfs(game_dir, extracted, &report.version())
+            .as_ref()
+            .map(|vfs| hull_dim::hull_dims_for_report(&report, provider.as_ref(), vfs));
         if text {
-            let text = survival::render(&report, provider.as_ref());
+            let text = survival::render(&report, provider.as_ref(), hull.as_ref());
             write!(sink, "{text}").map_err(|e| report!("write report: {e}"))?;
         } else {
-            let report = survival::assess_report(&report, provider.as_ref(), &dims);
+            let report = survival::assess_report(&report, provider.as_ref(), &dims, hull.as_ref());
             let row = serde_json::to_string(&report).map_err(|e| report!("serialize report: {e}"))?;
             writeln!(sink, "{row}").map_err(|e| report!("write report: {e}"))?;
         }
