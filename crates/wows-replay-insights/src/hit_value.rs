@@ -1205,3 +1205,65 @@ impl GameParamProvider for ProviderRef<'_> {
         self.0.params()
     }
 }
+
+#[cfg(test)]
+mod zone_tests {
+    use wows_replays::analyzer::battle_controller::state::VictimPose;
+    use wows_replays::analyzer::decoder::HitType;
+    use wows_replays::analyzer::decoder::ShotHit;
+    use wows_replays::types::EntityId;
+    use wows_replays::types::GameClock;
+    use wows_replays::types::WorldPos;
+    use wowsunpack::game_types::ShotId;
+    use wowsunpack::game_types::Vec3;
+    use wowsunpack::recognized::Recognized;
+
+    use super::*;
+
+    fn hit_at(offset: Vec3, yaw: f32) -> ResolvedShotHit {
+        ResolvedShotHit {
+            clock: GameClock(0.0),
+            hit: ShotHit {
+                owner_id: EntityId::from(1u32),
+                hit_type: HitType {
+                    collision: Recognized::Unknown("0".to_owned()),
+                    shell_hit: Recognized::Unknown("0".to_owned()),
+                    raw: 0,
+                },
+                shot_id: ShotId::from(1u32),
+                position: WorldPos::new(offset.x, offset.y, offset.z),
+                terminal_ballistics: None,
+            },
+            victim_entity_id: Some(EntityId::from(2u32)),
+            salvo: None,
+            fired_at: None,
+            victim_pose: Some(VictimPose { position: WorldPos::new(0.0, 0.0, 0.0), yaw, pitch: 0.0, roll: 0.0 }),
+        }
+    }
+
+    /// The body frame equals the world frame at yaw=0, so a world offset maps
+    /// directly to a body offset. WORLD_TO_METERS is 15, so 8.67 world units =
+    /// 130 m (bow), 1.0 = 15 m (superstructure), 0.5 = 7.5 m (deck), 0.6 = 9 m
+    /// (belt), 0.1 = 1.5 m (citadel).
+    #[test]
+    fn zones_use_the_15m_scale() {
+        assert_eq!(zone_for_hit(&hit_at(Vec3::new(8.67, 0.0, 0.0), 0.0)), "bow");
+        assert_eq!(zone_for_hit(&hit_at(Vec3::new(-8.67, 0.0, 0.0), 0.0)), "stern");
+        assert_eq!(zone_for_hit(&hit_at(Vec3::new(0.0, 1.0, 0.0), 0.0)), "superstructure");
+        assert_eq!(zone_for_hit(&hit_at(Vec3::new(0.0, 0.5, 0.0), 0.0)), "deck");
+        assert_eq!(zone_for_hit(&hit_at(Vec3::new(0.0, 0.0, 0.6), 0.0)), "belt");
+        assert_eq!(zone_for_hit(&hit_at(Vec3::new(0.0, 0.0, 0.1), 0.0)), "citadel");
+    }
+
+    /// A yawed broadside impact must be classified laterally (belt/citadel), not
+    /// as bow/stern: the rotation is applied before the zone thresholds, so the
+    /// ship's heading is honored rather than ignored.
+    #[test]
+    fn zones_respect_the_yaw_rotation() {
+        let zone = zone_for_hit(&hit_at(Vec3::new(8.67, 0.0, 0.0), std::f32::consts::FRAC_PI_2));
+        assert!(
+            zone == "belt" || zone == "citadel" || zone == "deck",
+            "expected a lateral/vertical zone for a yawed broadside, got {zone}"
+        );
+    }
+}
