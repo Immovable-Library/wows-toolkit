@@ -26,6 +26,7 @@ use wowsunpack::game_params::types::Species;
 use wowsunpack::game_params::ttx::armor_materials::collision_material_name;
 use wowsunpack::game_params::ttx::components::ArtilleryGunStats;
 use wowsunpack::game_types::Vec3;
+use wowsunpack::game_types::ShotId;
 use wowsunpack::Rc;
 
 use crate::build::ResolvedBuild;
@@ -47,6 +48,7 @@ pub fn set_ship_names(map: HashMap<String, String>) {
 #[cfg_attr(feature = "serde", derive(serde::Serialize))]
 #[derive(Clone, Debug)]
 pub struct HitAssessment {
+    pub victim_entity_id: EntityId,
     pub victim_ship: String,
     pub victim_class: String,
     pub zone: String,
@@ -96,8 +98,12 @@ pub struct AssessOutcome {
 #[cfg_attr(feature = "serde", derive(serde::Serialize))]
 #[derive(Clone, Debug)]
 pub struct VictimLesson {
+    pub victim_entity_id: EntityId,
     pub victim_ship: String,
     pub victim_class: String,
+    /// Number of landed hits on this victim. Shot-accounting per victim (the
+    /// count of shells aimed at it) is not derivable from the hit history, so
+    /// this is the landed-hit count, kept for report compatibility.
     pub shells_fired: u32,
     pub hits: u32,
     pub overpen: u32,
@@ -114,18 +120,22 @@ pub struct VictimLesson {
 /// Aggregate the per-hit assessments into a per-target lesson.
 pub fn summarize(report: &BattleReport, params: &dyn GameParamProvider) -> Vec<VictimLesson> {
     use std::collections::BTreeMap;
-    let mut groups: BTreeMap<(String, String), Vec<&HitAssessment>> = BTreeMap::new();
+    // Group by entity id so two ships that share a display name and class
+    // (common in PvE fleets) do not merge into one lesson.
+    let mut groups: BTreeMap<EntityId, Vec<&HitAssessment>> = BTreeMap::new();
     let all = assess(report, params).assessments;
     for hit in &all {
         groups
-            .entry((hit.victim_ship.clone(), hit.victim_class.clone()))
+            .entry(hit.victim_entity_id)
             .or_default()
             .push(hit);
     }
 
     groups
         .into_iter()
-        .map(|((victim_ship, victim_class), hits)| {
+        .map(|(victim_entity_id, hits)| {
+            let victim_ship = hits.first().map(|h| h.victim_ship.clone()).unwrap_or_default();
+            let victim_class = hits.first().map(|h| h.victim_class.clone()).unwrap_or_default();
             let shells_fired = hits.len() as u32;
             let overpen = hits.iter().filter(|h| h.hit_type.contains("OVERPEN")).count() as u32;
             let bounce = hits.iter().filter(|h| h.hit_type.contains("RICOCHET")).count() as u32;
@@ -152,6 +162,7 @@ pub fn summarize(report: &BattleReport, params: &dyn GameParamProvider) -> Vec<V
                 avg_lead,
             );
             VictimLesson {
+                victim_entity_id,
                 victim_ship,
                 victim_class,
                 shells_fired,
@@ -260,9 +271,17 @@ pub fn analyze_volleys(report: &BattleReport, params: &dyn GameParamProvider) ->
     let (self_entity, _) = self_shells(report, params);
 
     let mut fired: BTreeMap<u32, u32> = BTreeMap::new();
+    let mut seen: HashSet<(u32, Option<ShotId>)> = HashSet::new();
     for salvo in report.salvos().iter().filter(|s| s.owner_id == self_entity) {
         if salvo.salvo_id == 0 || salvo.salvo_id == u32::MAX {
             // Unmatched salvo sentinel; not a real volley key.
+            continue;
+        }
+        // One trigger pull can arrive as several SHOTS_PACK entries sharing a
+        // salvo id; `first_shot` discriminates them. A merged/multi-perspective
+        // session logs the same group more than once, so dedup before summing
+        // or the shot count is inflated.
+        if !seen.insert((salvo.salvo_id, salvo.first_shot)) {
             continue;
         }
         *fired.entry(salvo.salvo_id).or_insert(0) += salvo.shots;
@@ -619,6 +638,7 @@ pub fn assess(report: &BattleReport, params: &dyn GameParamProvider) -> AssessOu
         let est = if saturated { base / 6.0 } else { base };
         zone_damage.entry((victim_entity_id, zone.clone())).and_modify(|v| *v += est).or_insert(est);
         out.push(HitAssessment {
+            victim_entity_id,
             victim_ship: victim,
             victim_class,
             zone,
