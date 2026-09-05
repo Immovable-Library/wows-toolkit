@@ -23,10 +23,10 @@ fn hull_map(
     provider: &dyn wowsunpack::game_params::types::GameParamProvider,
     game_dir: Option<&str>,
     extracted: Option<&str>,
-) -> Option<std::collections::HashMap<wows_replays::types::EntityId, hull_dim::HullDim>> {
+) -> Option<std::collections::HashMap<wows_replays::types::EntityId, hull_dim::HullData>> {
     crate::open_build_vfs(game_dir, extracted, &report.version())
         .as_ref()
-        .map(|vfs| hull_dim::hull_dims_for_report(report, provider, vfs))
+        .map(|vfs| hull_dim::hull_data_for_report(report, provider, vfs))
 }
 
 /// Install the runtime ship-name table (id -> Chinese) from a JSON map.

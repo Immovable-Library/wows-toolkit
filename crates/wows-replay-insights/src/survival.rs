@@ -498,7 +498,7 @@ fn grade_for(score: Option<u32>) -> Option<&'static str> {
 pub fn assess(
     report: &BattleReport,
     params: &dyn GameParamProvider,
-    hull: Option<&std::collections::HashMap<EntityId, crate::hull_dim::HullDim>>,
+    hull: Option<&std::collections::HashMap<EntityId, crate::hull_dim::HullData>>,
 ) -> SurvivalProfile {
     let self_entity = report.self_player().initial_state().entity_id();
     let build = self_build(report, params);
@@ -724,16 +724,21 @@ pub fn assess(
             .map(|s| s.name().to_owned())
             .unwrap_or_else(|| "UNKNOWN".to_owned());
         let zone = hit_value::zone_for_hit(hit, hull.and_then(|m| m.get(&self_entity)));
-        let hitloc = hit_value::victim_hit_location(report, params, self_entity, &zone);
+        let hitloc_zone = hull
+            .and_then(|m| m.get(&self_entity))
+            .and_then(|data| crate::hull_dim::exact_zone_for_hit(hit, data))
+            .unwrap_or_else(|| zone.clone());
+        let hitloc = hit_value::victim_hit_location(report, params, self_entity, &hitloc_zone);
         let zone_mm = hitloc.as_ref().map(|hl| hl.thickness());
         let zone_max_hp = hitloc.as_ref().map(|hl| hl.max_hp()).unwrap_or(0.0);
-        let zone_damage_so_far = zone_damage.get(&zone).copied().unwrap_or(0.0);
-        let saturated = zone != "citadel" && zone_max_hp > 0.0 && zone_damage_so_far >= zone_max_hp;
+        let zone_damage_so_far = zone_damage.get(&hitloc_zone).copied().unwrap_or(0.0);
+        let saturated =
+            !hit_value::is_citadel_zone(&hitloc_zone) && zone_max_hp > 0.0 && zone_damage_so_far >= zone_max_hp;
         let base = hit_value::estimate_damage(&shell, &hit_type, zone_mm.as_ref());
         // A saturated (exhausted) zone absorbs only marginal damage (~1/6);
         // the citadel zone never saturates, so it is left at full rate.
         let est = if saturated { base / 6.0 } else { base };
-        *zone_damage.entry(zone.clone()).or_insert(0.0) += est;
+        *zone_damage.entry(hitloc_zone.clone()).or_insert(0.0) += est;
         shell_hits_taken += 1;
         taken_damage += est;
         biggest_hit = biggest_hit.max(est);
@@ -1058,7 +1063,7 @@ pub fn assess_report(
     report: &BattleReport,
     params: &dyn GameParamProvider,
     dims: &[SurvivalDimension],
-    hull: Option<&std::collections::HashMap<EntityId, crate::hull_dim::HullDim>>,
+    hull: Option<&std::collections::HashMap<EntityId, crate::hull_dim::HullData>>,
 ) -> SurvivalReport {
     if dims.is_empty() {
         return SurvivalReport {
@@ -1307,7 +1312,7 @@ pub fn assess_output(
     self_entity: EntityId,
     enemies: &HashSet<EntityId>,
     params: &dyn GameParamProvider,
-    hull: Option<&std::collections::HashMap<EntityId, crate::hull_dim::HullDim>>,
+    hull: Option<&std::collections::HashMap<EntityId, crate::hull_dim::HullData>>,
 ) -> OutputCoupling {
     // OUTPUT dimension: the self ship's own hits on enemies, sourced from the
     // hit_value output timeline (decoupled from the survival-end report). Hits
@@ -1431,7 +1436,7 @@ pub fn assess_output(
 pub fn render(
     report: &BattleReport,
     params: &dyn GameParamProvider,
-    hull: Option<&std::collections::HashMap<EntityId, crate::hull_dim::HullDim>>,
+    hull: Option<&std::collections::HashMap<EntityId, crate::hull_dim::HullData>>,
 ) -> String {
     let p = assess(report, params, hull);
     let mut s = String::new();

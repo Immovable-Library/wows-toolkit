@@ -82,7 +82,7 @@ pub fn run(
             .map_err(|e| report!("metadata provider {}: {e}", path.display()))?;
         let hull = crate::open_build_vfs(game_dir, extracted, &report.version())
             .as_ref()
-            .map(|vfs| hull_dim::hull_dims_for_report(&report, provider.as_ref(), vfs));
+            .map(|vfs| hull_dim::hull_data_for_report(&report, provider.as_ref(), vfs));
         if text {
             let text = survival::render(&report, provider.as_ref(), hull.as_ref());
             write!(sink, "{text}").map_err(|e| report!("write report: {e}"))?;

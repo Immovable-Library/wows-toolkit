@@ -32,7 +32,8 @@ use crate::build::ResolvedBuild;
 use crate::fire_chance::geometry::angle_on_bow;
 use crate::fire_chance::geometry::belt_strike_angle;
 use crate::fire_chance::geometry::world_offset_to_body;
-use crate::hull_dim::HullDim;
+use crate::hull_dim::HullData;
+use crate::hull_dim::exact_zone_for_hit;
 
 /// Runtime-loaded local Chinese ship-name table, keyed by numeric ship id.
 /// `set_ship_names` installs it once from the skill's `ship_names.json`; the
@@ -124,7 +125,7 @@ pub struct VictimLesson {
 pub fn summarize(
     report: &BattleReport,
     params: &dyn GameParamProvider,
-    hull: Option<&HashMap<EntityId, HullDim>>,
+    hull: Option<&HashMap<EntityId, HullData>>,
 ) -> Vec<VictimLesson> {
     use std::collections::BTreeMap;
     // Group by entity id so two ships that share a display name and class
@@ -278,7 +279,7 @@ pub struct VolleyHitDetail {
 pub fn analyze_volleys(
     report: &BattleReport,
     params: &dyn GameParamProvider,
-    hull: Option<&HashMap<EntityId, HullDim>>,
+    hull: Option<&HashMap<EntityId, HullData>>,
 ) -> Vec<VolleyScore> {
     use std::collections::BTreeMap;
     use std::collections::BTreeSet;
@@ -429,7 +430,7 @@ pub fn render_report(
     report: &BattleReport,
     params: &dyn GameParamProvider,
     deep: bool,
-    hull: Option<&HashMap<EntityId, HullDim>>,
+    hull: Option<&HashMap<EntityId, HullData>>,
 ) -> String {
     if deep {
         render_deep_report(report, params, hull)
@@ -442,7 +443,7 @@ pub fn render_report(
 pub fn render_normal_report(
     report: &BattleReport,
     params: &dyn GameParamProvider,
-    hull: Option<&HashMap<EntityId, HullDim>>,
+    hull: Option<&HashMap<EntityId, HullData>>,
 ) -> String {
     let lessons = summarize(report, params, hull);
     let outcome = assess(report, params, hull);
@@ -479,7 +480,7 @@ pub fn render_normal_report(
 pub fn render_deep_report(
     report: &BattleReport,
     params: &dyn GameParamProvider,
-    hull: Option<&HashMap<EntityId, HullDim>>,
+    hull: Option<&HashMap<EntityId, HullData>>,
 ) -> String {
     let volleys = analyze_volleys(report, params, hull);
     let outcome = assess(report, params, hull);
@@ -586,7 +587,7 @@ fn equipped_artillery(build: &ResolvedBuild) -> Option<&ArtilleryGunStats> {
 pub fn assess(
     report: &BattleReport,
     params: &dyn GameParamProvider,
-    hull: Option<&HashMap<EntityId, HullDim>>,
+    hull: Option<&HashMap<EntityId, HullData>>,
 ) -> AssessOutcome {
     let (self_entity, shells) = self_shells(report, params);
     let victims = victim_info(report, params);
@@ -644,6 +645,14 @@ pub fn assess(
         };
         let hit_type = hit_type_name.to_owned();
         let zone = zone_for_hit(hit, hull.and_then(|m| m.get(&victim_entity_id)));
+        // Prefer the exact GameParams zone from the ship's splash boxes so the
+        // armour thickness/saturation budget reads the right plate (e.g. "St" or
+        // "Cas" instead of a fuzzy "Hull" fallback); keep the coarse label for
+        // the reason/swaps text and the reported zone.
+        let hitloc_zone = hull
+            .and_then(|m| m.get(&victim_entity_id))
+            .and_then(|data| exact_zone_for_hit(hit, data))
+            .unwrap_or_else(|| zone.clone());
         let (lead_error_m, lead_off_axis_m) = match shot_aim(hit) {
             Some(aim) => {
                 let victim = pose.position.0;
@@ -658,11 +667,14 @@ pub fn assess(
             }
             None => (None, None),
         };
-        let hitloc = victim_hit_location(report, params, victim_entity_id, &zone);
+        let hitloc = victim_hit_location(report, params, victim_entity_id, &hitloc_zone);
         let zone_mm = hitloc.as_ref().map(|hl| hl.thickness());
         let budget = hitloc.as_ref().map(|hl| hl.max_hp()).unwrap_or(0.0);
-        let zone_damage_so_far = zone_damage.get(&(victim_entity_id, zone.clone())).copied().unwrap_or(0.0);
-        let saturated = zone != "citadel" && budget > 0.0 && zone_damage_so_far >= budget;
+        // Saturation is per exact zone (the budget's `max_hp` pool), so the
+        // accumulator and the citadel exception are keyed on the exact zone too;
+        // the coarse label only feeds the reason/text field.
+        let zone_damage_so_far = zone_damage.get(&(victim_entity_id, hitloc_zone.clone())).copied().unwrap_or(0.0);
+        let saturated = !is_citadel_zone(&hitloc_zone) && budget > 0.0 && zone_damage_so_far >= budget;
         let pen = pen_verdict(&used, &hit_type, belt_strike, zone_mm.as_ref());
         let ribbon = ribbon_for(&hit_type);
         let reason = reason_for(&used, &zone, &hit_type, &victim_class);
@@ -679,7 +691,7 @@ pub fn assess(
         }
         let base = estimate_damage(&used, &hit_type, zone_mm.as_ref());
         let est = if saturated { base / 6.0 } else { base };
-        zone_damage.entry((victim_entity_id, zone.clone())).and_modify(|v| *v += est).or_insert(est);
+        zone_damage.entry((victim_entity_id, hitloc_zone.clone())).and_modify(|v| *v += est).or_insert(est);
         out.push(HitAssessment {
             victim_entity_id,
             victim_ship: victim,
@@ -1061,7 +1073,7 @@ fn is_belt_material(material_id: u32) -> bool {
 /// superstructure base sits (it only yields the total height, which on a
 /// tall-masted battleship is far above the deck) -- scaling them by total
 /// height would put a destroyer's deck below any real hit.
-fn zone_thresholds(hull: Option<&HullDim>) -> ZoneThresholds {
+fn zone_thresholds(data: Option<&HullData>) -> ZoneThresholds {
     // Calibrated on Iowa's armour-mesh bbox (half-length 135.2 m, half-beam
     // 16.5 m): the old 110 m bow boundary sits at 110 / 135.2 = 0.814 of the
     // half-length and the old 8 m belt boundary at 8 / 16.5 = 0.485 of the
@@ -1076,7 +1088,7 @@ fn zone_thresholds(hull: Option<&HullDim>) -> ZoneThresholds {
     const DEFAULT_SUPERSTRUCTURE: f32 = 14.0;
     const DEFAULT_BELT: f32 = 8.0;
 
-    match hull {
+    match data.map(|d| &d.dim) {
         Some(h) => ZoneThresholds {
             fore: h.fore_m * BOW_BOUNDARY_FRACTION,
             aft: h.aft_m * BOW_BOUNDARY_FRACTION,
@@ -1108,7 +1120,7 @@ struct ZoneThresholds {
 /// horizontal bow/belt bounds come from the victim's hull dimensions when known
 /// and otherwise fall back to the fixed battleship-scaled heuristic (the
 /// vertical deck/superstructure bounds stay on the fixed heuristic).
-pub(crate) fn zone_for_hit(hit: &ResolvedShotHit, hull: Option<&HullDim>) -> String {
+pub(crate) fn zone_for_hit(hit: &ResolvedShotHit, data: Option<&HullData>) -> String {
     let Some(pose) = hit.victim_pose else { return "unknown".to_owned() };
     let impact = hit.hit.position.0;
     // The zone is the impact's offset from the victim's centre, not from the
@@ -1128,7 +1140,7 @@ pub(crate) fn zone_for_hit(hit: &ResolvedShotHit, hull: Option<&HullDim>) -> Str
     let y = body.y * crate::hull_dim::SHIP_MODEL_TO_METERS;
     let x = body.x * crate::hull_dim::SHIP_MODEL_TO_METERS;
     let z = body.z * crate::hull_dim::SHIP_MODEL_TO_METERS;
-    let bounds = zone_thresholds(hull);
+    let bounds = zone_thresholds(data);
     if y > bounds.superstructure {
         "superstructure".to_owned()
     } else if x > bounds.fore {
@@ -1184,7 +1196,7 @@ pub fn self_output_timeline(
     self_entity: EntityId,
     enemies: &HashSet<EntityId>,
     params: &dyn GameParamProvider,
-    hull: Option<&HashMap<EntityId, HullDim>>,
+    hull: Option<&HashMap<EntityId, HullData>>,
 ) -> OutputTimeline {
     let mut events: Vec<(f32, f32)> = Vec::new();
     let mut dropped = 0u32;
@@ -1197,7 +1209,11 @@ pub fn self_output_timeline(
         let Some(_pose) = hit.victim_pose else { dropped += 1; continue };
         let Some(_origin) = shot_origin(hit) else { dropped += 1; continue };
         let zone = zone_for_hit(hit, hull.and_then(|m| m.get(&victim_id)));
-        let hitloc = victim_hit_location(report, params, victim_id, &zone);
+        let hitloc_zone = hull
+            .and_then(|m| m.get(&victim_id))
+            .and_then(|data| exact_zone_for_hit(hit, data))
+            .unwrap_or_else(|| zone.clone());
+        let hitloc = victim_hit_location(report, params, victim_id, &hitloc_zone);
         let zone_mm = hitloc.as_ref().map(|hl| hl.thickness());
         let hit_type = hit.hit.hit_type.shell_hit.known().map(|s| s.name()).unwrap_or("UNKNOWN");
         let est = estimate_damage(&shell, hit_type, zone_mm.as_ref());
@@ -1220,6 +1236,12 @@ pub(crate) fn saturation_budget(max_hp: f32, zone: &str) -> f32 {
         "bow" | "stern" => max_hp * 0.15,
         _ => max_hp * 0.30,
     }
+}
+
+/// Whether a hit-location key is the citadel (which never saturates for damage
+/// purposes). GameParams spells it "Citadel" or "Cit" across ships.
+pub(crate) fn is_citadel_zone(zone: &str) -> bool {
+    zone.eq_ignore_ascii_case("citadel") || zone.eq_ignore_ascii_case("cit")
 }
 
 /// The victim's hit-location record for `zone`, cloned out of the build.
@@ -1295,6 +1317,7 @@ impl GameParamProvider for ProviderRef<'_> {
 
 #[cfg(test)]
 mod zone_tests {
+    use crate::hull_dim::HullDim;
     use wows_replays::analyzer::battle_controller::state::VictimPose;
     use wows_replays::analyzer::decoder::HitType;
     use wows_replays::analyzer::decoder::ShotHit;
@@ -1361,7 +1384,10 @@ mod zone_tests {
     /// lands in the bow zone, which is what the per-ship refinement is for.
     #[test]
     fn per_ship_bow_boundary_rescues_a_destroyer_hit() {
-        let dd = HullDim { fore_m: 70.5, aft_m: 70.5, half_beam_m: 6.6, height_m: 19.4 };
+        let dd = HullData {
+            dim: HullDim { fore_m: 70.5, aft_m: 70.5, half_beam_m: 6.6, height_m: 19.4 },
+            zones: None,
+        };
         let hit = hit_at(Vec3::new(4.4, 0.0, 0.0), 0.0);
         assert_eq!(zone_for_hit(&hit, None), "citadel");
         assert_eq!(zone_for_hit(&hit, Some(&dd)), "bow");
