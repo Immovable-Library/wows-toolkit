@@ -73,7 +73,7 @@ pub fn run(
         let provider = ctx
             .metadata_provider(&report.version())
             .map_err(|e| report!("metadata provider {}: {e}", path.display()))?;
-        for assessment in hit_value::assess(&report, provider.as_ref()) {
+        for assessment in hit_value::assess(&report, provider.as_ref()).assessments {
             let row = serde_json::to_string(&assessment).map_err(|e| report!("serialize assessment: {e}"))?;
             writeln!(sink, "{}", row).map_err(|e| report!("write assessment: {e}"))?;
         }

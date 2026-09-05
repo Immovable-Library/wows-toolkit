@@ -81,6 +81,17 @@ pub struct HitAssessment {
     pub reason: String,
 }
 
+/// Result of the single-shot output assessment, including how many
+/// self-fired-on-enemy hits could not be assessed (no victim, no shell, not a
+/// main-battery shell, missing pose/origin, or an unrecognized shell-hit type).
+/// A non-zero `excluded` with empty `assessments` means "no usable data", not
+/// "the player landed nothing".
+#[derive(Clone, Debug)]
+pub struct AssessOutcome {
+    pub assessments: Vec<HitAssessment>,
+    pub excluded: u32,
+}
+
 /// A concise per-target lesson, aggregated from the per-hit assessments.
 #[cfg_attr(feature = "serde", derive(serde::Serialize))]
 #[derive(Clone, Debug)]
@@ -104,7 +115,7 @@ pub struct VictimLesson {
 pub fn summarize(report: &BattleReport, params: &dyn GameParamProvider) -> Vec<VictimLesson> {
     use std::collections::BTreeMap;
     let mut groups: BTreeMap<(String, String), Vec<&HitAssessment>> = BTreeMap::new();
-    let all = assess(report, params);
+    let all = assess(report, params).assessments;
     for hit in &all {
         groups
             .entry((hit.victim_ship.clone(), hit.victim_class.clone()))
@@ -173,7 +184,15 @@ fn build_lesson(
     let is_thin = matches!(victim_class, "destroyer" | "carrier");
     let mut parts: Vec<String> = Vec::new();
     if overpen >= 2 && is_thin {
-        parts.push(format!("{overpen}发 AP 过穿薄甲目标（DD/航母），应切 HE（视切弹窗口）"));
+        let used_ammo = hits.first().map(|h| h.ammo_used.as_str()).unwrap_or("?");
+        let other_ammo = hits.first().map(|h| h.ammo_other.as_str()).unwrap_or("?");
+        if used_ammo == "AP" && other_ammo == "HE" {
+            parts.push(format!("{overpen}发 AP 过穿薄甲目标（DD/航母），应切 HE（视切弹窗口）"));
+        } else if used_ammo == "AP" {
+            parts.push(format!("{overpen}发 AP 过穿薄甲目标（DD/航母），无 HE 可切，改打厚区"));
+        } else {
+            parts.push(format!("{overpen}发过穿薄甲目标（DD/航母）"));
+        }
     }
     if bounce >= 2 {
         parts.push(format!("{bounce}发跳弹，目标角度/穿深问题，考虑 HE 或等露侧"));
@@ -249,7 +268,7 @@ pub fn analyze_volleys(report: &BattleReport, params: &dyn GameParamProvider) ->
         *fired.entry(salvo.salvo_id).or_insert(0) += salvo.shots;
     }
 
-    let all = assess(report, params);
+    let all = assess(report, params).assessments;
     let mut by_salvo: BTreeMap<u32, Vec<&HitAssessment>> = BTreeMap::new();
     for hit in &all {
         if hit.salvo_id == 0 || hit.salvo_id == u32::MAX {
@@ -376,6 +395,7 @@ pub fn render_report(report: &BattleReport, params: &dyn GameParamProvider, deep
 /// Concise per-target report (normal).
 pub fn render_normal_report(report: &BattleReport, params: &dyn GameParamProvider) -> String {
     let lessons = summarize(report, params);
+    let outcome = assess(report, params);
     let ship_name = self_ship_name(report, params).unwrap_or_else(|| "自舰".to_owned());
     let mut s = String::new();
     s.push_str(&format!("=== 瞄准/弹药复盘（按目标）：{ship_name} ===\n"));
@@ -397,12 +417,18 @@ pub fn render_normal_report(report: &BattleReport, params: &dyn GameParamProvide
         }
         s.push_str(&format!("\n    {}\n", l.advice));
     }
+    if outcome.assessments.is_empty() {
+        s.push_str("无可用数据：没有可评估的主炮命中（未命中、非主炮、或命中无法解析）\n");
+    } else if outcome.excluded > 0 {
+        s.push_str(&format!("另有 {} 发命中无法评估（无受害舰/非主炮/姿态缺失/未知弹种）\n", outcome.excluded));
+    }
     s
 }
 
 /// Full per-volley report with per-hit detail (deep).
 pub fn render_deep_report(report: &BattleReport, params: &dyn GameParamProvider) -> String {
     let volleys = analyze_volleys(report, params);
+    let outcome = assess(report, params);
     let ship_name = self_ship_name(report, params).unwrap_or_else(|| "自舰".to_owned());
     let mut s = String::new();
     s.push_str(&format!("=== 逐轮瞄准/弹药复盘：{ship_name} ===\n"));
@@ -429,6 +455,11 @@ pub fn render_deep_report(report: &BattleReport, params: &dyn GameParamProvider)
                 h.target, h.zone, h.ribbon, h.damage, h.reason
             ));
         }
+    }
+    if outcome.assessments.is_empty() {
+        s.push_str("无可用数据：没有可评估的主炮命中（未命中、非主炮、或命中无法解析）\n");
+    } else if outcome.excluded > 0 {
+        s.push_str(&format!("另有 {} 发命中无法评估（无受害舰/非主炮/姿态缺失/未知弹种）\n", outcome.excluded));
     }
     s
 }
@@ -494,7 +525,7 @@ fn equipped_artillery(build: &ResolvedBuild) -> Option<&ArtilleryGunStats> {
 }
 
 /// Aggregate per-hit assessments for the recording player's own shells.
-pub fn assess(report: &BattleReport, params: &dyn GameParamProvider) -> Vec<HitAssessment> {
+pub fn assess(report: &BattleReport, params: &dyn GameParamProvider) -> AssessOutcome {
     let (self_entity, shells) = self_shells(report, params);
     let victims = victim_info(report, params);
     let reload_s = self_reload_s(report, params);
@@ -510,11 +541,12 @@ pub fn assess(report: &BattleReport, params: &dyn GameParamProvider) -> Vec<HitA
         .collect();
     let mut zone_damage: HashMap<(EntityId, String), f32> = HashMap::new();
     let mut out = Vec::new();
+    let mut excluded = 0u32;
 
     for hit in report.hit_history().iter().filter(|hit| hit.hit.owner_id == self_entity) {
         // An unresolved victim (None) cannot be attributed to any enemy target,
         // so there is no recordable hit on a ship.
-        let Some(victim_entity_id) = hit.victim_entity_id else { continue };
+        let Some(victim_entity_id) = hit.victim_entity_id else { excluded += 1; continue };
         // A self-fired shell can never hit the self ship. For a known self owner
         // the resolver only considers enemy candidates, so a resolve to self is
         // defensive (e.g. the owner was absent from the player index and the
@@ -525,10 +557,11 @@ pub fn assess(report: &BattleReport, params: &dyn GameParamProvider) -> Vec<HitA
         if !enemies.contains(&victim_entity_id) {
             continue;
         }
-        let Some(used) = shell_for_hit(hit, params) else { continue };
+        let Some(used) = shell_for_hit(hit, params) else { excluded += 1; continue };
         // Only main-battery shells are a player ammo choice; secondary/AA shells
         // are auto-fired and cannot be swapped, so they are out of scope.
         if !shells.iter().any(|s| s.name == used.name) {
+            excluded += 1;
             continue;
         }
         let other = other_shell(&shells, &used);
@@ -537,13 +570,17 @@ pub fn assess(report: &BattleReport, params: &dyn GameParamProvider) -> Vec<HitA
             .cloned()
             .unwrap_or_else(|| ("?".to_owned(), "?".to_owned(), "unknown".to_owned()));
         let victim = ship_zh(&victim_id, &victim_raw);
-        let Some(pose) = hit.victim_pose else { continue };
-        let Some(origin) = shot_origin(hit) else { continue };
+        let Some(pose) = hit.victim_pose else { excluded += 1; continue };
+        let Some(origin) = shot_origin(hit) else { excluded += 1; continue };
         let impact = hit.hit.position.0;
         let incoming = origin_to_impact(hit);
         let belt_strike = belt_strike_angle(incoming, pose.yaw, pose.pitch, pose.roll);
         let aob = angle_on_bow(origin, impact, pose.yaw, pose.pitch, pose.roll);
-        let hit_type = hit.hit.hit_type.shell_hit.known().map(|s| s.name()).unwrap_or("UNKNOWN").to_owned();
+        let Some(hit_type_name) = hit.hit.hit_type.shell_hit.known().map(|s| s.name()) else {
+            excluded += 1;
+            continue;
+        };
+        let hit_type = hit_type_name.to_owned();
         let zone = zone_for_hit(hit);
         let (lead_error_m, lead_off_axis_m) = match shot_aim(hit) {
             Some(aim) => {
@@ -605,7 +642,7 @@ pub fn assess(report: &BattleReport, params: &dyn GameParamProvider) -> Vec<HitA
             reason,
         });
     }
-    out
+    AssessOutcome { assessments: out, excluded }
 }
 
 pub(crate) fn victim_info(report: &BattleReport, params: &dyn GameParamProvider) -> HashMap<EntityId, (String, String, String)> {
@@ -638,7 +675,6 @@ fn other_shell<'a>(shells: &'a [ShellInfo], used: &ShellInfo) -> Option<&'a Shel
     shells
         .iter()
         .find(|s| ammo_str(&s.ammo_type) != used_type)
-        .or_else(|| shells.first())
 }
 
 pub(crate) fn shot_origin(hit: &ResolvedShotHit) -> Option<Vec3> {
@@ -865,6 +901,7 @@ fn swap_verdict(
     let Some(other) = other else {
         return "unknown".to_owned();
     };
+    let other_is_he = matches!(other.ammo_type, AmmoType::HE);
     let is_thin = matches!(victim_class, "destroyer" | "carrier");
     match used.ammo_type {
         AmmoType::HE => {
@@ -884,18 +921,34 @@ fn swap_verdict(
         AmmoType::AP => {
             if is_thin {
                 return if hit_type.contains("OVERPEN") {
-                    "switch: AP overpens a destroyer/carrier; HE deals full damage".to_owned()
+                    if other_is_he {
+                        "switch: AP overpens a destroyer/carrier; HE deals full damage".to_owned()
+                    } else {
+                        "keep: AP overpens a thin plate and no HE is available".to_owned()
+                    }
                 } else {
                     "keep: thin target; shell-type swap is not the fix".to_owned()
                 };
             }
             if hit_type.contains("RICOCHET") {
-                "keep: target too angled, AP bounces; use HE to splash".to_owned()
+                if other_is_he {
+                    "keep: target too angled, AP bounces; use HE to splash".to_owned()
+                } else {
+                    "keep: target too angled and no HE available to splash".to_owned()
+                }
             } else if hit_type.contains("NOPENETRATION") {
-                "keep: AP cannot reach here; HE splashes more".to_owned()
+                if other_is_he {
+                    "keep: AP cannot reach here; HE splashes more".to_owned()
+                } else {
+                    "keep: AP cannot reach here and no HE is available".to_owned()
+                }
             } else if hit_type.contains("OVERPEN") {
-                "switch: AP overpens a thin/DD plate; HE deals full damage (or aim at a thicker section)"
-                    .to_owned()
+                if other_is_he {
+                    "switch: AP overpens a thin/DD plate; HE deals full damage (or aim at a thicker section)"
+                        .to_owned()
+                } else {
+                    "keep: AP overpens; no HE available to swap to".to_owned()
+                }
             } else {
                 "keep: AP penetrating is the right call here".to_owned()
             }
