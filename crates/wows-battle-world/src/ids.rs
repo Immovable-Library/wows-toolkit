@@ -34,6 +34,9 @@ pub struct IngestOptions {
     /// default: only a positional-analysis consumer needs it, and the log can
     /// hold thousands of samples.
     pub record_position_history: bool,
+    /// Accumulate every health change in `HealthHistoryLog`. Off by default:
+    /// only an HP-timeline consumer (survival S3) needs it.
+    pub record_health_history: bool,
 }
 
 impl Default for IngestOptions {
@@ -44,6 +47,7 @@ impl Default for IngestOptions {
             record_hit_history: false,
             record_salvo_history: false,
             record_position_history: false,
+            record_health_history: false,
         }
     }
 }

@@ -18,11 +18,15 @@ use crate::resources::BurnFlagsObserved;
 use crate::resources::BurnStateChange;
 use crate::resources::BurnStateLog;
 use crate::resources::EntityIndex;
+use crate::resources::HealthHistoryLog;
+use crate::resources::HealthSample;
 use crate::units::Radians;
+use wowsunpack::game_params::keys::HEALTH;
 
 /// Update `VehicleState` for a known vehicle entity from an EntityProperty packet.
 ///
 /// Also handles `targetLocalPos` -> `Aim.target_yaw` (packed lo-byte decode).
+#[allow(clippy::too_many_arguments)]
 pub fn handle_vehicle_property(
     entity_id: EntityId,
     property: &str,
@@ -31,6 +35,7 @@ pub fn handle_vehicle_property(
     version: Version,
     constants: &GameConstants,
     clock: GameClock,
+    record_health_history: bool,
 ) {
     let Some(ecs_entity) = world.resource::<EntityIndex>().get(entity_id) else {
         return;
@@ -49,6 +54,7 @@ pub fn handle_vehicle_property(
     // The entity borrow (er/vs) must be dropped before BurnStateLog can be
     // borrowed, so the pending change is staged here and pushed afterward.
     let mut burn_change: Option<BurnStateChange> = None;
+    let mut health_change: Option<(f32, f32)> = None;
     if let Ok(mut er) = world.get_entity_mut(ecs_entity)
         && let Some(mut vs) = er.get_mut::<VehicleState>()
     {
@@ -60,9 +66,31 @@ pub fn handle_vehicle_property(
         if previous != current {
             burn_change = Some(BurnStateChange { victim: entity_id, clock, previous, current });
         }
+        if property == HEALTH {
+            health_change = Some((vs.0.health(), vs.0.max_health()));
+        }
     }
     if let Some(change) = burn_change {
         world.resource_mut::<BurnStateLog>().0.push(change);
+    }
+    if record_health_history
+        && let Some((health, max_health)) = health_change
+    {
+        let last = world
+            .resource::<HealthHistoryLog>()
+            .0
+            .iter()
+            .rev()
+            .find(|s| s.entity == entity_id)
+            .map(|s| s.health);
+        if last != Some(health) {
+            world.resource_mut::<HealthHistoryLog>().0.push(HealthSample {
+                entity: entity_id,
+                clock,
+                health,
+                max_health,
+            });
+        }
     }
 
     // targetLocalPos: lo byte encodes world-space yaw as (lo/256)*TAU - PI.
@@ -212,7 +240,7 @@ mod burn_state_tests {
     fn set_burning_flags(world: &mut World, id: EntityId, flags: u16, clock: GameClock) {
         let version = Version::default();
         let constants = GameConstants::defaults();
-        handle_vehicle_property(id, "burningFlags", &ArgValue::Uint16(flags), world, version, &constants, clock);
+        handle_vehicle_property(id, "burningFlags", &ArgValue::Uint16(flags), world, version, &constants, clock, false);
     }
 
     /// Only burn bits (0-3) produce entries. A flood starting must not read as
@@ -254,6 +282,7 @@ mod burn_state_tests {
             Version::default(),
             &GameConstants::defaults(),
             GameClock(10.0),
+            false,
         );
         assert!(!world.resource::<BurnFlagsObserved>().0, "an unrelated property proves nothing");
 
@@ -346,5 +375,24 @@ mod burn_state_tests {
         assert_eq!(log.len(), 2);
         assert_eq!(log[1].previous, 0b0011);
         assert_eq!(log[1].current, 0b0000);
+    }
+
+    #[test]
+    fn health_history_records_changes_only_when_gated() {
+        let id = EntityId::from(7u32);
+        let mut world = test_world_with_vehicle(id);
+        world.insert_resource(HealthHistoryLog::default());
+        let version = Version::default();
+        let constants = GameConstants::defaults();
+
+        handle_vehicle_property(id, "health", &ArgValue::Float32(40000.0), &mut world, version, &constants, GameClock(5.0), true);
+        handle_vehicle_property(id, "health", &ArgValue::Float32(40000.0), &mut world, version, &constants, GameClock(6.0), true);
+        handle_vehicle_property(id, "health", &ArgValue::Float32(30000.0), &mut world, version, &constants, GameClock(7.0), true);
+
+        let log = &world.resource::<HealthHistoryLog>().0;
+        assert_eq!(log.len(), 2, "unchanged value is deduped: {log:?}");
+        assert_eq!(log[0].health, 40000.0);
+        assert_eq!(log[1].health, 30000.0);
+        assert_eq!(log[1].clock, GameClock(7.0));
     }
 }

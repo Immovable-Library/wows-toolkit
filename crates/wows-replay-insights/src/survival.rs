@@ -15,6 +15,7 @@ use std::collections::HashMap;
 use std::collections::HashSet;
 
 use wows_battle_world::report::BattleReport;
+use wows_battle_world::resources::HealthSample;
 use wows_battle_world::resources::PositionKind;
 use wows_replays::types::EntityId;
 use wows_replays::types::GameClock;
@@ -50,6 +51,8 @@ const MOTION_STRIDE_S: f32 = 1.0;
 const AVOIDANCE_WEIGHT: f32 = 0.40;
 const SURVIVAL_WEIGHT: f32 = 0.35;
 const SELF_RESCUE_WEIGHT: f32 = 0.25;
+/// HP fraction (of max) at or below which the ship is counted as near death.
+const NEAR_DEATH_FRAC: f32 = 0.20;
 
 /// Whether an agro weapon belongs to the shell lane that `taken_damage` can
 /// represent. Non-shell potential (torpedo, aircraft, fire, flood, ram, etc.)
@@ -267,6 +270,29 @@ pub struct Exposure {
     pub cover_status: String,
 }
 
+/// S3: blood-management / near-death summary from the self ship's HP timeline.
+///
+/// Only populated when `IngestOptions::record_health_history` was set. The
+/// timeline records value changes, so `recorded == false` means the HP data was
+/// never captured, not that the ship was never damaged.
+#[derive(Clone, Debug)]
+#[cfg_attr(feature = "serde", derive(serde::Serialize))]
+pub struct HpTimeline {
+    pub recorded: bool,
+    pub samples: u32,
+    pub max_health: Option<f32>,
+    pub min_health_frac: Option<f32>,
+    pub end_health_frac: Option<f32>,
+    pub near_death: Option<bool>,
+    /// Elapsed clock when the minimum HP fraction was reached.
+    pub min_health_time_s: Option<f32>,
+    /// Total HP restored upward (repairs / heals) as a fraction of max HP;
+    /// may exceed 1.0 when the ship healed more than a full bar over the match.
+    pub healed_frac: Option<f32>,
+    /// Fraction of the observed timeline spent below the near-death threshold.
+    pub under_threshold_time_frac: Option<f32>,
+}
+
 /// The full S1 survival profile for the recording player.
 #[derive(Clone, Debug)]
 #[cfg_attr(feature = "serde", derive(serde::Serialize))]
@@ -366,6 +392,7 @@ pub struct SurvivalProfile {
     pub hits: Vec<IncomingHit>,
     pub sources: Vec<IncomingSource>,
     pub exposure: Exposure,
+    pub hp_timeline: HpTimeline,
 }
 
 /// Adapt `&dyn GameParamProvider` to the generic `P: GameParamProvider` that
@@ -690,6 +717,7 @@ pub fn assess(report: &BattleReport, params: &dyn GameParamProvider) -> Survival
     let mut sources: Vec<IncomingSource> = sources.into_values().collect();
     sources.sort_by(|a, b| b.damage_estimated.partial_cmp(&a.damage_estimated).unwrap_or(std::cmp::Ordering::Equal));
     let exposure = assess_exposure(report, self_entity, &enemies);
+    let hp_timeline = assess_hp_timeline(report, self_entity);
 
     // Death timing and fate. Absence from the death log is NOT proof of
     // survival: it only means the recording never reported a death. Only a
@@ -820,7 +848,18 @@ pub fn assess(report: &BattleReport, params: &dyn GameParamProvider) -> Survival
             unidentified_hits - accounted
         ));
     }
-    conclusions.push("S3 未做(缺 HP 时间线); S2 位置导出已做近似暴露/走位, 掩体/真实视线未含".to_owned());
+    if hp_timeline.recorded {
+        let pct = |v: Option<f32>| v.map(|x| format!("{:.0}%", x * 100.0)).unwrap_or_else(|| "?" .to_owned());
+        conclusions.push(format!(
+            "S3 HP 时间线: 最低血 {} / 结束血 {}, 濒死(<20%)={}, 累计修复回血 {}; S2 走位/掩体为近似",
+            pct(hp_timeline.min_health_frac),
+            pct(hp_timeline.end_health_frac),
+            if hp_timeline.near_death == Some(true) { "是" } else { "否" },
+            pct(hp_timeline.healed_frac),
+        ));
+    } else {
+        conclusions.push("S3 HP 时间线无自舰血量变化(或未开启 record_health_history); S2 位置导出已做近似暴露/走位".to_owned());
+    }
     if saturating_hits > 0 {
         conclusions.push(format!("{saturating_hits} 发命中已饱和分区, 按 ~1/6 边际伤害计入"));
     } else if taken_damage > 0.0 {
@@ -924,6 +963,7 @@ pub fn assess(report: &BattleReport, params: &dyn GameParamProvider) -> Survival
         hits,
         sources,
         exposure,
+        hp_timeline,
     }
 }
 
@@ -1026,6 +1066,104 @@ fn assess_exposure(report: &BattleReport, self_entity: EntityId, enemies: &HashS
         approach_frac: if motion_n > 0 { Some(approach_n as f32 / motion_n as f32) } else { None },
         kiting_frac: if motion_n > 0 { Some(kiting_n as f32 / motion_n as f32) } else { None },
         cover_status: "unknown".to_owned(),
+    }
+}
+
+/// Build the S3 blood-management profile from the self ship's HP timeline.
+fn assess_hp_timeline(report: &BattleReport, self_entity: EntityId) -> HpTimeline {
+    let mut samples: Vec<&HealthSample> = report
+        .hp_timeline()
+        .iter()
+        .filter(|s| s.entity == self_entity)
+        .collect();
+    samples.sort_by(|a, b| a.clock.0.total_cmp(&b.clock.0));
+
+    if samples.is_empty() {
+        return HpTimeline {
+            recorded: false,
+            samples: 0,
+            max_health: None,
+            min_health_frac: None,
+            end_health_frac: None,
+            near_death: None,
+            min_health_time_s: None,
+            healed_frac: None,
+            under_threshold_time_frac: None,
+        };
+    }
+
+    // `max_health` is the high-water mark seen across the samples; on old builds
+    // the property is itself a running high-water mark, so this is the best
+    // stable denominator available and is taken as an assumption.
+    let max_health = samples.iter().map(|s| s.max_health).fold(0.0f32, f32::max);
+    let max_health = if max_health > 0.0 { max_health } else { samples[0].health };
+
+    let mut min_frac = f32::MAX;
+    let mut min_clock = 0.0f32;
+    for s in &samples {
+        if max_health > 0.0 {
+            let f = s.health / max_health;
+            if f < min_frac {
+                min_frac = f;
+                min_clock = elapsed(report, s.clock);
+            }
+        }
+    }
+    let min_frac = (min_frac <= 1.0 && max_health > 0.0).then_some(min_frac);
+    let end_health_frac = samples
+        .last()
+        .map(|s| if max_health > 0.0 { s.health / max_health } else { 1.0 });
+    let healed: f32 = samples.windows(2).map(|w| (w[1].health - w[0].health).max(0.0)).sum();
+    // Not clamped: >1.0 means the ship healed more than a full bar over the
+    // match (multiple Repair Party uses), same convention as taken_frac_of_hp.
+    let healed_frac = (max_health > 0.0).then_some(healed / max_health);
+
+    let near_death = min_frac.map(|f| f < NEAR_DEATH_FRAC);
+
+    // Fraction of the match the ship spent below the near-death threshold.
+    // Health is piecewise-constant between recorded changes, so prepend a
+    // full-HP baseline at battle start and extend the last held value to the
+    // end (battle end, or the death clock when the ship died).
+    let mut points: Vec<(f32, f32)> = samples
+        .iter()
+        .map(|s| (elapsed(report, s.clock), if max_health > 0.0 { s.health / max_health } else { 1.0 }))
+        .collect();
+    points.sort_by(|a, b| a.0.total_cmp(&b.0));
+    if points.first().map(|(t, _)| *t > 0.0).unwrap_or(false) {
+        points.insert(0, (0.0, 1.0));
+    }
+    let last_t = points.last().map(|(t, _)| *t).unwrap_or(0.0);
+    let end_t = report
+        .deaths_by_victim()
+        .get(&self_entity)
+        .map(|&c| elapsed(report, c))
+        .or_else(|| report.played_duration())
+        .unwrap_or(last_t);
+    let mut under_time = 0.0f32;
+    for w in points.windows(2) {
+        let dt = (w[1].0 - w[0].0).max(0.0);
+        if w[0].1 < NEAR_DEATH_FRAC {
+            under_time += dt;
+        }
+    }
+    if let Some((t, f)) = points.last() {
+        if *f < NEAR_DEATH_FRAC {
+            under_time += (end_t - t).max(0.0);
+        }
+    }
+    let total_time = (end_t - 0.0).max(0.0);
+    let under_threshold_time_frac = (total_time > 0.0).then_some((under_time / total_time).clamp(0.0, 1.0));
+
+    HpTimeline {
+        recorded: true,
+        samples: samples.len() as u32,
+        max_health: (max_health > 0.0).then_some(max_health),
+        min_health_frac: min_frac,
+        end_health_frac,
+        near_death,
+        min_health_time_s: (max_health > 0.0).then_some(min_clock),
+        healed_frac,
+        under_threshold_time_frac,
     }
 }
 
@@ -1152,6 +1290,23 @@ pub fn render(report: &BattleReport, params: &dyn GameParamProvider) -> String {
         p.exposure.approach_frac.map(|v| format!("{:.0}%", v * 100.0)).unwrap_or_else(|| "?" .to_owned()),
         p.exposure.kiting_frac.map(|v| format!("{:.0}%", v * 100.0)).unwrap_or_else(|| "?" .to_owned()),
     ));
+    s.push_str("\n-- 血量/濒死(S3 HP 时间线) --\n");
+    if p.hp_timeline.recorded {
+        let pct = |v: Option<f32>| v.map(|x| format!("{:.0}%", x * 100.0)).unwrap_or_else(|| "?" .to_owned());
+    s.push_str(&format!(
+        "  样本 {}; 最大HP {:.0}; 最低血 {}; 结束血 {}; 濒死(<20%)={}; 最低血时刻 {}s; 累计修复回血 {}; 血线以下时间占比 {}\n",
+        p.hp_timeline.samples,
+        p.hp_timeline.max_health.unwrap_or(0.0),
+        pct(p.hp_timeline.min_health_frac),
+        pct(p.hp_timeline.end_health_frac),
+        if p.hp_timeline.near_death == Some(true) { "是" } else { "否" },
+        p.hp_timeline.min_health_time_s.map(|t| format!("{t:.0}")).unwrap_or_else(|| "?" .to_owned()),
+        pct(p.hp_timeline.healed_frac),
+        pct(p.hp_timeline.under_threshold_time_frac),
+    ));
+    } else {
+        s.push_str("  无血量变化或未开启记录\n");
+    }
     s.push_str("\n-- 结论 --\n");
     for c in &p.conclusions {
         s.push_str(&format!("  - {}\n", c));

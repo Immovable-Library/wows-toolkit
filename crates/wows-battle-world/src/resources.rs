@@ -634,6 +634,25 @@ pub struct PositionSample {
 #[derive(Resource, Debug, Clone, Default)]
 pub struct PositionHistoryLog(pub Vec<PositionSample>);
 
+/// One observed health value for a vehicle at a clock.
+#[derive(Debug, Clone, Copy)]
+pub struct HealthSample {
+    pub entity: EntityId,
+    pub clock: GameClock,
+    pub health: f32,
+    pub max_health: f32,
+}
+
+/// Every health update observed during the parse, in packet order. An
+/// unchanged value is not re-logged on every broadcast, so the log holds the
+/// value changes (each tick, each heal) that actually happened.
+///
+/// Populated only when `IngestOptions::record_health_history` is set; it
+/// defaults to `false`, so an empty log does not mean "never damaged", it may
+/// mean recording was never turned on for this parse.
+#[derive(Resource, Debug, Clone, Default)]
+pub struct HealthHistoryLog(pub Vec<HealthSample>);
+
 /// One observed increment of a self-player ribbon.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub struct RibbonEvent {

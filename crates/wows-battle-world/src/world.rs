@@ -31,6 +31,7 @@ use crate::resources::DamageLedger;
 use crate::resources::DeadShips;
 use crate::resources::EntityIndex;
 use crate::resources::HitHistoryLog;
+use crate::resources::HealthHistoryLog;
 use crate::resources::Hydrophone;
 use crate::resources::InteractiveZoneIndex;
 use crate::resources::KillLog;
@@ -171,6 +172,15 @@ impl<'res, 'replay, G: ResourceLoader> BattleWorld<'res, 'replay, G> {
     /// rather than "not recorded".
     pub fn set_record_position_history(&mut self, record: bool) {
         self.options.record_position_history = record;
+    }
+
+    /// Accumulate every health change in `HealthHistoryLog` for the whole parse.
+    ///
+    /// Off by default because only an HP-timeline consumer (survival S3) reads
+    /// it. Any consumer of `BattleReport::hp_timeline` must turn it on before
+    /// feeding packets.
+    pub fn set_record_health_history(&mut self, record: bool) {
+        self.options.record_health_history = record;
     }
 
     /// Replace the consumable inventory for one entity.
@@ -316,6 +326,7 @@ fn insert_empty_resources(world: &mut World) {
     world.insert_resource(HitHistoryLog::default());
     world.insert_resource(SalvoLog::default());
     world.insert_resource(PositionHistoryLog::default());
+    world.insert_resource(HealthHistoryLog::default());
 }
 
 /// Build MetadataPlayers from the replay vehicles list.

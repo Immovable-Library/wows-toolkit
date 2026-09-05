@@ -86,6 +86,7 @@ pub fn dispatch<G: ResourceLoader>(
                 version,
                 constants,
                 clock,
+                options.record_health_history,
             );
             zones::handle_entity_property_zone(prop.entity_id, prop.property, &prop.value, world);
             match_state::handle_entity_property_match(prop.property, &prop.value, clock, world, constants, version);

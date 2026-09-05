@@ -66,6 +66,7 @@ pub fn run(
             record_hit_history: true,
             record_salvo_history: true,
             record_position_history: true,
+            record_health_history: true,
         };
         let report = match battle_report_for(&replay_file, ctx, options) {
             Ok(report) => report,

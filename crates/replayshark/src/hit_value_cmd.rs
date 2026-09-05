@@ -64,6 +64,7 @@ pub fn run(
             record_hit_history: true,
             record_salvo_history: true,
             record_position_history: false,
+            record_health_history: false,
         };
         let report = match battle_report_for(&replay_file, ctx, options) {
             Ok(report) => report,
@@ -102,6 +103,7 @@ pub fn run_summary(
             record_hit_history: true,
             record_salvo_history: true,
             record_position_history: false,
+            record_health_history: false,
         };
         let report = match battle_report_for(&replay_file, ctx, options) {
             Ok(report) => report,
@@ -140,6 +142,7 @@ pub fn run_volleys(
             record_hit_history: true,
             record_salvo_history: true,
             record_position_history: false,
+            record_health_history: false,
         };
         let report = match battle_report_for(&replay_file, ctx, options) {
             Ok(report) => report,
@@ -179,6 +182,7 @@ pub fn run_report(
             record_hit_history: true,
             record_salvo_history: true,
             record_position_history: false,
+            record_health_history: false,
         };
         let report = match battle_report_for(&replay_file, ctx, options) {
             Ok(report) => report,

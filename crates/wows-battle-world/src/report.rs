@@ -54,6 +54,8 @@ use crate::resources::MatchState;
 use crate::resources::PlayerIndex;
 use crate::resources::PositionHistoryLog;
 use crate::resources::PositionSample;
+use crate::resources::HealthHistoryLog;
+use crate::resources::HealthSample;
 use crate::resources::PresenceLog;
 use crate::resources::RibbonEvent;
 use crate::resources::RibbonLog;
@@ -98,6 +100,7 @@ pub struct BattleReport {
     hit_history: Vec<ResolvedShotHit>,
     salvos: Vec<SalvoEvent>,
     positions: PositionHistoryLog,
+    health: HealthHistoryLog,
     deaths: HashMap<EntityId, GameClock>,
     max_duration: u32,
     played_duration: Option<f32>,
@@ -307,6 +310,17 @@ impl BattleReport {
     /// `clock`.
     pub fn positions_over_time(&self) -> &[PositionSample] {
         &self.positions.0
+    }
+
+    /// Every observed health change, in packet order. Empty unless
+    /// `IngestOptions::record_health_history` was set during ingest; see
+    /// `HealthHistoryLog`'s doc comment.
+    ///
+    /// Samples are value changes only (unchanged broadcasts are not repeated),
+    /// so a consumer that needs the starting full-HP point should prepend it
+    /// from the first sample's `max_health` at the battle start clock.
+    pub fn hp_timeline(&self) -> &[HealthSample] {
+        &self.health.0
     }
 
     /// When each vehicle died, keyed by victim entity id, from `KillLog`.
@@ -528,6 +542,7 @@ impl<'res, 'replay, G: ResourceLoader> BattleWorld<'res, 'replay, G> {
         let hit_history = std::mem::take(&mut self.world_mut().resource_mut::<HitHistoryLog>().0);
         let salvos = std::mem::take(&mut self.world_mut().resource_mut::<SalvoLog>().0);
         let positions = std::mem::take(&mut *self.world_mut().resource_mut::<PositionHistoryLog>());
+        let health = std::mem::take(&mut *self.world_mut().resource_mut::<HealthHistoryLog>());
 
         BattleReport {
             arena_id,
@@ -561,6 +576,7 @@ impl<'res, 'replay, G: ResourceLoader> BattleWorld<'res, 'replay, G> {
             hit_history,
             salvos,
             positions,
+            health,
             deaths: death_clock_by_victim,
             max_duration,
             played_duration,

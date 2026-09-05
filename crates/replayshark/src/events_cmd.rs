@@ -63,6 +63,7 @@ pub fn run(ctx: &dyn GameDataContext, inputs: Vec<PathBuf>, out: Option<PathBuf>
             record_hit_history: true,
             record_salvo_history: true,
             record_position_history: false,
+            record_health_history: false,
         };
         let report = match battle_report_for(&replay_file, ctx, options) {
             Ok(report) => report,
