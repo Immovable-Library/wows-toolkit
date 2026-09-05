@@ -1,6 +1,7 @@
 mod battle_results_cmd;
 mod events_cmd;
 mod hit_value_cmd;
+mod performance_cmd;
 mod survival_cmd;
 
 use battle_results_cmd::ResultsFormat;
@@ -267,6 +268,21 @@ enum Commands {
         /// s1=incoming, s2=exposure, s3=hp, s4=output_coupling). Empty = all.
         #[arg(long, value_delimiter = ',')]
         dims: Vec<wows_replay_insights::survival::SurvivalDimension>,
+    },
+    /// Whole-match performance: survival (S1-S4) + output-end, one page.
+    Performance {
+        /// Replay files or directories to evaluate
+        #[arg(required = true)]
+        replays: Vec<PathBuf>,
+        /// Write to this file; defaults to stdout
+        #[arg(short, long)]
+        out: Option<PathBuf>,
+        /// Local ship-name table (id -> Chinese)
+        #[arg(long)]
+        ship_names: Option<PathBuf>,
+        /// Render the human-readable one-page report instead of JSON
+        #[arg(long, default_value_t = false)]
+        text: bool,
     },
 }
 
@@ -1554,6 +1570,9 @@ fn main() {
         }
         Commands::Survival { replays, out, ship_names, text, dims } => {
             survival_cmd::run(ctx, game_dir, extracted, replays, out, ship_names, text, dims).expect("survival command failed");
+        }
+        Commands::Performance { replays, out, ship_names, text } => {
+            performance_cmd::run(ctx, game_dir, extracted, replays, out, ship_names, text).expect("performance command failed");
         }
         Commands::Query { command } => match command {
             QueryCommands::ArenaId { replays } => {

@@ -1,0 +1,95 @@
+//! `performance` command: whole-match performance (survival S1-S4 + output-end)
+//! merged into one report, as JSON (default) or a one-page text page (`--text`).
+
+use std::fs::File;
+use std::io::Write;
+use std::path::PathBuf;
+
+use rootcause::prelude::*;
+use rootcause::Result;
+use wows_battle_world::ids::ShotTracking;
+use wows_battle_world::process::battle_report_for;
+use wows_battle_world::process::ProcessOptions;
+use wows_replay_insights::hit_value;
+use wows_replay_insights::hull_dim;
+use wows_replay_insights::performance;
+use wows_replays::context::GameDataContext;
+use wows_replays::ReplayFile;
+
+/// Install the runtime ship-name table (id -> Chinese) from a JSON map.
+fn load_ship_names(path: Option<&std::path::Path>) -> Result<()> {
+    let Some(path) = path else { return Ok(()) };
+    let text = std::fs::read_to_string(path).map_err(|e| report!("read {}: {e}", path.display()))?;
+    let map: std::collections::HashMap<String, String> =
+        serde_json::from_str(&text).map_err(|e| report!("parse {}: {e}", path.display()))?;
+    hit_value::set_ship_names(map);
+    Ok(())
+}
+
+/// Expand directory arguments into their `.wowsreplay` files.
+fn expand_inputs(inputs: &[PathBuf]) -> Result<Vec<PathBuf>> {
+    let mut out = Vec::new();
+    for input in inputs {
+        if input.is_dir() {
+            for entry in walkdir::WalkDir::new(input) {
+                let entry = entry.map_err(|e| report!("walk {}: {e}", input.display()))?;
+                let path = entry.path();
+                if path.is_file() && path.extension().is_some_and(|ext| ext == "wowsreplay") {
+                    out.push(path.to_path_buf());
+                }
+            }
+        } else {
+            out.push(input.clone());
+        }
+    }
+    Ok(out)
+}
+
+#[allow(clippy::too_many_arguments)]
+pub fn run(
+    ctx: &dyn GameDataContext,
+    game_dir: Option<&str>,
+    extracted: Option<&str>,
+    inputs: Vec<PathBuf>,
+    out: Option<PathBuf>,
+    ship_names: Option<PathBuf>,
+    text: bool,
+) -> Result<()> {
+    let replays = expand_inputs(&inputs)?;
+    load_ship_names(ship_names.as_deref())?;
+    let mut sink: Box<dyn Write> = match &out {
+        Some(path) => Box::new(File::create(path).map_err(|e| report!("create {}: {e}", path.display()))?),
+        None => Box::new(std::io::stdout()),
+    };
+
+    for path in &replays {
+        let replay_file =
+            ReplayFile::from_file(path).map_err(|e| report!("read replay {}: {e:?}", path.display()))?;
+        let options = ProcessOptions {
+            shot_tracking: ShotTracking::Tracked,
+            record_hit_history: true,
+            record_salvo_history: true,
+            record_position_history: true,
+            record_health_history: true,
+        };
+        let report = match battle_report_for(&replay_file, ctx, options) {
+            Ok(report) => report,
+            Err(e) => return Err(report!("process {}: {e}", path.display())),
+        };
+        let provider = ctx
+            .metadata_provider(&report.version())
+            .map_err(|e| report!("metadata provider {}: {e}", path.display()))?;
+        let hull = crate::open_build_vfs(game_dir, extracted, &report.version())
+            .as_ref()
+            .map(|vfs| hull_dim::hull_data_for_report(&report, provider.as_ref(), vfs));
+        let whole = performance::assess_whole(&report, provider.as_ref(), hull.as_ref());
+        if text {
+            let s = performance::render_whole(&whole);
+            write!(sink, "{s}").map_err(|e| report!("write report: {e}"))?;
+        } else {
+            let row = serde_json::to_string(&whole).map_err(|e| report!("serialize whole-match: {e}"))?;
+            writeln!(sink, "{row}").map_err(|e| report!("write whole-match: {e}"))?;
+        }
+    }
+    Ok(())
+}
