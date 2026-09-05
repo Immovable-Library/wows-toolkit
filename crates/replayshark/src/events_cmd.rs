@@ -117,7 +117,10 @@ fn write_event_stream(report: &BattleReport, provider: &dyn GameParamProvider, w
             })
             .flatten();
         let shell_obj = shell.as_ref().map(shell_to_json);
-        let terminal_strike_deg = hit
+        // Server material angle (>=14.8 only): the shell vs material relative
+        // angle. Kept separate from the locally computed belt-normal angle so a
+        // row is not ambiguous about which reference plane it came from.
+        let material_angle_deg = hit
             .hit
             .terminal_ballistics
             .as_ref()
@@ -137,7 +140,6 @@ fn write_event_stream(report: &BattleReport, provider: &dyn GameParamProvider, w
             }
             _ => (None, None),
         };
-        let strike_angle_deg = terminal_strike_deg.or(belt_strike_deg);
         let collision = hit.hit.hit_type.collision.known().map(|c| c.name()).unwrap_or("UNKNOWN");
         let shell_hit = hit.hit.hit_type.shell_hit.known().map(|s| s.name()).unwrap_or("UNKNOWN");
         writeln!(
@@ -147,7 +149,7 @@ fn write_event_stream(report: &BattleReport, provider: &dyn GameParamProvider, w
                 "type": "hit",
                 "data": detail,
                 "shell": shell_obj,
-                "strike_angle_deg": strike_angle_deg,
+                "material_angle_deg": material_angle_deg,
                 "belt_strike_angle_deg": belt_strike_deg,
                 "angle_on_bow_deg": angle_on_bow_deg,
                 "collision": collision,

@@ -276,6 +276,7 @@ pub fn analyze_volleys(report: &BattleReport, params: &dyn GameParamProvider) ->
     let (self_entity, _) = self_shells(report, params);
 
     let mut fired: BTreeMap<(u32, Option<u32>), u32> = BTreeMap::new();
+    let mut fired_clock: BTreeMap<(u32, Option<u32>), f32> = BTreeMap::new();
     let mut seen: HashSet<(u32, Option<u32>)> = HashSet::new();
     for salvo in report.salvos().iter().filter(|s| s.owner_id == self_entity) {
         if salvo.salvo_id == 0 || salvo.salvo_id == u32::MAX {
@@ -291,6 +292,7 @@ pub fn analyze_volleys(report: &BattleReport, params: &dyn GameParamProvider) ->
             continue;
         }
         *fired.entry(key).or_insert(0) += salvo.shots;
+        fired_clock.entry(key).or_insert(report.game_clock_to_elapsed(salvo.clock).0);
     }
 
     let all = assess(report, params).assessments;
@@ -324,7 +326,10 @@ pub fn analyze_volleys(report: &BattleReport, params: &dyn GameParamProvider) ->
                 targets.push(h.victim_ship.clone());
             }
         }
-        let clock = hits.first().map(|h| h.clock).unwrap_or(0.0);
+        // A volley that landed nothing has no hit clock; fall back to the
+        // salvo's own fire time so it sits at the right point on the timeline
+        // instead of matching start (t=0).
+        let clock = hits.first().map(|h| h.clock).unwrap_or_else(|| fired_clock.get(&key).copied().unwrap_or(0.0));
         let leads: Vec<f32> = hits.iter().filter_map(|h| h.lead_error_m).collect();
         let avg_lead = if leads.is_empty() {
             None
