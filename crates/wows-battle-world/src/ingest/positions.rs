@@ -18,14 +18,19 @@ use crate::components::WeatherZone;
 use crate::components::WeatherZoneData;
 use crate::ids::SourceTeam;
 use crate::resources::EntityIndex;
+use crate::resources::PositionHistoryLog;
+use crate::resources::PositionKind;
+use crate::resources::PositionSample;
 use crate::units::Degrees;
 use crate::units::Radians;
 
 /// Handle a Position packet: update Transform3d for the entity.
-pub fn handle_position(pos: &PositionPacket, world: &mut World, clock: GameClock) {
+pub fn handle_position(pos: &PositionPacket, world: &mut World, clock: GameClock, record: bool) {
     let entity = spawn_or_get(world, pos.pid);
+    let yaw_deg = pos.rotation.yaw.to_degrees();
+    let world_pos = WorldPos::new(pos.position.x, pos.position.y, pos.position.z);
     let t = Transform3d {
-        pos: WorldPos::new(pos.position.x, pos.position.y, pos.position.z),
+        pos: world_pos,
         yaw: Radians::from(pos.rotation.yaw),
         pitch: Radians::from(pos.rotation.pitch),
         roll: Radians::from(pos.rotation.roll),
@@ -34,19 +39,28 @@ pub fn handle_position(pos: &PositionPacket, world: &mut World, clock: GameClock
     if let Ok(mut e) = world.get_entity_mut(entity) {
         e.insert(t);
     }
+    if record {
+        world.resource_mut::<PositionHistoryLog>().0.push(PositionSample {
+            entity: pos.pid,
+            clock,
+            kind: PositionKind::World { position: world_pos, yaw_deg },
+        });
+    }
 }
 
 /// Handle a PlayerOrientation packet: update Transform3d only when parent_id == 0.
 ///
 /// Non-zero parent_id indicates the entity is attached (e.g. camera to ship);
 /// only the free-floating case maps to a ship world position.
-pub fn handle_player_orientation(orient: &PlayerOrientationPacket, world: &mut World, clock: GameClock) {
+pub fn handle_player_orientation(orient: &PlayerOrientationPacket, world: &mut World, clock: GameClock, record: bool) {
     if orient.parent_id != EntityId::from(0u32) {
         return;
     }
     let entity = spawn_or_get(world, orient.pid);
+    let yaw_deg = orient.rotation.yaw.to_degrees();
+    let world_pos = WorldPos::new(orient.position.x, orient.position.y, orient.position.z);
     let t = Transform3d {
-        pos: WorldPos::new(orient.position.x, orient.position.y, orient.position.z),
+        pos: world_pos,
         yaw: Radians::from(orient.rotation.yaw),
         pitch: Radians::from(orient.rotation.pitch),
         roll: Radians::from(orient.rotation.roll),
@@ -55,6 +69,13 @@ pub fn handle_player_orientation(orient: &PlayerOrientationPacket, world: &mut W
     if let Ok(mut e) = world.get_entity_mut(entity) {
         e.insert(t);
     }
+    if record {
+        world.resource_mut::<PositionHistoryLog>().0.push(PositionSample {
+            entity: orient.pid,
+            clock,
+            kind: PositionKind::World { position: world_pos, yaw_deg },
+        });
+    }
 }
 
 /// Handle MinimapUpdate entries.
@@ -62,7 +83,13 @@ pub fn handle_player_orientation(orient: &PlayerOrientationPacket, world: &mut W
 /// Source-team filtering: when `source_team` is Some, only updates for entities
 /// belonging to that team are applied. Entities not yet known fall through so
 /// their first sighting still registers.
-pub fn handle_minimap_updates(updates: &[MinimapUpdate], world: &mut World, clock: GameClock, source_team: SourceTeam) {
+pub fn handle_minimap_updates(
+    updates: &[MinimapUpdate],
+    world: &mut World,
+    clock: GameClock,
+    source_team: SourceTeam,
+    record: bool,
+) {
     for update in updates {
         // Source-team filter.
         if let Some(team) = source_team.0
@@ -108,6 +135,13 @@ pub fn handle_minimap_updates(updates: &[MinimapUpdate], world: &mut World, cloc
         let entity = spawn_or_get(world, update.entity_id);
         if let Ok(mut e) = world.get_entity_mut(entity) {
             e.insert(placement);
+        }
+        if record {
+            world.resource_mut::<PositionHistoryLog>().0.push(PositionSample {
+                entity: update.entity_id,
+                clock,
+                kind: PositionKind::Minimap { position, heading_deg: heading.value(), visible },
+            });
         }
     }
 }

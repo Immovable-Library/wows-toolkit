@@ -22,6 +22,7 @@ use wows_replays::types::ArenaId;
 use wows_replays::types::EntityId;
 use wows_replays::types::GameClock;
 use wows_replays::types::GameParamId;
+use wows_replays::types::NormalizedPos;
 use wows_replays::types::WorldPos;
 use wows_replays::types::WorldPos2D;
 use wowsunpack::game_types::BattleStage;
@@ -601,6 +602,37 @@ pub struct SalvoEvent {
 /// than adding up rows.
 #[derive(Resource, Debug, Clone, Default)]
 pub struct SalvoLog(pub Vec<SalvoEvent>);
+
+/// One observed position sample for a vehicle, tagged by coordinate space.
+#[derive(Debug, Clone, Copy)]
+pub enum PositionKind {
+    /// Full-precision world position and yaw (Position / PlayerOrientation).
+    World { position: WorldPos, yaw_deg: f32 },
+    /// Quantized normalized minimap position, heading (degrees) and snapshot
+    /// visibility (updateMinimapVisionInfo).
+    Minimap { position: NormalizedPos, heading_deg: f32, visible: bool },
+}
+
+/// A position sample at one clock for one game entity.
+#[derive(Debug, Clone, Copy)]
+pub struct PositionSample {
+    pub entity: EntityId,
+    pub clock: GameClock,
+    pub kind: PositionKind,
+}
+
+/// Every position update observed during the parse, in packet order.
+///
+/// Two vehicle-position lanes feed it: `Position`/`PlayerOrientation` world
+/// samples (dense, in AOI) and `MinimapUpdate` samples (sparse, quantized,
+/// visible or last-known). They are kept per-sample with an explicit
+/// [`PositionKind`] so a consumer never mixes the two coordinate spaces.
+///
+/// Populated only when `IngestOptions::record_position_history` is set; it
+/// defaults to `false`, so an empty log does not mean nothing moved, it may
+/// mean recording was never turned on for this parse.
+#[derive(Resource, Debug, Clone, Default)]
+pub struct PositionHistoryLog(pub Vec<PositionSample>);
 
 /// One observed increment of a self-player ribbon.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]

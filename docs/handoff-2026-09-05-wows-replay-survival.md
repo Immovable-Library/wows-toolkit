@@ -4,7 +4,13 @@ Snapshot date: 2026-09-05. 新对话从这里无缝续接：**生存端评估引
 
 ## 一句话续接指令（新对话直接粘贴）
 
-> 继续 WOWS 回放生存端评估开发。先读 `docs/handoff-2026-09-05-wows-replay-survival.md` 与 `C:/Users/asdfg/.codex/skills/wows-replay-parser/specs/2026-09-05-survival-evaluation-engine.md`。**S1（生存画像 + 0-100 生存分）已实现**：`replayshark` 新增 `survival` 子命令（默认 JSONL / `--text` 文本）；`wows-replay-insights/src/survival.rs` 产出 `SurvivalProfile`；复用 `hit_value::estimate_damage` 与「仅敌方」逻辑。**本会话继续从 S2（位置时间线：暴露/kiting/掩体）开始**；S2/S3 需在 `wows-battle-world` 新增位置（`Position` 0x0a / `Transform3d`/`MinimapPlacement`）与 HP 时间线导出。`games_dir=D:/World_of_Warships`。
+> 继续 WOWS 回放生存端评估开发。先读 `docs/handoff-2026-09-05-wows-replay-survival.md` 与 `C:/Users/asdfg/.codex/skills/wows-replay-parser/specs/2026-09-05-survival-evaluation-engine.md`。**S1（生存画像 + 0-100 生存分）与 S2（位置时间线导出 + 近似暴露/走位）已实现**：`replayshark` 新增 `survival` 子命令（默认 JSONL / `--text` 文本）；`wows-replay-insights/src/survival.rs` 产出 `SurvivalProfile` 与 `Exposure`；复用 `hit_value::estimate_damage` 与「仅敌方」逻辑。`BattleReport::positions_over_time()` 已暴露。**本会话继续从 S3（HP 时间线：血量管理/濒死时刻/血量→输出耦合）开始**；S3 需在 `wows-battle-world` 新增 HP 时间线导出。`games_dir=D:/World_of_Warships`。
+
+## S2 已完成（本会话实现）
+
+- **位置时间线导出**：`wows-battle-world` 新增 `PositionHistoryLog` / `PositionSample` / `PositionKind`（World=全精度位置+yaw度；Minimap=归一化位置+heading度+可见性）。`IngestOptions`/`ProcessOptions`/`BattleWorld` 增加 `record_position_history`（默认 false），`handle_position`/`handle_player_orientation`/`handle_minimap_updates` 门控记录；`BattleReport::positions_over_time()` 暴露。
+- **近似暴露/走位**（`survival.rs` `Exposure`）：只用世界坐标（AOI 内），`self_samples`/`enemy_samples`、最近敌舰 min/avg 距离、12km 内暴露占比、12km 内平均敌舰数（按实体去重）、approach/kiting 比例（自舰跨 ~1s 航向 vs 敌舰方向的 dot 符号）。`cover_status="unknown"`（地图几何/真实视线未建模，已注明近似）。
+- **文档**：ADR 见 skill `docs/adr/0002-s1-survival-evaluation.md`（追加 S2 节）；本 handoff 已更新。
 
 ## S1 已完成（本会话实现，含根修）
 

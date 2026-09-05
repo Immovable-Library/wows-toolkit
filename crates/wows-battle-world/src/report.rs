@@ -52,6 +52,8 @@ use crate::resources::HitHistoryLog;
 use crate::resources::KillLog;
 use crate::resources::MatchState;
 use crate::resources::PlayerIndex;
+use crate::resources::PositionHistoryLog;
+use crate::resources::PositionSample;
 use crate::resources::PresenceLog;
 use crate::resources::RibbonEvent;
 use crate::resources::RibbonLog;
@@ -95,6 +97,7 @@ pub struct BattleReport {
     presence: PresenceLog,
     hit_history: Vec<ResolvedShotHit>,
     salvos: Vec<SalvoEvent>,
+    positions: PositionHistoryLog,
     deaths: HashMap<EntityId, GameClock>,
     max_duration: u32,
     played_duration: Option<f32>,
@@ -289,6 +292,18 @@ impl BattleReport {
     /// `params_id` belongs to the owner ship's ATBA ammo set.
     pub fn salvos(&self) -> &[SalvoEvent] {
         &self.salvos
+    }
+
+    /// Every position sample for every vehicle, in packet order. Empty unless
+    /// `IngestOptions::record_position_history` was set during ingest; see
+    /// `PositionHistoryLog`'s doc comment.
+    ///
+    /// Samples carry a `PositionKind`, so world (dense, AOI) and minimap
+    /// (sparse, spotted) lanes never mix coordinate spaces. A consumer that
+    /// needs a per-entity ordered timeline groups by `entity` then sorts by
+    /// `clock`.
+    pub fn positions_over_time(&self) -> &[PositionSample] {
+        &self.positions.0
     }
 
     /// When each vehicle died, keyed by victim entity id, from `KillLog`.
@@ -509,6 +524,7 @@ impl<'res, 'replay, G: ResourceLoader> BattleWorld<'res, 'replay, G> {
         let presence = std::mem::take(&mut *self.world_mut().resource_mut::<PresenceLog>());
         let hit_history = std::mem::take(&mut self.world_mut().resource_mut::<HitHistoryLog>().0);
         let salvos = std::mem::take(&mut self.world_mut().resource_mut::<SalvoLog>().0);
+        let positions = std::mem::take(&mut *self.world_mut().resource_mut::<PositionHistoryLog>());
 
         BattleReport {
             arena_id,
@@ -541,6 +557,7 @@ impl<'res, 'replay, G: ResourceLoader> BattleWorld<'res, 'replay, G> {
             presence,
             hit_history,
             salvos,
+            positions,
             deaths: death_clock_by_victim,
             max_duration,
             played_duration,

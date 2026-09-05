@@ -36,11 +36,17 @@ pub struct ProcessOptions {
     pub shot_tracking: ShotTracking,
     pub record_hit_history: bool,
     pub record_salvo_history: bool,
+    pub record_position_history: bool,
 }
 
 impl Default for ProcessOptions {
     fn default() -> Self {
-        Self { shot_tracking: ShotTracking::Untracked, record_hit_history: false, record_salvo_history: false }
+        Self {
+            shot_tracking: ShotTracking::Untracked,
+            record_hit_history: false,
+            record_salvo_history: false,
+            record_position_history: false,
+        }
     }
 }
 
@@ -63,6 +69,7 @@ pub fn battle_report_for(
     world.set_shot_tracking(options.shot_tracking);
     world.set_record_hit_history(options.record_hit_history);
     world.set_record_salvo_history(options.record_salvo_history);
+    world.set_record_position_history(options.record_position_history);
 
     let mut parser = Parser::with_version(provider.entity_specs(), version);
     let mut remaining = replay.packet_data();

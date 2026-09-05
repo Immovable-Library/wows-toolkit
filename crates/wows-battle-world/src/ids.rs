@@ -30,6 +30,10 @@ pub struct IngestOptions {
     /// only a shots-fired statistic needs it, and a renderer draws shells from
     /// the active-shot list instead.
     pub record_salvo_history: bool,
+    /// Accumulate every position sample in `PositionHistoryLog`. Off by
+    /// default: only a positional-analysis consumer needs it, and the log can
+    /// hold thousands of samples.
+    pub record_position_history: bool,
 }
 
 impl Default for IngestOptions {
@@ -39,6 +43,7 @@ impl Default for IngestOptions {
             source_team: SourceTeam(None),
             record_hit_history: false,
             record_salvo_history: false,
+            record_position_history: false,
         }
     }
 }

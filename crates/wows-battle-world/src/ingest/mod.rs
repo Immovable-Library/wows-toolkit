@@ -63,11 +63,11 @@ pub fn dispatch<G: ResourceLoader>(
         }
         DecodedPacketPayload::Position(pos) => {
             note_seen(world, pos.pid, clock);
-            positions::handle_position(&pos, world, clock);
+            positions::handle_position(&pos, world, clock, options.record_position_history);
         }
         DecodedPacketPayload::PlayerOrientation(orient) => {
             note_seen(world, orient.pid, clock);
-            positions::handle_player_orientation(&orient, world, clock);
+            positions::handle_player_orientation(&orient, world, clock, options.record_position_history);
         }
         DecodedPacketPayload::DamageStat(ref entries) => {
             combat::handle_damage_stat(entries, world);
@@ -139,7 +139,7 @@ pub fn dispatch<G: ResourceLoader>(
             combat::handle_damage_received(victim, aggressors, clock, world);
         }
         DecodedPacketPayload::MinimapUpdate { updates, .. } => {
-            positions::handle_minimap_updates(&updates, world, clock, options.source_team);
+            positions::handle_minimap_updates(&updates, world, clock, options.source_team, options.record_position_history);
         }
         DecodedPacketPayload::PropertyUpdate(update) => {
             zones::handle_property_update(update, clock, world);

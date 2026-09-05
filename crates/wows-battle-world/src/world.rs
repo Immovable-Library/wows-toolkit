@@ -39,6 +39,7 @@ use crate::resources::MetadataPlayers;
 use crate::resources::PendingDropParams;
 use crate::resources::PlaneIndex;
 use crate::resources::PlayerIndex;
+use crate::resources::PositionHistoryLog;
 use crate::resources::PresenceLog;
 use crate::resources::ReplayVehicles;
 use crate::resources::RibbonLog;
@@ -158,6 +159,18 @@ impl<'res, 'replay, G: ResourceLoader> BattleWorld<'res, 'replay, G> {
     /// rather than "not recorded".
     pub fn set_record_salvo_history(&mut self, record: bool) {
         self.options.record_salvo_history = record;
+    }
+
+    /// Accumulate every position sample in `PositionHistoryLog` for the whole
+    /// parse.
+    ///
+    /// Off by default because only a positional-analysis consumer reads it and
+    /// the log can hold thousands of samples. Any consumer of
+    /// `BattleReport::positions_over_time` must turn it on before feeding
+    /// packets: the log is otherwise empty, which reads as "nothing moved"
+    /// rather than "not recorded".
+    pub fn set_record_position_history(&mut self, record: bool) {
+        self.options.record_position_history = record;
     }
 
     /// Replace the consumable inventory for one entity.
@@ -302,6 +315,7 @@ fn insert_empty_resources(world: &mut World) {
     world.insert_resource(PresenceLog::default());
     world.insert_resource(HitHistoryLog::default());
     world.insert_resource(SalvoLog::default());
+    world.insert_resource(PositionHistoryLog::default());
 }
 
 /// Build MetadataPlayers from the replay vehicles list.
@@ -374,6 +388,8 @@ mod tests {
     use wows_replays::types::WorldPos;
 
     use crate::resources::HitHistoryLog;
+    use crate::resources::PositionHistoryLog;
+    use crate::resources::PositionKind;
     use crate::resources::PlayerIndex;
     use crate::resources::PresenceLog;
     use crate::resources::PresenceWindow;
@@ -383,6 +399,9 @@ mod tests {
     use crate::test_support::minimal_meta;
     use crate::test_support::self_player;
     use crate::world::BattleWorld;
+    use wows_replays::packet2::PlayerOrientationPacket;
+    use wows_replays::packet2::Rot3;
+    use wows_replays::packet2::Vec3;
 
     /// A despawned entity is gone, so its presence window must not keep
     /// answering `continuously_observed` with true. A false "yes" there lets
@@ -506,6 +525,39 @@ mod tests {
             if record {
                 assert_eq!(log.0[0].shots, 3, "the salvo's full width is recorded, not the shells that landed");
                 assert_eq!(log.0[0].owner_id, EntityId::from(7u32));
+            }
+        }
+    }
+
+    /// The position history is off by default, so an unset flag reads as
+    /// "nothing moved" rather than "not recorded". Driven through the ingest
+    /// handler that consults it so a setter wired to the wrong field fails.
+    #[test]
+    fn recording_the_position_history_is_off_until_it_is_set() {
+        for (record, expected) in [(false, 0usize), (true, 1usize)] {
+            let meta = minimal_meta();
+            let resources = StubResources(fixture_param());
+            let mut world = BattleWorld::new(&meta, &resources, None);
+
+            world.set_record_position_history(record);
+            let options = world.options;
+            crate::ingest::positions::handle_player_orientation(
+                &PlayerOrientationPacket {
+                    pid: EntityId::from(9u32),
+                    parent_id: EntityId::from(0u32),
+                    position: Vec3 { x: 100.0, y: 0.0, z: 50.0 },
+                    rotation: Rot3 { yaw: 0.5, pitch: 0.0, roll: 0.0 },
+                },
+                world.world_mut(),
+                GameClock(10.0),
+                options.record_position_history,
+            );
+
+            let log = world.world().resource::<PositionHistoryLog>();
+            assert_eq!(log.0.len(), expected, "record_position_history = {record}");
+            if record {
+                assert_eq!(log.0[0].entity, EntityId::from(9u32));
+                assert!(matches!(log.0[0].kind, PositionKind::World { .. }));
             }
         }
     }

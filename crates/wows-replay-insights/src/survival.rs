@@ -12,10 +12,13 @@
 //! unidentified rather than assigned damage.
 
 use std::collections::HashMap;
+use std::collections::HashSet;
 
 use wows_battle_world::report::BattleReport;
+use wows_battle_world::resources::PositionKind;
 use wows_replays::types::EntityId;
 use wows_replays::types::GameClock;
+use wows_replays::types::WorldPos;
 use wowsunpack::game_params::types::GameParamProvider;
 use wowsunpack::game_params::types::Param;
 use wowsunpack::game_types::ChargeCount;
@@ -33,6 +36,17 @@ use crate::hit_value;
 /// prompt. Chosen from the fire section's default duration; a DCP is prompt
 /// only inside this window.
 const PROMPT_DCP_WINDOW_S: f32 = 10.0;
+/// Distance (m) inside which a known enemy counts as "exposed".
+const EXPOSURE_RADIUS_M: f32 = 12000.0;
+/// Max clock gap when matching a self sample to a nearby enemy sample.
+const EXPOSURE_MATCH_TOLERANCE_S: f32 = 2.0;
+/// Min self movement (m) before a course is considered (avoids noise).
+const MOTION_MIN_M: f32 = 0.5;
+/// Stride (s) over which the self course is measured, so per-sample position
+/// jitter does not dominate the approach/kiting sign.
+const MOTION_STRIDE_S: f32 = 1.0;
+/// Dot-product threshold that separates "moving toward" from "kiting away".
+const MOTION_APPROACH_DOT: f32 = 0.3;
 
 /// One incoming shell hit on the self ship, with the damage it estimated.
 #[derive(Clone, Debug)]
@@ -87,6 +101,34 @@ pub struct ScoreBreakdown {
     pub survival_weight: f32,
     pub self_rescue_weight: f32,
     pub score: f32,
+}
+
+/// S2: coarse exposure / kiting assessment from the position timeline.
+///
+/// Uses world-space positions only (dense, in-AOI ships) and does NOT model
+/// terrain cover or line of sight: `cover_status` stays "unknown" and every
+/// figure is labelled approximate. It measures how close self got to the
+/// nearest known enemy and whether, while within range, the self moved toward
+/// (approach) or away from (kiting) that enemy.
+#[derive(Clone, Debug)]
+#[cfg_attr(feature = "serde", derive(serde::Serialize))]
+pub struct Exposure {
+    /// Number of world-space self samples observed.
+    pub self_samples: u32,
+    /// Number of world-space enemy samples observed.
+    pub enemy_samples: u32,
+    pub nearest_enemy_min_m: Option<f32>,
+    pub nearest_enemy_avg_m: Option<f32>,
+    /// Fraction of self samples where the nearest known enemy was within 12 km.
+    pub exposed_time_frac: f32,
+    /// Average number of enemies within 12 km over the exposed samples.
+    pub enemies_within_12km_avg: f32,
+    /// Fraction of exposed samples where the self moved toward the enemy.
+    pub approach_frac: f32,
+    /// Fraction of exposed samples where the self moved away from the enemy.
+    pub kiting_frac: f32,
+    /// Terrain-based cover distance: not modelled (map geometry deferred).
+    pub cover_status: String,
 }
 
 /// The full S1 survival profile for the recording player.
@@ -156,6 +198,7 @@ pub struct SurvivalProfile {
     pub score_breakdown: ScoreBreakdown,
     pub hits: Vec<IncomingHit>,
     pub sources: Vec<IncomingSource>,
+    pub exposure: Exposure,
 }
 
 /// Adapt `&dyn GameParamProvider` to the generic `P: GameParamProvider` that
@@ -442,6 +485,7 @@ pub fn assess(report: &BattleReport, params: &dyn GameParamProvider) -> Survival
     hits.sort_by(|a, b| a.clock_s.partial_cmp(&b.clock_s).unwrap_or(std::cmp::Ordering::Equal));
     let mut sources: Vec<IncomingSource> = sources.into_values().collect();
     sources.sort_by(|a, b| b.damage_estimated.partial_cmp(&a.damage_estimated).unwrap_or(std::cmp::Ordering::Equal));
+    let exposure = assess_exposure(report, self_entity, &enemies);
 
     // Death timing.
     let died = report.deaths_by_victim().contains_key(&self_entity);
@@ -516,13 +560,22 @@ pub fn assess(report: &BattleReport, params: &dyn GameParamProvider) -> Survival
     if unidentified_hits > 0 {
         conclusions.push(format!("{unidentified_hits} 发命中无法匹配弹道/鱼雷, 未计入伤害"));
     }
-    conclusions.push("进水/濒死状态缺 HP 与位置时间线(属 S2/S3), S1 未做暴露/走位归因".to_owned());
+    conclusions.push("S3 未做(缺 HP 时间线); S2 位置导出已做近似暴露/走位, 掩体/真实视线未含".to_owned());
     if saturating_hits > 0 {
         conclusions.push(format!("{saturating_hits} 发命中已饱和分区, 按 ~1/6 边际伤害计入"));
     } else if taken_damage > 0.0 {
         conclusions.push(
             "分区饱和未计入(该构建 hit_locations 可能未启用): 估伤为上限, 实际吃伤可能更低".to_owned(),
         );
+    }
+    if exposure.self_samples == 0 {
+        conclusions.push("S2 位置时间线未记录(需开启 record_position_history), 走位/暴露未分析".to_owned());
+    } else {
+        conclusions.push(format!(
+            "S2 近似: 12km内暴露占比 {:.0}%, 最近敌舰最小 {:.0}m; 掩体/真实视线未建模(需地图几何与 visibilityFlags)",
+            exposure.exposed_time_frac * 100.0,
+            exposure.nearest_enemy_min_m.unwrap_or(0.0),
+        ));
     }
 
     let grade = grade_for(survival_score);
@@ -601,11 +654,101 @@ pub fn assess(report: &BattleReport, params: &dyn GameParamProvider) -> Survival
         },
         hits,
         sources,
+        exposure,
     }
 }
 
 fn ret_pct(v: f32) -> String {
     format!("{:.0}%", v * 100.0)
+}
+
+/// Build the S2 exposure / kiting profile from the position timeline.
+fn assess_exposure(report: &BattleReport, self_entity: EntityId, enemies: &HashSet<EntityId>) -> Exposure {
+    let mut self_track: Vec<(f32, WorldPos)> = Vec::new();
+    let mut enemy_track: Vec<(f32, WorldPos, EntityId)> = Vec::new();
+    for sample in report.positions_over_time() {
+        if let PositionKind::World { position, .. } = sample.kind {
+            let t = sample.clock.0;
+            if sample.entity == self_entity {
+                self_track.push((t, position));
+            } else if enemies.contains(&sample.entity) {
+                enemy_track.push((t, position, sample.entity));
+            }
+        }
+    }
+    self_track.sort_by(|a, b| a.0.total_cmp(&b.0));
+    enemy_track.sort_by(|a, b| a.0.total_cmp(&b.0));
+
+    let mut nearest_min = f32::MAX;
+    let mut nearest_sum = 0.0f32;
+    let mut nearest_n = 0u32;
+    let mut exposed_n = 0u32;
+    let mut enemy_sum = 0.0f32;
+    let mut approach_n = 0u32;
+    let mut kiting_n = 0u32;
+    let mut motion_n = 0u32;
+
+    for (t, self_pos) in &self_track {
+        let window_start = (t - EXPOSURE_MATCH_TOLERANCE_S).max(0.0);
+        let window_end = t + EXPOSURE_MATCH_TOLERANCE_S;
+        let start = enemy_track.partition_point(|(et, _, _)| *et < window_start);
+        let mut near: Option<(WorldPos, f32)> = None;
+        let mut within_radius: HashSet<EntityId> = HashSet::new();
+        for (et, epos, eid) in &enemy_track[start..] {
+            if *et > window_end {
+                break;
+            }
+            let d = self_pos.distance_xz(epos).value();
+            if near.is_none_or(|(_, nd)| d < nd) {
+                near = Some((*epos, d));
+            }
+            if d < EXPOSURE_RADIUS_M {
+                within_radius.insert(*eid);
+            }
+        }
+        if let Some((epos, d)) = near {
+            nearest_min = nearest_min.min(d);
+            nearest_sum += d;
+            nearest_n += 1;
+            if d < EXPOSURE_RADIUS_M {
+                exposed_n += 1;
+                enemy_sum += within_radius.len() as f32;
+                let prev_i = self_track.partition_point(|(t2, _)| *t2 < *t - MOTION_STRIDE_S);
+                if prev_i > 0 {
+                    let prev = self_track[prev_i - 1].1;
+                    let mv_x = self_pos.x - prev.x;
+                    let mv_z = self_pos.z - prev.z;
+                    let mv_len = (mv_x * mv_x + mv_z * mv_z).sqrt();
+                    if mv_len > MOTION_MIN_M {
+                        let te_x = epos.x - self_pos.x;
+                        let te_z = epos.z - self_pos.z;
+                        let te_len = (te_x * te_x + te_z * te_z).sqrt();
+                        if te_len > 1.0 {
+                            let dot = (mv_x * te_x + mv_z * te_z) / (mv_len * te_len);
+                            if dot > MOTION_APPROACH_DOT {
+                                approach_n += 1;
+                            } else if dot < -MOTION_APPROACH_DOT {
+                                kiting_n += 1;
+                            }
+                            motion_n += 1;
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    Exposure {
+        self_samples: self_track.len() as u32,
+        enemy_samples: enemy_track.len() as u32,
+        nearest_enemy_min_m: (nearest_n > 0).then_some(nearest_min),
+        nearest_enemy_avg_m: if nearest_n > 0 { Some(nearest_sum / nearest_n as f32) } else { None },
+        exposed_time_frac: if self_track.is_empty() { 0.0 } else { exposed_n as f32 / self_track.len() as f32 },
+        enemies_within_12km_avg: if exposed_n > 0 { enemy_sum / exposed_n as f32 } else { 0.0 },
+        approach_frac: if motion_n > 0 { approach_n as f32 / motion_n as f32 } else { 0.0 },
+        kiting_frac: if motion_n > 0 { kiting_n as f32 / motion_n as f32 } else { 0.0 },
+        cover_status: "unknown".to_owned(),
+    }
 }
 
 /// Render a human-readable S1 report for the recording player.
@@ -711,6 +854,21 @@ pub fn render(report: &BattleReport, params: &dyn GameParamProvider) -> String {
         }
     }
 
+    s.push_str("\n-- 暴露/走位(S2 近似) --\n");
+    s.push_str(&format!(
+        "  自舰世界样本 {} 个, 敌舰世界样本 {} 个; 最近敌舰最小 {:.0}m 平均 {:?}; 12km内暴露占比 {:.0}%, 平均敌舰数 {:.1}\n",
+        p.exposure.self_samples,
+        p.exposure.enemy_samples,
+        p.exposure.nearest_enemy_min_m.unwrap_or(0.0),
+        p.exposure.nearest_enemy_avg_m,
+        p.exposure.exposed_time_frac * 100.0,
+        p.exposure.enemies_within_12km_avg,
+    ));
+    s.push_str(&format!(
+        "  靠近敌舰(approach) {:.0}%, 拉开(kiting) {:.0}%; 掩体距离未建模(需地图几何), 真实视线未含\n",
+        p.exposure.approach_frac * 100.0,
+        p.exposure.kiting_frac * 100.0,
+    ));
     s.push_str("\n-- 结论 --\n");
     for c in &p.conclusions {
         s.push_str(&format!("  - {}\n", c));

@@ -63,6 +63,7 @@ pub fn run(
             shot_tracking: ShotTracking::Tracked,
             record_hit_history: true,
             record_salvo_history: true,
+            record_position_history: false,
         };
         let report = match battle_report_for(&replay_file, ctx, options) {
             Ok(report) => report,
@@ -100,6 +101,7 @@ pub fn run_summary(
             shot_tracking: ShotTracking::Tracked,
             record_hit_history: true,
             record_salvo_history: true,
+            record_position_history: false,
         };
         let report = match battle_report_for(&replay_file, ctx, options) {
             Ok(report) => report,
@@ -137,6 +139,7 @@ pub fn run_volleys(
             shot_tracking: ShotTracking::Tracked,
             record_hit_history: true,
             record_salvo_history: true,
+            record_position_history: false,
         };
         let report = match battle_report_for(&replay_file, ctx, options) {
             Ok(report) => report,
@@ -175,6 +178,7 @@ pub fn run_report(
             shot_tracking: ShotTracking::Tracked,
             record_hit_history: true,
             record_salvo_history: true,
+            record_position_history: false,
         };
         let report = match battle_report_for(&replay_file, ctx, options) {
             Ok(report) => report,
