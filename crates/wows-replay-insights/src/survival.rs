@@ -25,6 +25,7 @@ use wowsunpack::game_types::ChargeCount;
 use wowsunpack::game_types::Consumable;
 use wowsunpack::game_types::DamageStatCategory;
 use wowsunpack::game_types::DamageStatWeapon;
+use wowsunpack::game_types::ShellHitType;
 use wowsunpack::recognized::Recognized;
 use wowsunpack::Rc;
 
@@ -46,9 +47,6 @@ const MOTION_MIN_M: f32 = 0.5;
 /// Stride (s) over which the self course is measured, so per-sample position
 /// jitter does not dominate the approach/kiting sign.
 const MOTION_STRIDE_S: f32 = 1.0;
-/// Dot-product threshold that separates "moving toward" from "kiting away".
-const MOTION_APPROACH_DOT: f32 = 0.3;
-
 const AVOIDANCE_WEIGHT: f32 = 0.40;
 const SURVIVAL_WEIGHT: f32 = 0.35;
 const SELF_RESCUE_WEIGHT: f32 = 0.25;
@@ -69,6 +67,68 @@ fn weapon_is_shell(weapon: &DamageStatWeapon) -> bool {
             | DamageStatWeapon::MainCs
             | DamageStatWeapon::AtbaCs
     )
+}
+
+/// How an unidentified (salvo-unmatched) hit is typed by the decoder's
+/// `shell_hit` marker, so a consumer can tell a non-shell projectile from an
+/// aged-out gun shell from an unrecognized weapon id.
+#[derive(Clone, Copy, PartialEq, Debug)]
+enum UnidentifiedKind {
+    /// `ShellHitType::None`: a non-shell projectile (torpedo / aircraft).
+    NonShell,
+    /// A known shell hit type: still a gun shell, just no salvo to key it.
+    Shell,
+    /// Unrecognized shell-hit id: cannot be classified.
+    Unknown,
+}
+
+fn classify_unidentified(hit: &wows_replays::analyzer::battle_controller::state::ResolvedShotHit) -> UnidentifiedKind {
+    match hit.hit.hit_type.shell_hit.known() {
+        Some(ShellHitType::None) => UnidentifiedKind::NonShell,
+        Some(_) => UnidentifiedKind::Shell,
+        None => UnidentifiedKind::Unknown,
+    }
+}
+
+/// The position of an enemy at the clock nearest the requested time, if it has
+/// any sample. Used to measure closing distance to the matched enemy across the
+/// motion window instead of reading a single possibly-stale sample.
+fn pos_at(track: Option<&Vec<(f32, WorldPos)>>, clock: f32) -> Option<WorldPos> {
+    let track = track?;
+    if track.is_empty() {
+        return None;
+    }
+    let i = track.partition_point(|(t, _)| *t < clock);
+    let mut chosen = track[i.min(track.len() - 1)];
+    if i > 0 {
+        let prev = track[i - 1];
+        if (prev.0 - clock).abs() < (chosen.0 - clock).abs() {
+            chosen = prev;
+        }
+    }
+    Some(chosen.1)
+}
+
+/// Linearly interpolate a position at an arbitrary clock between the two
+/// bracketing samples, so a moving enemy sampled at a coarser cadence does not
+/// bias the closing-distance sign by up to a whole sample interval.
+fn interp_pos(track: Option<&Vec<(f32, WorldPos)>>, clock: f32) -> Option<WorldPos> {
+    let track = track?;
+    if track.is_empty() {
+        return None;
+    }
+    let i = track.partition_point(|(t, _)| *t < clock);
+    let prev = i.checked_sub(1).map(|j| track[j]);
+    let next = track.get(i).copied();
+    match (prev, next) {
+        (Some((ta, pa)), Some((tb, pb))) if tb > ta => {
+            let f = ((clock - ta) / (tb - ta)).clamp(0.0, 1.0);
+            Some(WorldPos::new(pa.x + (pb.x - pa.x) * f, 0.0, pa.z + (pb.z - pa.z) * f))
+        }
+        (Some((_, p)), _) => Some(p),
+        (_, Some((_, p))) => Some(p),
+        (None, None) => None,
+    }
 }
 
 /// Weighted average over the factors that are actually known, capped at the
@@ -177,8 +237,9 @@ pub struct ScoreBreakdown {
 /// Uses world-space positions only (dense, in-AOI ships) and does NOT model
 /// terrain cover or line of sight: `cover_status` stays "unknown" and every
 /// figure is labelled approximate. It measures how close self got to the
-/// nearest known enemy and whether, while within range, the self moved toward
-/// (approach) or away from (kiting) that enemy.
+/// nearest known enemy and, while within range, whether the self moved such
+/// that the distance to the matched enemy shrank (approach) or grew (kiting).
+/// Both are a relative measure over the motion window, not a course-only dot.
 #[derive(Clone, Debug)]
 #[cfg_attr(feature = "serde", derive(serde::Serialize))]
 pub struct Exposure {
@@ -194,10 +255,12 @@ pub struct Exposure {
     /// Average number of enemies within 12 km over the exposed samples.
     /// `None` when no exposed sample was observed.
     pub enemies_within_12km_avg: Option<f32>,
-    /// Fraction of exposed samples where the self moved toward the enemy.
+    /// Fraction of exposed samples where the self moved and the distance to the
+    /// matched enemy shrank (relative closing).
     /// `None` when no motion was observed.
     pub approach_frac: Option<f32>,
-    /// Fraction of exposed samples where the self moved away from the enemy.
+    /// Fraction of exposed samples where the self moved and the distance to the
+    /// matched enemy grew (opening).
     /// `None` when no motion was observed.
     pub kiting_frac: Option<f32>,
     /// Terrain-based cover distance: not modelled (map geometry deferred).
@@ -251,6 +314,15 @@ pub struct SurvivalProfile {
     /// the 30s list, and every hit whose victim was unresolved (no live
     /// candidate ship near the impact).
     pub unidentified_hits: u32,
+    /// The subset of `unidentified_hits` that are non-shell projectiles
+    /// (torpedo / aircraft): clear non-shell damage evidence.
+    pub non_shell_hits: u32,
+    /// The subset of `unidentified_hits` that are gun shells whose salvo aged
+    /// out: still a shell hit, just not keyable to a shell for damage.
+    pub unidentified_shell_hits: u32,
+    /// The subset of `unidentified_hits` whose `shell_hit` id was not
+    /// recognized: cannot be classified as shell or non-shell.
+    pub unknown_projectile_hits: u32,
     pub saturating_hits: u32,
     pub biggest_hit: f32,
 
@@ -502,6 +574,9 @@ pub fn assess(report: &BattleReport, params: &dyn GameParamProvider) -> Survival
     let mut zone_damage: HashMap<String, f32> = HashMap::new();
     let mut shell_hits_taken = 0u32;
     let mut unidentified_hits = 0u32;
+    let mut non_shell_hits = 0u32;
+    let mut unidentified_shell_hits = 0u32;
+    let mut unknown_projectile_hits = 0u32;
     let mut saturating_hits = 0u32;
     let mut taken_damage = 0.0f32;
     let mut biggest_hit = 0.0f32;
@@ -526,14 +601,21 @@ pub fn assess(report: &BattleReport, params: &dyn GameParamProvider) -> Survival
         }
         let Some(shell) = hit_value::shell_for_hit(hit, params) else {
             unidentified_hits += 1;
+            match classify_unidentified(hit) {
+                UnidentifiedKind::NonShell => non_shell_hits += 1,
+                UnidentifiedKind::Shell => unidentified_shell_hits += 1,
+                UnidentifiedKind::Unknown => unknown_projectile_hits += 1,
+            }
             continue;
         };
         let Some(pose) = hit.victim_pose else {
             unidentified_hits += 1;
+            unidentified_shell_hits += 1;
             continue;
         };
         let Some(origin) = hit_value::shot_origin(hit) else {
             unidentified_hits += 1;
+            unidentified_shell_hits += 1;
             continue;
         };
         let impact = hit.hit.position.0;
@@ -632,10 +714,10 @@ pub fn assess(report: &BattleReport, params: &dyn GameParamProvider) -> Survival
         None
     };
 
-    // The taken lane is shell-only. Non-shell damage (torpedo, aircraft, fire,
-    // flood, ram) surfaces only as unidentified hits or fires; when either is
-    // present the evasion lane is not clean, and an evasion number would
-    // fabricate a "well avoided (quietly dodged)" story.
+    // The taken lane is shell-only. Any unidentified incoming hit (aged-out
+    // shell, torpedo, unknown weapon) and any fire is damage the shell
+    // estimate cannot capture, so the evasion lane is incomplete: the computed
+    // `1 - taken/potential` is an upper bound, not a measured clean evasion.
     let has_non_shell_damage = unidentified_hits > 0 || fires_lit > 0;
     let avoidance = if shell_potential > 0.0 && !has_non_shell_damage {
         Some((1.0 - (taken_damage / shell_potential)).clamp(0.0, 1.0))
@@ -689,7 +771,7 @@ pub fn assess(report: &BattleReport, params: &dyn GameParamProvider) -> Survival
         let share_pct = ret_pct(taken_share);
         if has_non_shell_damage {
             conclusions.push(format!(
-                "被瞄准炮弹潜在伤害 {shell_potential:.0}, 实际炮弹吃伤 {taken_damage:.0}(占比 {share_pct}); 有未识别/非炮弹伤害, 规避结论受限"
+                "被瞄准炮弹潜在伤害 {shell_potential:.0}, 实际炮弹吃伤 {taken_damage:.0}(占比 {share_pct}); 有非炮弹伤害(着火/鱼雷等), 规避结论受限"
             ));
         } else if taken_share < 0.25 {
             conclusions.push(format!(
@@ -722,8 +804,21 @@ pub fn assess(report: &BattleReport, params: &dyn GameParamProvider) -> Survival
         Some(false) => conclusions.push("整局存活".to_owned()),
         None => conclusions.push("对局未到终局, 是否存活未知".to_owned()),
     }
-    if unidentified_hits > 0 {
-        conclusions.push(format!("{unidentified_hits} 发命中无法匹配弹道/鱼雷或受害舰未解析, 未计入伤害"));
+    if non_shell_hits > 0 {
+        conclusions.push(format!("{non_shell_hits} 发鱼雷/空袭等非炮弹命中自舰, 未计入炮弹伤害"));
+    }
+    if unidentified_shell_hits > 0 {
+        conclusions.push(format!("{unidentified_shell_hits} 发炮弹命中自舰但未估计伤害(过期弹道/姿态缺失), 吃伤为近似"));
+    }
+    if unknown_projectile_hits > 0 {
+        conclusions.push(format!("{unknown_projectile_hits} 发命中弹种未识别, 未分类"));
+    }
+    let accounted = non_shell_hits + unidentified_shell_hits + unknown_projectile_hits;
+    if unidentified_hits > accounted {
+        conclusions.push(format!(
+            "{} 发命中受害舰或命中姿态/弹道未解析, 未计入伤害",
+            unidentified_hits - accounted
+        ));
     }
     conclusions.push("S3 未做(缺 HP 时间线); S2 位置导出已做近似暴露/走位, 掩体/真实视线未含".to_owned());
     if saturating_hits > 0 {
@@ -793,6 +888,9 @@ pub fn assess(report: &BattleReport, params: &dyn GameParamProvider) -> Survival
         taken_frac_of_hp: self_max_hp.map_or(0.0, |hp| if hp > 0.0 { taken_damage / hp } else { 0.0 }),
         shell_hits_taken,
         unidentified_hits,
+        non_shell_hits,
+        unidentified_shell_hits,
+        unknown_projectile_hits,
         saturating_hits,
         biggest_hit,
         fires_lit: if burn_observed { Some(fires_lit) } else { None },
@@ -849,6 +947,10 @@ fn assess_exposure(report: &BattleReport, self_entity: EntityId, enemies: &HashS
     }
     self_track.sort_by(|a, b| a.0.total_cmp(&b.0));
     enemy_track.sort_by(|a, b| a.0.total_cmp(&b.0));
+    let mut enemy_by_id: HashMap<EntityId, Vec<(f32, WorldPos)>> = HashMap::new();
+    for (t, pos, eid) in &enemy_track {
+        enemy_by_id.entry(*eid).or_default().push((*t, *pos));
+    }
 
     let mut nearest_min = f32::MAX;
     let mut nearest_sum = 0.0f32;
@@ -863,46 +965,51 @@ fn assess_exposure(report: &BattleReport, self_entity: EntityId, enemies: &HashS
         let window_start = (t - EXPOSURE_MATCH_TOLERANCE_S).max(0.0);
         let window_end = t + EXPOSURE_MATCH_TOLERANCE_S;
         let start = enemy_track.partition_point(|(et, _, _)| *et < window_start);
-        let mut near: Option<(WorldPos, f32)> = None;
+        let mut near: Option<(WorldPos, f32, EntityId)> = None;
         let mut within_radius: HashSet<EntityId> = HashSet::new();
         for (et, epos, eid) in &enemy_track[start..] {
             if *et > window_end {
                 break;
             }
             let d = self_pos.distance_xz(epos).value();
-            if near.is_none_or(|(_, nd)| d < nd) {
-                near = Some((*epos, d));
+            if near.is_none_or(|(_, nd, _)| d < nd) {
+                near = Some((*epos, d, *eid));
             }
             if d < EXPOSURE_RADIUS_M {
                 within_radius.insert(*eid);
             }
         }
-        if let Some((epos, d)) = near {
+        if let Some((_epos, d, eid)) = near {
             nearest_min = nearest_min.min(d);
             nearest_sum += d;
             nearest_n += 1;
             if d < EXPOSURE_RADIUS_M {
                 exposed_n += 1;
                 enemy_sum += within_radius.len() as f32;
-                let prev_i = self_track.partition_point(|(t2, _)| *t2 < *t - MOTION_STRIDE_S);
-                if prev_i > 0 {
-                    let prev = self_track[prev_i - 1].1;
-                    let mv_x = self_pos.x - prev.x;
-                    let mv_z = self_pos.z - prev.z;
-                    let mv_len = (mv_x * mv_x + mv_z * mv_z).sqrt();
-                    if mv_len > MOTION_MIN_M {
-                        let te_x = epos.x - self_pos.x;
-                        let te_z = epos.z - self_pos.z;
-                        let te_len = (te_x * te_x + te_z * te_z).sqrt();
-                        if te_len > 1.0 {
-                            let dot = (mv_x * te_x + mv_z * te_z) / (mv_len * te_len);
-                            if dot > MOTION_APPROACH_DOT {
-                                approach_n += 1;
-                            } else if dot < -MOTION_APPROACH_DOT {
-                                kiting_n += 1;
-                            }
-                            motion_n += 1;
-                        }
+                // Measure closing distance to the matched enemy over the motion
+                // window rather than dotting the course against a single,
+                // possibly stale or identity-swapped enemy sample. Both ends of
+                // the window use the same enemy identity; the enemy position is
+                // interpolated and the self start uses a both-sided nearest, so
+                // the sign reflects real closing rather than sample skew.
+                if let (Some(prev), Some(end), Some(start)) = (
+                    pos_at(Some(&self_track), *t - MOTION_STRIDE_S),
+                    interp_pos(enemy_by_id.get(&eid), *t),
+                    interp_pos(enemy_by_id.get(&eid), *t - MOTION_STRIDE_S),
+                ) {
+                    let d_start = prev.distance_xz(&start).value();
+                    let d_end = self_pos.distance_xz(&end).value();
+                    let closing = d_start - d_end;
+                    if closing > MOTION_MIN_M {
+                        approach_n += 1;
+                    } else if closing < -MOTION_MIN_M {
+                        kiting_n += 1;
+                    }
+                    // Only count the motion when the self actually moved: a
+                    // stationary ship closing only because the enemy sails in
+                    // should not be credited with avoiding.
+                    if self_pos.distance_xz(&prev).value() > MOTION_MIN_M {
+                        motion_n += 1;
                     }
                 }
             }
@@ -1054,6 +1161,14 @@ pub fn render(report: &BattleReport, params: &dyn GameParamProvider) -> String {
 
 #[cfg(test)]
 mod tests {
+    use wows_replays::analyzer::battle_controller::state::ResolvedShotHit;
+    use wows_replays::analyzer::decoder::HitType;
+    use wows_replays::analyzer::decoder::ShotHit;
+    use wows_replays::types::GameClock;
+    use wows_replays::types::WorldPos;
+    use wowsunpack::game_types::ShotId;
+    use wowsunpack::recognized::Recognized;
+
     use super::*;
 
     fn assert_close(actual: f32, expected: f32) {
@@ -1128,5 +1243,30 @@ mod tests {
         ] {
             assert!(!weapon_is_shell(&w), "{w:?} should be non-shell");
         }
+    }
+
+    #[test]
+    fn unidentified_classification() {
+        let mk = |shell_hit: Recognized<ShellHitType>| ResolvedShotHit {
+            clock: GameClock(0.0),
+            hit: ShotHit {
+                owner_id: EntityId::from(1u32),
+                hit_type: HitType {
+                    collision: Recognized::Unknown("0".to_owned()),
+                    shell_hit,
+                    raw: 0,
+                },
+                shot_id: ShotId::from(1u32),
+                position: WorldPos::new(0.0, 0.0, 0.0),
+                terminal_ballistics: None,
+            },
+            victim_entity_id: Some(EntityId::from(2u32)),
+            salvo: None,
+            fired_at: None,
+            victim_pose: None,
+        };
+        assert_eq!(classify_unidentified(&mk(Recognized::Known(ShellHitType::None))), UnidentifiedKind::NonShell);
+        assert_eq!(classify_unidentified(&mk(Recognized::Known(ShellHitType::Normal))), UnidentifiedKind::Shell);
+        assert_eq!(classify_unidentified(&mk(Recognized::Unknown("9".to_owned()))), UnidentifiedKind::Unknown);
     }
 }
