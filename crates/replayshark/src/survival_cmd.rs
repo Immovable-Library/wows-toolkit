@@ -50,6 +50,7 @@ pub fn run(
     out: Option<PathBuf>,
     ship_names: Option<PathBuf>,
     text: bool,
+    dims: Vec<survival::SurvivalDimension>,
 ) -> Result<()> {
     let replays = expand_inputs(&inputs)?;
     load_ship_names(ship_names.as_deref())?;
@@ -79,9 +80,9 @@ pub fn run(
             let text = survival::render(&report, provider.as_ref());
             write!(sink, "{text}").map_err(|e| report!("write report: {e}"))?;
         } else {
-            let profile = survival::assess(&report, provider.as_ref());
-            let row = serde_json::to_string(&profile).map_err(|e| report!("serialize profile: {e}"))?;
-            writeln!(sink, "{row}").map_err(|e| report!("write profile: {e}"))?;
+            let report = survival::assess_report(&report, provider.as_ref(), &dims);
+            let row = serde_json::to_string(&report).map_err(|e| report!("serialize report: {e}"))?;
+            writeln!(sink, "{row}").map_err(|e| report!("write report: {e}"))?;
         }
     }
     Ok(())

@@ -978,6 +978,45 @@ pub fn estimate_damage(shell: &ShellInfo, hit_type: &str, belt_mm: Option<&f32>)
     }
 }
 
+/// The self ship's own hits on enemies, as an (elapsed clock, estimated damage)
+/// timeline. This is the OUTPUT dimension that survival's coupling composes
+/// against the HP timeline; the output-end report (`hit-value` etc.) is a
+/// separate consumer of the same `hit_history`.
+pub struct OutputTimeline {
+    /// (elapsed clock, estimated damage) for each fully-resolved hit.
+    pub events: Vec<(f32, f32)>,
+    /// Enemy-victim hits that could not be fully estimated (missing shell, pose,
+    /// or origin); disclosed so output is honest about its lower bound.
+    pub dropped: u32,
+}
+
+pub fn self_output_timeline(
+    report: &BattleReport,
+    self_entity: EntityId,
+    enemies: &HashSet<EntityId>,
+    params: &dyn GameParamProvider,
+) -> OutputTimeline {
+    let mut events: Vec<(f32, f32)> = Vec::new();
+    let mut dropped = 0u32;
+    for hit in report.hit_history().iter().filter(|h| h.hit.owner_id == self_entity) {
+        let Some(victim_id) = hit.victim_entity_id else { continue };
+        if !enemies.contains(&victim_id) {
+            continue;
+        }
+        let Some(shell) = shell_for_hit(hit, params) else { dropped += 1; continue };
+        let Some(_pose) = hit.victim_pose else { dropped += 1; continue };
+        let Some(_origin) = shot_origin(hit) else { dropped += 1; continue };
+        let zone = zone_for_hit(hit);
+        let hitloc = victim_hit_location(report, params, victim_id, &zone);
+        let zone_mm = hitloc.as_ref().map(|hl| hl.thickness());
+        let hit_type = hit.hit.hit_type.shell_hit.known().map(|s| s.name()).unwrap_or("UNKNOWN");
+        let est = estimate_damage(&shell, hit_type, zone_mm.as_ref());
+        events.push((report.game_clock_to_elapsed(hit.clock).0, est));
+    }
+    events.sort_by(|a, b| a.0.total_cmp(&b.0));
+    OutputTimeline { events, dropped }
+}
+
 /// Approximate HP a zone can absorb before saturating. A fraction of the
 /// victim's maximum HP; the citadel never saturates for damage purposes.
 #[allow(dead_code)]

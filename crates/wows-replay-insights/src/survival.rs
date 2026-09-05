@@ -419,6 +419,42 @@ pub struct SurvivalProfile {
     pub output_coupling: OutputCoupling,
 }
 
+/// The composable survival dimensions. Each is an independent assessor; a
+/// report is a composition of the selected dimensions.
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub enum SurvivalDimension {
+    Incoming,
+    Exposure,
+    HpTimeline,
+    OutputCoupling,
+}
+
+impl std::str::FromStr for SurvivalDimension {
+    type Err = String;
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        match s.trim().to_ascii_lowercase().as_str() {
+            "s1" | "incoming" => Ok(Self::Incoming),
+            "s2" | "exposure" => Ok(Self::Exposure),
+            "s3" | "hp" | "hp_timeline" => Ok(Self::HpTimeline),
+            "s4" | "output" | "coupling" | "output_coupling" => Ok(Self::OutputCoupling),
+            _ => Err(format!("unknown survival dimension: {s}")),
+        }
+    }
+}
+
+/// The composed survival report: each requested dimension is present, the rest
+/// are `None`. `Incoming` produces the integrated `SurvivalProfile` (which also
+/// carries the S2/S3/S4 sections as its report sections); the remaining
+/// dimensions are the standalone modular accessors.
+#[derive(Clone, Debug)]
+#[cfg_attr(feature = "serde", derive(serde::Serialize))]
+pub struct SurvivalReport {
+    pub s1: Option<SurvivalProfile>,
+    pub exposure: Option<Exposure>,
+    pub hp_timeline: Option<HpTimeline>,
+    pub output_coupling: Option<OutputCoupling>,
+}
+
 /// Adapt `&dyn GameParamProvider` to the generic `P: GameParamProvider` that
 /// `ResolvedBuild::from_player` needs. Mirrors `hit_value::ProviderRef`.
 struct ProviderRef<'a>(&'a dyn GameParamProvider);
@@ -1004,8 +1040,52 @@ fn ret_pct(v: f32) -> String {
     format!("{:.0}%", v * 100.0)
 }
 
+/// Compose a survival report from the selected dimensions.
+///
+/// With an empty `dims` the report is the integrated `SurvivalProfile` (which
+/// already carries the S2/S3/S4 sections as its fields), matching the pre-
+/// modular row shape and avoiding double-write. With a non-empty `dims`, each
+/// requested standalone dimension is computed independently; `Incoming` is the
+/// integrated profile and the rest are the modular accessors.
+pub fn assess_report(
+    report: &BattleReport,
+    params: &dyn GameParamProvider,
+    dims: &[SurvivalDimension],
+) -> SurvivalReport {
+    if dims.is_empty() {
+        return SurvivalReport {
+            s1: Some(assess(report, params)),
+            exposure: None,
+            hp_timeline: None,
+            output_coupling: None,
+        };
+    }
+    let selected = |d: SurvivalDimension| dims.is_empty() || dims.contains(&d);
+    let self_entity = report.self_player().initial_state().entity_id();
+    let enemies: std::collections::HashSet<EntityId> = report
+        .players()
+        .iter()
+        .filter(|p| p.relation().is_enemy())
+        .map(|p| p.initial_state().entity_id())
+        .collect();
+
+    let s1 = selected(SurvivalDimension::Incoming).then(|| assess(report, params));
+    let exposure = selected(SurvivalDimension::Exposure)
+        .then(|| assess_exposure(report, self_entity, &enemies));
+    let hp_timeline = selected(SurvivalDimension::HpTimeline).then(|| assess_hp_timeline(report, self_entity));
+    let output_coupling = selected(SurvivalDimension::OutputCoupling)
+        .then(|| assess_output(report, self_entity, &enemies, params));
+
+    SurvivalReport {
+        s1,
+        exposure,
+        hp_timeline,
+        output_coupling,
+    }
+}
+
 /// Build the S2 exposure / kiting profile from the position timeline.
-fn assess_exposure(report: &BattleReport, self_entity: EntityId, enemies: &HashSet<EntityId>) -> Exposure {
+pub fn assess_exposure(report: &BattleReport, self_entity: EntityId, enemies: &HashSet<EntityId>) -> Exposure {
     let mut self_track: Vec<(f32, WorldPos)> = Vec::new();
     let mut enemy_track: Vec<(f32, WorldPos, EntityId)> = Vec::new();
     for sample in report.positions_over_time() {
@@ -1103,7 +1183,7 @@ fn assess_exposure(report: &BattleReport, self_entity: EntityId, enemies: &HashS
 }
 
 /// Build the S3 blood-management profile from the self ship's HP timeline.
-fn assess_hp_timeline(report: &BattleReport, self_entity: EntityId) -> HpTimeline {
+pub fn assess_hp_timeline(report: &BattleReport, self_entity: EntityId) -> HpTimeline {
     let mut samples: Vec<&HealthSample> = report
         .hp_timeline()
         .iter()
@@ -1214,34 +1294,20 @@ fn hp_frac_at(hp: &[(f32, f32)], clock: f32) -> Option<f32> {
 }
 
 /// Build the S4 survival -> output coupling profile.
-fn assess_output(
+pub fn assess_output(
     report: &BattleReport,
     self_entity: EntityId,
     enemies: &HashSet<EntityId>,
     params: &dyn GameParamProvider,
 ) -> OutputCoupling {
-    // The self ship's own hits on enemies, with estimated damage, per clock.
-    // Hits that land on an enemy but cannot be fully estimated are counted so
-    // output is honest about its lower bound. Saturation is not modeled here,
-    // so the per-hit estimate is an upper bound (disclosed in the note).
-    let mut events: Vec<(f32, f32)> = Vec::new();
-    let mut output_dropped = 0u32;
-    for hit in report.hit_history().iter().filter(|h| h.hit.owner_id == self_entity) {
-        let Some(victim_id) = hit.victim_entity_id else { continue };
-        if !enemies.contains(&victim_id) {
-            continue;
-        }
-        let Some(shell) = hit_value::shell_for_hit(hit, params) else { output_dropped += 1; continue };
-        let Some(_pose) = hit.victim_pose else { output_dropped += 1; continue };
-        let Some(_origin) = hit_value::shot_origin(hit) else { output_dropped += 1; continue };
-        let zone = hit_value::zone_for_hit(hit);
-        let hitloc = hit_value::victim_hit_location(report, params, victim_id, &zone);
-        let zone_mm = hitloc.as_ref().map(|hl| hl.thickness());
-        let hit_type = hit.hit.hit_type.shell_hit.known().map(|s| s.name()).unwrap_or("UNKNOWN");
-        let est = hit_value::estimate_damage(&shell, hit_type, zone_mm.as_ref());
-        events.push((elapsed(report, hit.clock), est));
-    }
-    events.sort_by(|a, b| a.0.total_cmp(&b.0));
+    // OUTPUT dimension: the self ship's own hits on enemies, sourced from the
+    // hit_value output timeline (decoupled from the survival-end report). Hits
+    // that land on an enemy but cannot be fully estimated are counted so output
+    // is honest about its lower bound. Saturation is not modeled here, so the
+    // per-hit estimate is an upper bound (disclosed in the note).
+    let out = hit_value::self_output_timeline(report, self_entity, enemies, params);
+    let events = out.events;
+    let output_dropped = out.dropped;
     let output_hits = events.len() as u32;
     let output_damage: f32 = events.iter().map(|(_, d)| *d).sum();
 

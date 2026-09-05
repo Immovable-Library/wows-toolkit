@@ -263,6 +263,10 @@ enum Commands {
         /// Render the human-readable report instead of JSONL
         #[arg(long, default_value_t = false)]
         text: bool,
+        /// Dimensions to compose into the JSONL report (comma-separated:
+        /// s1=incoming, s2=exposure, s3=hp, s4=output_coupling). Empty = all.
+        #[arg(long, value_delimiter = ',')]
+        dims: Vec<wows_replay_insights::survival::SurvivalDimension>,
     },
 }
 
@@ -1548,8 +1552,8 @@ fn main() {
         Commands::Report { replays, out, depth, ship_names } => {
             hit_value_cmd::run_report(ctx, replays, out, depth, ship_names).expect("report command failed");
         }
-        Commands::Survival { replays, out, ship_names, text } => {
-            survival_cmd::run(ctx, replays, out, ship_names, text).expect("survival command failed");
+        Commands::Survival { replays, out, ship_names, text, dims } => {
+            survival_cmd::run(ctx, replays, out, ship_names, text, dims).expect("survival command failed");
         }
         Commands::Query { command } => match command {
             QueryCommands::ArenaId { replays } => {
