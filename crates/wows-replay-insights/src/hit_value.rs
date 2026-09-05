@@ -598,7 +598,7 @@ pub fn assess(report: &BattleReport, params: &dyn GameParamProvider) -> Vec<HitA
     out
 }
 
-fn victim_info(report: &BattleReport, params: &dyn GameParamProvider) -> HashMap<EntityId, (String, String, String)> {
+pub(crate) fn victim_info(report: &BattleReport, params: &dyn GameParamProvider) -> HashMap<EntityId, (String, String, String)> {
     let mut map = HashMap::new();
     for player in report.players() {
         if let Some(build) = ResolvedBuild::from_player(player, &ProviderRef(params), report.version()) {
@@ -617,7 +617,7 @@ fn victim_armor(report: &BattleReport, params: &dyn GameParamProvider, entity: E
     belt_armor_mm(&build.ship)
 }
 
-fn shell_for_hit(hit: &ResolvedShotHit, params: &dyn GameParamProvider) -> Option<ShellInfo> {
+pub(crate) fn shell_for_hit(hit: &ResolvedShotHit, params: &dyn GameParamProvider) -> Option<ShellInfo> {
     let salvo = hit.salvo.as_ref()?;
     let param = params.game_param_by_id(salvo.params_id)?;
     param.projectile().map(|proj| proj.to_shell_info(param.name().to_owned()))
@@ -631,7 +631,7 @@ fn other_shell<'a>(shells: &'a [ShellInfo], used: &ShellInfo) -> Option<&'a Shel
         .or_else(|| shells.first())
 }
 
-fn shot_origin(hit: &ResolvedShotHit) -> Option<Vec3> {
+pub(crate) fn shot_origin(hit: &ResolvedShotHit) -> Option<Vec3> {
     let salvo = hit.salvo.as_ref()?;
     salvo
         .shots
@@ -651,13 +651,13 @@ fn shot_aim(hit: &ResolvedShotHit) -> Option<Vec3> {
         .or_else(|| salvo.shots.first().map(|shot| shot.target.0))
 }
 
-fn origin_to_impact(hit: &ResolvedShotHit) -> Vec3 {
+pub(crate) fn origin_to_impact(hit: &ResolvedShotHit) -> Vec3 {
     let origin = shot_origin(hit).unwrap_or(Vec3::new(0.0, 0.0, 0.0));
     let impact = hit.hit.position.0;
     Vec3::new(impact.x - origin.x, impact.y - origin.y, impact.z - origin.z)
 }
 
-fn ammo_str(ammo: &AmmoType) -> &'static str {
+pub(crate) fn ammo_str(ammo: &AmmoType) -> &'static str {
     match ammo {
         AmmoType::AP => "AP",
         AmmoType::HE => "HE",
@@ -666,7 +666,7 @@ fn ammo_str(ammo: &AmmoType) -> &'static str {
     }
 }
 
-fn ribbon_for(hit_type: &str) -> String {
+pub(crate) fn ribbon_for(hit_type: &str) -> String {
     if hit_type.contains("OVERPEN") {
         "过穿".to_owned()
     } else if hit_type.contains("NOPENETRATION") {
@@ -707,7 +707,7 @@ fn reason_for(shell: &ShellInfo, zone: &str, hit_type: &str, victim_class: &str)
     }
 }
 
-fn species_class(species: &Species) -> &'static str {
+pub(crate) fn species_class(species: &Species) -> &'static str {
     match species {
         Species::Battleship => "battleship",
         Species::Cruiser => "cruiser",
@@ -719,7 +719,7 @@ fn species_class(species: &Species) -> &'static str {
 
 /// Local Chinese ship-name table, keyed by the GameParams index. Unknown ships
 /// fall back to the English name embedded in the index (after its class prefix).
-fn ship_zh(id: &str, name: &str) -> String {
+pub(crate) fn ship_zh(id: &str, name: &str) -> String {
     if let Some(map) = SHIP_NAMES.get() {
         if let Some(zh) = map.get(id) {
             // Only trust a value that carries a CJK char; the generated table
@@ -927,7 +927,7 @@ fn is_belt_material(material_id: u32) -> bool {
 /// Coarse zone from the body-frame impact. World units are scaled to ship
 /// meters by [`crate::fire_chance::geometry`]'s 15x (BW_TO_SHIP); the bounds
 /// are approximate and the mesh-based resolver is the later refinement.
-fn zone_for_hit(hit: &ResolvedShotHit) -> String {
+pub(crate) fn zone_for_hit(hit: &ResolvedShotHit) -> String {
     let Some(pose) = hit.victim_pose else { return "unknown".to_owned() };
     let Some(origin) = shot_origin(hit) else { return "unknown".to_owned() };
     let impact = hit.hit.position.0;
@@ -956,7 +956,7 @@ fn zone_for_hit(hit: &ResolvedShotHit) -> String {
 /// Estimated damage this shell applied to the target zone, using the game's
 /// damage-saturation fractions: citadel 100%, normal pen 33%, overpen 10%,
 /// shatter/ricochet 0, splash 33%. Never the client-exact value.
-fn estimate_damage(shell: &ShellInfo, hit_type: &str, belt_mm: Option<&f32>) -> f32 {
+pub fn estimate_damage(shell: &ShellInfo, hit_type: &str, belt_mm: Option<&f32>) -> f32 {
     let alpha = shell.alpha_damage;
     if hit_type.contains("MAJORHIT") {
         return alpha;
@@ -979,7 +979,7 @@ fn estimate_damage(shell: &ShellInfo, hit_type: &str, belt_mm: Option<&f32>) -> 
 /// Approximate HP a zone can absorb before saturating. A fraction of the
 /// victim's maximum HP; the citadel never saturates for damage purposes.
 #[allow(dead_code)]
-fn saturation_budget(max_hp: f32, zone: &str) -> f32 {
+pub(crate) fn saturation_budget(max_hp: f32, zone: &str) -> f32 {
     if max_hp <= 0.0 {
         return 0.0;
     }
@@ -992,7 +992,7 @@ fn saturation_budget(max_hp: f32, zone: &str) -> f32 {
 }
 
 /// The victim's hit-location record for `zone`, cloned out of the build.
-fn victim_hit_location(
+pub(crate) fn victim_hit_location(
     report: &BattleReport,
     params: &dyn GameParamProvider,
     entity: EntityId,
@@ -1004,7 +1004,7 @@ fn victim_hit_location(
     hit_location_for(locations, zone).cloned()
 }
 
-fn hit_location_for<'a>(
+pub(crate) fn hit_location_for<'a>(
     locations: &'a std::collections::HashMap<String, wowsunpack::game_params::types::HitLocation>,
     zone: &str,
 ) -> Option<&'a wowsunpack::game_params::types::HitLocation> {

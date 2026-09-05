@@ -1,6 +1,7 @@
 mod battle_results_cmd;
 mod events_cmd;
 mod hit_value_cmd;
+mod survival_cmd;
 
 use battle_results_cmd::ResultsFormat;
 
@@ -246,6 +247,22 @@ enum Commands {
         /// Local ship-name table (id -> Chinese)
         #[arg(long)]
         ship_names: Option<PathBuf>,
+    },
+    /// S1 survival profile for the recording player (incoming hits, fires,
+    /// DCP/heal, death, agro) with a 0-100 survival score.
+    Survival {
+        /// Replay files or directories to evaluate
+        #[arg(required = true)]
+        replays: Vec<PathBuf>,
+        /// Write to this file; defaults to stdout
+        #[arg(short, long)]
+        out: Option<PathBuf>,
+        /// Local ship-name table (id -> Chinese)
+        #[arg(long)]
+        ship_names: Option<PathBuf>,
+        /// Render the human-readable report instead of JSONL
+        #[arg(long, default_value_t = false)]
+        text: bool,
     },
 }
 
@@ -1530,6 +1547,9 @@ fn main() {
         }
         Commands::Report { replays, out, depth, ship_names } => {
             hit_value_cmd::run_report(ctx, replays, out, depth, ship_names).expect("report command failed");
+        }
+        Commands::Survival { replays, out, ship_names, text } => {
+            survival_cmd::run(ctx, replays, out, ship_names, text).expect("survival command failed");
         }
         Commands::Query { command } => match command {
             QueryCommands::ArenaId { replays } => {

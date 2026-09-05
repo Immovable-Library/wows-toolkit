@@ -4,7 +4,21 @@ Snapshot date: 2026-09-05. 新对话从这里无缝续接：**生存端评估引
 
 ## 一句话续接指令（新对话直接粘贴）
 
-> 继续 WOWS 回放生存端评估开发。先读 `docs/handoff-2026-09-05-wows-replay-survival.md` 与 `C:/Users/asdfg/.codex/skills/wows-replay-parser/specs/2026-09-05-survival-evaluation-engine.md`，按方案从 **S1（生存画像：被打命中+估伤/着火进水/DCP-heal/死亡/Agro，0-100 生存分）** 开始；复用已提交的输出端引擎（`replayshark`，commit `80e7cbd7`）的 `hit_value::estimate_damage` 与敌人限定逻辑；`games_dir=D:/World_of_Warships`。
+> 继续 WOWS 回放生存端评估开发。先读 `docs/handoff-2026-09-05-wows-replay-survival.md` 与 `C:/Users/asdfg/.codex/skills/wows-replay-parser/specs/2026-09-05-survival-evaluation-engine.md`。**S1（生存画像 + 0-100 生存分）已实现**：`replayshark` 新增 `survival` 子命令（默认 JSONL / `--text` 文本）；`wows-replay-insights/src/survival.rs` 产出 `SurvivalProfile`；复用 `hit_value::estimate_damage` 与「仅敌方」逻辑。**本会话继续从 S2（位置时间线：暴露/kiting/掩体）开始**；S2/S3 需在 `wows-battle-world` 新增位置（`Position` 0x0a / `Transform3d`/`MinimapPlacement`）与 HP 时间线导出。`games_dir=D:/World_of_Warships`。
+
+## S1 已完成（本会话实现，含根修）
+
+- **根修**：`wows-battle-world/src/ingest/projectiles.rs` `resolve_victim` 改为 **owner-aware**。原逻辑只搜 `is_enemy()` 实体，导致「敌方炮弹打中自舰」永远把 victim 解析成附近敌舰（自舰不是 enemy），S1 拿不到被打命中。现按 shooter 关系取反候选集：敌方射手 → 候选为录制者方（自舰+友军）；自舰/友军/未知射手 → 候选为敌方（保留输出端「仅敌方」不变式，不回归「神风 11→14」）。
+- **新命令**：`replayshark survival [--text] [--ship-names ...] <replay>`。JSON 含 `score_breakdown`（规避/存活/自救 + 权重）、`hits`（逐发：来源/弹种/命中类型/部位/估伤/命中角/舷角/饱和）、`sources`（按攻击者聚合）、`potential_damage`（Agro）、`fires_lit`/`sustained_fires`/`fires_covered`、`dcd`/`repair_party`/`smoke`、`died`/`death_share_of_match`、`conclusions`。
+- **S1 评分**（0-100）= 0.40·规避 + 0.35·存活 + 0.25·自救；规避 = 1 - 吃伤/Agro；存活 = 存活为 1，死亡为死亡时刻/对局时长；自救 = DCP 对持续(≥10s)火段的覆盖（无 DCP 的舰给基线 0.6）。
+- **测试/验证**：`cargo check -p replayshark` 无警告；`cargo test -p wows-battle-world --lib` 41 passed；`cargo test -p wows-replay-insights --lib` 125 passed。真跑东京快车（佐治亚，存活+heal）、樱花绽放（克尼塞伯克，死亡 76%）均出结果。
+- **ADR**：`C:/Users/asdfg/.codex/skills/wows-replay-parser/docs/adr/0002-s1-survival-evaluation.md`。
+
+### S1 已知缺口（不加虚假归因）
+
+- 分区饱和依赖 `hit_locations`（models opt-in），缺失时估伤为上限（文本已注明）。
+- 进水状态：burn 日志忽略 flood 位；BattleReport 无自舰进水/HP 时间线，`flood_status=unknown`，死亡原因未暴露。
+- 走位/暴露/血量管理 = S2/S3。
 
 ## 已完成并发布（输出端，commit 80e7cbd7）
 

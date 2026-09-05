@@ -168,7 +168,7 @@ pub fn handle_shot_kills(
 
         let (salvo, fired_at) = match_active_salvo(world, hit.owner_id, hit.shot_id);
 
-        let victim_entity_id = resolve_victim(world, hit.position).unwrap_or(self_ship_id);
+        let victim_entity_id = resolve_victim(world, hit.position, hit.owner_id).unwrap_or(self_ship_id);
 
         let resolved = ResolvedShotHit {
             clock,
@@ -249,20 +249,36 @@ fn match_active_salvo(
 ///
 /// `None` when no entity in the world carries a position to compare against,
 /// leaving the caller to fall back to the self ship.
-fn resolve_victim(world: &mut World, impact: WorldPos) -> Option<EntityId> {
-    // A shell can only damage an enemy of the recording player. Restricting the
-    // nearest-ship search to enemies stops an out-of-AOI target from being
-    // attributed to a nearer ally or the recording player's own ship.
-    let enemies: HashSet<EntityId> = world
-        .resource::<PlayerIndex>()
-        .0
-        .iter()
-        .filter(|(_, p)| p.relation().is_enemy())
-        .map(|(eid, _)| *eid)
-        .collect();
+fn resolve_victim(world: &mut World, impact: WorldPos, owner_id: EntityId) -> Option<EntityId> {
+    // A shell damages an opposing team: a shell from an enemy hits the recording
+    // player's team (self or ally), a shell from the recording player/ally hits
+    // the enemies. The candidate set follows the shooter's relation to the
+    // recording player, which the previous enemy-only search got wrong for the
+    // incoming direction: it could never return the self ship, so every enemy
+    // shell that hit the recording player was attributed to a nearby enemy.
+    let candidates: HashSet<EntityId> = {
+        let player_index = world.resource::<PlayerIndex>();
+        let owner_is_enemy = player_index
+            .0
+            .get(&owner_id)
+            .map(|p| p.relation().is_enemy())
+            // An unknown owner (e.g. a stray shell) treats the direction as
+            // offensive, i.e. the victim is an enemy of the recording player.
+            .unwrap_or(true);
+        let candidates = player_index
+            .0
+            .iter()
+            .filter(|(_, p)| {
+                let is_enemy = p.relation().is_enemy();
+                if owner_is_enemy { !is_enemy } else { is_enemy }
+            })
+            .map(|(eid, _)| *eid)
+            .collect();
+        candidates
+    };
     let mut q = world.query::<(&GameId, &Transform3d)>();
     q.iter(world)
-        .filter(|(gid, _)| enemies.contains(&gid.0))
+        .filter(|(gid, _)| candidates.contains(&gid.0))
         .min_by(|(_, a), (_, b)| {
             let da = a.pos.distance_xz(&impact);
             let db = b.pos.distance_xz(&impact);

@@ -19,3 +19,5 @@ pub use build::ResolvedBuild;
 pub mod fire_chance;
 
 pub mod hit_value;
+
+pub mod survival;
