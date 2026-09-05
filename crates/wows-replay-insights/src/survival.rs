@@ -246,8 +246,10 @@ pub struct SurvivalProfile {
     pub match_complete: bool,
 
     pub shell_hits_taken: u32,
-    /// Hits whose salvo (and therefore shell identity) could not be matched;
-    /// every torpedo hit and every shell whose salvo aged out of the 30s list.
+    /// Incoming hits that could not be attributed to a shell lane or to a
+    /// resolved victim: every torpedo hit, every shell whose salvo aged out of
+    /// the 30s list, and every hit whose victim was unresolved (no live
+    /// candidate ship near the impact).
     pub unidentified_hits: u32,
     pub saturating_hits: u32,
     pub biggest_hit: f32,
@@ -507,10 +509,19 @@ pub fn assess(report: &BattleReport, params: &dyn GameParamProvider) -> Survival
     for hit in report
         .hit_history()
         .iter()
-        .filter(|h| h.hit.owner_id != self_entity && h.victim_entity_id == self_entity)
+        .filter(|h| h.hit.owner_id != self_entity)
     {
         let owner = hit.hit.owner_id;
         if !enemies.contains(&owner) {
+            continue;
+        }
+        // An unresolved victim is incoming fire we cannot attribute; count it as
+        // unidentified rather than damage on the self ship.
+        let Some(victim_id) = hit.victim_entity_id else {
+            unidentified_hits += 1;
+            continue;
+        };
+        if victim_id != self_entity {
             continue;
         }
         let Some(shell) = hit_value::shell_for_hit(hit, params) else {
@@ -712,7 +723,7 @@ pub fn assess(report: &BattleReport, params: &dyn GameParamProvider) -> Survival
         None => conclusions.push("对局未到终局, 是否存活未知".to_owned()),
     }
     if unidentified_hits > 0 {
-        conclusions.push(format!("{unidentified_hits} 发命中无法匹配弹道/鱼雷, 未计入伤害"));
+        conclusions.push(format!("{unidentified_hits} 发命中无法匹配弹道/鱼雷或受害舰未解析, 未计入伤害"));
     }
     conclusions.push("S3 未做(缺 HP 时间线); S2 位置导出已做近似暴露/走位, 掩体/真实视线未含".to_owned());
     if saturating_hits > 0 {

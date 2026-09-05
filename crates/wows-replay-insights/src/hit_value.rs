@@ -505,15 +505,17 @@ pub fn assess(report: &BattleReport, params: &dyn GameParamProvider) -> Vec<HitA
     let mut out = Vec::new();
 
     for hit in report.hit_history().iter().filter(|hit| hit.hit.owner_id == self_entity) {
-        // A self-fired shell can never hit the self ship: `resolve_victim`
-        // falls back to the self entity when no transform-carrying enemy is
-        // nearest the impact (out-of-AOI targets), so such rows are a victim
-        // misattribution, not a hit on the player. Exclude them rather than
-        // invent a target.
-        if hit.victim_entity_id == self_entity {
+        // An unresolved victim (None) cannot be attributed to any enemy target,
+        // so there is no recordable hit on a ship.
+        let Some(victim_entity_id) = hit.victim_entity_id else { continue };
+        // A self-fired shell can never hit the self ship. For a known self owner
+        // the resolver only considers enemy candidates, so a resolve to self is
+        // defensive (e.g. the owner was absent from the player index and the
+        // default chose the self team); exclude it rather than invent a target.
+        if victim_entity_id == self_entity {
             continue;
         }
-        if !enemies.contains(&hit.victim_entity_id) {
+        if !enemies.contains(&victim_entity_id) {
             continue;
         }
         let Some(used) = shell_for_hit(hit, params) else { continue };
@@ -524,7 +526,7 @@ pub fn assess(report: &BattleReport, params: &dyn GameParamProvider) -> Vec<HitA
         }
         let other = other_shell(&shells, &used);
         let (victim_id, victim_raw, victim_class) = victims
-            .get(&hit.victim_entity_id)
+            .get(&victim_entity_id)
             .cloned()
             .unwrap_or_else(|| ("?".to_owned(), "?".to_owned(), "unknown".to_owned()));
         let victim = ship_zh(&victim_id, &victim_raw);
@@ -550,10 +552,10 @@ pub fn assess(report: &BattleReport, params: &dyn GameParamProvider) -> Vec<HitA
             }
             None => (None, None),
         };
-        let hitloc = victim_hit_location(report, params, hit.victim_entity_id, &zone);
+        let hitloc = victim_hit_location(report, params, victim_entity_id, &zone);
         let zone_mm = hitloc.as_ref().map(|hl| hl.thickness());
         let budget = hitloc.as_ref().map(|hl| hl.max_hp()).unwrap_or(0.0);
-        let zone_damage_so_far = zone_damage.get(&(hit.victim_entity_id, zone.clone())).copied().unwrap_or(0.0);
+        let zone_damage_so_far = zone_damage.get(&(victim_entity_id, zone.clone())).copied().unwrap_or(0.0);
         let saturated = zone != "citadel" && budget > 0.0 && zone_damage_so_far >= budget;
         let pen = pen_verdict(&used, &hit_type, belt_strike, zone_mm.as_ref());
         let ribbon = ribbon_for(&hit_type);
@@ -570,7 +572,7 @@ pub fn assess(report: &BattleReport, params: &dyn GameParamProvider) -> Vec<HitA
             }
         }
         let est = estimate_damage(&used, &hit_type, zone_mm.as_ref());
-        zone_damage.entry((hit.victim_entity_id, zone.clone())).and_modify(|v| *v += est).or_insert(est);
+        zone_damage.entry((victim_entity_id, zone.clone())).and_modify(|v| *v += est).or_insert(est);
         out.push(HitAssessment {
             victim_ship: victim,
             victim_class,

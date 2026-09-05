@@ -551,7 +551,7 @@ pub(super) fn playback_thread(
         let mut total_matched = 0u32;
         for hit in new_hits {
             for s in staging.iter_mut() {
-                if hit.victim_entity_id == s.target_entity_id {
+                if hit.victim_entity_id == Some(s.target_entity_id) {
                     s.shot_hits.push(hit.clone());
                     total_matched += 1;
                 }

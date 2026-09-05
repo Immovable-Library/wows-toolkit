@@ -819,23 +819,25 @@ pub fn analyze(input: &FireChanceInput<'_>) -> Option<EffectiveFireChance> {
 
     for hit in input.hits {
         // `salvo` is `Some` only for a hit matched to its originating salvo.
-        // Without it the shell is unidentifiable and `victim_entity_id` falls
-        // back to the self ship, so an unmatched hit is not a candidate at all.
+        // Without it the shell is unidentifiable, so an unmatched hit is not a
+        // candidate at all. The victim is the target ship; an unresolved victim
+        // (None) has no ship to contest, so it is skipped the same way.
         let Some(salvo) = hit.salvo.as_ref() else { continue };
         if salvo.owner_id != input.attacker.entity {
             continue;
         }
+        let Some(victim_id) = hit.victim_entity_id else { continue };
 
         let eligibility = classify(input, &geometry, &tracks, &bundle, tier, formula_applies, hit, salvo.params_id);
 
         let contest = contesting_sections(input, &geometry, secondary_ammo, hit, salvo.params_id, &eligibility);
         for (section, kind) in contest {
-            contenders.push(ContestingImpact { victim: hit.victim_entity_id, section, clock: hit.clock, kind });
+            contenders.push(ContestingImpact { victim: victim_id, section, clock: hit.clock, kind });
         }
 
         let record = classified.len();
         classified.push(ClassifiedHit {
-            victim: hit.victim_entity_id,
+            victim: victim_id,
             clock: hit.clock,
             disposition: eligibility.disposition(),
             contest: None,
@@ -843,7 +845,7 @@ pub fn analyze(input: &FireChanceInput<'_>) -> Option<EffectiveFireChance> {
         if let HitEligibility::Eligible { section, expected } = eligibility {
             candidates.push(Candidate {
                 hit,
-                victim: hit.victim_entity_id,
+                victim: victim_id,
                 section,
                 expected,
                 shell: salvo.params_id,
@@ -976,13 +978,14 @@ fn section_of(
     geometry: &HashMap<EntityId, FireSectionGeometry>,
     hit: &ResolvedShotHit,
 ) -> Result<BurnNodeIndex, SectionGap> {
-    let geom = geometry.get(&hit.victim_entity_id).ok_or(SectionGap::NoGeometry)?;
+    let Some(victim_id) = hit.victim_entity_id else { return Err(SectionGap::NoGeometry) };
+    let geom = geometry.get(&victim_id).ok_or(SectionGap::NoGeometry)?;
     let pose = hit.victim_pose.as_ref().ok_or(SectionGap::NoVictimPose)?;
     let section = section_for_hit(geom, hit.hit.position, pose.position, pose.yaw, pose.pitch, pose.roll)
         .ok_or(SectionGap::OffTheHull)?;
     // The hull's `burnNodes` list is what makes a section's probability
     // readable; a geometry longer than it would index past the hull's own data.
-    let victim = input.victims.get(&hit.victim_entity_id).ok_or(SectionGap::NoGeometry)?;
+    let victim = input.victims.get(&victim_id).ok_or(SectionGap::NoGeometry)?;
     if usize::from(section.get()) >= victim.node_probability.len() {
         return Err(SectionGap::NoGeometry);
     }
@@ -1179,12 +1182,13 @@ fn classify(
 ) -> HitEligibility {
     // First of everything, because "did this shell land on a ship at all" is
     // prior to what kind of shell it was. `victim_entity_id` is the nearest ship
-    // to the impact and is never absent, so a shell that hit an island beside a
-    // destroyer is keyed to that destroyer; naming it by its ammunition instead
-    // would file a hit under a ship that was never hit. It is prior to the
-    // hit-type check for the same reason plus a sharper one: such a shell
-    // carries `SHELL_HIT_TYPE_NORMAL`, so `rolls_for_fire` admits it and only
-    // the geometry gate, which exists to catch a mis-keyed victim rather than to
+    // to the impact, so a shell that hit an island beside a destroyer is keyed
+    // to that destroyer; naming it by its ammunition instead would file a hit
+    // under a ship that was never hit. An unresolved victim (None) has no ship
+    // and falls out through the geometry gate below. It is prior to the hit-type
+    // check for the same reason plus a sharper one: such a shell carries
+    // `SHELL_HIT_TYPE_NORMAL`, so `rolls_for_fire` admits it and only the
+    // geometry gate, which exists to catch a mis-keyed victim rather than to
     // decide what the shell struck, would stand between it and the denominator.
     if struck_no_ship(&hit.hit.hit_type.collision) {
         return HitEligibility::ImpactNotOnAShip;
@@ -1200,16 +1204,20 @@ fn classify(
     }
 
     // A victim with no context has no hull, so it has no geometry either.
+    // Bind it here so it is the explicit gate the geometry check would catch.
+    let Some(victim_id) = hit.victim_entity_id else {
+        return HitEligibility::NoSectionGeometry;
+    };
     let section = match section_of(input, geometry, hit) {
         Ok(section) => section,
         Err(SectionGap::NoGeometry) => return HitEligibility::NoSectionGeometry,
         Err(SectionGap::OffTheHull) => return HitEligibility::ImpactUnplaceableOnVictim,
         Err(SectionGap::NoVictimPose) => return HitEligibility::VictimPoseUnknown,
     };
-    let Some(victim) = input.victims.get(&hit.victim_entity_id) else {
+    let Some(victim) = input.victims.get(&victim_id) else {
         return HitEligibility::NoSectionGeometry;
     };
-    let Some(track) = tracks.get(&hit.victim_entity_id) else {
+    let Some(track) = tracks.get(&victim_id) else {
         return HitEligibility::NoSectionGeometry;
     };
 
@@ -1230,7 +1238,7 @@ fn classify(
     // when it opens and every transition inside it, so a victim in AOI at the
     // hit clock has an exact mask there. What an earlier gap loses is when a
     // section was lit, which this analysis does not ask.
-    if !input.presence.continuously_observed(hit.victim_entity_id, hit.clock, hit.clock) {
+    if !input.presence.continuously_observed(victim_id, hit.clock, hit.clock) {
         return HitEligibility::ObservationGap;
     }
 
@@ -2002,9 +2010,9 @@ mod tests {
         }
 
         /// One more main-battery shell of ours, landing in the water beside the
-        /// victim. `victim_entity_id` is the nearest ship to the impact and is
-        /// never absent, so this shell is keyed to the victim exactly as a real
-        /// splash beside a hull is.
+        /// victim. `victim_entity_id` is the nearest ship to the impact, so this
+        /// shell is keyed to the victim exactly as a real splash beside a hull
+        /// is; it is None only when no ship was near the impact.
         fn also_hitting_terrain(mut self) -> Fixture {
             self.extra_main_hits.push(ExtraHit {
                 section: 0,
@@ -2557,7 +2565,7 @@ mod tests {
                 position: impact_on_section(section),
                 terminal_ballistics: None,
             },
-            victim_entity_id: victim,
+            victim_entity_id: Some(victim),
             salvo: Some(ArtillerySalvo { owner_id: attacker_id(), params_id: shell, salvo_id: 1, shots: shot_list(1) }),
             fired_at: Some(GameClock(clock.0 - 5.0)),
             victim_pose: Some(VictimPose { position: WorldPos::new(0.0, 0.0, 0.0), yaw: 0.0, pitch: 0.0, roll: 0.0 }),
@@ -2732,7 +2740,7 @@ mod tests {
     fn candidate_with(hit: &ResolvedShotHit, section: u8, expected: Option<f32>) -> Candidate<'_> {
         Candidate {
             hit,
-            victim: hit.victim_entity_id,
+            victim: hit.victim_entity_id.expect("test candidate has a resolved victim"),
             section: BurnNodeIndex::new(section).expect("section in range"),
             expected: expected.map(|chance| BurnChance::new(chance).expect("a probability")),
             shell: main_shell_id(),
@@ -3096,8 +3104,8 @@ mod tests {
 
     /// A shell that hit the water hit no ship, so no target ship's row may
     /// carry it however near the splash landed. `victim_entity_id` is the
-    /// nearest ship to the impact and is never absent, which is exactly how
-    /// such a hit ends up keyed to a hull it never touched.
+    /// nearest ship to the impact (None only when no ship was near), which is
+    /// exactly how such a hit ends up keyed to a hull it never touched.
     #[test]
     fn a_terrain_hit_is_in_no_target_ships_row() {
         let out = analyze(&fixture().hitting_section(0).also_hitting_terrain().build()).expect("geometry");
@@ -3185,9 +3193,10 @@ mod tests {
         assert_eq!(out.narrowed[&NarrowingReason::ShellCannotBurn], 1);
     }
 
-    /// A hit the parser never matched to a salvo names no shell, and its
-    /// `victim_entity_id` falls back to the self ship, so it is not a candidate
-    /// at all. Long-flight shells at maximum range land here systematically.
+    /// A hit the parser never matched to a salvo names no shell, and with no
+    /// matched salvo its victim may be unresolved (None), so it is not a
+    /// candidate at all. Long-flight shells at maximum range land here
+    /// systematically.
     #[test]
     fn an_unmatched_hit_is_not_a_candidate() {
         let out = analyze(&fixture().without_a_matched_salvo().build()).expect("geometry");

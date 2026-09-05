@@ -144,21 +144,13 @@ pub fn handle_torpedo_direction(
 /// When `options.record_hit_history` is set, each resolved hit is also pushed
 /// into `HitHistoryLog`, which (unlike `ShotHitLog`) is never cleared.
 pub fn handle_shot_kills(
-    avatar_id: AvatarId,
+    _avatar_id: AvatarId,
     hits: Vec<ShotHit>,
     clock: GameClock,
     world: &mut World,
     options: &IngestOptions,
 ) {
     let record = options.shot_tracking == ShotTracking::Tracked;
-
-    let self_ship_id =
-        world.resource::<PlayerIndex>().0.iter().find(|(_, p)| p.relation().is_self()).map(|(eid, _)| *eid);
-
-    let Some(self_ship_id) = self_ship_id else {
-        tracing::warn!("ShotKills received but self-player not yet known (avatar={avatar_id:?})");
-        return;
-    };
 
     for hit in hits {
         remove_matching_torpedo(world, hit.owner_id, hit.shot_id);
@@ -169,7 +161,7 @@ pub fn handle_shot_kills(
 
         let (salvo, fired_at) = match_active_salvo(world, hit.owner_id, hit.shot_id);
 
-        let victim_entity_id = resolve_victim(world, hit.position, hit.owner_id).unwrap_or(self_ship_id);
+        let victim_entity_id = resolve_victim(world, hit.position, hit.owner_id);
 
         let resolved = ResolvedShotHit {
             clock,
@@ -248,8 +240,9 @@ fn match_active_salvo(
 /// shell landing between two ships in a tight formation can sit nearer the one
 /// it missed.
 ///
-/// `None` when no entity in the world carries a position to compare against,
-/// leaving the caller to fall back to the self ship.
+/// `None` when no live candidate ship carries a position to compare against,
+/// so the caller records the hit with an unresolved victim rather than
+/// attributing it to any ship.
 fn resolve_victim(world: &mut World, impact: WorldPos, owner_id: EntityId) -> Option<EntityId> {
     // A shell damages an opposing team: a shell from an enemy hits the recording
     // player's team (self or ally), a shell from the recording player/ally hits
@@ -302,7 +295,8 @@ fn resolve_victim(world: &mut World, impact: WorldPos, owner_id: EntityId) -> Op
 /// a departed ship still has a live heading and no position at all. Reporting
 /// the pose as absent is the only honest answer there; a zero position reads
 /// as a ship at map centre and puts the impact hundreds of units off the hull.
-fn victim_pose(world: &mut World, victim: EntityId) -> Option<VictimPose> {
+fn victim_pose(world: &mut World, victim: Option<EntityId>) -> Option<VictimPose> {
+    let victim = victim?;
     let entity = world.resource::<crate::resources::EntityIndex>().get(victim)?;
     let er = world.get_entity(entity).ok()?;
     let transform = er.get::<Transform3d>()?;
@@ -393,7 +387,7 @@ mod victim_pose_tests {
         let id = EntityId::from(5u32);
         let mut world = world_with_victim(id);
 
-        let pose = victim_pose(&mut world, id).expect("a victim with a transform has a pose");
+        let pose = victim_pose(&mut world, Some(id)).expect("a victim with a transform has a pose");
         assert_eq!(pose.position, WorldPos::new(120.0, 0.0, -40.0));
         assert_eq!(pose.pitch, 0.1);
         assert_eq!(pose.roll, 0.2);
@@ -411,13 +405,14 @@ mod victim_pose_tests {
 
         handle_entity_leave(id, GameClock(20.0), &mut world);
 
-        assert!(victim_pose(&mut world, id).is_none());
+        assert!(victim_pose(&mut world, Some(id)).is_none());
     }
 
     /// An id that never resolved to an entity has nothing to report either.
     #[test]
     fn an_unknown_victim_has_no_pose() {
         let mut world = world_with_victim(EntityId::from(5u32));
-        assert!(victim_pose(&mut world, EntityId::from(404u32)).is_none());
+        assert!(victim_pose(&mut world, Some(EntityId::from(404u32))).is_none());
+        assert!(victim_pose(&mut world, None).is_none());
     }
 }

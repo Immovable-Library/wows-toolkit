@@ -657,9 +657,9 @@ fn reconcile_hits(
             continue;
         }
 
-        let placement = input
-            .victims
-            .get(&hit.victim_entity_id)
+        let placement = hit
+            .victim_entity_id
+            .and_then(|vid| input.victims.get(&vid))
             .and_then(|victim| placed.get(&victim.hull_model_path))
             .zip(hit.victim_pose.as_ref())
             .map(|(geometry, pose)| {
@@ -682,8 +682,9 @@ fn reconcile_hits(
             continue;
         }
         reconciliation.main_battery_on_ship += 1;
-        let off_roster = !roster.contains(&hit.victim_entity_id) || hit.victim_entity_id == input.self_entity;
-        let after_death = deaths.get(&hit.victim_entity_id).is_some_and(|died_at| hit.clock >= *died_at);
+        let Some(victim_id) = hit.victim_entity_id else { continue };
+        let off_roster = !roster.contains(&victim_id) || victim_id == input.self_entity;
+        let after_death = deaths.get(&victim_id).is_some_and(|died_at| hit.clock >= *died_at);
         match param.projectile().map(|projectile| projectile.ammo_type()) {
             Some("HE") => {
                 reconciliation.main_battery_he_on_ship += 1;
@@ -704,7 +705,7 @@ fn reconcile_hits(
         }
 
         // A point query at the impact clock, the same one `classify` makes.
-        if !report.presence().continuously_observed(hit.victim_entity_id, hit.clock, hit.clock) {
+        if !report.presence().continuously_observed(victim_id, hit.clock, hit.clock) {
             continue;
         }
         reconciliation.observed += 1;

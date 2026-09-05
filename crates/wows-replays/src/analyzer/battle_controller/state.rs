@@ -296,7 +296,10 @@ pub struct ResolvedShotHit {
     /// The raw hit data from the receiveShotKills packet.
     pub hit: ShotHit,
     /// Entity that received the receiveShotKills call (the victim ship).
-    pub victim_entity_id: EntityId,
+    /// `None` when no candidate ship could be resolved: absence is not proof of
+    /// a self hit, so a consumer must treat an unresolved victim as an unknown
+    /// hit rather than attribute it to any ship.
+    pub victim_entity_id: Option<EntityId>,
     /// The full originating salvo data, if the hit was matched.
     pub salvo: Option<ArtillerySalvo>,
     /// The originating salvo fire time. None if unmatched.

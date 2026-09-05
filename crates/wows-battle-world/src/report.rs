@@ -271,6 +271,9 @@ impl BattleReport {
     /// shell is unidentifiable there, so a consumer that needs to know what
     /// struck must filter on `salvo.is_some()`; the victim is resolved the same
     /// way either way.
+    ///
+    /// `victim_entity_id` is `None` when no live candidate ship was near the
+    /// impact; a consumer must not attribute such a row to any ship.
     pub fn hit_history(&self) -> &[ResolvedShotHit] {
         &self.hit_history
     }
@@ -716,7 +719,7 @@ mod tests {
                 position: WorldPos::new(0.0, 0.0, 0.0),
                 terminal_ballistics: None,
             },
-            victim_entity_id: victim,
+            victim_entity_id: Some(victim),
             salvo: None,
             fired_at: None,
             victim_pose: None,
@@ -755,7 +758,7 @@ mod tests {
         assert_eq!(report.burn_state_changes()[0].victim, victim);
         assert!(report.presence().continuously_observed(victim, GameClock(0.0), GameClock(20.0)));
         assert_eq!(report.hit_history().len(), 1);
-        assert_eq!(report.hit_history()[0].victim_entity_id, victim);
+        assert_eq!(report.hit_history()[0].victim_entity_id, Some(victim));
     }
 
     /// The fire analysis excludes hits landing at or after a victim's death, so

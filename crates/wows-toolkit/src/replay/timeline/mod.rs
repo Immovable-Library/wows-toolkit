@@ -609,7 +609,8 @@ impl ShotTimelineCollector {
 impl WorldScanCollector for ShotTimelineCollector {
     fn observe(&mut self, _packet: &Packet<'_, '_>, _prev_clock: GameClock, view: &BattleView<'_>) {
         for hit in view.shot_hits() {
-            if let Some(timeline) = self.timelines.get_mut(&hit.victim_entity_id) {
+            let Some(victim_id) = hit.victim_entity_id else { continue };
+            if let Some(timeline) = self.timelines.get_mut(&victim_id) {
                 timeline.hits.push(PreExtractedHit { clock: hit.clock, hit: hit.clone() });
             } else {
                 let mut tl = ShipShotTimeline {
@@ -617,7 +618,7 @@ impl WorldScanCollector for ShotTimelineCollector {
                     health_history: std::collections::BTreeMap::new(),
                 };
                 tl.hits.push(PreExtractedHit { clock: hit.clock, hit: hit.clone() });
-                self.timelines.insert(hit.victim_entity_id, tl);
+                self.timelines.insert(victim_id, tl);
             }
         }
     }
