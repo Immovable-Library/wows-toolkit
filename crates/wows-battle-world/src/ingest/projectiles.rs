@@ -32,6 +32,7 @@ use crate::ids::IngestOptions;
 use crate::ids::ShotTracking;
 use crate::resources::ActiveShotOrder;
 use crate::resources::ActiveTorpedoOrder;
+use crate::resources::DeadShips;
 use crate::resources::HitHistoryLog;
 use crate::resources::PlayerIndex;
 use crate::resources::SalvoEvent;
@@ -256,14 +257,19 @@ fn resolve_victim(world: &mut World, impact: WorldPos, owner_id: EntityId) -> Op
     // recording player, which the previous enemy-only search got wrong for the
     // incoming direction: it could never return the self ship, so every enemy
     // shell that hit the recording player was attributed to a nearby enemy.
+    // A sunk ship keeps its scene transform but is no longer a live target, so
+    // it must be excluded: a shell landing near a wreck would otherwise resolve
+    // to a stale position instead of the true living target.
+    let dead: HashSet<EntityId> = world.resource::<DeadShips>().0.keys().copied().collect();
     let candidates: HashSet<EntityId> = {
         let player_index = world.resource::<PlayerIndex>();
         let owner_is_enemy = player_index
             .0
             .get(&owner_id)
             .map(|p| p.relation().is_enemy())
-            // An unknown owner (e.g. a stray shell) treats the direction as
-            // offensive, i.e. the victim is an enemy of the recording player.
+            // An unknown owner (e.g. a stray shell) is treated as enemy-fired:
+            // the hit is assumed to land on the recording player's team, which
+            // is the conservative choice for tracking incoming self damage.
             .unwrap_or(true);
         let candidates = player_index
             .0
@@ -273,6 +279,7 @@ fn resolve_victim(world: &mut World, impact: WorldPos, owner_id: EntityId) -> Op
                 if owner_is_enemy { !is_enemy } else { is_enemy }
             })
             .map(|(eid, _)| *eid)
+            .filter(|eid| !dead.contains(eid))
             .collect();
         candidates
     };

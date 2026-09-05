@@ -260,7 +260,10 @@ pub struct SurvivalProfile {
     /// bits). Set only when determinable; otherwise "unknown".
     pub flood_status: String,
 
-    pub has_dcp: bool,
+    /// `Some(true)` = DCP confirmed present, `Some(false)` = build resolved and
+    /// has no Damage Control slot, `None` = presence unknown (build resolution
+    /// failed and no DCP was ever activated).
+    pub has_dcp: Option<bool>,
     /// `None` means the Damage Control has unlimited charges (base DCP).
     pub dcp_charges: Option<u32>,
     pub dcp_activations: u32,
@@ -344,14 +347,14 @@ pub fn assess(report: &BattleReport, params: &dyn GameParamProvider) -> Survival
         .map(|c| c.hulls.values().filter_map(|h| h.health).map(|hp| hp.value()).fold(0.0f32, f32::max))
         .filter(|v| *v > 0.0);
 
-    let mut has_dcp = false;
+    let mut has_dcp: Option<bool> = None;
     let mut dcp_charges: Option<u32> = None;
     let mut has_repair_party = false;
     if let Some(b) = &build {
         for slot in &b.slots {
             match slot.consumable_type {
                 Recognized::Known(Consumable::DamageControl) => {
-                    has_dcp = true;
+                    has_dcp = Some(true);
                     dcp_charges = match slot.total_charges {
                         ChargeCount::Finite(n) => Some(n),
                         ChargeCount::Unlimited => None,
@@ -360,6 +363,11 @@ pub fn assess(report: &BattleReport, params: &dyn GameParamProvider) -> Survival
                 Recognized::Known(Consumable::RepairParty) => has_repair_party = true,
                 _ => {}
             }
+        }
+        // Build resolved but no Damage Control slot: confirmed absent, distinct
+        // from an unresolved build (which stays `None` = unknown).
+        if has_dcp.is_none() {
+            has_dcp = Some(false);
         }
     }
 
@@ -385,7 +393,7 @@ pub fn assess(report: &BattleReport, params: &dyn GameParamProvider) -> Survival
     // A DCP was actually used even when the build slot did not resolve; do not
     // label a ship "no DCP" (0.6 baseline) next to real DCP activations.
     if dcp_activations > 0 {
-        has_dcp = true;
+        has_dcp = Some(true);
     }
 
     // Fire timeline for the self ship: lit / out deltas with elapsed clocks.
@@ -636,10 +644,14 @@ pub fn assess(report: &BattleReport, params: &dyn GameParamProvider) -> Survival
         None
     } else if fires_lit == 0 {
         Some(1.0)
-    } else if !has_dcp {
+    } else if has_dcp == Some(false) {
         // No DCP on the ship: the fire was not a miscallable moment-of-play
         // mistake, it is a resource/build limit. Baseline rather than zero.
         Some(0.6)
+    } else if has_dcp.is_none() {
+        // DCP presence could not be confirmed (build unresolved, never used):
+        // we cannot separate "resource limit" from "own fault", so unknown.
+        None
     } else {
         Some(dcp_prompt_ratio)
     };
@@ -650,10 +662,12 @@ pub fn assess(report: &BattleReport, params: &dyn GameParamProvider) -> Survival
         "burningFlags 未复制, 着火计数未知, 不做自欺归因".to_owned()
     } else if fires_lit == 0 {
         "未观测到着火".to_owned()
-    } else if has_dcp {
+    } else if has_dcp == Some(true) {
         format!("共起火 {fires_lit} 次(持续≥{PROMPT_DCP_WINDOW_S:.0}s 的火段 {sustained} 个), DCP 及时覆盖 {covers} 个")
-    } else {
+    } else if has_dcp == Some(false) {
         format!("共起火 {fires_lit} 次(持续火段 {sustained} 个), 该舰无 DCP(资源限制, 非操作失误)")
+    } else {
+        format!("共起火 {fires_lit} 次(持续火段 {sustained} 个), DCP 存在与否未知(构建未解析)")
     };
 
     let mut conclusions: Vec<String> = Vec::new();

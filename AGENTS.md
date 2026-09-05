@@ -23,6 +23,12 @@ Cargo workspace, edition 2024, rust 1.97. Crates under `crates/`:
 - The repo is a git project. Use `git` as the authoritative interface.
 - Never append `Co-Authored-By` or any AI attribution to commit messages.
 
+## Prioritization
+
+- Fix confirmed bugs before starting new feature work. A new milestone stays
+  blocked until the bug backlog from the previous milestone is cleared, or the
+  user explicitly defers it.
+
 ## Types and data modeling
 
 - Prefer newtypes over raw primitives for domain values, even when the value arrives as a primitive. Wrap identifiers and any quantities that could be confused with each other (angles together with their unit, bitflags, durations, indices, weapon groups) in distinct newtypes so the type system rejects mixing them. Reuse existing newtypes (`wowsunpack` `TeamId`, `GameParamId`, `EntityId`, etc.) instead of storing their raw inner value.
