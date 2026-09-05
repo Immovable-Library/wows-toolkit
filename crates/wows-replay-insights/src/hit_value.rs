@@ -26,7 +26,6 @@ use wowsunpack::game_params::types::Species;
 use wowsunpack::game_params::ttx::armor_materials::collision_material_name;
 use wowsunpack::game_params::ttx::components::ArtilleryGunStats;
 use wowsunpack::game_types::Vec3;
-use wowsunpack::game_types::ShotId;
 use wowsunpack::Rc;
 
 use crate::build::ResolvedBuild;
@@ -73,6 +72,9 @@ pub struct HitAssessment {
     pub lead_off_axis_m: Option<f32>,
     /// The originating salvo id (server side), for per-volley grouping.
     pub salvo_id: u32,
+    /// The salvo's first shell shot id (its discriminator, per the SalvoEvent
+    /// contract) that together with `salvo_id` uniquely identifies a volley.
+    pub first_shot: Option<u32>,
     /// Game clock of the hit.
     pub clock: f32,
     /// Estimated damage this shell applied to its zone.
@@ -236,6 +238,9 @@ fn build_lesson(
 pub struct VolleyScore {
     pub clock: f32,
     pub salvo_id: u32,
+    /// The salvo's first shell shot id; together with `salvo_id` it uniquely
+    /// identifies a volley, so a reused salvo id does not merge distinct volleys.
+    pub first_shot: Option<u32>,
     pub shells_fired: u32,
     pub shells_hit: u32,
     pub ammo: String,
@@ -270,41 +275,43 @@ pub fn analyze_volleys(report: &BattleReport, params: &dyn GameParamProvider) ->
     use std::collections::BTreeSet;
     let (self_entity, _) = self_shells(report, params);
 
-    let mut fired: BTreeMap<u32, u32> = BTreeMap::new();
-    let mut seen: HashSet<(u32, Option<ShotId>)> = HashSet::new();
+    let mut fired: BTreeMap<(u32, Option<u32>), u32> = BTreeMap::new();
+    let mut seen: HashSet<(u32, Option<u32>)> = HashSet::new();
     for salvo in report.salvos().iter().filter(|s| s.owner_id == self_entity) {
         if salvo.salvo_id == 0 || salvo.salvo_id == u32::MAX {
             // Unmatched salvo sentinel; not a real volley key.
             continue;
         }
+        let key = (salvo.salvo_id, salvo.first_shot.map(|s| s.raw()));
         // One trigger pull can arrive as several SHOTS_PACK entries sharing a
         // salvo id; `first_shot` discriminates them. A merged/multi-perspective
         // session logs the same group more than once, so dedup before summing
         // or the shot count is inflated.
-        if !seen.insert((salvo.salvo_id, salvo.first_shot)) {
+        if !seen.insert(key) {
             continue;
         }
-        *fired.entry(salvo.salvo_id).or_insert(0) += salvo.shots;
+        *fired.entry(key).or_insert(0) += salvo.shots;
     }
 
     let all = assess(report, params).assessments;
-    let mut by_salvo: BTreeMap<u32, Vec<&HitAssessment>> = BTreeMap::new();
+    let mut by_salvo: BTreeMap<(u32, Option<u32>), Vec<&HitAssessment>> = BTreeMap::new();
     for hit in &all {
         if hit.salvo_id == 0 || hit.salvo_id == u32::MAX {
             continue;
         }
-        by_salvo.entry(hit.salvo_id).or_default().push(hit);
+        by_salvo.entry((hit.salvo_id, hit.first_shot)).or_default().push(hit);
     }
 
     // A salvo that was fired but landed no resolved hit must still produce a row,
     // so a miss drags the score down rather than disappearing from the report.
-    let mut salvo_ids: BTreeSet<u32> = fired.keys().copied().collect();
-    salvo_ids.extend(by_salvo.keys().copied());
+    let mut volley_keys: BTreeSet<(u32, Option<u32>)> = fired.keys().copied().collect();
+    volley_keys.extend(by_salvo.keys().copied());
 
     let mut out = Vec::new();
-    for salvo_id in salvo_ids {
-        let hits = by_salvo.get(&salvo_id).map(|v| v.as_slice()).unwrap_or(&[]);
-        let shells_fired = fired.get(&salvo_id).copied().unwrap_or(0);
+    for (salvo_id, first_shot) in volley_keys {
+        let key = (salvo_id, first_shot);
+        let hits = by_salvo.get(&key).map(|v| v.as_slice()).unwrap_or(&[]);
+        let shells_fired = fired.get(&key).copied().unwrap_or(0);
         let shells_hit = hits.len() as u32;
         let damage_dealt = hits.iter().map(|h| h.estimated_damage).sum::<f32>();
         let ammo = hits.first().map(|h| h.ammo_used.clone()).unwrap_or_else(|| "?".to_owned());
@@ -341,6 +348,7 @@ pub fn analyze_volleys(report: &BattleReport, params: &dyn GameParamProvider) ->
         out.push(VolleyScore {
             clock,
             salvo_id,
+            first_shot,
             shells_fired,
             shells_hit,
             ammo,
@@ -458,8 +466,9 @@ pub fn render_deep_report(report: &BattleReport, params: &dyn GameParamProvider)
             (format!("{}命", v.shells_hit), v.score.to_string())
         };
         s.push_str(&format!(
-            "轮{} t={:.0}s  {}发 [{}] {} 命中{}  评分{}  {}\n",
+            "轮{}/#{} t={:.0}s  {}发 [{}] {} 命中{}  评分{}  {}\n",
             v.salvo_id,
+            v.first_shot.map(|f| f.to_string()).unwrap_or_else(|| "?".to_owned()),
             v.clock,
             v.shells_fired,
             v.ammo,
@@ -656,6 +665,7 @@ pub fn assess(report: &BattleReport, params: &dyn GameParamProvider) -> AssessOu
             lead_error_m,
             lead_off_axis_m,
             salvo_id: hit.salvo.as_ref().map(|s| s.salvo_id).unwrap_or(0),
+            first_shot: hit.salvo.as_ref().and_then(|s| s.shots.first()).map(|shot| shot.shot_id.raw()),
             clock: hit.clock.0,
             estimated_damage: est,
             ribbon,
