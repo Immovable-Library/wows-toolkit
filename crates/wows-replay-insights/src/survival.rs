@@ -24,6 +24,7 @@ use wowsunpack::game_params::types::Param;
 use wowsunpack::game_types::ChargeCount;
 use wowsunpack::game_types::Consumable;
 use wowsunpack::game_types::DamageStatCategory;
+use wowsunpack::game_types::DamageStatWeapon;
 use wowsunpack::recognized::Recognized;
 use wowsunpack::Rc;
 
@@ -47,6 +48,68 @@ const MOTION_MIN_M: f32 = 0.5;
 const MOTION_STRIDE_S: f32 = 1.0;
 /// Dot-product threshold that separates "moving toward" from "kiting away".
 const MOTION_APPROACH_DOT: f32 = 0.3;
+
+const AVOIDANCE_WEIGHT: f32 = 0.40;
+const SURVIVAL_WEIGHT: f32 = 0.35;
+const SELF_RESCUE_WEIGHT: f32 = 0.25;
+
+/// Whether an agro weapon belongs to the shell lane that `taken_damage` can
+/// represent. Non-shell potential (torpedo, aircraft, fire, flood, ram, etc.)
+/// never appears in the shell-only taken lane, so it must not be counted as
+/// "avoided" when the two lanes are compared.
+fn weapon_is_shell(weapon: &DamageStatWeapon) -> bool {
+    matches!(
+        weapon,
+        DamageStatWeapon::MainAp
+            | DamageStatWeapon::MainHe
+            | DamageStatWeapon::AtbaAp
+            | DamageStatWeapon::AtbaHe
+            | DamageStatWeapon::MainAiAp
+            | DamageStatWeapon::MainAiHe
+            | DamageStatWeapon::MainCs
+            | DamageStatWeapon::AtbaCs
+    )
+}
+
+/// Weighted average over the factors that are actually known, capped at the
+/// fraction of the score space that was measured.
+///
+/// Returns `None` when the fate (survived/died) is unknown: a survival score
+/// without the survival outcome is not meaningful and would fabricate
+/// certainty about whether the ship lived.
+///
+/// When a non-fate factor is unknown, re-normalizing over the known ones alone
+/// would let missing data reach the same perfect ceiling as fully-measured
+/// data. The unknown cases here carry positive evidence the truth is worse
+/// (unidentified hits, fires, unobserved burn), so the composite is capped at
+/// `known_weight / total_weight`: you can never score higher than the portion
+/// of the score you actually measured.
+fn normalized_composite(
+    survival: Option<f32>,
+    avoidance: Option<f32>,
+    self_rescue: Option<f32>,
+) -> Option<f32> {
+    if survival.is_none() {
+        return None;
+    }
+    let mut weighted = 0.0f32;
+    let mut weight_sum = 0.0f32;
+    for (factor, weight) in [
+        (avoidance, AVOIDANCE_WEIGHT),
+        (survival, SURVIVAL_WEIGHT),
+        (self_rescue, SELF_RESCUE_WEIGHT),
+    ] {
+        if let Some(value) = factor {
+            weighted += value * weight;
+            weight_sum += weight;
+        }
+    }
+    if weight_sum > 0.0 {
+        Some((weighted / weight_sum).clamp(0.0, weight_sum))
+    } else {
+        None
+    }
+}
 
 /// One incoming shell hit on the self ship, with the damage it estimated.
 #[derive(Clone, Debug)]
@@ -91,16 +154,22 @@ pub struct WeaponPotential {
 #[derive(Clone, Debug)]
 #[cfg_attr(feature = "serde", derive(serde::Serialize))]
 pub struct ScoreBreakdown {
-    /// 1 - taken/potential (evasion). 1.0 = chewed up none of what was aimed.
-    pub avoidance: f32,
-    /// 1.0 while alive; died -> death clock / match length.
-    pub survival: f32,
-    /// Prompt-DCP / repair coverage of fires. Baseline for ships without DCP.
-    pub self_rescue: f32,
+    /// Shell-lane 1 - shell_taken / shell_potential. `None` when no shell
+    /// potential was aimed or non-shell damage (unidentified hits / fire) was
+    /// taken, so the evasion lane is not clean.
+    pub avoidance: Option<f32>,
+    /// Confirmed alive -> 1.0; confirmed dead -> death clock / match length;
+    /// `None` when the recording did not reach battle end.
+    pub survival: Option<f32>,
+    /// Prompt-DCP / repair coverage of fires. `None` when fire was never
+    /// observed (burningFlags not replicated), so "no fire" is unknown.
+    pub self_rescue: Option<f32>,
     pub avoidance_weight: f32,
     pub survival_weight: f32,
     pub self_rescue_weight: f32,
-    pub score: f32,
+    /// Normalized 0..1 composite over the known factors. `None` when the fate
+    /// is unknown. Use `SurvivalProfile::survival_score` for the 0-100 value.
+    pub score: Option<f32>,
 }
 
 /// S2: coarse exposure / kiting assessment from the position timeline.
@@ -120,13 +189,17 @@ pub struct Exposure {
     pub nearest_enemy_min_m: Option<f32>,
     pub nearest_enemy_avg_m: Option<f32>,
     /// Fraction of self samples where the nearest known enemy was within 12 km.
-    pub exposed_time_frac: f32,
+    /// `None` when there were no self samples (no position timeline recorded).
+    pub exposed_time_frac: Option<f32>,
     /// Average number of enemies within 12 km over the exposed samples.
-    pub enemies_within_12km_avg: f32,
+    /// `None` when no exposed sample was observed.
+    pub enemies_within_12km_avg: Option<f32>,
     /// Fraction of exposed samples where the self moved toward the enemy.
-    pub approach_frac: f32,
+    /// `None` when no motion was observed.
+    pub approach_frac: Option<f32>,
     /// Fraction of exposed samples where the self moved away from the enemy.
-    pub kiting_frac: f32,
+    /// `None` when no motion was observed.
+    pub kiting_frac: Option<f32>,
     /// Terrain-based cover distance: not modelled (map geometry deferred).
     pub cover_status: String,
 }
@@ -149,15 +222,28 @@ pub struct SurvivalProfile {
 
     /// Server potential damage aimed at the self ship (DamageStatCategory::Agro).
     pub potential_damage: f32,
+    /// The portion of `potential_damage` aimed by shell (gun) weapons, which is
+    /// the lane the estimated taken damage can represent.
+    pub shell_potential_damage: f32,
+    /// The portion of `potential_damage` from non-shell sources (torpedo,
+    /// aircraft, fire, flood, ram, etc.) that the shell-only taken lane cannot
+    /// represent.
+    pub non_shell_potential_damage: f32,
     pub potential_by_weapon: Vec<WeaponPotential>,
     /// Estimated damage the self ship actually took from identified shell hits.
     pub taken_damage_estimated: f32,
-    /// How much of the aimed potential actually connected (0..1).
-    pub taken_frac_of_potential: f32,
-    /// 1 - taken/potential. A player who was heavily aimed at but not hit is high.
-    pub avoidance_ratio: f32,
+    /// Shell-lane fraction of aimed potential that connected. `None` when there
+    /// was no shell potential to compare against.
+    pub taken_frac_of_potential: Option<f32>,
+    /// Shell-lane 1 - taken/potential. `None` when the evasion lane is not
+    /// clean (no shell potential, unidentified hits, or fire taken).
+    pub avoidance_ratio: Option<f32>,
     /// Estimated damage taken as a share of the ship's max HP.
     pub taken_frac_of_hp: f32,
+
+    /// Whether the recording reached the end of the match (`battle_result()` is
+    /// `Some`). False means death and survival are unknown, not "alive".
+    pub match_complete: bool,
 
     pub shell_hits_taken: u32,
     /// Hits whose salvo (and therefore shell identity) could not be matched;
@@ -187,12 +273,16 @@ pub struct SurvivalProfile {
     pub sustained_fires: u32,
     pub dcp_prompt_ratio: f32,
 
-    pub died: bool,
+    /// `Some(true)` = confirmed dead, `Some(false)` = confirmed survived (match
+    /// reached the end and the ship is absent from the death log), `None` =
+    /// unknown because the recording stopped before battle end.
+    pub died: Option<bool>,
     pub death_clock_s: Option<f32>,
     pub death_share_of_match: Option<f32>,
 
-    pub survival_score: u32,
-    pub grade: String,
+    /// 0-100 composite over the known factors. `None` when the fate is unknown.
+    pub survival_score: Option<u32>,
+    pub grade: Option<String>,
     pub verdict: String,
     pub conclusions: Vec<String>,
     pub score_breakdown: ScoreBreakdown,
@@ -228,13 +318,13 @@ fn self_build(report: &BattleReport, params: &dyn GameParamProvider) -> Option<R
     ResolvedBuild::from_player(report.self_player(), &ProviderRef(params), report.version())
 }
 
-fn grade_for(score: u32) -> &'static str {
-    match score {
+fn grade_for(score: Option<u32>) -> Option<&'static str> {
+    score.map(|s| match s {
         80..=100 => "优",
         55..=79 => "良",
         35..=54 => "中",
         _ => "差",
-    }
+    })
 }
 
 /// Build the S1 survival profile from a finished battle report.
@@ -255,7 +345,7 @@ pub fn assess(report: &BattleReport, params: &dyn GameParamProvider) -> Survival
         .filter(|v| *v > 0.0);
 
     let mut has_dcp = false;
-    let mut dcp_charges = 0u32;
+    let mut dcp_charges: Option<u32> = None;
     let mut has_repair_party = false;
     if let Some(b) = &build {
         for slot in &b.slots {
@@ -263,8 +353,8 @@ pub fn assess(report: &BattleReport, params: &dyn GameParamProvider) -> Survival
                 Recognized::Known(Consumable::DamageControl) => {
                     has_dcp = true;
                     dcp_charges = match slot.total_charges {
-                        ChargeCount::Finite(n) => n,
-                        ChargeCount::Unlimited => u32::MAX,
+                        ChargeCount::Finite(n) => Some(n),
+                        ChargeCount::Unlimited => None,
                     };
                 }
                 Recognized::Known(Consumable::RepairParty) => has_repair_party = true,
@@ -292,6 +382,11 @@ pub fn assess(report: &BattleReport, params: &dyn GameParamProvider) -> Survival
         }
     }
     dcp_clocks.sort_by(|a, b| a.partial_cmp(b).unwrap_or(std::cmp::Ordering::Equal));
+    // A DCP was actually used even when the build slot did not resolve; do not
+    // label a ship "no DCP" (0.6 baseline) next to real DCP activations.
+    if dcp_activations > 0 {
+        has_dcp = true;
+    }
 
     // Fire timeline for the self ship: lit / out deltas with elapsed clocks.
     // A DCP is only a self-rescue win when it is used while a fire is actually
@@ -357,8 +452,11 @@ pub fn assess(report: &BattleReport, params: &dyn GameParamProvider) -> Survival
     // Server potential damage (agro) by weapon, and its total.
     let mut potential_by_weapon: HashMap<String, f32> = HashMap::new();
     let mut potential_total = 0.0f32;
+    let mut shell_potential = 0.0f32;
+    let mut non_shell_potential = 0.0f32;
     for entry in report.self_damage_stats() {
         if entry.category.known().copied() == Some(DamageStatCategory::Agro) {
+            let is_shell = entry.weapon.known().is_some_and(weapon_is_shell);
             let weapon = entry
                 .weapon
                 .known()
@@ -368,6 +466,11 @@ pub fn assess(report: &BattleReport, params: &dyn GameParamProvider) -> Survival
             let amount = entry.total as f32;
             *potential_by_weapon.entry(weapon).or_default() += amount;
             potential_total += amount;
+            if is_shell {
+                shell_potential += amount;
+            } else {
+                non_shell_potential += amount;
+            }
         }
     }
     let mut potential_weapons: Vec<WeaponPotential> =
@@ -487,41 +590,61 @@ pub fn assess(report: &BattleReport, params: &dyn GameParamProvider) -> Survival
     sources.sort_by(|a, b| b.damage_estimated.partial_cmp(&a.damage_estimated).unwrap_or(std::cmp::Ordering::Equal));
     let exposure = assess_exposure(report, self_entity, &enemies);
 
-    // Death timing.
-    let died = report.deaths_by_victim().contains_key(&self_entity);
+    // Death timing and fate. Absence from the death log is NOT proof of
+    // survival: it only means the recording never reported a death. Only a
+    // battle that reached its end (`battle_result()` is `Some`) lets us treat
+    // absence as "survived".
+    let match_complete = report.battle_result().is_some();
+    let died_confirmed = report.deaths_by_victim().contains_key(&self_entity);
     let death_clock_s = report.deaths_by_victim().get(&self_entity).map(|&c| elapsed(report, c));
     let played_duration = report.played_duration();
-    let death_share_of_match = match (died, death_clock_s, played_duration) {
+    let death_share_of_match = match (died_confirmed, death_clock_s, played_duration) {
         (true, Some(clock), Some(played)) if played > 0.0 => Some((clock / played).clamp(0.0, 1.0)),
         // Died but no playable duration (recording cut short): the share is
         // unknown, and the survival factor falls to the "died" baseline.
         (true, Some(_), _) => None,
         _ => None,
     };
+    let died: Option<bool> = if died_confirmed {
+        Some(true)
+    } else if match_complete {
+        Some(false)
+    } else {
+        None
+    };
 
-    let avoidance = if potential_total > 0.0 {
-        (1.0 - (taken_damage / potential_total)).clamp(0.0, 1.0)
-    } else if taken_damage <= 0.0 {
-        1.0
+    // The taken lane is shell-only. Non-shell damage (torpedo, aircraft, fire,
+    // flood, ram) surfaces only as unidentified hits or fires; when either is
+    // present the evasion lane is not clean, and an evasion number would
+    // fabricate a "well avoided (quietly dodged)" story.
+    let has_non_shell_damage = unidentified_hits > 0 || fires_lit > 0;
+    let avoidance = if shell_potential > 0.0 && !has_non_shell_damage {
+        Some((1.0 - (taken_damage / shell_potential)).clamp(0.0, 1.0))
     } else {
-        0.0
+        None
     };
-    let survival = if died {
-        death_share_of_match.unwrap_or(0.0)
+    let survival = if died_confirmed {
+        Some(death_share_of_match.unwrap_or(0.0))
+    } else if match_complete {
+        Some(1.0)
     } else {
-        1.0
+        None
     };
-    let self_rescue = if fires_lit == 0 {
-        1.0
+    // When `burningFlags` never replicated, "no fires" is unknown, not a clean
+    // sheet. Do not award a perfect self-rescue score on absent data.
+    let self_rescue = if !burn_observed {
+        None
+    } else if fires_lit == 0 {
+        Some(1.0)
     } else if !has_dcp {
         // No DCP on the ship: the fire was not a miscallable moment-of-play
         // mistake, it is a resource/build limit. Baseline rather than zero.
-        0.6
+        Some(0.6)
     } else {
-        dcp_prompt_ratio
+        Some(dcp_prompt_ratio)
     };
-    let score = (0.40 * avoidance + 0.35 * survival + 0.25 * self_rescue).clamp(0.0, 1.0);
-    let survival_score = (score * 100.0).round() as u32;
+    let score = normalized_composite(survival, avoidance, self_rescue);
+    let survival_score = score.map(|s| (s * 100.0).round() as u32);
 
     let flame_note = if fires_lit == 0 && !burn_observed {
         "burningFlags 未复制, 着火计数未知, 不做自欺归因".to_owned()
@@ -536,26 +659,43 @@ pub fn assess(report: &BattleReport, params: &dyn GameParamProvider) -> Survival
     let mut conclusions: Vec<String> = Vec::new();
     conclusions.push(flame_note);
     conclusions.push("伤害为 wows_shell 社区估伤近似, 非客户端精确值".to_owned());
-    if potential_total > 0.0 {
-        let taken_share = (taken_damage / potential_total).clamp(0.0, 1.0);
+    if shell_potential > 0.0 {
+        let taken_share = (taken_damage / shell_potential).clamp(0.0, 1.0);
         let share_pct = ret_pct(taken_share);
-        if taken_share < 0.25 {
-            conclusions.push(format!("被瞄准潜在伤害 {potential_total:.0}, 实际吃伤 {taken_damage:.0}(占比 {share_pct}), 规避/隐蔽良好"));
+        if has_non_shell_damage {
+            conclusions.push(format!(
+                "被瞄准炮弹潜在伤害 {shell_potential:.0}, 实际炮弹吃伤 {taken_damage:.0}(占比 {share_pct}); 有未识别/非炮弹伤害, 规避结论受限"
+            ));
+        } else if taken_share < 0.25 {
+            conclusions.push(format!(
+                "被瞄准炮弹潜在伤害 {shell_potential:.0}, 实际吃伤 {taken_damage:.0}(占比 {share_pct}), 规避/隐蔽良好"
+            ));
         } else if taken_share > 0.55 {
-            conclusions.push(format!("被瞄准潜在伤害 {potential_total:.0}, 实际吃伤 {taken_damage:.0}(占比 {share_pct}); 高承受可能是集火/团队卖点, 也可能是暴露"));
+            conclusions.push(format!(
+                "被瞄准炮弹潜在伤害 {shell_potential:.0}, 实际吃伤 {taken_damage:.0}(占比 {share_pct}); 高承受可能是集火/团队卖点, 也可能是暴露"
+            ));
         } else {
-            conclusions.push(format!("被瞄准潜在伤害 {potential_total:.0}, 实际吃伤 {taken_damage:.0}(占比 {share_pct})"));
+            conclusions.push(format!(
+                "被瞄准炮弹潜在伤害 {shell_potential:.0}, 实际吃伤 {taken_damage:.0}(占比 {share_pct})"
+            ));
         }
     } else if taken_damage <= 0.0 {
-        conclusions.push("未被敌舰瞄准(agro=0)且零吃伤; 生存分高不代表有输出".to_owned());
+        conclusions.push("未被敌方炮弹瞄准(炮弹 agro=0)且零攻击吃伤".to_owned());
     }
-    if died {
-        let share = death_share_of_match
-            .map(|s| format!("约为对局 {} 处死亡", ret_pct(s)))
-            .unwrap_or_else(|| "死亡时刻无法换算".to_owned());
-        conclusions.push(format!("确认死亡(死于 {share}); 死亡原因需事件级/S3 佐证"));
-    } else {
-        conclusions.push("整局存活".to_owned());
+    if non_shell_potential > 0.0 {
+        conclusions.push(format!(
+            "另有非炮弹/未分类潜在伤害 {non_shell_potential:.0}, 未计入规避口径"
+        ));
+    }
+    match died {
+        Some(true) => {
+            let share = death_share_of_match
+                .map(|s| format!("约为对局 {} 处死亡", ret_pct(s)))
+                .unwrap_or_else(|| "死亡时刻无法换算".to_owned());
+            conclusions.push(format!("确认死亡(死于 {share}); 死亡原因需事件级/S3 佐证"));
+        }
+        Some(false) => conclusions.push("整局存活".to_owned()),
+        None => conclusions.push("对局未到终局, 是否存活未知".to_owned()),
     }
     if unidentified_hits > 0 {
         conclusions.push(format!("{unidentified_hits} 发命中无法匹配弹道/鱼雷, 未计入伤害"));
@@ -572,18 +712,20 @@ pub fn assess(report: &BattleReport, params: &dyn GameParamProvider) -> Survival
         conclusions.push("S2 位置时间线未记录(需开启 record_position_history), 走位/暴露未分析".to_owned());
     } else {
         conclusions.push(format!(
-            "S2 近似: 12km内暴露占比 {:.0}%, 最近敌舰最小 {:.0}m; 掩体/真实视线未建模(需地图几何与 visibilityFlags)",
-            exposure.exposed_time_frac * 100.0,
-            exposure.nearest_enemy_min_m.unwrap_or(0.0),
+            "S2 近似: 12km内暴露占比 {}, 最近敌舰最小 {}; 掩体/真实视线未建模(需地图几何与 visibilityFlags)",
+            exposure.exposed_time_frac.map(|v| format!("{:.0}%", v * 100.0)).unwrap_or_else(|| "?" .to_owned()),
+            exposure.nearest_enemy_min_m.map(|v| format!("{v:.0}m")).unwrap_or_else(|| "?" .to_owned()),
         ));
     }
 
-    let grade = grade_for(survival_score);
+    let grade = grade_for(survival_score).map(str::to_owned);
+    let grade_label = grade.as_deref().unwrap_or("未知");
+    let pct = |v: Option<f32>| v.map(|x| format!("{:.0}%", x * 100.0)).unwrap_or_else(|| "?".to_owned());
     let verdict = format!(
-        "规避 {:.0}% / 存活 {:.0}% / 自救 {:.0}% -> {grade}",
-        avoidance * 100.0,
-        survival * 100.0,
-        self_rescue * 100.0
+        "规避 {} / 存活 {} / 自救 {} -> {grade_label}",
+        pct(avoidance),
+        pct(survival),
+        pct(self_rescue)
     );
 
     SurvivalProfile {
@@ -610,10 +752,17 @@ pub fn assess(report: &BattleReport, params: &dyn GameParamProvider) -> Survival
         max_duration_s: report.max_duration(),
         played_duration_s: played_duration,
         potential_damage: potential_total,
+        shell_potential_damage: shell_potential,
+        non_shell_potential_damage: non_shell_potential,
         potential_by_weapon: potential_weapons,
         taken_damage_estimated: taken_damage,
-        taken_frac_of_potential: if potential_total > 0.0 { (taken_damage / potential_total).clamp(0.0, 1.0) } else { 0.0 },
+        taken_frac_of_potential: if shell_potential > 0.0 {
+            Some((taken_damage / shell_potential).clamp(0.0, 1.0))
+        } else {
+            None
+        },
         avoidance_ratio: avoidance,
+        match_complete,
         // Not clamped: >1.0 means the player healed more than once (Repair
         // Party), surviving more than their max HP in raw damage.
         taken_frac_of_hp: self_max_hp.map_or(0.0, |hp| if hp > 0.0 { taken_damage / hp } else { 0.0 }),
@@ -625,10 +774,7 @@ pub fn assess(report: &BattleReport, params: &dyn GameParamProvider) -> Survival
         burn_observed,
         flood_status: "unknown".to_owned(),
         has_dcp,
-        dcp_charges: {
-            let charges = dcp_charges;
-            (charges != u32::MAX).then_some(charges)
-        },
+        dcp_charges,
         dcp_activations,
         has_repair_party,
         repair_party_activations,
@@ -640,17 +786,17 @@ pub fn assess(report: &BattleReport, params: &dyn GameParamProvider) -> Survival
         death_clock_s,
         death_share_of_match,
         survival_score,
-        grade: grade.to_owned(),
+        grade,
         verdict,
         conclusions,
         score_breakdown: ScoreBreakdown {
             avoidance,
             survival,
             self_rescue,
-            avoidance_weight: 0.40,
-            survival_weight: 0.35,
-            self_rescue_weight: 0.25,
-            score: survival_score as f32,
+            avoidance_weight: AVOIDANCE_WEIGHT,
+            survival_weight: SURVIVAL_WEIGHT,
+            self_rescue_weight: SELF_RESCUE_WEIGHT,
+            score,
         },
         hits,
         sources,
@@ -743,10 +889,10 @@ fn assess_exposure(report: &BattleReport, self_entity: EntityId, enemies: &HashS
         enemy_samples: enemy_track.len() as u32,
         nearest_enemy_min_m: (nearest_n > 0).then_some(nearest_min),
         nearest_enemy_avg_m: if nearest_n > 0 { Some(nearest_sum / nearest_n as f32) } else { None },
-        exposed_time_frac: if self_track.is_empty() { 0.0 } else { exposed_n as f32 / self_track.len() as f32 },
-        enemies_within_12km_avg: if exposed_n > 0 { enemy_sum / exposed_n as f32 } else { 0.0 },
-        approach_frac: if motion_n > 0 { approach_n as f32 / motion_n as f32 } else { 0.0 },
-        kiting_frac: if motion_n > 0 { kiting_n as f32 / motion_n as f32 } else { 0.0 },
+        exposed_time_frac: if self_track.is_empty() { None } else { Some(exposed_n as f32 / self_track.len() as f32) },
+        enemies_within_12km_avg: if exposed_n > 0 { Some(enemy_sum / exposed_n as f32) } else { None },
+        approach_frac: if motion_n > 0 { Some(approach_n as f32 / motion_n as f32) } else { None },
+        kiting_frac: if motion_n > 0 { Some(kiting_n as f32 / motion_n as f32) } else { None },
         cover_status: "unknown".to_owned(),
     }
 }
@@ -771,17 +917,20 @@ pub fn render(report: &BattleReport, params: &dyn GameParamProvider) -> String {
     ));
     s.push_str(&format!(
         "\n生存分 {} ({})  {}\n",
-        p.survival_score,
-        p.grade,
+        p.survival_score.map(|v| v.to_string()).unwrap_or_else(|| "未知".to_owned()),
+        p.grade.as_deref().unwrap_or("未知"),
         p.verdict
     ));
     s.push_str(&format!(
-        "  潜在伤害(agro) {:.0}, 实际吃伤(估) {:.0}, 承受比 {:.0}%, 规避 {:.0}%",
-        p.potential_damage,
+        "  潜在炮弹伤害(agro) {:.0}, 实际炮弹吃伤(估) {:.0}, 承受比 {}, 规避 {}",
+        p.shell_potential_damage,
         p.taken_damage_estimated,
-        p.taken_frac_of_potential * 100.0,
-        p.avoidance_ratio * 100.0
+        p.taken_frac_of_potential.map(|v| format!("{:.0}%", v * 100.0)).unwrap_or_else(|| "?".to_owned()),
+        p.avoidance_ratio.map(|v| format!("{:.0}%", v * 100.0)).unwrap_or_else(|| "?".to_owned())
     ));
+    if p.non_shell_potential_damage > 0.0 {
+        s.push_str(&format!("; 另非炮弹潜在 {:.0}", p.non_shell_potential_damage));
+    }
     if p.self_max_hp.is_some() {
         s.push_str(&format!("; 占最大HP {:.0}%", p.taken_frac_of_hp * 100.0));
     }
@@ -804,15 +953,17 @@ pub fn render(report: &BattleReport, params: &dyn GameParamProvider) -> String {
         p.sustained_fires,
         format!("{:.0}%", p.dcp_prompt_ratio * 100.0)
     ));
-    if p.died {
-        let share = p.death_share_of_match.map(|v| format!("{:.0}%", v * 100.0)).unwrap_or_else(|| "?".to_owned());
-        s.push_str(&format!(
-            "  死亡于 t={}s (对局 {})\n",
-            p.death_clock_s.map(|c| format!("{c:.0}")).unwrap_or_else(|| "?".to_owned()),
-            share
-        ));
-    } else {
-        s.push_str("  整局存活\n");
+    match p.died {
+        Some(true) => {
+            let share = p.death_share_of_match.map(|v| format!("{:.0}%", v * 100.0)).unwrap_or_else(|| "?".to_owned());
+            s.push_str(&format!(
+                "  死亡于 t={}s (对局 {})\n",
+                p.death_clock_s.map(|c| format!("{c:.0}")).unwrap_or_else(|| "?".to_owned()),
+                share
+            ));
+        }
+        Some(false) => s.push_str("  整局存活\n"),
+        None => s.push_str("  对局未到终局, 是否存活未知\n"),
     }
 
     s.push_str("\n-- 主要承伤来源 --\n");
@@ -856,22 +1007,101 @@ pub fn render(report: &BattleReport, params: &dyn GameParamProvider) -> String {
 
     s.push_str("\n-- 暴露/走位(S2 近似) --\n");
     s.push_str(&format!(
-        "  自舰世界样本 {} 个, 敌舰世界样本 {} 个; 最近敌舰最小 {:.0}m 平均 {:?}; 12km内暴露占比 {:.0}%, 平均敌舰数 {:.1}\n",
+        "  自舰世界样本 {} 个, 敌舰世界样本 {} 个; 最近敌舰最小 {} 平均 {}; 12km内暴露占比 {}, 平均敌舰数 {}\n",
         p.exposure.self_samples,
         p.exposure.enemy_samples,
-        p.exposure.nearest_enemy_min_m.unwrap_or(0.0),
-        p.exposure.nearest_enemy_avg_m,
-        p.exposure.exposed_time_frac * 100.0,
-        p.exposure.enemies_within_12km_avg,
+        p.exposure.nearest_enemy_min_m.map(|v| format!("{v:.0}m")).unwrap_or_else(|| "?".to_owned()),
+        p.exposure.nearest_enemy_avg_m.map(|v| format!("{v:.0}m")).unwrap_or_else(|| "?".to_owned()),
+        p.exposure.exposed_time_frac.map(|v| format!("{:.0}%", v * 100.0)).unwrap_or_else(|| "?" .to_owned()),
+        p.exposure.enemies_within_12km_avg.map(|v| format!("{v:.1}")).unwrap_or_else(|| "?".to_owned()),
     ));
     s.push_str(&format!(
-        "  靠近敌舰(approach) {:.0}%, 拉开(kiting) {:.0}%; 掩体距离未建模(需地图几何), 真实视线未含\n",
-        p.exposure.approach_frac * 100.0,
-        p.exposure.kiting_frac * 100.0,
+        "  靠近敌舰(approach) {}, 拉开(kiting) {}; 掩体距离未建模(需地图几何), 真实视线未含\n",
+        p.exposure.approach_frac.map(|v| format!("{:.0}%", v * 100.0)).unwrap_or_else(|| "?" .to_owned()),
+        p.exposure.kiting_frac.map(|v| format!("{:.0}%", v * 100.0)).unwrap_or_else(|| "?" .to_owned()),
     ));
     s.push_str("\n-- 结论 --\n");
     for c in &p.conclusions {
         s.push_str(&format!("  - {}\n", c));
     }
     s
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    fn assert_close(actual: f32, expected: f32) {
+        assert!((actual - expected).abs() < 1e-4, "got {actual}, expected {expected}");
+    }
+
+    #[test]
+    fn composite_is_none_when_fate_unknown() {
+        // A truncated recording has no survival outcome, so no composite score
+        // may be fabricated even if avoidance and self_rescue look perfect.
+        assert_eq!(normalized_composite(None, Some(1.0), Some(1.0)), None);
+    }
+
+    #[test]
+    fn composite_full_known_factors() {
+        let c = normalized_composite(Some(1.0), Some(0.96), Some(0.0)).unwrap();
+        // 0.40*0.96 + 0.35*1.0 + 0.25*0.0 = 0.384 + 0.35 = 0.734
+        assert_close(c, 0.734);
+    }
+
+    #[test]
+    fn composite_caps_at_measured_weight_when_subfactors_unknown() {
+        // survival known, avoidance and self_rescue unknown. The composite is
+        // capped at the measured weight fraction (0.35), so lack of data never
+        // lets a single known factor claim the full score.
+        let c = normalized_composite(Some(0.6), None, None).unwrap();
+        assert_close(c, 0.35);
+    }
+
+    #[test]
+    fn composite_caps_when_a_subfact_is_unknown() {
+        // survival = 1.0 and self_rescue = 0.0 both known, avoidance unknown:
+        // re-normalized (0.583) but capped at measured weight 0.60, and never
+        // allowed to present a perfect 1.0 from partial data.
+        let c = normalized_composite(Some(1.0), None, Some(0.0)).unwrap();
+        assert_close(c, 0.35 / 0.60);
+    }
+
+    #[test]
+    fn composite_never_reaches_perfect_from_missing_data() {
+        // The reviewer's concrete regression: a perfect-looking shell game with
+        // one aged-out (unidentified) hit must not score 100 just because the
+        // evasion lane is unknown. survival + self_rescue are both 1.0, but the
+        // unknown avoidance caps the composite below the full ceiling.
+        let c = normalized_composite(Some(1.0), None, Some(1.0)).unwrap();
+        assert!((c - 0.60).abs() < 1e-4, "got {c}, expected capped 0.60");
+        assert!(c < 1.0);
+    }
+
+    #[test]
+    fn shell_weapon_classification() {
+        for w in [
+            DamageStatWeapon::MainAp,
+            DamageStatWeapon::MainHe,
+            DamageStatWeapon::AtbaAp,
+            DamageStatWeapon::AtbaHe,
+            DamageStatWeapon::MainAiAp,
+            DamageStatWeapon::MainAiHe,
+            DamageStatWeapon::MainCs,
+            DamageStatWeapon::AtbaCs,
+        ] {
+            assert!(weapon_is_shell(&w), "{w:?} should be shell");
+        }
+        for w in [
+            DamageStatWeapon::Torpedo,
+            DamageStatWeapon::BomberHe,
+            DamageStatWeapon::TBomber,
+            DamageStatWeapon::Burn,
+            DamageStatWeapon::Flood,
+            DamageStatWeapon::Ram,
+            DamageStatWeapon::RocketHe,
+        ] {
+            assert!(!weapon_is_shell(&w), "{w:?} should be non-shell");
+        }
+    }
 }

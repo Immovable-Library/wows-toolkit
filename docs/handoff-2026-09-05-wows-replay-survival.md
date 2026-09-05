@@ -4,7 +4,7 @@ Snapshot date: 2026-09-05. 新对话从这里无缝续接：**生存端评估引
 
 ## 一句话续接指令（新对话直接粘贴）
 
-> 继续 WOWS 回放生存端评估开发。先读 `docs/handoff-2026-09-05-wows-replay-survival.md` 与 `C:/Users/asdfg/.codex/skills/wows-replay-parser/specs/2026-09-05-survival-evaluation-engine.md`。**S1（生存画像 + 0-100 生存分）与 S2（位置时间线导出 + 近似暴露/走位）已实现**：`replayshark` 新增 `survival` 子命令（默认 JSONL / `--text` 文本）；`wows-replay-insights/src/survival.rs` 产出 `SurvivalProfile` 与 `Exposure`；复用 `hit_value::estimate_damage` 与「仅敌方」逻辑。`BattleReport::positions_over_time()` 已暴露。**本会话继续从 S3（HP 时间线：血量管理/濒死时刻/血量→输出耦合）开始**；S3 需在 `wows-battle-world` 新增 HP 时间线导出。`games_dir=D:/World_of_Warships`。
+> 继续 WOWS 回放生存端评估开发。先读 `docs/handoff-2026-09-05-wows-replay-survival.md` 与 `C:/Users/asdfg/.codex/skills/wows-replay-parser/specs/2026-09-05-survival-evaluation-engine.md`。**S1（生存画像 + 0-100 生存分）与 S2（位置时间线导出 + 近似暴露/走位）已实现，且 S1 打分已诚实化**：`replayshark` 新增 `survival` 子命令（默认 JSONL / `--text` 文本）；`wows-replay-insights/src/survival.rs` 产出 `SurvivalProfile` 与 `Exposure`；复用 `hit_value::estimate_damage` 与「仅敌方」逻辑；`BattleReport::positions_over_time()` 已暴露。**S1 诚实化**：`died`/`survival`/`avoidance_ratio`/`self_rescue`/`taken_frac_of_potential`/`survival_score`/`grade` 改为 `Option`（回放未到终局 → 存活/死亡置未知，不再凭"无死亡记录"判存活）；规避比按炮弹 lane 对齐、存在未识别命中/非炮弹伤害时置 `null`（不输出"规避良好"）；复合分封顶在"已测量权重占比"（缺失数据不能得满分）；新增 `match_complete`/`shell_potential_damage`/`non_shell_potential_damage`；`has_dcp` 同时看激活日志；去掉 `u32::MAX` 哨兵；S2 空 lane 不造 0。**本会话继续从 S3（HP 时间线：血量管理/濒死/血量→输出耦合）开始**；同时处理 deferred 跨 crate 项：`resolve_victim`（`unwrap_or(self_ship_id)` 把 unknown≈self · 死船过期 `Transform3d` · `:265` 注释与 `owner_is_enemy` 矛盾）、DCP 存在性三态（confirmed-absent/unknown）、unidentified 按「过期炮击 vs 鱼雷」细分、S2 approach/kiting 匹配样本可能过期。`games_dir=D:/World_of_Warships`。
 
 ## S2 已完成（本会话实现）
 
@@ -25,6 +25,23 @@ Snapshot date: 2026-09-05. 新对话从这里无缝续接：**生存端评估引
 - 分区饱和依赖 `hit_locations`（models opt-in），缺失时估伤为上限（文本已注明）。
 - 进水状态：burn 日志忽略 flood 位；BattleReport 无自舰进水/HP 时间线，`flood_status=unknown`，死亡原因未暴露。
 - 走位/暴露/血量管理 = S2/S3。
+
+## S1 打分诚实化（本会话对抗性复审修复）
+
+针对"数据缺失时虚高/满分"的评审 BLOCKER 与复审安全隐患，`crates/wows-replay-insights/src/survival.rs` 已改：
+
+- **fate 门控**：`died` 改 `Option<bool>`，`survival_factor` 仅在「确认死亡」或「`battle_result()` 为 `Some`（对局跑完）」时为 `Some`，否则 `None`；`survival_score`/`grade` 改 `Option`——截断/退出回放不再输出"整局存活/100 分"，而是 `null` + 结论"对局未到终局, 是否存活未知"。
+- **自救**：`burn_state_observed()==false`（burningFlags 未复制）时 `self_rescue=None`，不再凭"没着火"给满分。
+- **规避 lane 对齐**：`weapon_is_shell` 区分炮弹/非炮弹；`avoidance_ratio` 用 `1 - shell_taken / shell_potential`；存在未识别命中或着火（非炮弹伤害证据）时置 `null`，并抑制"规避/隐蔽良好"结论、注明受限。
+- **复合分封顶**（复审核心）：`normalized_composite` 把分数封顶在"已测量权重占比"（已知因子权重和），缺失数据无法得到与完整测量相同的满分。单测 `composite_never_reaches_perfect_from_missing_data` 锁定该语义。
+- **配套**：`has_dcp` 同时看 DCP 激活日志；`dcp_charges` 用 `Option`（去掉 `u32::MAX` 哨兵）；S2 `exposed_time_frac`/`approach_frac`/`kiting_frac`/`enemies_within_12km_avg` 空 lane 改为 `None` 不造 0；`score_breakdown.score` 从 0-100 改为 0-1 归一化。
+- **新字段**：`match_complete`（bool）、`shell_potential_damage`、`non_shell_potential_damage`（f32）——下游 JSON 消费方需按 `null` 处理 Option 字段。
+
+### 验证
+
+- `cargo test -p wows-replay-insights`：131 lib tests 全绿（新增 6 个诚实性单测）。
+- `cargo clippy -p wows-replay-insights`：无新增警告（剩余为既有风格项）。
+- 真跑真实回放：Atoll 完整对局评分 74→58，规避 `?`（3 发未识别）；批量 6 个中原来两个 100 分回放封顶 60。
 
 ## 已完成并发布（输出端，commit 80e7cbd7）
 
@@ -78,7 +95,7 @@ Snapshot date: 2026-09-05. 新对话从这里无缝续接：**生存端评估引
 
 ## 环境与命令速查
 
-- Repo：`D:\codexProject\wows-toolkit`（git，工作树干净，HEAD=80e7cbd7）。
+- Repo：`D:\codexProject\wows-toolkit`（git；生存端 S1/S2 + S1 诚实化已提交，前面是输出端 commit `80e7cbd7`）。
 - 游戏目录（CLI `-g`）：`D:/World_of_Warships`；回放 `D:/World_of_Warships/replays/15.7.0.0/`。
 - 输出端跑法：`cargo run -p replayshark -- -g D:/World_of_Warships report --depth --ship-names C:/Users/asdfg/.codex/skills/wows-replay-parser/ship_names.json <replay>`
 - Skill：`C:/Users/asdfg/.codex/skills/wows-replay-parser`；术语表 `CONTEXT.md`；ADR `docs/adr/0001-m2-single-shot-hit-value.md`；`scripts/review.py`（跑 report）。
