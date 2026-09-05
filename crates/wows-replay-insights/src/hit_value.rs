@@ -1062,25 +1062,31 @@ fn is_belt_material(material_id: u32) -> bool {
 /// tall-masted battleship is far above the deck) -- scaling them by total
 /// height would put a destroyer's deck below any real hit.
 fn zone_thresholds(hull: Option<&HullDim>) -> ZoneThresholds {
-    // Calibrated on Iowa's armour-mesh bbox (length 270.4 m, beam 33.0 m):
-    // the old 110 m bow boundary sits at 110 / 135.2 = 0.814 of the half-length
-    // and the old 8 m belt boundary at 8 / 16.5 = 0.485 of the half-beam.
+    // Calibrated on Iowa's armour-mesh bbox (half-length 135.2 m, half-beam
+    // 16.5 m): the old 110 m bow boundary sits at 110 / 135.2 = 0.814 of the
+    // half-length and the old 8 m belt boundary at 8 / 16.5 = 0.485 of the
+    // half-beam. Applied to the per-side reach, a centred ship reproduces the
+    // old boundaries exactly; Iowa's fore reach (137.5 m) gives ~112 m, within
+    // ~2% of the old 110 m.
     const BOW_BOUNDARY_FRACTION: f32 = 0.814;
     const BELT_BOUNDARY_FRACTION: f32 = 0.485;
-    const DEFAULT_BOW: f32 = 110.0;
+    const DEFAULT_FORE: f32 = 110.0;
+    const DEFAULT_AFT: f32 = 110.0;
     const DEFAULT_DECK: f32 = 6.0;
     const DEFAULT_SUPERSTRUCTURE: f32 = 14.0;
     const DEFAULT_BELT: f32 = 8.0;
 
     match hull {
         Some(h) => ZoneThresholds {
-            bow: h.half_length_m() * BOW_BOUNDARY_FRACTION,
+            fore: h.fore_m * BOW_BOUNDARY_FRACTION,
+            aft: h.aft_m * BOW_BOUNDARY_FRACTION,
             deck: DEFAULT_DECK,
             superstructure: DEFAULT_SUPERSTRUCTURE,
-            belt: h.half_beam_m() * BELT_BOUNDARY_FRACTION,
+            belt: h.half_beam_m * BELT_BOUNDARY_FRACTION,
         },
         None => ZoneThresholds {
-            bow: DEFAULT_BOW,
+            fore: DEFAULT_FORE,
+            aft: DEFAULT_AFT,
             deck: DEFAULT_DECK,
             superstructure: DEFAULT_SUPERSTRUCTURE,
             belt: DEFAULT_BELT,
@@ -1090,7 +1096,8 @@ fn zone_thresholds(hull: Option<&HullDim>) -> ZoneThresholds {
 
 #[derive(Clone, Copy)]
 struct ZoneThresholds {
-    bow: f32,
+    fore: f32,
+    aft: f32,
     deck: f32,
     superstructure: f32,
     belt: f32,
@@ -1124,8 +1131,10 @@ pub(crate) fn zone_for_hit(hit: &ResolvedShotHit, hull: Option<&HullDim>) -> Str
     let bounds = zone_thresholds(hull);
     if y > bounds.superstructure {
         "superstructure".to_owned()
-    } else if x.abs() > bounds.bow {
-        if x > 0.0 { "bow".to_owned() } else { "stern".to_owned() }
+    } else if x > bounds.fore {
+        "bow".to_owned()
+    } else if x < -bounds.aft {
+        "stern".to_owned()
     } else if y > bounds.deck {
         "deck".to_owned()
     } else if z.abs() > bounds.belt && y < bounds.deck {
@@ -1352,7 +1361,7 @@ mod zone_tests {
     /// lands in the bow zone, which is what the per-ship refinement is for.
     #[test]
     fn per_ship_bow_boundary_rescues_a_destroyer_hit() {
-        let dd = HullDim { length_m: 141.0, beam_m: 13.2, height_m: 19.4 };
+        let dd = HullDim { fore_m: 70.5, aft_m: 70.5, half_beam_m: 6.6, height_m: 19.4 };
         let hit = hit_at(Vec3::new(4.4, 0.0, 0.0), 0.0);
         assert_eq!(zone_for_hit(&hit, None), "citadel");
         assert_eq!(zone_for_hit(&hit, Some(&dd)), "bow");

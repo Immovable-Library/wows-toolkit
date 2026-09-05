@@ -65,8 +65,9 @@ fn probe_hull_bbox() {
             dim = Some(match dim {
                 None => d,
                 Some(e) => hull_dim::HullDim {
-                    length_m: e.length_m.max(d.length_m),
-                    beam_m: e.beam_m.max(d.beam_m),
+                    fore_m: e.fore_m.max(d.fore_m),
+                    aft_m: e.aft_m.max(d.aft_m),
+                    half_beam_m: e.half_beam_m.max(d.half_beam_m),
                     height_m: e.height_m.max(d.height_m),
                 },
             });
@@ -76,19 +77,21 @@ fn probe_hull_bbox() {
             continue;
         };
         resolved += 1;
+        let length = dim.length_m();
+        let beam = dim.half_beam_m * 2.0;
         eprintln!(
-            "{ship}: length={:.1}m beam={:.1}m height={:.1}m (geom parts={geom_count})",
-            dim.length_m, dim.beam_m, dim.height_m
+            "{ship}: length={length:.1}m beam={beam:.1}m height={:.1}m (geom parts={geom_count})",
+            dim.height_m
         );
         assert!(
-            (dim.length_m - exp_len).abs() < exp_len * 0.06,
+            (length - exp_len).abs() < exp_len * 0.06,
             "{ship}: armour-mesh length {:.1}m too far from published {exp_len}m",
-            dim.length_m
+            length
         );
         assert!(
-            (dim.beam_m - exp_beam).abs() < exp_beam * 0.20,
+            (beam - exp_beam).abs() < exp_beam * 0.20,
             "{ship}: armour-mesh beam {:.1}m too far from published {exp_beam}m",
-            dim.beam_m
+            beam
         );
         assert!(dim.height_m > 8.0, "{ship}: implausibly short hull, height {:.1}m", dim.height_m);
     }

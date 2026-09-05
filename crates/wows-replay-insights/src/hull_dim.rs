@@ -26,25 +26,32 @@ use wowsunpack::game_params::types::GameParamProvider;
 use wows_replays::types::EntityId;
 use wows_battle_world::report::BattleReport;
 use crate::build::ResolvedBuild;
+use crate::fire_chance::resolve::equipped_upgrade;
 use crate::hit_value::ProviderRef;
+use wowsunpack::game_params::types::Vehicle;
 
-/// The hull's outer dimensions, in meters, from its armour-mesh bounding box.
+/// The hull's outer reaches, in meters from the model origin, from its
+/// armour-mesh bounding box.
+///
+/// The reaches are per-side so a ship whose origin is not the geometric centre
+/// (aft-heavy, or a bow that overhangs) gets asymmetric bow/stern boundaries
+/// rather than a symmetric half-extent.
 #[derive(Clone, Copy, Debug, PartialEq)]
 pub struct HullDim {
-    pub length_m: f32,
-    pub beam_m: f32,
+    /// Reach toward the bow (+Z model / +X body), meters.
+    pub fore_m: f32,
+    /// Reach toward the stern (-Z model / -X body), meters.
+    pub aft_m: f32,
+    /// Largest lateral half-beam either side of the centreline, meters.
+    pub half_beam_m: f32,
+    /// Vertical extent (keel to mast top), meters.
     pub height_m: f32,
 }
 
 impl HullDim {
-    /// The ship's half-length in meters.
-    pub fn half_length_m(&self) -> f32 {
-        self.length_m * 0.5
-    }
-
-    /// The ship's half-beam in meters.
-    pub fn half_beam_m(&self) -> f32 {
-        self.beam_m * 0.5
+    /// The ship's overall length in meters.
+    pub fn length_m(&self) -> f32 {
+        self.fore_m + self.aft_m
     }
 }
 
@@ -75,12 +82,12 @@ pub fn hull_dim_from_geometry(geom_bytes: &[u8]) -> Option<HullDim> {
     if !any {
         return None;
     }
-    let extent = [max[0] - min[0], max[1] - min[1], max[2] - min[2]];
     // Z is length (bow), X is beam, Y is height.
     Some(HullDim {
-        length_m: extent[2] * SHIP_MODEL_TO_METERS,
-        beam_m: extent[0] * SHIP_MODEL_TO_METERS,
-        height_m: extent[1] * SHIP_MODEL_TO_METERS,
+        fore_m: max[2] * SHIP_MODEL_TO_METERS,
+        aft_m: -min[2] * SHIP_MODEL_TO_METERS,
+        half_beam_m: max[0].max(-min[0]) * SHIP_MODEL_TO_METERS,
+        height_m: (max[1] - min[1]) * SHIP_MODEL_TO_METERS,
     })
 }
 
@@ -91,12 +98,13 @@ pub fn hull_dim_from_geometry(geom_bytes: &[u8]) -> Option<HullDim> {
 /// model is absent, whose geometry has no armour triangles, or whose VFS path
 /// cannot be opened is skipped so the caller falls back to the fixed heuristic.
 ///
-/// Approximation: a ship is resolved by its base `model_path`; equipped
-/// hull-upgrade models are not distinguished, so a non-base hull shares the base
-/// hull's dimensions (hulls rarely change length/beam materially). The bbox is
-/// also treated as centered on the model origin, so the fore/aft and
-/// port/starboard reaches are symmetric; per-side reaches are a later
-/// refinement. The parsed `assets.bin` is not cached across reports.
+/// The ship is resolved by its equipped hull upgrade (mirroring
+/// `fire_chance::resolve`), falling back to the base `model_path` when the build
+/// has no TTX hull components to resolve against. The reaches are measured
+/// per-side from the model origin, so a ship whose origin is not the geometric
+/// centre gets asymmetric bow/stern boundaries. The armour-mesh overhang and the
+/// assumption that model Z=0 is the replay's position anchor are not reconciled;
+/// the parsed `assets.bin` is not cached across reports.
 pub fn hull_dims_for_report(
     report: &BattleReport,
     params: &dyn GameParamProvider,
@@ -121,14 +129,28 @@ pub fn hull_dims_for_report(
         let Some(build) = ResolvedBuild::from_player(player, &ProviderRef(params), report.version()) else {
             continue;
         };
-        let Some(model_path) = build.ship.vehicle().and_then(|v| v.model_path().map(str::to_owned)) else {
+        let Some(vehicle) = build.ship.vehicle() else {
             continue;
         };
+        let model_path = equipped_hull_model_path(&build, vehicle);
         if let Some(dim) = hull_dim_for_model(&db, &index, vfs, &model_path) {
             map.insert(player.initial_state().entity_id(), dim);
         }
     }
     map
+}
+
+/// The model path of the ship's equipped hull upgrade, falling back to the base
+/// `model_path` when the equipped hull is unambiguous-but-not-in-GameParams, or
+/// when the build has no TTX hull components to resolve against.
+fn equipped_hull_model_path(build: &ResolvedBuild, vehicle: &Vehicle) -> String {
+    if let Some(ttx) = vehicle.ttx_components()
+        && let Ok(hull) = equipped_upgrade(build, "_Hull", ttx.hulls.keys())
+        && let Some(path) = vehicle.model_path_for_hull(&hull)
+    {
+        return path.to_owned();
+    }
+    vehicle.model_path().map(str::to_owned).unwrap_or_default()
 }
 
 /// Resolve a ship's hull `.visual`/`.geometry` records and compute the armour
@@ -206,8 +228,9 @@ fn merge_dims(existing: Option<HullDim>, next: HullDim) -> HullDim {
     match existing {
         None => next,
         Some(e) => HullDim {
-            length_m: e.length_m.max(next.length_m),
-            beam_m: e.beam_m.max(next.beam_m),
+            fore_m: e.fore_m.max(next.fore_m),
+            aft_m: e.aft_m.max(next.aft_m),
+            half_beam_m: e.half_beam_m.max(next.half_beam_m),
             height_m: e.height_m.max(next.height_m),
         },
     }
@@ -228,17 +251,16 @@ mod tests {
     }
 
     #[test]
-    fn half_extents_are_half_the_full_extents() {
-        let d = HullDim { length_m: 270.4, beam_m: 33.0, height_m: 45.9 };
-        assert_eq!(d.half_length_m(), 135.2);
-        assert_eq!(d.half_beam_m(), 16.5);
+    fn length_is_fore_plus_aft() {
+        let d = HullDim { fore_m: 137.5, aft_m: 132.9, half_beam_m: 16.5, height_m: 45.9 };
+        assert_eq!(d.length_m(), 270.4);
     }
 
     #[test]
     fn merge_takes_the_max_extent() {
-        let a = HullDim { length_m: 100.0, beam_m: 10.0, height_m: 5.0 };
-        let b = HullDim { length_m: 120.0, beam_m: 12.0, height_m: 6.0 };
-        assert_eq!(merge_dims(Some(a), b), HullDim { length_m: 120.0, beam_m: 12.0, height_m: 6.0 });
+        let a = HullDim { fore_m: 100.0, aft_m: 90.0, half_beam_m: 10.0, height_m: 5.0 };
+        let b = HullDim { fore_m: 110.0, aft_m: 95.0, half_beam_m: 12.0, height_m: 6.0 };
+        assert_eq!(merge_dims(Some(a), b), HullDim { fore_m: 110.0, aft_m: 95.0, half_beam_m: 12.0, height_m: 6.0 });
         assert_eq!(merge_dims(None, b), b);
     }
 }

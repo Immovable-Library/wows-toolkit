@@ -343,7 +343,7 @@ fn fire_prevention(build: &ResolvedBuild) -> FirePrevention {
 }
 
 /// Why a slot's equipped upgrade could not be named.
-enum SlotGap {
+pub(crate) enum SlotGap {
     NoOptions,
     Ambiguous,
 }
@@ -365,7 +365,7 @@ impl SlotGap {
 /// upgrade there would be a guess about which hull or battery was mounted, and
 /// the wrong hull means the wrong fire-section geometry. A slot with exactly one
 /// option is not a guess, so it resolves without the replay's help.
-fn equipped_upgrade<'a>(
+pub(crate) fn equipped_upgrade<'a>(
     build: &ResolvedBuild,
     uc_type: &str,
     candidates: impl Iterator<Item = &'a String>,
