@@ -126,11 +126,11 @@ pub fn exact_zone_for_hit(hit: &ResolvedShotHit, data: &HullData) -> Option<Stri
     let point = [body.z, body.y, body.x];
     for b in &zones.boxes {
         let inside = point[0] >= b.min[0]
-            && point[0] <= b.max[0]
+            && point[0] < b.max[0]
             && point[1] >= b.min[1]
-            && point[1] <= b.max[1]
+            && point[1] < b.max[1]
             && point[2] >= b.min[2]
-            && point[2] <= b.max[2];
+            && point[2] < b.max[2];
         if inside
             && let Some(zone) = zones.zone_for_box.get(&b.name)
         {
@@ -138,7 +138,10 @@ pub fn exact_zone_for_hit(hit: &ResolvedShotHit, data: &HullData) -> Option<Stri
         }
         // An unmapped box (e.g. an engine/barbette box with no hit-location key)
         // can sit inside a mapped one; keep scanning so the hit falls to the
-        // real zone instead of short-circuiting to the coarse label.
+        // real zone instead of short-circuiting to the coarse label. Boxes use
+        // half-open `[min, max)` semantics (a point on a max face belongs to the
+        // adjacent box), mirroring `getSplashBoxNameAtPoint`; the first box that
+        // contains a point wins when extents overlap at float precision.
     }
     None
 }
@@ -469,9 +472,21 @@ fn build_zones(boxes: Vec<SplashBox>, vehicle: &Vehicle) -> Option<HullZones> {
     }
     let mut zone_for_box = std::collections::HashMap::new();
     if let Some(hl) = vehicle.hit_locations() {
+        // A splash box name claimed by exactly one hit-location key maps to that
+        // key; a name claimed by two or more keys is ambiguous and is dropped so
+        // the exact-zones path falls back to the coarse label rather than guess.
+        // Both outcomes are independent of the HashMap iteration order, so no
+        // sorting is needed for determinism.
+        let mut claimants: std::collections::HashMap<&str, std::collections::HashSet<&String>> =
+            std::collections::HashMap::new();
         for (key, location) in hl {
             for box_name in location.splash_boxes() {
-                zone_for_box.insert(box_name.clone(), key.clone());
+                claimants.entry(box_name.as_str()).or_default().insert(key);
+            }
+        }
+        for (box_name, keys) in claimants {
+            if keys.len() == 1 {
+                zone_for_box.insert(box_name.to_owned(), keys.into_iter().next().unwrap().clone());
             }
         }
     }
@@ -592,6 +607,74 @@ mod tests {
         ]);
 
         assert_eq!(plate_thickness_at_point([0.0, 0.0, 0.0], [2.0, 0.0, 0.0], &plates, &armor), Some(32.0));
+    }
+
+    /// Box membership is half-open `[min, max)`: a point exactly on the `max`
+    /// face is not inside, so a shared boundary is claimed by exactly one box.
+    #[test]
+    fn exact_zone_rejects_a_point_on_the_box_max_edge() {
+        let data = HullData {
+            dim: HullDim { fore_m: 70.0, aft_m: 70.0, half_beam_m: 8.0, height_m: 20.0 },
+            zones: Some(HullZones {
+                boxes: vec![SplashBox {
+                    name: "CM_SB_bow_1".to_owned(),
+                    min: [-0.5, -0.3, 2.0],
+                    max: [0.5, 0.4, 4.0],
+                }],
+                zone_for_box: std::collections::HashMap::from([("CM_SB_bow_1".to_owned(), "Bow".to_owned())]),
+            }),
+            plates: None,
+        };
+        // Body x=3 is inside [2,4); body x=4 sits exactly on the max face.
+        assert_eq!(exact_zone_for_hit(&hit_at_body([3.0, 0.0, 0.0]), &data), Some("Bow".to_owned()));
+        assert_eq!(exact_zone_for_hit(&hit_at_body([4.0, 0.0, 0.0]), &data), None);
+    }
+
+    /// A splash box name claimed by more than one hit-location key is ambiguous
+    /// and is dropped so the exact-zones path falls back to the coarse label,
+    /// and the mapping is deterministic across builds despite HashMap ordering.
+    #[test]
+    fn build_zones_drops_an_ambiguous_box_and_is_deterministic() {
+        use std::collections::HashMap;
+        use wowsunpack::game_params::types::HitLocation;
+
+        let bow = HitLocation::builder()
+            .max_hp(1.0)
+            .hl_type("ArmorZone".to_owned())
+            .regenerated_hp_part(0.0)
+            .thickness(1.0)
+            .splash_boxes(vec!["CM_SB_bow_1".to_owned(), "CM_SB_shared_1".to_owned()])
+            .build();
+        let cit = HitLocation::builder()
+            .max_hp(2.0)
+            .hl_type("ArmorZone".to_owned())
+            .regenerated_hp_part(0.0)
+            .thickness(2.0)
+            .splash_boxes(vec!["CM_SB_shared_1".to_owned()])
+            .build();
+        let hl = HashMap::from([("Bow".to_owned(), bow), ("Cit".to_owned(), cit)]);
+        let vehicle = Vehicle::builder()
+            .level(5)
+            .group("cruiser".to_owned())
+            .maybe_abilities(None)
+            .upgrades(Vec::new())
+            .maybe_config_data(None)
+            .maybe_model_path(None)
+            .maybe_armor(None)
+            .maybe_hit_locations(Some(hl))
+            .permoflages(Vec::new())
+            .camera_trajectories(Vec::new())
+            .maybe_ttx_components(None)
+            .innate_skills(Vec::new())
+            .build();
+        let boxes = vec![
+            SplashBox { name: "CM_SB_bow_1".to_owned(), min: [0.0, 0.0, 0.0], max: [1.0, 1.0, 1.0] },
+            SplashBox { name: "CM_SB_shared_1".to_owned(), min: [0.0, 0.0, 0.0], max: [1.0, 1.0, 1.0] },
+        ];
+        let zones = build_zones(boxes.clone(), &vehicle).expect("zones");
+        assert_eq!(zones.zone_for_box.get("CM_SB_bow_1").map(String::as_str), Some("Bow"));
+        assert_eq!(zones.zone_for_box.get("CM_SB_shared_1"), None);
+        assert_eq!(build_zones(boxes, &vehicle).expect("zones").zone_for_box, zones.zone_for_box);
     }
 
     fn hit_at_body(offset: [f32; 3]) -> ResolvedShotHit {
