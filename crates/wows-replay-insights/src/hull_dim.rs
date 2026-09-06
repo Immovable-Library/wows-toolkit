@@ -33,6 +33,8 @@ use crate::hit_value::ProviderRef;
 use wowsunpack::game_params::types::Vehicle;
 use wows_replays::analyzer::battle_controller::state::ResolvedShotHit;
 use wowsunpack::game_types::Vec3;
+use wowsunpack::game_params::types::ArmorMap;
+use crate::hit_value::shot_origin;
 
 /// The hull's outer reaches, in meters from the model origin, from its
 /// armour-mesh bounding box.
@@ -76,6 +78,27 @@ pub struct HullZones {
 pub struct HullData {
     pub dim: HullDim,
     pub zones: Option<HullZones>,
+    /// Armour-mesh plates and their thickness map, when the geometry resolves.
+    /// Used to recover the exact plate thickness at an impact point.
+    pub(crate) plates: Option<HullPlates>,
+}
+
+/// One armour-mesh triangle with the material/layer identity used to look up its
+/// plate thickness in the ship's `ArmorMap`.
+#[derive(Clone, Copy, Debug)]
+pub(crate) struct ArmorPlate {
+    /// Triangle vertices in ship-model space (`[lateral, up, bow]`), 15 m/unit.
+    vertices: [[f32; 3]; 3],
+    material_id: u8,
+    layer_index: u8,
+}
+
+/// A ship's armour-mesh triangles plus the `ArmorMap` whose `(material, layer)`
+/// keys resolve each plate's thickness in mm.
+#[derive(Clone, Debug)]
+pub(crate) struct HullPlates {
+    plates: Vec<ArmorPlate>,
+    armor: ArmorMap,
 }
 
 /// Classify a hit into the exact GameParams hit-location key by testing its
@@ -120,6 +143,129 @@ pub fn exact_zone_for_hit(hit: &ResolvedShotHit, data: &HullData) -> Option<Stri
     None
 }
 
+/// The plate thickness (mm) at a hit's impact point, from the ship's armour
+/// mesh and its `ArmorMap`.
+///
+/// The shell's incoming ray (shooter muzzle -> impact) is cast against the
+/// armour-mesh triangles; the triangle whose intersection with that ray lies
+/// closest to the impact point is the plate the shell struck, and its
+/// `(material, layer)` pair resolves to a thickness in the `ArmorMap`. Returns
+/// `None` when no ray can be formed, no plate is hit, or the plate has no usable
+/// thickness entry.
+pub(crate) fn plate_thickness_for_hit(hit: &ResolvedShotHit, data: &HullData) -> Option<f32> {
+    let HullPlates { plates, armor } = data.plates.as_ref()?;
+    let pose = hit.victim_pose.as_ref()?;
+    let origin = shot_origin(hit)?;
+    let impact = hit.hit.position.0;
+    let origin_pt = model_space_point(origin, pose);
+    let impact_pt = model_space_point(impact, pose);
+    plate_thickness_at_point(origin_pt, impact_pt, plates, armor)
+}
+
+/// Resolve the plate thickness along a ray in ship-model space. The ray runs
+/// from `origin_pt` toward `impact_pt`; the nearest armour triangle is the plate
+/// the shell strikes and its `(material, layer)` is looked up in `armor`.
+fn plate_thickness_at_point(
+    origin_pt: [f32; 3],
+    impact_pt: [f32; 3],
+    plates: &[ArmorPlate],
+    armor: &ArmorMap,
+) -> Option<f32> {
+    if origin_pt == impact_pt {
+        return None;
+    }
+    let dir = norm3(sub3(impact_pt, origin_pt));
+    if dir.iter().all(|c| c.abs() < f32::EPSILON) {
+        return None;
+    }
+    // A flat muzzle->impact chord can graze a near-side rail or superstructure
+    // plate at a smaller `t` than the plate that actually took the hit, because
+    // the shell's real terminal dive is steeper than that chord. The distance
+    // `|t - t_impact|` equals the 3D distance from the ray/plate intersection to
+    // the impact point, so the plate at the impact wins even when it is not the
+    // first surface the chord crosses.
+    let t_impact = len3(sub3(impact_pt, origin_pt));
+    let mut best: Option<(f32, &ArmorPlate)> = None;
+    for tri in plates {
+        if let Some(t) = ray_tri_intersect(origin_pt, dir, tri.vertices)
+            && best.is_none_or(|(best_dt, _)| (t - t_impact).abs() < best_dt)
+        {
+            best = Some(((t - t_impact).abs(), tri));
+        }
+    }
+    let (_, tri) = best?;
+    armor
+        .get(&(tri.material_id as u32))
+        .and_then(|layers| layers.get(&(tri.layer_index as u32)))
+        .copied()
+        // A 0-mm entry in the ArmorMap is a "common" material that does not
+        // classify as armour (mirrors `armor_list_min_max`), not a real plate;
+        // treat it as unknown so the caller's conservative estimate applies.
+        .filter(|&t| t > 0.0)
+}
+
+/// Map a world position to ship-model space given the victim pose. Model space
+/// is `[lateral, up, bow]` at 15 m/unit; the body frame keeps `+X` bow, so the
+/// model point is `[body.z, body.y, body.x]`.
+fn model_space_point(world: Vec3, pose: &wows_replays::analyzer::battle_controller::state::VictimPose) -> [f32; 3] {
+    let body = world_offset_to_body(
+        Vec3::new(world.x - pose.position.x, world.y - pose.position.y, world.z - pose.position.z),
+        pose.yaw,
+        pose.pitch,
+        pose.roll,
+    );
+    [body.z, body.y, body.x]
+}
+
+fn sub3(a: [f32; 3], b: [f32; 3]) -> [f32; 3] {
+    [a[0] - b[0], a[1] - b[1], a[2] - b[2]]
+}
+
+fn norm3(v: [f32; 3]) -> [f32; 3] {
+    let len = (v[0] * v[0] + v[1] * v[1] + v[2] * v[2]).sqrt();
+    if len <= f32::EPSILON {
+        return v;
+    }
+    [v[0] / len, v[1] / len, v[2] / len]
+}
+
+fn len3(v: [f32; 3]) -> f32 {
+    (v[0] * v[0] + v[1] * v[1] + v[2] * v[2]).sqrt()
+}
+
+/// Moller-Trumbore ray/triangle intersection. Returns the ray parameter `t`
+/// (>= epsilon) when the ray hits the triangle's interior.
+fn ray_tri_intersect(origin: [f32; 3], dir: [f32; 3], v: [[f32; 3]; 3]) -> Option<f32> {
+    let e1 = [v[1][0] - v[0][0], v[1][1] - v[0][1], v[1][2] - v[0][2]];
+    let e2 = [v[2][0] - v[0][0], v[2][1] - v[0][1], v[2][2] - v[0][2]];
+    let p = [
+        dir[1] * e2[2] - dir[2] * e2[1],
+        dir[2] * e2[0] - dir[0] * e2[2],
+        dir[0] * e2[1] - dir[1] * e2[0],
+    ];
+    let det = e1[0] * p[0] + e1[1] * p[1] + e1[2] * p[2];
+    if det.abs() < 1e-9 {
+        return None;
+    }
+    let inv = 1.0 / det;
+    let tvec = [origin[0] - v[0][0], origin[1] - v[0][1], origin[2] - v[0][2]];
+    let u = (tvec[0] * p[0] + tvec[1] * p[1] + tvec[2] * p[2]) * inv;
+    if !(0.0..=1.0).contains(&u) {
+        return None;
+    }
+    let q = [
+        tvec[1] * e1[2] - tvec[2] * e1[1],
+        tvec[2] * e1[0] - tvec[0] * e1[2],
+        tvec[0] * e1[1] - tvec[1] * e1[0],
+    ];
+    let v_coord = (dir[0] * q[0] + dir[1] * q[1] + dir[2] * q[2]) * inv;
+    if v_coord < 0.0 || u + v_coord > 1.0 {
+        return None;
+    }
+    let t = (e2[0] * q[0] + e2[1] * q[1] + e2[2] * q[2]) * inv;
+    (t > 1e-6).then_some(t)
+}
+
 /// Convert ship-model units to meters. 1 ship-model unit = 15 m.
 pub(crate) const SHIP_MODEL_TO_METERS: f32 = 15.0;
 
@@ -130,6 +276,12 @@ pub(crate) const SHIP_MODEL_TO_METERS: f32 = 15.0;
 /// heuristic.
 pub fn hull_dim_from_geometry(geom_bytes: &[u8]) -> Option<HullDim> {
     let geom = geometry::parse_geometry(geom_bytes).ok()?;
+    hull_dim_from_parsed(&geom)
+}
+
+/// Compute the hull dimensions from a parsed geometry, skipping the re-parse an
+/// in-loop caller already paid for.
+fn hull_dim_from_parsed(geom: &geometry::MergedGeometry<'_>) -> Option<HullDim> {
     let mut min = [f32::INFINITY; 3];
     let mut max = [f32::NEG_INFINITY; 3];
     let mut any = false;
@@ -236,6 +388,7 @@ fn hull_data_for_model(
     let needle = format!("/{model_dir}/");
     let mut dim: Option<HullDim> = None;
     let mut boxes: Vec<SplashBox> = Vec::new();
+    let mut plates: Vec<ArmorPlate> = Vec::new();
     for (i, entry) in db.paths_storage.iter().enumerate() {
         if !entry.name.ends_with(".visual") {
             continue;
@@ -257,8 +410,19 @@ fn hull_data_for_model(
         let Some((geom_bytes, splash_bytes)) = read_geom_and_splash(vfs, &geom_path) else {
             continue;
         };
-        if let Some(d) = hull_dim_from_geometry(&geom_bytes) {
-            dim = Some(merge_dims(dim, d));
+        if let Ok(g) = geometry::parse_geometry(&geom_bytes) {
+            if let Some(d) = hull_dim_from_parsed(&g) {
+                dim = Some(merge_dims(dim, d));
+            }
+            for model in &g.armor_models {
+                for tri in &model.triangles {
+                    plates.push(ArmorPlate {
+                        vertices: tri.vertices,
+                        material_id: tri.material_id,
+                        layer_index: tri.layer_index,
+                    });
+                }
+            }
         }
         if let Some(sb) = splash_bytes
             && let Ok(parsed) = geometry::parse_splash_file(&sb)
@@ -268,7 +432,12 @@ fn hull_data_for_model(
     }
     let dim = dim?;
     let zones = build_zones(boxes, vehicle);
-    Some(HullData { dim, zones })
+    let armor = vehicle.armor().cloned();
+    let hp = (!plates.is_empty())
+        .then_some(plates)
+        .zip(armor)
+        .map(|(plates, armor)| HullPlates { plates, armor });
+    Some(HullData { dim, zones, plates: hp })
 }
 
 /// Read a `.geometry` record and its `.splash` sibling from the VFS.
@@ -377,6 +546,54 @@ mod tests {
         assert_eq!(merge_dims(None, b), b);
     }
 
+    /// The ray casts to the nearest armour triangle and reads that plate's
+    /// thickness from the `ArmorMap`; a miss or a degenerate ray yields `None`
+    /// so the caller falls back to the heuristic.
+    #[test]
+    fn plate_thickness_casts_to_the_nearest_plate() {
+        use std::collections::BTreeMap;
+
+        let plates = vec![
+            ArmorPlate { vertices: [[3.0, -2.0, -2.0], [3.0, 2.0, -2.0], [3.0, 0.0, 2.0]], material_id: 56, layer_index: 1 },
+            ArmorPlate { vertices: [[2.0, -2.0, -2.0], [2.0, 2.0, -2.0], [2.0, 0.0, 2.0]], material_id: 60, layer_index: 1 },
+        ];
+        let armor = std::collections::HashMap::from([
+            (56u32, BTreeMap::from([(1u32, 19.0f32)])),
+            (60u32, BTreeMap::from([(1u32, 32.0f32)])),
+        ]);
+
+        // Broadside ray from outside the hull hits the outer plate (x=3) first.
+        assert_eq!(plate_thickness_at_point([10.0, 0.0, 0.0], [3.0, 0.0, 0.0], &plates, &armor), Some(19.0));
+        // A ray aimed off the plate's extent misses every triangle.
+        assert_eq!(plate_thickness_at_point([10.0, 0.0, 0.0], [0.0, 0.0, 30.0], &plates, &armor), None);
+        // A zero-length ray cannot be cast.
+        assert_eq!(plate_thickness_at_point([3.0, 0.0, 0.0], [3.0, 0.0, 0.0], &plates, &armor), None);
+        // A material present in armour but with no matching plate returns None.
+        let armor_missing = std::collections::HashMap::from([(99u32, BTreeMap::from([(1u32, 50.0f32)]))]);
+        assert_eq!(plate_thickness_at_point([10.0, 0.0, 0.0], [3.0, 0.0, 0.0], &plates, &armor_missing), None);
+    }
+
+    /// A flat muzzle->impact chord can cross a plate at a smaller `t` than the
+    /// plate actually taking the hit. The lookup must prefer the plate whose
+    /// intersection is nearest the impact point, not the one first along the ray.
+    #[test]
+    fn plate_thickness_prefers_the_impact_plate_over_a_grazed_one() {
+        use std::collections::BTreeMap;
+
+        let plates = vec![
+            // A rail plate the chord clips on the way (t=1), far from the impact.
+            ArmorPlate { vertices: [[1.0, -2.0, -2.0], [1.0, 2.0, -2.0], [1.0, 0.0, 2.0]], material_id: 56, layer_index: 1 },
+            // The plate the shell actually struck, at the impact point (t=2).
+            ArmorPlate { vertices: [[2.0, -2.0, -2.0], [2.0, 2.0, -2.0], [2.0, 0.0, 2.0]], material_id: 60, layer_index: 1 },
+        ];
+        let armor = std::collections::HashMap::from([
+            (56u32, BTreeMap::from([(1u32, 19.0f32)])),
+            (60u32, BTreeMap::from([(1u32, 32.0f32)])),
+        ]);
+
+        assert_eq!(plate_thickness_at_point([0.0, 0.0, 0.0], [2.0, 0.0, 0.0], &plates, &armor), Some(32.0));
+    }
+
     fn hit_at_body(offset: [f32; 3]) -> ResolvedShotHit {
         use wows_replays::analyzer::battle_controller::state::VictimPose;
         use wows_replays::analyzer::decoder::HitType;
@@ -428,6 +645,7 @@ mod tests {
                 }],
                 zone_for_box: std::collections::HashMap::from([("CM_SB_bow_1".to_owned(), "Bow".to_owned())]),
             }),
+            plates: None,
         };
         assert_eq!(exact_zone_for_hit(&hit_at_body([3.0, 0.0, 0.0]), &data), Some("Bow".to_owned()));
         // Body x is longitudinal (model z); a hit off the bow box longitudinally
@@ -459,6 +677,7 @@ mod tests {
                 ],
                 zone_for_box: std::collections::HashMap::from([("CM_SB_cit_1".to_owned(), "Cas".to_owned())]),
             }),
+            plates: None,
         };
         assert_eq!(exact_zone_for_hit(&hit_at_body([1.0, 0.0, 0.0]), &data), Some("Cas".to_owned()));
     }

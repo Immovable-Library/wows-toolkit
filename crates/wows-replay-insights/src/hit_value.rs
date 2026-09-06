@@ -668,7 +668,7 @@ pub fn assess(
             None => (None, None),
         };
         let hitloc = victim_hit_location(report, params, victim_entity_id, &hitloc_zone);
-        let zone_mm = hitloc.as_ref().map(|hl| hl.thickness());
+        let zone_mm = zone_mm_for(hull, hit, victim_entity_id, hitloc.as_ref());
         let budget = hitloc.as_ref().map(|hl| hl.max_hp()).unwrap_or(0.0);
         // Saturation is per exact zone (the budget's `max_hp` pool), so the
         // accumulator and the citadel exception are keyed on the exact zone too;
@@ -1214,7 +1214,7 @@ pub fn self_output_timeline(
             .and_then(|data| exact_zone_for_hit(hit, data))
             .unwrap_or_else(|| zone.clone());
         let hitloc = victim_hit_location(report, params, victim_id, &hitloc_zone);
-        let zone_mm = hitloc.as_ref().map(|hl| hl.thickness());
+        let zone_mm = zone_mm_for(hull, hit, victim_id, hitloc.as_ref());
         let hit_type = hit.hit.hit_type.shell_hit.known().map(|s| s.name()).unwrap_or("UNKNOWN");
         let est = estimate_damage(&shell, hit_type, zone_mm.as_ref());
         events.push((report.game_clock_to_elapsed(hit.clock).0, est));
@@ -1255,6 +1255,25 @@ pub(crate) fn victim_hit_location(
     let build = ResolvedBuild::from_player(player, &ProviderRef(params), report.version())?;
     let locations = build.ship.vehicle()?.hit_locations()?;
     hit_location_for(locations, zone).cloned()
+}
+
+/// The plate thickness (mm) at a hit's impact point.
+///
+/// Prefers the exact armour-mesh plate recovered by [`crate::hull_dim`] from the
+/// ship's `.geometry` and `ArmorMap`, which is spatially correct. Falls back to
+/// the hit-location record's own `thickness` only when that is positive; a `0`
+/// thickness in GameParams means the field is absent, not a zero-mm plate, so it
+/// is treated as unknown (the caller's conservative estimate applies).
+pub(crate) fn zone_mm_for(
+    hull: Option<&std::collections::HashMap<EntityId, crate::hull_dim::HullData>>,
+    hit: &ResolvedShotHit,
+    entity: EntityId,
+    hitloc: Option<&wowsunpack::game_params::types::HitLocation>,
+) -> Option<f32> {
+    hull
+        .and_then(|m| m.get(&entity))
+        .and_then(|data| crate::hull_dim::plate_thickness_for_hit(hit, data))
+        .or_else(|| hitloc.map(|hl| hl.thickness()).filter(|&t| t > 0.0))
 }
 
 pub(crate) fn hit_location_for<'a>(
@@ -1387,6 +1406,7 @@ mod zone_tests {
         let dd = HullData {
             dim: HullDim { fore_m: 70.5, aft_m: 70.5, half_beam_m: 6.6, height_m: 19.4 },
             zones: None,
+            plates: None,
         };
         let hit = hit_at(Vec3::new(4.4, 0.0, 0.0), 0.0);
         assert_eq!(zone_for_hit(&hit, None), "citadel");

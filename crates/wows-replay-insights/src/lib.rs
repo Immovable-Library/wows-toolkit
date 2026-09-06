@@ -24,6 +24,8 @@ pub mod fire_chance;
 #[cfg(feature = "build")]
 pub mod hull_dim;
 
+#[cfg(feature = "build")]
 pub mod hit_value;
 
+#[cfg(feature = "build")]
 pub mod survival;

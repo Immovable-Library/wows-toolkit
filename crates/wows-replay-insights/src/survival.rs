@@ -729,7 +729,7 @@ pub fn assess(
             .and_then(|data| crate::hull_dim::exact_zone_for_hit(hit, data))
             .unwrap_or_else(|| zone.clone());
         let hitloc = hit_value::victim_hit_location(report, params, self_entity, &hitloc_zone);
-        let zone_mm = hitloc.as_ref().map(|hl| hl.thickness());
+        let zone_mm = hit_value::zone_mm_for(hull, hit, self_entity, hitloc.as_ref());
         let zone_max_hp = hitloc.as_ref().map(|hl| hl.max_hp()).unwrap_or(0.0);
         let zone_damage_so_far = zone_damage.get(&hitloc_zone).copied().unwrap_or(0.0);
         let saturated =
