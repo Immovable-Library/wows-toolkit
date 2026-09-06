@@ -188,6 +188,13 @@ pub struct IncomingHit {
     pub hit_type: String,
     pub ribbon: String,
     pub zone: String,
+    /// The exact GameParams hit-location key resolved from the ship's `.splash`
+    /// boxes, or `None` when the coarse `zone` heuristic was used instead.
+    pub exact_zone: Option<String>,
+    /// The plate thickness (mm) the HE/SAP penetration and damage estimate were
+    /// read against: the armour-mesh plate at the impact point when resolvable,
+    /// otherwise the coarse hit-location fallback, or `None` when unresolvable.
+    pub plate_thickness_mm: Option<f32>,
     pub estimated_damage: f32,
     pub strike_angle_deg: f32,
     pub angle_on_bow_deg: f32,
@@ -724,10 +731,15 @@ pub fn assess(
             .map(|s| s.name().to_owned())
             .unwrap_or_else(|| "UNKNOWN".to_owned());
         let zone = hit_value::zone_for_hit(hit, hull.and_then(|m| m.get(&self_entity)));
-        let hitloc_zone = hull
+        let exact_zone = hull
             .and_then(|m| m.get(&self_entity))
-            .and_then(|data| crate::hull_dim::exact_zone_for_hit(hit, data))
-            .unwrap_or_else(|| zone.clone());
+            .and_then(|data| crate::hull_dim::exact_zone_for_hit(hit, data));
+        let hitloc_zone = exact_zone.clone().unwrap_or_else(|| zone.clone());
+        let zone = exact_zone
+            .as_deref()
+            .and_then(hit_value::exact_zone_label)
+            .map(str::to_owned)
+            .unwrap_or_else(|| zone);
         let hitloc = hit_value::victim_hit_location(report, params, self_entity, &hitloc_zone);
         let zone_mm = hit_value::zone_mm_for(hull, hit, self_entity, hitloc.as_ref());
         let zone_max_hp = hitloc.as_ref().map(|hl| hl.max_hp()).unwrap_or(0.0);
@@ -759,6 +771,8 @@ pub fn assess(
             hit_type: hit_type.clone(),
             ribbon: hit_value::ribbon_for(&hit_type),
             zone: zone.clone(),
+            exact_zone,
+            plate_thickness_mm: zone_mm,
             estimated_damage: est,
             strike_angle_deg,
             angle_on_bow_deg,

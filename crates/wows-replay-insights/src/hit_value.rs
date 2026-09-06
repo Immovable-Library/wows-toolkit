@@ -53,6 +53,15 @@ pub struct HitAssessment {
     pub victim_ship: String,
     pub victim_class: String,
     pub zone: String,
+    /// The exact GameParams hit-location key resolved from the ship's `.splash`
+    /// boxes (e.g. "Bow", "St", "Cas"), or `None` when no splash box mapped the
+    /// impact and the coarse `zone` heuristic was used instead.
+    pub exact_zone: Option<String>,
+    /// The plate thickness (mm) the HE/SAP penetration and damage estimate were
+    /// read against: the armour-mesh plate at the impact point when resolvable,
+    /// otherwise the coarse hit-location fallback, or `None` when unresolvable
+    /// (the caller then applies the conservative estimate).
+    pub plate_thickness_mm: Option<f32>,
     pub ammo_used: String,
     pub ammo_other: String,
     pub alpha_damage: f32,
@@ -647,12 +656,19 @@ pub fn assess(
         let zone = zone_for_hit(hit, hull.and_then(|m| m.get(&victim_entity_id)));
         // Prefer the exact GameParams zone from the ship's splash boxes so the
         // armour thickness/saturation budget reads the right plate (e.g. "St" or
-        // "Cas" instead of a fuzzy "Hull" fallback); keep the coarse label for
-        // the reason/swaps text and the reported zone.
-        let hitloc_zone = hull
+        // "Cas" instead of a fuzzy "Hull" fallback).
+        let exact_zone = hull
             .and_then(|m| m.get(&victim_entity_id))
-            .and_then(|data| exact_zone_for_hit(hit, data))
-            .unwrap_or_else(|| zone.clone());
+            .and_then(|data| exact_zone_for_hit(hit, data));
+        let hitloc_zone = exact_zone.clone().unwrap_or_else(|| zone.clone());
+        // When the exact zone is resolved, use its coarse label for the report
+        // and reason text so a small ship's deck/superstructure hit is not
+        // reported as "citadel"; an unmapped key keeps the heuristic label.
+        let zone = exact_zone
+            .as_deref()
+            .and_then(exact_zone_label)
+            .map(str::to_owned)
+            .unwrap_or_else(|| zone);
         let (lead_error_m, lead_off_axis_m) = match shot_aim(hit) {
             Some(aim) => {
                 let victim = pose.position.0;
@@ -697,6 +713,8 @@ pub fn assess(
             victim_ship: victim,
             victim_class,
             zone,
+            exact_zone,
+            plate_thickness_mm: zone_mm,
             ammo_used: ammo_str(&used.ammo_type).to_owned(),
             ammo_other: ammo_str(&other.map(|s| s.ammo_type.clone()).unwrap_or(AmmoType::Unknown(String::new()))).to_owned(),
             alpha_damage: used.alpha_damage,
@@ -1244,6 +1262,36 @@ pub(crate) fn is_citadel_zone(zone: &str) -> bool {
     zone.eq_ignore_ascii_case("citadel") || zone.eq_ignore_ascii_case("cit")
 }
 
+/// Map an exact GameParams hit-location key to the coarse zone vocabulary used
+/// by the report and reason text (`bow`/`stern`/`citadel`/`superstructure`/
+/// `deck`/`belt`). Returns `None` for keys that do not map cleanly, so the
+/// caller keeps the heuristic label rather than guess.
+pub(crate) fn exact_zone_label(key: &str) -> Option<&'static str> {
+    if key.eq_ignore_ascii_case("cit") || key.eq_ignore_ascii_case("citadel") {
+        return Some("citadel");
+    }
+    if key.eq_ignore_ascii_case("bow") {
+        return Some("bow");
+    }
+    if key.eq_ignore_ascii_case("st") || key.eq_ignore_ascii_case("stern") {
+        return Some("stern");
+    }
+    if key.eq_ignore_ascii_case("ss")
+        || key.eq_ignore_ascii_case("ssc")
+        || key.eq_ignore_ascii_case("superstructure")
+        || key.eq_ignore_ascii_case("super")
+    {
+        return Some("superstructure");
+    }
+    if key.eq_ignore_ascii_case("cas") || key.eq_ignore_ascii_case("casemate") || key.eq_ignore_ascii_case("belt") {
+        return Some("belt");
+    }
+    if key.eq_ignore_ascii_case("deck") {
+        return Some("deck");
+    }
+    None
+}
+
 /// The victim's hit-location record for `zone`, cloned out of the build.
 pub(crate) fn victim_hit_location(
     report: &BattleReport,
@@ -1411,5 +1459,18 @@ mod zone_tests {
         let hit = hit_at(Vec3::new(4.4, 0.0, 0.0), 0.0);
         assert_eq!(zone_for_hit(&hit, None), "citadel");
         assert_eq!(zone_for_hit(&hit, Some(&dd)), "bow");
+    }
+
+    #[test]
+    fn exact_zone_label_maps_known_keys_only() {
+        assert_eq!(exact_zone_label("Cit"), Some("citadel"));
+        assert_eq!(exact_zone_label("Citadel"), Some("citadel"));
+        assert_eq!(exact_zone_label("Bow"), Some("bow"));
+        assert_eq!(exact_zone_label("St"), Some("stern"));
+        assert_eq!(exact_zone_label("SS"), Some("superstructure"));
+        assert_eq!(exact_zone_label("Cas"), Some("belt"));
+        assert_eq!(exact_zone_label("Deck"), Some("deck"));
+        assert_eq!(exact_zone_label("SSC"), Some("superstructure"));
+        assert_eq!(exact_zone_label("Hull"), None);
     }
 }
