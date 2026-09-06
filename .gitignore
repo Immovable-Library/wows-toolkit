@@ -48,6 +48,9 @@ profile.json.gz
 **/tests/snapshots/**/*.old.png
 # Wargaming API bulk cache (large; regenerate with scripts/mass_collect.py)
 cache/
+# Per-build game constants extracted by the parked replay-parse / ops scripts
+# (regenerate with scripts/extract_ops_*.py).
+constants_cache/
 # raw replay files (large)
 replays/
 # one-off probe scratch scripts
