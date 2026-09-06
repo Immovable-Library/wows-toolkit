@@ -16,6 +16,8 @@ Snapshot date: 2026-09-06. 本文件为最新、干净的续接入口（上一�
 >
 > **固定口径（AGENTS.md）**：先修 bug，再加新功能；新里程碑须在上个 bug/评审阻塞项清空（或用户明确顺延）后才开；提交前用新鲜 `v4_flash_worker` 子代理做对抗性评审（plaintext-handoff Hook 已配好）；工作区注意 `cargo check --workspace` 因 rav1e/nasm 环境问题失败（与改动无关，免跑）；提交信息不加 AI 署名。
 
+> **开发方向状态（2026-09-06）**：①出生点/出生时间标定（`wows-map-spawn-atlas`/`wows-ship-spawn-probe`/`wows-replay-cache`）与③当前 rep 深度分析（本仓库 `wows-toolkit`）为**活跃**；②玩家剧情 PR 量化（`wows-replay-parser`）与④逆向 WG 收益/效率（Python 拟合 + `ops_efficiency_full.jsonl`）**数据量不足，先封存**。清理策略：活跃方向 1/3 的资源（`target/` 构建缓存、`wows-replay-cache/cache/` 回放缓存、`output/{atlas,那莱}`、脚本/源码）保留；封存方向 2/4 的可再生加工缓存已清——删除 `cache/`（WG API 批量缓存）、`__pycache__`，并把 `constants_cache/`(35 个已跟踪文件)`git rm` + 加进 `.gitignore`（commit `70ccc536`）。封存方向 2/4 的原始数据/报告（`replays/`、`replays.db`、`ops_efficiency_full.jsonl`、`output/{backboard,archive}` 等）保留，供将来继续收集样本。
+
 ## 当前验证基线（截至 2026-09-06）
 
 - `cargo test -p wows-replay-insights --lib`：**145 passed**（含 `plate_thickness_casts_to_the_nearest_plate`、`plate_thickness_prefers_the_impact_plate_over_a_grazed_one`、`exact_zone_label_maps_known_keys_only`、`exact_zone_rejects_a_point_on_the_box_max_edge`、`build_zones_drops_an_ambiguous_box_and_is_deterministic`）。
