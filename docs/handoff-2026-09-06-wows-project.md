@@ -4,6 +4,7 @@
 本分支在此之上叠加了「操作剧本经验分析」（方向④）等自定义模块。**新会话先读本文件**，再按需往下钻：
 
 - 方向③详细续接：`docs/handoff-2026-09-05-wows-replay-survival.md`
+- 方向③另一姊妹工作流（归因引擎，见下）：`docs/handoff-2026-09-05-wows-replay-attribution.md`
 - 方向④核心文档：`docs/Q6_CLASS_K_ANALYSIS.md`、`docs/PROJECT_CONTEXT.md`、`docs/WOWS_OPERATIONS_DEV_PLAN.md`
 - 方向① skill 文档：`.codex/skills/wows-map-spawn-atlas/SKILL.md`、`wows-ship-spawn-probe/SKILL.md`、`wows-replay-cache/SKILL.md`
 - 方向② skill 文档：`.codex/skills/wows-replay-parser/SKILL.md`
@@ -50,6 +51,12 @@
 
 ### ③ 当前 rep 深度分析报告（活跃）
 
+方向③包含两条并行工作流，各有自己的续接入口：
+- **生存/输出评估**（主）：`docs/handoff-2026-09-05-wows-replay-survival.md`（见下）。
+- **归因引擎**（姊妹）：`docs/handoff-2026-09-05-wows-replay-attribution.md`——把 rep 变成走位/瞄准建议，多假设归因；核心不变式：WOWS 点亮伤害只记给唯一侦测单位，同刻多单位在侦测环内则该目标对所有单位记 0 点亮伤害。
+
+#### 生存/输出评估
+
 **已完成（非常深入）**
 - `replayshark` CLI：`report [--depth]`、`hit-value`/`hit-summary`/`volleys`/`events`、`survival [--dims s1,s2,s3,s4] [--text]`、`performance [--text]`。
 - 输出端：仅主炮/仅敌方、分区饱和、提前量、换弹反事实、逐轮 0-100 评分；精确区板厚由 `.geometry` 装甲网格 + `ArmorMap` 在落点取（`hull_dim::plate_thickness_for_hit`），命中板取「离落点最近交点」。
@@ -63,6 +70,10 @@
 - `#5`：per-ship `HullData` 缓存（需自引用借用——`PrototypeDatabase` 借用 `assets_bin` 字节——或 `Box::leak`/`self_cell`，并穿线 replayshark 4 个近似循环；本会话评估后回退）。
 - `#9/#10/#11`（数据项）：地图几何 masks / LOS 归因、`visibilityFlags` 逐目标点亮、S2 真实视线/掩体——需先拿到地图几何与侦测事件。
 - `#4/#6`（已完成）、`#7/#8`（已完成）不再处理。
+
+#### 归因引擎
+
+见 `docs/handoff-2026-09-05-wows-replay-attribution.md`（含机制修正、数据源、待办）。当前进度与未来计划以该文件为准。
 
 ### ④ 逆向 WG 经验/收益算法（封存，数据不足）
 
