@@ -4,6 +4,8 @@ Snapshot date: 2026-09-06. 本文件为最新、干净的续接入口（上一�
 
 ## 一句话续接指令（新对话直接粘贴）
 
+> **项目总交接（四方向 + 清理状态）见 `docs/handoff-2026-09-06-wows-project.md`；本文件仅覆盖方向③（rep 深度分析）细节。**
+>
 > 继续 WOWS 回放生存端/输出端评估开发。先读 `docs/handoff-2026-09-05-wows-replay-survival.md` 与 `C:/Users/asdfg/.codex/skills/wows-replay-parser/specs/2026-09-05-survival-evaluation-engine.md`。仓库 `D:\codexProject\wows-toolkit`，工作树干净，分支 `codex/local-changes`；`games_dir=D:/World_of_Warships`（CLI `--game`），回放 `D:/World_of_Warships/replays/15.7.0.0/`。
 >
 > **当前状态（本会话已完成并提交，依次为）**：
