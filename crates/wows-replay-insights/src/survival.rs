@@ -769,7 +769,7 @@ pub fn assess(
             attacker_class: attacker_class.clone(),
             ammo: ammo.clone(),
             hit_type: hit_type.clone(),
-            ribbon: hit_value::ribbon_for(&hit_type),
+            ribbon: hit_value::ribbon_for(&hit_type, &shell.ammo_type),
             zone: zone.clone(),
             exact_zone,
             plate_thickness_mm: zone_mm,

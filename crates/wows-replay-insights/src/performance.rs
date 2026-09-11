@@ -127,12 +127,13 @@ pub fn render_whole(whole: &WholeMatch) -> String {
     out.push_str("  分区：有船壳/splash 数据用精确区，否则固定阈值（deck/super 6/14m）；估伤为 wows_shell 社区近似\n");
     for l in &o.lessons {
         out.push_str(&format!(
-            "  - {}（{}）命中{} 过穿{} 未击穿{} 跳弹{} 核心{} 换弹建议{}\n",
+            "  - {}（{}）命中{} 过穿{} 未击穿{} 溅射{} 跳弹{} 核心{} 换弹建议{}\n",
             l.victim_ship,
             l.victim_class,
             l.hits,
             l.overpen,
             l.no_pen,
+            l.splash,
             l.bounce,
             l.citadel,
             l.switch_calls,
