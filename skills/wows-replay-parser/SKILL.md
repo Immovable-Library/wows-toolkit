@@ -267,8 +267,11 @@ replayshark -g D:/World_of_Warships report --depth --ship-names <skill>/ship_nam
 `hit_value::estimate_damage` 里 AP/SAP 未穿透按 0 结算，只有 HE 按溅射（碎弹 α/6、穿透 α/3，
 已用 0x22 逐受害舰真值校准）。但 `docs/BALLISTICS.md` 列有 `SAPSplashDamageCoeff`，
 说明 SAP 碎弹可能同样有溅射伤害；现有回放里没有自舰 SAP 命中样本，无法验证。
-**动作：一旦扫到玩家驾驶 SAP 主炮弹种舰船（意大利重巡/驱逐等）的对局，先提醒用户，
-再用该局 `damage_main_cs` 对 `hits_main_cs` 做同一套校准，确认后修 `estimate_damage` 的 SAP 分支。**
+**动作：一旦扫到玩家驾驶「主炮弹种里确实有 SAP」的舰船的对局，先提醒用户。识别以数据为准，
+不要按国籍推断——意大利船不等于 SAP（尤里乌斯·恺撒虽是意大利战列舰，主炮只有 AP/HE）；
+判定用 `replayshark events` 看该局自舰 `shell.ammo_type` 里是否真出现 SAP。
+确认有样本后，用该局 `damage_main_cs` 对 `hits_main_cs` 做同一套校准（`cs` = SAP 这一假设
+也要在样本上先确认），确认后修 `estimate_damage` 的 SAP 分支。**
 
 
 ## 提取「吃船效率」供剧情分析
