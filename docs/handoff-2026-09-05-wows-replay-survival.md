@@ -15,6 +15,9 @@ Snapshot date: 2026-09-06. 本文件为最新、干净的续接入口（上一�
 > - **整局表现 P4**（`3053f03c`）：`replayshark performance [--text]`（`performance.rs` `WholeMatch{survival, output}` + `assess_whole` + `render_whole` 一页文本；默认 JSONL）。输出端主炮估伤与生存 S4 更宽口径已用「主炮」/「输出估伤」区分。
 > - **真实板厚 + build 门控**（`1e92dfaf`）：`hit_value`/`survival` 的 `zone_mm` 改走 `hull_dim::plate_thickness_for_hit`（装备 hull 的 `.geometry` 装甲网格 + `ArmorMap`，按落点射线取最近命中板，`(material_id, layer_index)`→毫米）；`HitLocation.thickness` 恒为 0 的问题随之消除（0mm/`None` 均视为未知→保守 0.33α）；命中板取「离落点最近的交点」而非「射线最先扫过的板」，避免平坦弹道掠过近侧板失真。`hit_value`/`survival` 一并门控于 `build`（`--no-default-features` 干净）。**评审后修正**：命中板改为 `|t - t_impact|` 最近者、plates 路径 0mm 过滤。
 > - **审计字段 + 精确区粗 label**（`9e874760`）：`HitAssessment`/`IncomingHit` 新增 `exact_zone`（splash 框精确键）与 `plate_thickness_mm`（本次 HE/SAP 穿透/估伤读取的板厚；甲板网格优先，粗命中区回退，不可解析为 `null`）。新增 `hit_value::exact_zone_label`（精确键→粗 label，保守映射：Cit/Citadel→citadel、Bow→bow、St/Stern→stern、SS/SSC/Super→superstructure、Cas/Casemate→belt、Deck→deck，未知键保留启发式），在精确区可解析时用映射 label 覆盖报告/文案用的粗 `zone`，修复「DD 甲板/上层建筑命中被标成 citadel」的误导。
+> - **HE 溅射修复**（`af5a1ffc`，2026-09-12）：游戏把 HE 命中标成 `SHELL_HIT_TYPE_NOPENETRATION`，旧 `estimate_damage` 对未穿透一律返回 0，导致 HE 输出/受击估伤清零、并给「换 HE」的反向建议（15.7 与 15.8 全中招）。按 0x22 逐受害舰真值校准：HE 碎弹 = α/6、HE 穿透 = α/3，六局复盘估伤由真值的 9%–28% 变为 78%–104%。同时 HE 未穿透在 `pen_verdict`/`ribbon_for`/lesson 文案改为「HE溅射」、`splash` 与 AP/SAP `no_pen` 分开计数、HE 溅射不再给换弹建议、报告加「近似/上界」caveat。
+>
+> **未结项（下次扫到就提醒用户）**：SAP 未穿透仍按 0 结算，但 `docs/BALLISTICS.md` 有 `SAPSplashDamageCoeff`，怀疑 SAP 碎弹也结算溅射；缺自舰 SAP 命中样本。**一旦扫到用户开 SAP 主炮船的对局，先提醒用户，再用该局 `damage_main_cs` / `hits_main_cs` 做同款校准后修 `estimate_damage` 的 SAP 分支。**
 >
 > **固定口径（AGENTS.md）**：先修 bug，再加新功能；新里程碑须在上个 bug/评审阻塞项清空（或用户明确顺延）后才开；提交前用新鲜 `v4_flash_worker` 子代理做对抗性评审（plaintext-handoff Hook 已配好）；工作区注意 `cargo check --workspace` 因 rav1e/nasm 环境问题失败（与改动无关，免跑）；提交信息不加 AI 署名。
 

@@ -262,6 +262,14 @@ replayshark -g D:/World_of_Warships report --depth --ship-names <skill>/ship_nam
 设计蓝本与里程碑见 `specs/2026-09-05-event-credit-attribution-engine.md`（M2 单轮命中价值）、
 生存端见 `specs/2026-09-05-survival-evaluation-engine.md`；术语表 `CONTEXT.md`，决策记录 `docs/adr/`。
 
+### 待验证：SAP 未穿透是否也结算溅射（2026-09-12 记，未结）
+
+`hit_value::estimate_damage` 里 AP/SAP 未穿透按 0 结算，只有 HE 按溅射（碎弹 α/6、穿透 α/3，
+已用 0x22 逐受害舰真值校准）。但 `docs/BALLISTICS.md` 列有 `SAPSplashDamageCoeff`，
+说明 SAP 碎弹可能同样有溅射伤害；现有回放里没有自舰 SAP 命中样本，无法验证。
+**动作：一旦扫到玩家驾驶 SAP 主炮弹种舰船（意大利重巡/驱逐等）的对局，先提醒用户，
+再用该局 `damage_main_cs` 对 `hits_main_cs` 做同一套校准，确认后修 `estimate_damage` 的 SAP 分支。**
+
 
 ## 提取「吃船效率」供剧情分析
 
