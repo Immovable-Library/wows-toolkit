@@ -49,6 +49,24 @@ REPLAY_BLOWFISH_KEY = bytes([
 WG_APP_ID = "4abd85d2d22608f74b646410ef7e3a16"
 CONSTANTS_REPO_TMPL = "https://raw.githubusercontent.com/padtrack/wows-constants/main/data/versions/{build}.json"
 
+# Ingest gate: only arenas listed in the shared operations approval pool (and
+# meeting each map's minimum client build) reach the JSONL / SQLite output. The
+# rules live in wows-replay-cache/approval_pool.json and approval_lib.classify
+# is the single implementation of them; this script only derives the map
+# family the pool is keyed by.
+APPROVAL_SKILL_DIR = Path(os.environ.get(
+    "WOWS_REPLAY_CACHE_SKILL", r"C:/Users/asdfg/.codex/skills/wows-replay-cache"))
+APPROVAL_POOL = APPROVAL_SKILL_DIR / "approval_pool.json"
+
+# Map families, in the order cache_lib.map_family probes them. Keys mirror
+# MAP_IDX in wows-ship-spawn-probe spawn_lib one for one; keep the order.
+MAP_FAMILY_KEYS = (
+    "NavalBase", "Ridge", "Labyrinth", "Naval_Defense", "Advance", "Atoll",
+    "LePVE", "USS_CL",
+    "WW2_OPERATION_1", "WW2_OPERATION_2", "WW2_OPERATION_3",
+    "LOW_LVL_OPERATION_1", "LOW_LVL_OPERATION_2", "LOW_LVL_OPERATION_3",
+)
+
 # Version-stable lookup tables (valid across every known build; these are the
 # leading identity/result fields that never get reordered).
 COMMON_RESULTS = [
@@ -240,6 +258,8 @@ def map_kind(scenario):
         return "new"
     if scenario.startswith("PCVO"):
         return "legacy_op"
+    if scenario.startswith("LOW_LVL_OPERATION"):
+        return "low_lvl_op"
     return "other"
 
 
@@ -258,6 +278,8 @@ def scenario_family(scenario, match_group):
         return "WW2_OP(new)"
     if scenario.startswith("PCVO"):
         return "PCVO(legacy_op)"
+    if scenario.startswith("LOW_LVL_OPERATION"):
+        return "LOW_LVL_OP(new)"
     if match_group == "pvp":
         return "pvp"
     if match_group == "cooperative":
@@ -284,6 +306,49 @@ def normalize_class(t):
     if "destroyer" in s:
         return "DD"
     return s
+
+
+def map_family(scenario):
+    """Approval-pool family for a scenario name, or None when it has none.
+
+    Mirrors wows-replay-cache cache_lib.map_family: WW2 operations carry their
+    own family in the name, the classic operations are matched by map key.
+    """
+    s = scenario or ""
+    if s.startswith("WW2_OPERATION_"):
+        parts = s.split("_")
+        return "_".join(parts[:3]) if len(parts) >= 3 else None
+    for key in MAP_FAMILY_KEYS:
+        if key in s:
+            return key
+    return None
+
+
+def load_approval(pool_path):
+    sys.path.insert(0, str(APPROVAL_SKILL_DIR / "scripts"))
+    import approval_lib
+    return approval_lib.load_config(pool_path), approval_lib
+
+
+def filter_approved(games, pool_path):
+    """Split parsed games into (approved, dropped) using the approval pool.
+
+    ``dropped`` counts games per (status, pool, reason); status is "outside"
+    for arenas no pool claims and "rejected" for pooled arenas that miss the
+    map's build floor or are Flagships variants.
+    """
+    config, approval_lib = load_approval(pool_path)
+    approved, dropped = [], {}
+    for g in games:
+        scenario = g.get("scenario") or ""
+        status, pool, reason = approval_lib.classify(
+            scenario, map_family(scenario), g.get("build"), config)
+        if status == "approved":
+            approved.append(g)
+        else:
+            key = (status, pool, reason or "")
+            dropped[key] = dropped.get(key, 0) + 1
+    return approved, dropped
 
 
 def load_build_tables(build, cache_dir, allow_fetch):
@@ -527,7 +592,8 @@ def discover(items):
 def main(argv=None):
     ap = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     ap.add_argument("replays", nargs="+", help="dirs / files / glob patterns (recurses into dirs)")
-    ap.add_argument("--out", default="replays_parsed.jsonl", help="output JSONL (one row per player)")
+    ap.add_argument("--out", default=None,
+                    help="output JSONL (default: replays_parsed.jsonl, or replays_parsed_all.jsonl when ungated)")
     ap.add_argument("--constants-dir", default="constants_cache", help="per-build constants cache dir")
     ap.add_argument("--no-fetch", action="store_true", help="do not fetch missing constants from GitHub")
     ap.add_argument("--no-resolve-ships", action="store_true", help="skip WG ship name/tier/class lookup")
@@ -536,10 +602,26 @@ def main(argv=None):
     ap.add_argument("--app-id", default=WG_APP_ID, help="WG application id")
     ap.add_argument("--workers", type=int, default=0, help="parallel workers (0 = cpu count)")
     ap.add_argument("--limit", type=int, default=0, help="only full-parse the first N files (for testing)")
-    ap.add_argument("--db", default="replays.db", help="SQLite output (upsert, dedup by arena_id+account_id)")
+    ap.add_argument("--db", default=None,
+                    help="SQLite output (default: replays.db, or replays_all.db when ungated)")
     ap.add_argument("--overwrite", action="store_true", help="start fresh (clear JSONL and DB) instead of appending")
+    ap.add_argument("--approval-pool", default=str(APPROVAL_POOL),
+                    help="operations approval pool (JSON); arenas it does not accept are not ingested")
+    ap.add_argument("--no-approval-filter", action="store_true",
+                    help="ingest every parsed replay instead of gating on the approval pool")
     ap.add_argument("--verbose", action="store_true")
     args = ap.parse_args(argv)
+
+    # Two stores: the gated one is the default, the ungated one is where every
+    # parseable replay belongs. Never let an ungated run write the gated DB.
+    gated = not args.no_approval_filter
+    if args.db is None:
+        args.db = "replays.db" if gated else "replays_all.db"
+    elif not gated and Path(args.db).name == "replays.db":
+        raise SystemExit("refusing to write ungated rows into the gated DB; "
+                         "use --db replays_all.db (or drop --no-approval-filter)")
+    if args.out is None:
+        args.out = "replays_parsed.jsonl" if gated else "replays_parsed_all.jsonl"
 
     paths = discover(args.replays)
     if not paths:
@@ -610,6 +692,13 @@ def main(argv=None):
                     print(f"  parsed {done}/{len(futs)}", file=sys.stderr)
         games.sort(key=lambda g: g["source"])
 
+    # ---- approval pool gate ----
+    dropped = {}
+    if args.no_approval_filter:
+        print("approval filter disabled: ingesting every parsed replay", file=sys.stderr)
+    else:
+        games, dropped = filter_approved(games, args.approval_pool)
+
     # ---- ship resolution ----
     ship_ids = set()
     for g in games:
@@ -642,8 +731,14 @@ def main(argv=None):
     fam = {}
     for g in games:
         fam[g["scenario_family"]] = fam.get(g["scenario_family"], 0) + 1
-    print(f"files matched={pre_ok} full-parsed={len(games)} player-rows={written} -> {out}")
+    print(f"files matched={pre_ok} full-parsed={len(games)} player-rows={written} "
+          f"-> {out} (db {args.db})")
     print(f"distinct builds={len(builds)} resolved={len(resolved)} unresolved={len(unresolved_builds)}")
+    if dropped:
+        print(f"approval pool: kept={len(games)} dropped={sum(dropped.values())}")
+        for (status, pool, reason), n in sorted(dropped.items(), key=lambda kv: -kv[1])[:6]:
+            label = pool or "not in any pool"
+            print(f"  {n:6d}  {status:8s} {label}" + (f" [{reason}]" if reason else ""))
     if unresolved_builds:
         print("unresolved builds (damage/exp nulled):", ", ".join(map(str, unresolved_builds)))
     print("scenario family:")

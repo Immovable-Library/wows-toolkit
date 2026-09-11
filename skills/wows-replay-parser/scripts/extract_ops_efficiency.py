@@ -37,6 +37,7 @@ def is_operation(sc):
         sc.startswith("WW2_OPERATION")
         or sc.startswith("PCVO")
         or sc.startswith("OP_")
+        or sc.startswith("LOW_LVL_OPERATION")
         or sc.startswith("Attack_On_Base")
         or sc == "Defense"
         or sc.startswith("Dunkirk")
@@ -47,6 +48,8 @@ def is_operation(sc):
 def op_family(sc):
     if sc.startswith("WW2_OPERATION"):
         return "WW2_OP(new)"
+    if sc.startswith("LOW_LVL_OPERATION"):
+        return "LOW_LVL_OP(new)"
     return "PCVO(legacy_op)"
 
 

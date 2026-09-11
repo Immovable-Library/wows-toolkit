@@ -64,13 +64,19 @@ Cargo workspace, edition 2024, rust 1.97. Crates under `crates/`:
 
 ## Approved replay data pool
 
-Replay and cache data for operations is governed by the approval pool in `C:/Users/asdfg/.codex/skills/wows-replay-cache/approval_pool.json`. New data entering the cache must pass the approval filter before any row is written; rejected arenas are skipped and must not be re-added. Analysis, spawn-map, and statistics pipelines must consume only approved arenas.
+Two replay stores are kept side by side by the replay-parser skill:
+
+- `replays.db` holds only arenas the approval pool accepts. Version-sensitive work (spawn calibration, spawn atlases, per-map statistics) reads this one.
+- `replays_all.db` holds every parseable replay with no gate. WG earnings/algorithm reverse engineering reads this one, because it needs the full sample.
+
+Replay and cache data for operations is governed by the approval pool in `C:/Users/asdfg/.codex/skills/wows-replay-cache/approval_pool.json`. New data entering the operations cache must pass the approval filter before any row is written; rejected arenas are skipped and must not be re-added. `extract_ops_replays.py` applies the same filter by default (`--no-approval-filter` writes the all-replays store) and `gate_db.py` re-derives the gated DB from that store, so a pool-rule change never requires re-parsing.
 
 Version gates per map (build is the client build stored in `arena.build`):
 
-- Killer Whale (`NavalBase`) and Narai (`Advance`): all versions accepted.
+- Killer Whale (`NavalBase`) and Narai (`Advance`): all versions accepted. Low-tier Killer Whale (15.8+, `..._NavalBase_56_LVL`) is the same family and is covered here.
 - Newport (`Naval_Defense`), Raptor Rescue (`Labyrinth`), Ultimate Frontier (`Atoll`), Hermes (`LePVE`), Aegis (`Ridge`), Cherry Blossom (`USS_CL`): build >= 11189791 (14.11.0).
 - Arctic Convoy (`WW2_OPERATION_1`), Tokyo Express (`WW2_OPERATION_2`), Pacific Offensive (`WW2_OPERATION_3`): build >= 12116141 (15.2.0).
+- Low-tier operations Trial by Fire (`LOW_LVL_OPERATION_1`), Swarm of Steel (`LOW_LVL_OPERATION_2`), Beehive (`LOW_LVL_OPERATION_3`), the tier 2-6 operation lobbies introduced in 15.8: build >= 13187581 (15.8.0).
 - Flagships scenario variants are never accepted.
 
 Legacy scenario names map to their current families: `Attack_On_Base_Normal` -> `NavalBase`, `Defense` -> `Naval_Defense`, `OP_01_01_ATTACK_ON_CONVOY_1` -> `Ridge`, `OP_01_03_NORMAL` -> `Labyrinth`, `OP_02_02_NORMAL` -> `Atoll`.

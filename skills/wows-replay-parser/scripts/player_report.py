@@ -9,6 +9,16 @@ import os
 import re
 import sqlite3
 import sys
+from pathlib import Path
+
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+import scenario_names
+import ship_names
+
+
+# Player performance feeds the WG earnings/algorithm analysis, so the default
+# source is the all-replays DB. Use --db replays.db for the version-gated set.
+DEFAULT_DB = Path(__file__).resolve().parent.parent / "replays_all.db"
 
 
 def fmt_dt(source, ts):
@@ -22,6 +32,21 @@ def fmt_dt(source, ts):
 
 def pct(a, b):
     return f"{a / b * 100:.1f}%" if b else "-"
+
+
+def num(v):
+    """Format a possibly-absent stat; the DB leaves old-version stats null."""
+    return "-" if v is None else f"{v:,}"
+
+
+def open_db(path):
+    """Read-only connection; a missing DB is an error, not a new empty file."""
+    p = Path(path)
+    if not p.exists():
+        raise SystemExit(f"database not found: {p} (pass --db, or ingest replays first)")
+    con = sqlite3.connect(f"file:{p.as_posix()}?mode=ro", uri=True)
+    con.row_factory = sqlite3.Row
+    return con
 
 
 def build(rows):
@@ -74,20 +99,21 @@ def build(rows):
     L.append("|---|---|---|---|---|---|---|---|---|")
     ships = collections.defaultdict(lambda: [0, 0, 0, 0, 0])
     for r in rows:
-        k = (r["ship_name"] or f"id{r['ship_id']}", r["tier"], r["ship_class"])
+        k = (ship_names.cn_name(r["ship_id"], r["ship_name"]), r["tier"], r["ship_class"])
         ships[k][0] += 1
         ships[k][1] += 1 if r["is_win"] else 0
         ships[k][2] += r["damage"] or 0
         ships[k][3] += r["frags"] or 0
         ships[k][4] += r["exp"] or 0
     for (nm, tier, cl), v in sorted(ships.items(), key=lambda kv: -kv[1][0]):
-        L.append(f"| {nm} | T{tier} | {cl} | {v[0]} | {v[1]} | {pct(v[1], v[0])} | {v[2] // v[0]:,} | {v[3] / v[0]:.2f} | {v[4] // v[0]:,} |")
+        L.append(f"| {nm} | {tier if tier is not None else '-'} | {cl or '-'} | {v[0]} | {v[1]} | "
+                 f"{pct(v[1], v[0])} | {v[2] // v[0]:,} | {v[3] / v[0]:.2f} | {v[4] // v[0]:,} |")
 
     # per-game, adaptive for stars/bracket
     has_stars = any(r["stars_server"] is not None for r in rows)
     has_bracket = any(r["bracket"] for r in rows)
     L.append("\n## 逐场明细\n")
-    head = "| 时间 | 模式 | 舰船 | 等级 | 结果 | 伤害 | 击杀 | 基础经验 | 存活 |"
+    head = "| 时间 | 模式 | 剧情 | 舰船 | 等级 | 结果 | 伤害 | 击杀 | 基础经验 | 存活 |"
     if has_stars:
         head += " 星级 |"
     if has_bracket:
@@ -96,8 +122,11 @@ def build(rows):
     L.append("|---".join([""] * head.count("|")) + "|")
     for r in rows:
         wl = "胜" if r["is_win"] else ("负" if r["is_loss"] else "平")
-        line = (f"| {fmt_dt(r['source'], r['ts'])} | {r['match_group']} | {r['ship_name']} "
-                f"| T{r['tier']} | {wl} | {r['damage']:,} | {r['frags']} | {r['exp']} "
+        scenario_cn, _ = scenario_names.standard_name(r["scenario"] or "")
+        ship_cn = ship_names.cn_name(r["ship_id"], r["ship_name"])
+        line = (f"| {fmt_dt(r['source'], r['ts'])} | {r['match_group']} | {scenario_cn} | {ship_cn} "
+                f"| T{r['tier'] if r['tier'] is not None else '-'} | {wl} | {num(r['damage'])} "
+                f"| {r['frags']} | {num(r['exp'])} "
                 f"| {'存活' if r['is_alive'] else '阵亡'} |")
         if has_stars:
             line += f" {r['stars_server']} |"
@@ -111,15 +140,15 @@ def build(rows):
 def main(argv=None):
     sys.stdout.reconfigure(encoding="utf-8", errors="replace")
     ap = argparse.ArgumentParser(description=__doc__.splitlines()[0])
-    ap.add_argument("--db", default="replays.db", help="SQLite database (table: rows)")
+    ap.add_argument("--db", default=str(DEFAULT_DB),
+                    help="SQLite database (table: rows); defaults to the all-replays DB")
     ap.add_argument("--player", required=True, help="exact in-game player name")
     ap.add_argument("--family", help="optional substring match on scenario_family (pvp/ops/coop/...)")
     ap.add_argument("--match-group", help="optional exact match on match_group")
     ap.add_argument("--out", help="output .md path (default reports/<player>_report.md)")
     args = ap.parse_args(argv)
 
-    con = sqlite3.connect(args.db)
-    con.row_factory = sqlite3.Row
+    con = open_db(args.db)
     q = "SELECT * FROM rows WHERE name = ?"
     params = [args.player]
     if args.family:

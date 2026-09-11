@@ -1,5 +1,14 @@
 # WoWs 工具集 项目交接文档（2026-09-06）
 
+> **2026-09-12 更新（回放库口径）**：解析库改为两库分工——`replays.db` 只收
+> `approval_pool.json` 认可池内的 rep（出生点标定等版本强相关工作读它）；
+> `replays_all.db` 收全部可解析 rep（WG 收益/算法逆向读它，需要全量样本）。
+> 闸门已进 `extract_ops_replays.py`（默认开启，`--no-approval-filter` 关闸写全量库），
+> 改池子规则后用 `scripts/gate_db.py` 从全量库重套，不必重解析。
+> 15.8 起的三张低级剧情（烈火试炼 `LOW_LVL_OPERATION_1`、钢铁蜂群 `LOW_LVL_OPERATION_2`、
+> 蜂巢 `LOW_LVL_OPERATION_3`）门槛为 build >= 13187581；低级杀人鲸走 `NavalBase`（全版本放行）。
+> 权威口径见 `AGENTS.md`「Approved replay data pool」与 skill 的 `SKILL.md`。
+
 这是 `codex/local-changes` 分支（基于 upstream `landaire/wows-toolkit`）的**项目总交接**。
 本分支在此之上叠加了「操作剧本经验分析」（方向④）等自定义模块。**新会话先读本文件**，再按需往下钻：
 

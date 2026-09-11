@@ -82,7 +82,7 @@ A monorepo of tools for interacting with World of Warships game data, replays, a
 
 | 技能 | 说明 |
 |------|------|
-| [skills/wows-replay-parser/](skills/wows-replay-parser/) | replay 解析 |
+| [skills/wows-replay-parser/](skills/wows-replay-parser/) | replay 解析（`C:/Users/asdfg/.codex/skills/wows-replay-parser` 的同步快照） |
 | [skills/wows-scoreboard-extract/](skills/wows-scoreboard-extract/) | 战绩截图 OCR 提取 |
 | [wows-scoreboard-extract/battle_results/](wows-scoreboard-extract/battle_results/) | 社区战绩截图（新数据源） |
 

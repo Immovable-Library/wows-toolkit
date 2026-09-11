@@ -1,0 +1,4 @@
+interface:
+  display_name: "WOWS 回放解析"
+  short_description: "解析 WOWS 回放落库 SQLite，按玩家生成战斗报告"
+  default_prompt: "Use $wows-replay-parser to parse replays and generate a player report."
