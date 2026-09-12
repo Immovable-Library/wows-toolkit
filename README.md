@@ -6,6 +6,9 @@ A monorepo of tools for interacting with World of Warships game data, replays, a
 > 本分支（`codex/local-changes`）在 upstream 基础上增加了操作剧本经验分析模块。
 > 上游：https://github.com/landaire/wows-toolkit
 
+> 客户端侧 mod（游戏内 PnF Python + Unbound UI）已拆到独立仓库 `D:\codexProject\wows-mods`。
+> 本仓库只做离线 replay 与资源分析，不写入游戏安装目录。
+
 ---
 
 ## 操作剧本经验分析（本分支）
