@@ -262,16 +262,18 @@ replayshark -g D:/World_of_Warships report --depth --ship-names <skill>/ship_nam
 设计蓝本与里程碑见 `specs/2026-09-05-event-credit-attribution-engine.md`（M2 单轮命中价值）、
 生存端见 `specs/2026-09-05-survival-evaluation-engine.md`；术语表 `CONTEXT.md`，决策记录 `docs/adr/`。
 
-### 待验证：SAP 未穿透是否也结算溅射（2026-09-12 记，未结）
+### 未穿透结算口径：HE/SAP 溅射（2026-09-20，SAP 已结）
 
-`hit_value::estimate_damage` 里 AP/SAP 未穿透按 0 结算，只有 HE 按溅射（碎弹 α/6、穿透 α/3，
-已用 0x22 逐受害舰真值校准）。但 `docs/BALLISTICS.md` 列有 `SAPSplashDamageCoeff`，
-说明 SAP 碎弹可能同样有溅射伤害；现有回放里没有自舰 SAP 命中样本，无法验证。
-**动作：一旦扫到玩家驾驶「主炮弹种里确实有 SAP」的舰船的对局，先提醒用户。识别以数据为准，
-不要按国籍推断——意大利船不等于 SAP（尤里乌斯·恺撒虽是意大利战列舰，主炮只有 AP/HE）；
-判定用 `replayshark events` 看该局自舰 `shell.ammo_type` 里是否真出现 SAP。
-确认有样本后，用该局 `damage_main_cs` 对 `hits_main_cs` 做同一套校准（`cs` = SAP 这一假设
-也要在样本上先确认），确认后修 `estimate_damage` 的 SAP 分支。**
+`hit_value::estimate_damage` 现行口径：citadel α、穿透 α/3、过穿 α/10，**HE 与 SAP 未穿透按溅射
+α/6**，AP 未穿透 0（`pen_verdict`/`ribbon_for`/lesson 文案同步标「HE溅射 / SAP溅射」）。
+
+- HE 校准：2026-09-11 拉赫马特/春蓬局，多组逐受害舰真值误差 0.1%~25%。
+- SAP 校准：2026-09-15 AL 马可波罗局（樱花绽放），SAP alpha 14,100、54 发碎弹 × α/6 = 126,900，
+  对 0x22 `damage_main_cs` 125,521 偏差 +1.1%；α/3 与 α/12 各偏约 2 倍，被排除。
+- **仍未验证**：该局 SAP 没有一发被游戏判为「穿透」（54 碎弹 + 1 跳弹），所以 SAP 穿透按 α/3
+  这一点缺样本。识别 SAP 以数据为准、不按国籍推断（意大利船不等于 SAP，尤里乌斯·恺撒只有 AP/HE），
+  用 `replayshark events` 看自舰 `shell.ammo_type`。**下次扫到含 SAP 舰体穿透（目标存活、非过杀）
+  的对局，用该局 `damage_main_cs`/`hits_main_cs` 复核 α/3，并把 SAP 跳弹是否结算溅射一并确认。**
 
 
 ## 提取「吃船效率」供剧情分析

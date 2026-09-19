@@ -121,11 +121,11 @@ pub struct VictimLesson {
     pub hits: u32,
     pub overpen: u32,
     pub bounce: u32,
-    /// AP/SAP hits that failed to penetrate: the shell was the wrong choice or
-    /// the angle was bad.
+    /// AP hits that failed to penetrate: the shell was the wrong choice or the
+    /// angle was bad. HE/SAP failures are `splash` instead.
     pub no_pen: u32,
-    /// HE hits that detonated on a plate too thick to pierce. Normal HE
-    /// behaviour, not a failed shot, so it is counted apart from `no_pen`.
+    /// HE/SAP hits that burst on a plate too thick to pierce. Normal behaviour
+    /// for those shells, not a failed shot, so it is counted apart from `no_pen`.
     pub splash: u32,
     pub citadel: u32,
     pub switch_calls: u32,
@@ -137,12 +137,50 @@ pub struct VictimLesson {
 
 /// Aggregate the per-hit assessments into a per-target lesson.
 ///
-/// A HE hit the game reports as `NoPenetration`/`Ricochet` is a shell that
-/// detonated on a plate it could not pierce: that is splash damage, which is
-/// normal HE behaviour, not a failed shot to fix. Only AP/SAP no-penetrations
-/// are counted as failed penetrations.
-pub(crate) fn is_he_splash(ammo: &str, hit_type: &str) -> bool {
-    ammo == "HE" && (hit_type.contains("NOPENETRATION") || hit_type.contains("RICOCHET"))
+/// A shell that burst on a plate it could not pierce pays splash, which is a
+/// normal result rather than a failed shot to fix. That covers HE (which never
+/// bounces) and SAP (which shatters like AP but still bursts). A SAP ricochet
+/// bounces off and pays nothing, like AP.
+pub(crate) fn is_splash(ammo: &str, hit_type: &str) -> bool {
+    match ammo {
+        "HE" => hit_type.contains("NOPENETRATION") || hit_type.contains("RICOCHET"),
+        "SAP" => hit_type.contains("NOPENETRATION"),
+        _ => false,
+    }
+}
+
+/// Per-target hit-type tallies shared by the lesson and the volley verdict, so
+/// the two cannot drift apart (a SAP shatter once counted as both a failed
+/// penetration and splash).
+#[derive(Default)]
+struct HitTally {
+    overpen: u32,
+    bounce: u32,
+    no_pen: u32,
+    splash: u32,
+    citadel: u32,
+}
+
+fn tally_hits<'a>(hits: impl IntoIterator<Item = (&'a str, &'a str)>) -> HitTally {
+    let mut t = HitTally::default();
+    for (ammo, hit_type) in hits {
+        let splash = is_splash(ammo, hit_type);
+        if splash {
+            t.splash += 1;
+        } else if hit_type.contains("NOPENETRATION") {
+            t.no_pen += 1;
+        }
+        if hit_type.contains("OVERPEN") {
+            t.overpen += 1;
+        }
+        if hit_type.contains("RICOCHET") && !splash {
+            t.bounce += 1;
+        }
+        if hit_type.contains("MAJORHIT") {
+            t.citadel += 1;
+        }
+    }
+    t
 }
 
 pub fn summarize(
@@ -168,21 +206,8 @@ pub fn summarize(
             let victim_ship = hits.first().map(|h| h.victim_ship.clone()).unwrap_or_default();
             let victim_class = hits.first().map(|h| h.victim_class.clone()).unwrap_or_default();
             let shells_fired = hits.len() as u32;
-            let overpen = hits.iter().filter(|h| h.hit_type.contains("OVERPEN")).count() as u32;
-            let bounce = hits
-                .iter()
-                .filter(|h| h.hit_type.contains("RICOCHET") && !is_he_splash(&h.ammo_used, &h.hit_type))
-                .count() as u32;
-            let mut no_pen = 0u32;
-            let mut splash = 0u32;
-            for h in &hits {
-                if is_he_splash(&h.ammo_used, &h.hit_type) {
-                    splash += 1;
-                } else if h.hit_type.contains("NOPENETRATION") {
-                    no_pen += 1;
-                }
-            }
-            let citadel = hits.iter().filter(|h| h.hit_type.contains("MAJORHIT")).count() as u32;
+            let tally = tally_hits(hits.iter().map(|h| (h.ammo_used.as_str(), h.hit_type.as_str())));
+            let HitTally { overpen, bounce, no_pen, splash, citadel } = tally;
             let switch_calls = hits.iter().filter(|h| h.swap_text.starts_with("switch")).count() as u32;
             let keep_calls = hits.iter().filter(|h| h.swap_text.starts_with("keep")).count() as u32;
             let saturated_hits = hits.iter().filter(|h| h.saturated).count() as u32;
@@ -254,10 +279,18 @@ fn build_lesson(
         parts.push(format!("{bounce}发跳弹，目标角度/穿深问题，考虑 HE 或等露侧"));
     }
     if no_pen >= 2 && !is_thin {
-        parts.push(format!("{no_pen}发未击穿，穿深/角度不足，HE 溅射更稳"));
+        let other = hits.first().map(|h| h.ammo_other.as_str()).unwrap_or("?");
+        if other == "HE" {
+            parts.push(format!("{no_pen}发未击穿，穿深/角度不足，HE 溅射更稳"));
+        } else if other == "SAP" {
+            parts.push(format!("{no_pen}发未击穿，穿深/角度不足，可换 SAP 打上层"));
+        } else {
+            parts.push(format!("{no_pen}发未击穿，穿深/角度不足"));
+        }
     }
     if splash >= 5 {
-        parts.push(format!("{splash}发 HE 未穿透按溅射结算（HE 正常结果，非失误）"));
+        let ammo = hits.first().map(|h| h.ammo_used.as_str()).unwrap_or("?");
+        parts.push(format!("{splash}发 {ammo} 未穿透按溅射结算（正常结果，非失误）"));
     }
     if citadel >= 1 {
         parts.push(format!("{citadel}发核心命中，效果良好"));
@@ -425,16 +458,8 @@ fn volley_verdict(
     score: u32,
     avg_lead: Option<f32>,
 ) -> String {
-    let overpen = hits.iter().filter(|h| h.hit_type.contains("OVERPEN")).count();
-    let no_pen = hits
-        .iter()
-        .filter(|h| h.ammo_used != "HE" && h.hit_type.contains("NOPENETRATION"))
-        .count();
-    let splash = hits
-        .iter()
-        .filter(|h| is_he_splash(&h.ammo_used, &h.hit_type))
-        .count();
-    let citadel = hits.iter().filter(|h| h.hit_type.contains("MAJORHIT")).count();
+    let tally = tally_hits(hits.iter().map(|h| (h.ammo_used.as_str(), h.hit_type.as_str())));
+    let HitTally { overpen, no_pen, splash, citadel, .. } = tally;
     let saturated = hits.iter().filter(|h| h.saturated).count();
     let mut parts = Vec::new();
     if shells_fired > shells_hit {
@@ -450,7 +475,8 @@ fn volley_verdict(
         parts.push(format!("{no_pen}发未击穿"));
     }
     if splash > 0 {
-        parts.push(format!("{splash}发HE溅射"));
+        let ammo = hits.first().map(|h| h.ammo_used.as_str()).unwrap_or("?");
+        parts.push(format!("{splash}发{ammo}溅射"));
     }
     if saturated > 0 {
         parts.push(format!("{saturated}发打饱和区"));
@@ -850,13 +876,14 @@ pub(crate) fn ammo_str(ammo: &AmmoType) -> &'static str {
 }
 
 pub(crate) fn ribbon_for(hit_type: &str, ammo: &AmmoType) -> String {
-    // HE does not shatter off a plate: the game's no-penetration for a HE shell
-    // means it detonated on the armour, so it must not be labelled as the failed
-    // penetration of an AP round.
+    // HE and SAP burst on the armour the game reports them as not penetrating, so
+    // that hit must not read as the failed penetration of an AP round.
     if matches!(ammo, AmmoType::HE)
         && (hit_type.contains("NOPENETRATION") || hit_type.contains("RICOCHET"))
     {
         "HE溅射".to_owned()
+    } else if matches!(ammo, AmmoType::SAP) && hit_type.contains("NOPENETRATION") {
+        "SAP溅射".to_owned()
     } else if hit_type.contains("OVERPEN") {
         "过穿".to_owned()
     } else if hit_type.contains("NOPENETRATION") {
@@ -883,12 +910,16 @@ fn reason_for(shell: &ShellInfo, zone: &str, hit_type: &str, victim_class: &str)
     } else if hit_type.contains("RICOCHET") {
         if matches!(shell.ammo_type, AmmoType::HE) {
             format!("{ammo}在厚甲上未穿透，靠溅射伤害（HE 不会跳弹）")
+        } else if matches!(shell.ammo_type, AmmoType::SAP) {
+            format!("{ammo}角度过斜跳弹，本次无伤害；等目标露侧再打")
         } else {
             format!("目标角度过斜致{ammo}跳弹；换 HE 或等目标露侧")
         }
     } else if hit_type.contains("NOPENETRATION") {
         if matches!(shell.ammo_type, AmmoType::HE) {
             format!("{ammo}未能穿透该处装甲，按溅射结算（HE 正常结果）")
+        } else if matches!(shell.ammo_type, AmmoType::SAP) {
+            format!("{ammo}未能穿透该处装甲，按溅射结算（SAP 正常结果）")
         } else {
             format!("{ammo}穿深不足或角度太斜，未能击穿；考虑 HE 溅射或等露侧")
         }
@@ -1012,23 +1043,23 @@ fn pen_verdict(shell: &ShellInfo, hit_type: &str, belt_strike_deg: f32, belt_mm:
     if hit_type.contains("OVERPEN") {
         return "overpen".to_owned();
     }
-    // HE never ricochets and is never "stopped" by a thick plate: the shell
-    // detonates on it, which the game still reports as a no-penetration. Label
-    // that as splash so a HE-firing player is not told the shot failed to pen.
-    if matches!(shell.ammo_type, AmmoType::HE) {
-        let failed = hit_type.contains("NOPENETRATION") || hit_type.contains("RICOCHET");
-        let plate_too_thick = matches!(belt_mm, Some(belt) if shell.he_pen_mm.unwrap_or(0.0) < *belt);
-        return if failed || plate_too_thick {
+    // HE and SAP are never "stopped" without effect: the shell bursts on a plate
+    // it cannot pierce, which the game reports as a no-penetration. Label that
+    // splash so the player is not told the shot simply failed to penetrate.
+    if hit_type.contains("NOPENETRATION") {
+        return if matches!(shell.ammo_type, AmmoType::HE | AmmoType::SAP) {
             "splash".to_owned()
         } else {
-            "pen".to_owned()
+            "no-pen".to_owned()
         };
     }
     if hit_type.contains("RICOCHET") {
-        return "bounce".to_owned();
-    }
-    if hit_type.contains("NOPENETRATION") {
-        return "no-pen".to_owned();
+        // HE does not bounce; a ricochet reported for it is still a detonation.
+        return if matches!(shell.ammo_type, AmmoType::HE) {
+            "splash".to_owned()
+        } else {
+            "bounce".to_owned()
+        };
     }
     match shell.ammo_type {
         AmmoType::AP => {
@@ -1040,15 +1071,21 @@ fn pen_verdict(shell: &ShellInfo, hit_type: &str, belt_strike_deg: f32, belt_mm:
                 "can-pen".to_owned()
             }
         }
-        AmmoType::HE => match belt_mm {
-            Some(belt) if shell.he_pen_mm.unwrap_or(0.0) < *belt => "splash".to_owned(),
-            Some(_) => "pen".to_owned(),
+        // The game reported a hit without a penetration verdict, so the plate is
+        // the only evidence left; without it the verdict stays unknown.
+        AmmoType::HE | AmmoType::SAP => match belt_mm {
             None => "unknown".to_owned(),
-        },
-        AmmoType::SAP => match belt_mm {
-            Some(belt) if shell.sap_pen_mm.unwrap_or(0.0) < *belt => "no-pen".to_owned(),
-            Some(_) => "pen".to_owned(),
-            None => "unknown".to_owned(),
+            Some(belt) => {
+                let pen_mm = match shell.ammo_type {
+                    AmmoType::HE => shell.he_pen_mm,
+                    _ => shell.sap_pen_mm,
+                };
+                if pen_mm.unwrap_or(0.0) < *belt {
+                    "splash".to_owned()
+                } else {
+                    "pen".to_owned()
+                }
+            }
         },
         AmmoType::Unknown(_) => "unknown".to_owned(),
     }
@@ -1116,7 +1153,13 @@ fn swap_verdict(
         }
         AmmoType::SAP => {
             if hit_type.contains("NOPENETRATION") {
-                "switch: SAP could not pierce; HE splashes better".to_owned()
+                // A SAP shatter still pays splash, and an AP+SAP ship has no HE
+                // to swap to, so this is only a swap call when HE is available.
+                if matches!(other.ammo_type, AmmoType::HE) {
+                    "switch: SAP could not pierce; HE splashes better".to_owned()
+                } else {
+                    "keep: SAP splash is the fallback here; no HE to swap to".to_owned()
+                }
             } else {
                 "keep: SAP fine here".to_owned()
             }
@@ -1243,31 +1286,46 @@ pub(crate) fn zone_for_hit(hit: &ResolvedShotHit, data: Option<&HullData>) -> St
 
 /// Estimated damage this shell applied to the target zone, as fractions of the
 /// shell's alpha damage: citadel 100%, penetration 33%, overpenetration 10%,
-/// AP/SAP that fail to penetrate 0, HE that fails to penetrate 17% (splash).
-/// Never the client-exact value.
+/// shatter (AP, or SAP that bounces) 0, splash 17% for the shells that burst on
+/// a plate they could not pierce (HE, and SAP that shatters). Never the
+/// client-exact value.
 ///
-/// AP and SAP that fail to penetrate deal nothing, but HE does not bounce: the
-/// game reports a HE shell that could not pierce the plate as a no-penetration
-/// and still pays splash. Zeroing those hits erased most HE output (and most
-/// incoming HE damage) from every estimate.
+/// The game reports a shell that could not pierce the plate as a
+/// no-penetration. AP deals nothing there, but HE and SAP still burst and pay
+/// splash; zeroing those hits erased most HE and SAP output (and most incoming
+/// damage of both types) from every estimate.
 ///
-/// The splash fraction is calibrated against the 0x22 per-victim interaction
-/// totals (`damage_main_he` / `hits_main_he`): on 2026-09-11 ops replays a HE
-/// shatter pays alpha/6 and a HE penetration pays alpha/3, which reproduces the
-/// server total to within ~0.1% (Chumphon: 361x300 + 89x600 = 161,700 vs
-/// 161,730; Rahmat Killer Whale: 459x316 + 50x633 = 177,032 vs 177,361).
+/// Fractions are calibrated against the 0x22 per-victim interaction totals:
+/// 2026-09-11 ops replays give a HE shatter alpha/6 and a HE penetration
+/// alpha/3, reproducing the server total to ~0.1% (Chumphon 361x300 + 89x600 =
+/// 161,700 vs 161,730; Rahmat Killer Whale 459x316 + 50x633 = 177,032 vs
+/// 177,361). The 2026-09-15 Alpha Marco Polo replay gives SAP alpha/6: 54
+/// shatters x 2,350 = 126,900 vs `damage_main_cs` 125,521 (+1.1%); alpha/3 and
+/// alpha/12 are both off by 2x. That replay has no SAP hit the game called a
+/// penetration, so alpha/3 there is still unverified.
 const SPLASH_DAMAGE_FRACTION: f32 = 1.0 / 6.0;
 const OVERPEN_DAMAGE_FRACTION: f32 = 0.10;
 const PEN_DAMAGE_FRACTION: f32 = 1.0 / 3.0;
 
 pub fn estimate_damage(shell: &ShellInfo, hit_type: &str, belt_mm: Option<&f32>) -> f32 {
     let alpha = shell.alpha_damage;
-    let is_he = matches!(shell.ammo_type, AmmoType::HE);
     if hit_type.contains("MAJORHIT") {
         return alpha;
     }
-    if hit_type.contains("RICOCHET") || hit_type.contains("NOPENETRATION") {
-        return if is_he { alpha * SPLASH_DAMAGE_FRACTION } else { 0.0 };
+    if hit_type.contains("NOPENETRATION") {
+        // AP that fails to penetrate deals nothing; HE and SAP burst on the
+        // plate they could not pierce and still pay splash.
+        return match shell.ammo_type {
+            AmmoType::HE | AmmoType::SAP => alpha * SPLASH_DAMAGE_FRACTION,
+            _ => 0.0,
+        };
+    }
+    if hit_type.contains("RICOCHET") {
+        // HE never bounces, so a ricochet reported for it is still a detonation.
+        return match shell.ammo_type {
+            AmmoType::HE => alpha * SPLASH_DAMAGE_FRACTION,
+            _ => 0.0,
+        };
     }
     if hit_type.contains("OVERPEN") {
         return alpha * OVERPEN_DAMAGE_FRACTION;
@@ -1564,7 +1622,7 @@ mod zone_tests {
             ammo_type: ammo,
             caliber: wowsunpack::game_params::types::Millimeters::from(127.0),
             he_pen_mm: Some(21.0),
-            sap_pen_mm: None,
+            sap_pen_mm: Some(45.0),
             alpha_damage: alpha,
             muzzle_velocity: 792.0,
             mass_kg: 24.5,
@@ -1608,6 +1666,66 @@ mod zone_tests {
         assert_eq!(ribbon_for("SHELL_HIT_TYPE_NOPENETRATION", &AmmoType::HE), "HE溅射");
         assert_eq!(ribbon_for("SHELL_HIT_TYPE_NOPENETRATION", &AmmoType::AP), "未击穿");
         assert_eq!(ribbon_for("SHELL_HIT_TYPE_OVERPENETRATION", &AmmoType::HE), "过穿");
+        assert_eq!(ribbon_for("SHELL_HIT_TYPE_NOPENETRATION", &AmmoType::SAP), "SAP溅射");
+        assert_eq!(ribbon_for("SHELL_HIT_TYPE_RICOCHET", &AmmoType::SAP), "跳弹");
+    }
+
+    /// SAP shatters like AP but still bursts on the plate it cannot pierce, so
+    /// its no-penetration pays splash (alpha/6) while a ricochet pays nothing.
+    /// Calibrated on the 2026-09-15 Alpha Marco Polo replay (alpha 14,100,
+    /// damage_main_cs 125,521 over 48 hits).
+    #[test]
+    fn sap_no_penetration_pays_splash_damage() {
+        let sap = shell_of(AmmoType::SAP, 14_100.0);
+        let shatter = estimate_damage(&sap, "SHELL_HIT_TYPE_NOPENETRATION", None);
+        assert!(
+            (shatter - 14_100.0 * SPLASH_DAMAGE_FRACTION).abs() < 1.0,
+            "SAP shatter should pay alpha/6, got {shatter}"
+        );
+        assert_eq!(estimate_damage(&sap, "SHELL_HIT_TYPE_RICOCHET", None), 0.0);
+        assert_eq!(
+            estimate_damage(&sap, "SHELL_HIT_TYPE_NORMAL", Some(&30.0)),
+            14_100.0 * PEN_DAMAGE_FRACTION
+        );
+        assert_eq!(pen_verdict(&sap, "SHELL_HIT_TYPE_NOPENETRATION", 25.0, Some(&60.0)), "splash");
+        assert_eq!(pen_verdict(&sap, "SHELL_HIT_TYPE_RICOCHET", 70.0, Some(&60.0)), "bounce");
+        assert!(is_splash("SAP", "SHELL_HIT_TYPE_NOPENETRATION"));
+        assert!(!is_splash("SAP", "SHELL_HIT_TYPE_RICOCHET"));
+        assert!(!is_splash("AP", "SHELL_HIT_TYPE_NOPENETRATION"));
+    }
+
+    /// The lesson and the volley verdict both tally hits through `tally_hits`,
+    /// so one SAP shatter can never be counted as a failed penetration and as
+    /// splash at the same time.
+    #[test]
+    fn tallies_separate_sap_shatter_from_failed_penetration() {
+        let t = tally_hits([
+            ("SAP", "SHELL_HIT_TYPE_NOPENETRATION"),
+            ("SAP", "SHELL_HIT_TYPE_NOPENETRATION"),
+            ("SAP", "SHELL_HIT_TYPE_RICOCHET"),
+            ("AP", "SHELL_HIT_TYPE_NOPENETRATION"),
+            ("HE", "SHELL_HIT_TYPE_NOPENETRATION"),
+            ("AP", "SHELL_HIT_TYPE_OVERPENETRATION"),
+            ("AP", "SHELL_HIT_TYPE_MAJORHIT"),
+            ("AP", "SHELL_HIT_TYPE_NORMAL"),
+        ]);
+        assert_eq!(t.splash, 3);
+        assert_eq!(t.no_pen, 1);
+        assert_eq!(t.bounce, 1);
+        assert_eq!(t.overpen, 1);
+        assert_eq!(t.citadel, 1);
+    }
+
+    /// Without plate data a HE/SAP hit the game called a normal hit has no
+    /// evidence for either verdict, so it stays unknown instead of claiming pen.
+    #[test]
+    fn pen_verdict_without_plate_data_is_unknown() {
+        let he = shell_of(AmmoType::HE, 1800.0);
+        let sap = shell_of(AmmoType::SAP, 14_100.0);
+        assert_eq!(pen_verdict(&he, "SHELL_HIT_TYPE_NORMAL", 25.0, None), "unknown");
+        assert_eq!(pen_verdict(&sap, "SHELL_HIT_TYPE_NORMAL", 25.0, None), "unknown");
+        assert_eq!(pen_verdict(&sap, "SHELL_HIT_TYPE_NORMAL", 25.0, Some(&30.0)), "pen");
+        assert_eq!(pen_verdict(&sap, "SHELL_HIT_TYPE_NORMAL", 25.0, Some(&60.0)), "splash");
     }
 
     /// A HE player must never be told their shot "failed to penetrate": HE
@@ -1621,9 +1739,9 @@ mod zone_tests {
         assert_eq!(pen_verdict(&ap, "SHELL_HIT_TYPE_NOPENETRATION", 25.0, Some(&thick)), "no-pen");
         assert_eq!(pen_verdict(&ap, "SHELL_HIT_TYPE_RICOCHET", 70.0, Some(&thick)), "bounce");
         assert_eq!(pen_verdict(&he, "SHELL_HIT_TYPE_NORMAL", 25.0, Some(&15.0)), "pen");
-        assert!(is_he_splash("HE", "SHELL_HIT_TYPE_NOPENETRATION"));
-        assert!(is_he_splash("HE", "SHELL_HIT_TYPE_RICOCHET"));
-        assert!(!is_he_splash("AP", "SHELL_HIT_TYPE_NOPENETRATION"));
-        assert!(!is_he_splash("HE", "SHELL_HIT_TYPE_NORMAL"));
+        assert!(is_splash("HE", "SHELL_HIT_TYPE_NOPENETRATION"));
+        assert!(is_splash("HE", "SHELL_HIT_TYPE_RICOCHET"));
+        assert!(!is_splash("AP", "SHELL_HIT_TYPE_NOPENETRATION"));
+        assert!(!is_splash("HE", "SHELL_HIT_TYPE_NORMAL"));
     }
 }
